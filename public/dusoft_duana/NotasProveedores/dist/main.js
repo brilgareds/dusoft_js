@@ -45303,7 +45303,8 @@ define('url',["angular"], function(angular) {
                 'ELIMINAR_PRODUCTO_TEMPORAL': BASE_URL + '/notasProveedores/eliminarProductoTemporal',
                 'CREAR_NOTA': BASE_URL + '/notasProveedores/crearNota',
                 'CREAR_NOTA_TEMPORAL': BASE_URL + '/notasProveedores/crearNotaTemporal',
-                'VER_NOTAS_FACTURA': BASE_URL + '/notasProveedores/verNotasFactura'
+                'VER_NOTAS_FACTURA': BASE_URL + '/notasProveedores/verNotasFactura',
+                'IMPRIMIR_NOTA': BASE_URL + '/notasProveedores/imprimirNota'
             }
         }
     };
@@ -52555,6 +52556,8 @@ define(
                     $scope.tituloConceptoEspecificoActual = [];
                     $scope.baja_costo = true;
                     $scope.ultimaFacturaAbierta = {};
+                    $scope.NotasGeneradas = {};
+                    $scope.nombre_tercero = 'genfar';
 
                     var modalInstance = {};
                 };
@@ -52670,7 +52673,7 @@ define(
                 };
 
                 $scope.ListarPrefijos = function(){
-                    $scope.root.tiposNotas = ['Nota Debito', 'Nota Credito'];
+                    $scope.root.tiposNotas = ['NDD', 'NCD'];
                     $scope.tipoNota = 'Tipo Nota';
                 };
 
@@ -52786,14 +52789,20 @@ define(
                     }
                 };
 
-                $scope.modal = function (obj) {
+                $scope.modal = function (obj, opt=1) {
+                    let template = '';
+                    if(opt === 1){
+                        template = 'views/modals/createNote.html';
+                    }else if(opt === 2){
+                        template = 'views/modals/showNotes.html';
+                    }
 
                     $scope.opts = {
                         backdrop: true,
                         backdropClick: true,
                         dialogFade: true,
                         keyboard: true,
-                        templateUrl: 'views/modals/showNotes.html',
+                        templateUrl: template,
                         scope: $scope,
                         // controller: "VentanaMensajeSincronizacionController",
                         resolve: {
@@ -52836,10 +52845,51 @@ define(
                         if (data.status === 200) {
                             console.log('Ajax fine!!');
                             console.log('data is: ', data.obj);
-                            $scope.NotasGeneradas = data.obj;
-                            $scope.modal($scope.NotasGeneradas);
-                        } else { console.log('Hubo un error: ', data.obj); }
+                            if(data.obj.tipos.all.length > 0){
+                                $scope.NotasGeneradas = {
+                                    encabezado: data.obj.encabezado,
+                                    notas: [ data.obj.tipos.debito, data.obj.tipos.credito ]
+                                };
+                                $scope.modal($scope.NotasGeneradas, 2);
+                            }else{ alert('La factura no tiene notas creadas!!'); }
+                        } else { alert('No se encontraron notas!!'); }
                     });
+                };
+
+                $scope.imprimir_pdf = (nota, tipo) => {
+                    nota.tipoNota = tipo;
+                    nota.retencionAnual = $scope.NotaTemporal.retencionAnual;
+                    console.log('La nota a imprimir es: ', nota);
+                    let url = nota.url;
+                    let host = $location.protocol() + '://' + $location.host() + ':' + $location.port();
+
+                    let obj = {
+                        session: $scope.session,
+                        data: {
+                            reimprimir: true,
+                            host: host,
+                            rows: nota
+                        }
+                    };
+                    //console.log('Datos recibidos: ',documento);
+                    let request = new XMLHttpRequest();
+                    request.open('HEAD', url, false);
+                    request.send();
+                    if(request.status === 200) {
+                        console.log('PDF existe!!');
+                        window.open(url, '_blank');
+                    } else {
+                        console.log('PDF NO existe');
+                        NotasProveedoresService.imprimirNota(obj, data => {
+                            if (data.status === 200) {
+                                console.log('la url final es: ', data.obj);
+                                window.open(data.obj, '_blank');
+                                // window.open(data.obj.listarAgrupar, '_blank');
+                            }else{
+                                console.log('Error en Ajax, status: ', data);
+                            }
+                        });
+                    }
                 };
 
                 $scope.listarNotas = {
@@ -52859,7 +52909,7 @@ define(
                         {field: 'facturaValorString', displayName: 'Valor Factura', width: "11%"},
                         {field: 'facturaSaldoString', displayName: 'Saldo', width: "11%"},
                         {displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity)" class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;"></i></div>'},
-                        {displayName: 'Ver', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="verNotasFactura(row.entity)" class="fa fa-file fa-2x" aria-hidden="true" style="color: #da8f07;"></i></div>'}
+                        {displayName: 'Ver', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="verNotasFactura(row.entity)" class="fa fa-file fa-2x" aria-hidden="true" style="color: #1c99d1;"></i></div>'}
                     ]
                 };
                 that.init();
@@ -52913,6 +52963,10 @@ define('services/NotasProveedoresService',["angular", "js/services"], function (
 
                 self.verNotasFactura = (obj, callback) => {
                     post(API.NOTAS_PROVEEDORES.VER_NOTAS_FACTURA, obj, callback);
+                };
+
+                self.imprimirNota = (obj, callback) => {
+                    post(API.NOTAS_PROVEEDORES.IMPRIMIR_NOTA, obj, callback);
                 };
 
                 return this;

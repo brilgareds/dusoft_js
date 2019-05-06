@@ -4,12 +4,16 @@ var NotasProveedoresModel = function () {
 };
 
 NotasProveedoresModel.prototype.TiposDoc = function (obj, callback) {
-    var resultado = ['CC', 'CE'];
+    var resultado = ['CC', 'CE', 'NIT'];
     callback(false, resultado);
 };
 
 NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) {
     var contarFiltros = 0;
+    let tablaNotas = 'inv_notas_debito_proveedor';
+    if (obj.tipo_nota && obj.tipo_nota === 'NCD') {
+        tablaNotas = 'inv_notas_credito_proveedor';
+    }
 
     var query = G.knex.select([
         "c.tipo_id_tercero as documentoTipo",
@@ -18,7 +22,7 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) 
         "b.codigo_proveedor_id as proveedorId",
         "a.numero_factura as facturaNumero",
         "a.observaciones as facturaObservacion",
-        G.knex.raw("TO_CHAR(a.fecha_registro, 'DD-MM-YYY') as fecha"),
+        G.knex.raw("TO_CHAR(a.fecha_registro, 'DD/MM/YYYY HH24:MI:SS') as fecha"),
         "a.valor_factura as facturaValor",
         "a.saldo as facturaSaldo"
     ])
@@ -28,6 +32,7 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) 
             this.on('b.tipo_id_tercero', '=', 'c.tipo_id_tercero')
                 .on('b.tercero_id', '=', 'c.tercero_id')
         })
+        .leftJoin(`${tablaNotas} as d`, 'a.numero_factura', 'd.numero_factura')
         .where('a.saldo', '>', '0')
         .andWhere('a.empresa_id', obj.empresaId)
         .andWhere(function () {
@@ -47,12 +52,20 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) 
                 contarFiltros++;
                 this.where("a.numero_factura", "ILIKE", "%" + obj.factura + "%");
             }
+            if (obj.tipo_nota) {
+                contarFiltros++;
+                this.where("d.prefijo", obj.tipo_nota);
+            }
+            if (obj.numero_nota) {
+                contarFiltros++;
+                this.where('d.numero', obj.numero_nota);
+            }
 
             if (contarFiltros === 0) {
                 this.where(false);
             }
         });
-    // console.log('Sql es: ', G.sqlformatter.format(query.toString()));
+     // console.log('Sql es: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (response) {
         callback(false, response);
@@ -62,30 +75,31 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) 
 };
 
 NotasProveedoresModel.prototype.guardarTemporalDetalle = (detalle, callback) => {
-    var resultado = [];
+    let resultado = [];
     detalle.sube_baja_costo = '1';
-    detalle.mayorValor = detalle.mayorValor ? '1':'0';
+    detalle.mayorValor = detalle.mayorValor ? '1' : '0';
 
-    var query = G.knex('inv_notas_facturas_proveedor_d_tmp')
-        .insert({
-            codigo_proveedor_id: detalle.codigo_proveedor_id,
-            numero_factura: detalle.numero_factura,
-            empresa_id: detalle.empresaId,
-            usuario_id: detalle.usuarioId,
-            codigo_producto: detalle.codigo_producto,
-            cantidad: detalle.cantidad,
-            concepto: detalle.conceptoGeneralId,
-            concepto_especifico: detalle.conceptoEspecificoId,
-            valor_concepto: detalle.valorConcepto,
-            observacion: detalle.observacion,
-            nota_mayor_valor: detalle.mayorValor,
-            valor: detalle.valor,
-            porc_iva: detalle.porc_iva,
-            sube_baja_costo: detalle.sube_baja_costo
-        });
-    // console.log('SQL is: ', G.sqlformatter.format(query.toString()));
+    promesa.then(response => {
+        let query = G.knex('inv_notas_facturas_proveedor_d_tmp')
+            .insert({
+                codigo_proveedor_id: detalle.codigo_proveedor_id,
+                numero_factura: detalle.numero_factura,
+                empresa_id: detalle.empresaId,
+                usuario_id: detalle.usuarioId,
+                codigo_producto: detalle.codigo_producto,
+                cantidad: detalle.cantidad,
+                concepto: detalle.conceptoGeneralId,
+                concepto_especifico: detalle.conceptoEspecificoId,
+                valor_concepto: detalle.valorConcepto,
+                observacion: detalle.observacion,
+                nota_mayor_valor: detalle.mayorValor,
+                valor: detalle.valor,
+                porc_iva: detalle.porc_iva,
+                sube_baja_costo: detalle.sube_baja_costo
+            });
 
-    query.then(resultado => {
+        return query;
+    }).then(resultado => {
         callback(false, resultado);
     }).catch(err => {
         callback(err);
@@ -111,7 +125,7 @@ NotasProveedoresModel.prototype.temporalEncabezado = function (obj, callback) {
                     if (temporal.length === 1) {
                         temporal = temporal[0];
                         return temporal;
-                    } else if(temporal.length > 1) {
+                    } else if (temporal.length > 1) {
                         throw 'Demasiados temporales! total temporales: ' + temporal.length;
                     } else {
                         throw 'Error al crear';
@@ -122,7 +136,7 @@ NotasProveedoresModel.prototype.temporalEncabezado = function (obj, callback) {
             } else if (temporal.length === 1) {
                 temporal = temporal[0];
                 return temporal;
-            } else if(temporal.length > 1) {
+            } else if (temporal.length > 1) {
                 throw 'Demasiados temporales! total temporales: ' + temporal.length;
             }
         }).then(function (temporal) {
@@ -139,9 +153,9 @@ NotasProveedoresModel.prototype.temporalEncabezado = function (obj, callback) {
             temporal.totalSaldo = temporal.saldo - temporal.valor_descuento;
             temporal.totalSaldoString = obj.number_money(String(temporal.totalSaldo));
             callback(false, temporal); // Temporal encontrado
-    }).catch(function (err) {
-        callback(err);
-    });
+        }).catch(err => {
+            callback(err);
+        });
 };
 
 NotasProveedoresModel.prototype.conceptosEspecificos = function (obj, callback) {
@@ -156,20 +170,119 @@ NotasProveedoresModel.prototype.conceptosEspecificos = function (obj, callback) 
         .orderBy('b.codigo_concepto_especifico');
     // console.log('SQl is: ', G.sqlformatter.format(query.toString()));
 
-    query.then(function(response){
-        response.forEach(function(element){
+    query.then(function (response) {
+        response.forEach(function (element) {
             element.nombre = element.nombre.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
         });
         callback(false, response);
-    }).catch(function(err){
+    }).catch(function (err) {
         callback(err);
     });
 };
 
-const promesa = new Promise((resolve, reject) => { resolve(true); });
+const promesa = new Promise((resolve, reject) => {
+    resolve(true);
+});
+
+NotasProveedoresModel.prototype.updateUrlNota = (obj, callback) => {
+    let columnaUrl = '';
+    if(obj.bodegaId === '06'){
+        columnaUrl = 'nota_url2';
+    }else{
+        columnaUrl = 'nota_url';
+    }
+
+    let queryUpdateUrlNota = G.knex(obj.tabla)
+        .where('empresa_id', obj.empresaId)
+        .andWhere('prefijo', obj.facturaPrefijo)
+        .andWhere('numero', obj.facturaNumero)
+        .update(columnaUrl, obj.url);
+
+    queryUpdateUrlNota
+        .then(response => {
+            callback(false, response);
+        }).catch(err => {
+            console.log('Error: ', err);
+            callback(err);
+        });
+};
+
+function recorrerNotas(that, obj, notas, index, callback) {
+    let nota = notas[index];
+    if (!nota) {
+        callback(false, notas);
+        return true;
+    }
+
+    nota.documento = nota.prefijo + '-' + nota.numero;
+    nota.tipoDoc = nota.tipo_documento;
+    nota.tercero = nota.tipo_id_tercero + '-' + nota.tercero_id + ' ' + nota.nombre_tercero;
+    nota.fechaRegistro = nota.fecha_registro;
+    nota.valorNota = parseFloat(nota.valor_nota);
+    nota.valorNotaString = obj.number_money(String(nota.valorNota));
+    nota.usuario = nota.usuario.toLowerCase();
+    nota.Usuario = nota.usuario.toUpperCase();
+    nota.tabla = obj.tabla;
+    obj.prefijo = nota.prefijo;
+    obj.numero = nota.numero;
+
+    G.Q.nfcall(verNotasFacturaDetalle, obj)
+        .then(response => {
+            nota.detalle = response;
+            recorrerNotas(that, obj, notas, index + 1, callback);
+        }).catch(err => {
+            callback(err);
+        });
+}
+
+function MayusPrimera(string){
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+let verNotasFacturaDetalle = (obj, callback) => {
+    let verNotasFacturaDetalle = G.knex
+        .select([
+            G.knex.raw('a.*'),
+            G.knex.raw('fc_descripcion_producto(codigo_producto) as descripcion'),
+            'b.descripcion_concepto_general as concepto_general',
+            'c.descripcion_concepto_especifico as concepto_especifico'
+        ])
+        .from(`${obj.tabla}_d as a`)
+        .innerJoin('glosas_concepto_general as b', 'a.concepto', 'b.codigo_concepto_general')
+        .innerJoin('glosas_concepto_especifico as c', 'a.concepto_especifico', 'c.codigo_concepto_especifico')
+        .where('a.empresa_id', obj.empresaId)
+        .andWhere('a.prefijo', obj.prefijo)
+        .andWhere('a.numero', obj.numero);
+
+    // console.log('SQL detalle es: ', G.sqlformatter.format(verNotasFacturaDetalle.toString()));
+
+    verNotasFacturaDetalle
+        .then(detalles => {
+            if (detalles.length > 0) {
+                for (let detalle of detalles) {
+                    detalle.valorConcepto = parseFloat(detalle.valor_concepto);
+                    detalle.valorConceptoString = obj.number_money(String(parseFloat(detalle.valor_concepto)));
+                    detalle.valorUnitario = parseFloat(detalle.valor_unitario);
+                    detalle.valorUnitarioString = obj.number_money(String(parseFloat(detalle.valor_unitario)));
+                    detalle.cantidad = parseFloat(detalle.cantidad);
+                    detalle.conceptoUnidad = parseFloat(detalle.valorConcepto) / parseFloat(detalle.cantidad);
+                    detalle.conceptoUnidadString = obj.number_money(String(detalle.conceptoUnidad));
+                    detalle.concepto_general = MayusPrimera(detalle.concepto_general.toLowerCase());
+                    detalle.concepto_especifico = MayusPrimera(detalle.concepto_especifico.toLowerCase());
+                }
+                callback(false, detalles);
+            } else {
+                callback('Sin detalle!!');
+            }
+        }).catch(err => {
+        callback(err);
+    });
+
+};
 
 NotasProveedoresModel.prototype.verNotasFactura = (obj, callback) => {
-    console.log('In model "verNotasFactura"');
+    let that = this;
+    let notas = [];
 
     promesa.then(response => {
 
@@ -195,47 +308,69 @@ NotasProveedoresModel.prototype.verNotasFactura = (obj, callback) => {
                     'a.numero',
                     'a.numero_factura',
                     'a.codigo_proveedor_id',
-                    'a.fecha_registro',
+                    G.knex.raw("TO_CHAR(a.fecha_registro,'DD/MM/YYYY HH24:MI:SS') as fecha_registro"),
                     'a.valor_nota',
-                    'b.descripcion as documento',
+                    'b.descripcion as tipo_documento',
                     'd.tipo_id_tercero',
                     'd.tercero_id',
                     'd.nombre_tercero',
-                    'e.usuario',
+                    'e.usuario as usuario',
                     'f.subtotal',
                     'f.iva_total',
                     'f.total',
                     'g.porc_rtf',
                     'g.porc_ica',
                     'g.porc_rtiva',
-                    G.knex.raw("TO_CHAR(g.fecha_registro,'YYYY') as anio_factura")
+                    'a.nota_url as url',
+                    'a.nota_url2 as url2',
+                    G.knex.raw("TO_CHAR(g.fecha_registro,'YYYY') as anio_factura"),
+                    'detalle.item_id',
+                    'detalle.codigo_producto',
+                    'detalle.concepto',
+                    'detalle.valor_concepto',
+                    'detalle.concepto_especifico',
+                    'detalle.cantidad',
+                    'detalle.valor_unitario',
+                    'detalle.observacion',
+                    'detalle.porc_iva',
+                    'detalle.sube_baja_costo'
                 ])
                 .from(`${obj.tabla} as a`)
-                .innerJoin('documentos as b', function() {
+                .leftJoin(`${obj.tabla}_d as detalle`, function () {
+                    this.on('a.empresa_id', 'detalle.empresa_id')
+                        .on('a.prefijo', 'detalle.prefijo')
+                        .on('a.numero', 'detalle.numero')
+                })
+                .leftJoin('documentos as b', function () {
                     this.on('a.empresa_id', 'b.empresa_id')
                         .on('a.documento_id', 'b.documento_id')
                 })
-                .innerJoin('terceros_proveedores as c', 'a.codigo_proveedor_id', 'c.codigo_proveedor_id')
-                .innerJoin('terceros as d', function() {
+                .leftJoin('terceros_proveedores as c', 'a.codigo_proveedor_id', 'c.codigo_proveedor_id')
+                .leftJoin('terceros as d', function () {
                     this.on('c.tipo_id_tercero', 'd.tipo_id_tercero')
                         .on('c.tercero_id', 'd.tercero_id')
                 })
-                .innerJoin('system_usuarios as e', 'a.usuario_id', 'e.usuario_id')
-                .innerJoin(inner, function() {
+                .leftJoin('system_usuarios as e', 'a.usuario_id', 'e.usuario_id')
+                .leftJoin(inner, function () {
                     this.on('a.numero_factura', 'f.numero_factura')
                         .on('a.codigo_proveedor_id', 'f.codigo_proveedor_id')
                 })
-                .innerJoin('inv_facturas_proveedores as g', function() {
+                .leftJoin('inv_facturas_proveedores as g', function () {
                     this.on('a.numero_factura', 'g.numero_factura')
                         .on('a.codigo_proveedor_id', 'g.codigo_proveedor_id')
                 })
                 .where('a.numero_factura', obj.facturaNumero)
                 .andWhere('a.codigo_proveedor_id', obj.proveedorId);
-
         return consultarNotasFactura;
+    }).then(notas => {
+        if (notas.length > 0) {
+            return G.Q.nfcall(recorrerNotas, that, obj, notas, 0);
+        } else {
+            return [];
+        }
     }).then(response => {
-        console.log('Fine!!');
-        callback(false, response);
+        notas = response;
+        callback(false, notas);
     }).catch(err => {
         console.log('Error: ', err);
         callback(err);
@@ -250,18 +385,18 @@ NotasProveedoresModel.prototype.eliminarProductoTemporal = (obj, callback) => {
         .andWhere('numero_factura', obj.facturaNumero)
         .del();
 
-    query.then(function (resultado) {
+    query.then(resultado => {
         callback(false, resultado);
-    }).catch(function (err) {
+    }).catch(err => {
         callback(err);
     })
 };
 
 NotasProveedoresModel.prototype.conceptosGenerales = function (obj, callback) {
     var query = G.knex.select([
-            'codigo_concepto_general as codigo',
-            'descripcion_concepto_general as nombre'
-        ])
+        'codigo_concepto_general as codigo',
+        'descripcion_concepto_general as nombre'
+    ])
         .from('glosas_concepto_general').orderBy('codigo_concepto_general');
 
     query.then(function (response) {
@@ -284,14 +419,14 @@ NotasProveedoresModel.prototype.ParametrosRetencion = function (obj, temporal, c
         .andWhere('empresa_id', obj.empresaId)
         .andWhere(G.knex.raw(filtro));
 
-    query.then(function (response) {
+    query.then(response => {
         if (response.length === 1) {
             var retenciones = response[0];
             retenciones.retencionFuente = 0.00;
             retenciones.retencionIca = 0.00;
             retenciones.retencionIva = 0.00;
 
-            if (retenciones.sw_rtf === '2' || retenciones.sw_rtf === '3'){
+            if (retenciones.sw_rtf === '2' || retenciones.sw_rtf === '3') {
                 if (temporal.subtotal >= retenciones.base_rtf) {
                     retenciones.retencionFuente = temporal.subtotal * (temporal.porc_rtf / 100);
                 }
@@ -321,7 +456,7 @@ NotasProveedoresModel.prototype.ParametrosRetencion = function (obj, temporal, c
     });
 };
 
-NotasProveedoresModel.prototype.facturaDetalle = function (obj, temporales, callback) {
+NotasProveedoresModel.prototype.facturaDetalle = (obj, temporales, conceptosEspecificos, callback) => {
     let filtro = '1 = 1 ';
     let busqueda;
 
@@ -358,9 +493,9 @@ NotasProveedoresModel.prototype.facturaDetalle = function (obj, temporales, call
             'a.numero_factura',
             'b.codigo_producto'
         ]);
-    query.then(function (response) {
+    query.then(response => {
         if (response.length > 0) {
-            response.forEach(function (element) {
+            response.forEach(element => {
                 element.cantidad = parseFloat(element.cantidad);
                 element.cantidadString = element.cantidad.toLocaleString('de-DE').replace(/(,)/g, ".");
                 element.valor = parseFloat(element.valor);
@@ -369,10 +504,22 @@ NotasProveedoresModel.prototype.facturaDetalle = function (obj, temporales, call
                 element.valorTotalString = obj.number_money(String(element.valorTotal));
                 element.porc_iva = parseFloat(element.porc_iva);
                 element.hidden = false;
-                if(Array.isArray(temporales)){
+                element.conceptoGeneralId = obj.conceptoGeneralDefaultCod;
+                element.conceptoGeneralTitulo = obj.conceptoGeneralDefaultNombre;
+                element.conceptoGeneralNombre = obj.conceptoGeneralDefaultNombre;
+                element.conceptoEspecificoId = obj.conceptoEspecificoDefaultCod;
+                element.conceptoEspecificoTitulo = obj.conceptoEspecificoDefaultNombre;
+                element.conceptoEspecificoNombre = obj.conceptoEspecificoDefaultNombre;
+                element.conceptosEspecificos = conceptosEspecificos;
+
+                if (Array.isArray(temporales)) {
                     busqueda = temporales.find(temporal => temporal.codigo === element.codigo_producto);
-                    if(busqueda !== undefined){ element.hidden = true; }
-                }else{ console.log('No existen temporales!'); }
+                    if (busqueda !== undefined) {
+                        element.hidden = true;
+                    }
+                } else {
+                    console.log('No existen temporales!');
+                }
             });
             callback(false, response);
         } else {
@@ -434,15 +581,15 @@ NotasProveedoresModel.prototype.temporalDetalle = function (obj, callback) {
             totalBajaCosto: 0,
             totalSubeCosto: 0,
         };
-        if(resultado.length > 0){
+        if (resultado.length > 0) {
             let tipoNota;
             let totalConceptos = 0;
             resultado.forEach(element => {
                 element.descripcionTitulo = element.descripciontitulo;
                 delete element.descripciontitulo;
-                if(element.descripcionTitulo.length > 25) {
+                if (element.descripcionTitulo.length > 25) {
                     element.descripcion = element.descripcionTitulo.substring(0, 25) + '...';
-                }else{
+                } else {
                     element.descripcion = element.descripcionTitulo;
                 }
                 element.descripcionConCodigo = element.codigo + ' - ' + element.descripcionTitulo;
@@ -454,15 +601,15 @@ NotasProveedoresModel.prototype.temporalDetalle = function (obj, callback) {
                 element.valorString = obj.number_money(String(element.valor));
                 element.valorConcepto = parseFloat(element.valorConcepto);
                 element.valorConceptoString = obj.number_money(String(element.valorConcepto));
-                element.totalConcepto = element.valorConcepto * element.cantidad;
-                element.totalConceptoString = obj.number_money(String(element.totalConcepto));
+                element.valorConceptoUnitario = parseFloat(element.valorConcepto / element.cantidad);
+                element.valorConceptoUnitarioString = obj.number_money(String(element.valorConceptoUnitario));
                 element.tipoNota = element.tipo_nota;
                 delete element.tipo_nota;
                 response.all.push(element);
-                if(element.notaMayorValor === '1'){
+                if (element.notaMayorValor === '1') {
                     response.bajaCosto.push(element);
                     response.totalBajaCosto += element.valorConcepto;
-                }else{
+                } else {
                     response.subeCosto.push(element);
                     response.totalSubeCosto += element.valorConcepto;
                 }
@@ -503,9 +650,13 @@ NotasProveedoresModel.prototype.ParametrosNota = function (obj, callback) {
     // console.log('Sql is: ', G.sqlformatter.format(query.toString()));
 
     query.then(response => {
-        if(response.length === 1) { callback(false, response[0]); }
-        else if(response.length > 1) { throw 'Existen muchos parametros para la nota!!\n Total: ' + response.length;}
-        else { throw 'No existen parametros para la nota'; }
+        if (response.length === 1) {
+            callback(false, response[0]);
+        } else if (response.length > 1) {
+            throw 'Existen muchos parametros para la nota!!\n Total: ' + response.length;
+        } else {
+            throw 'No existen parametros para la nota';
+        }
     }).catch(function (err) {
         callback(err);
     });
@@ -547,17 +698,17 @@ NotasProveedoresModel.prototype.buscarTemporalEncabezado = function (obj, callba
         G.knex.raw('TO_CHAR(e.fecha_registro,\'YYYY\') as anio_factura')
     ])
         .from('inv_notas_facturas_proveedor_tmp as a')
-        .innerJoin('terceros_proveedores as b', 'a.codigo_proveedor_id', 'b.codigo_proveedor_id')
-        .innerJoin('terceros as c', function () {
+        .leftJoin('terceros_proveedores as b', 'a.codigo_proveedor_id', 'b.codigo_proveedor_id')
+        .leftJoin('terceros as c', function () {
             this.on('b.tipo_id_tercero', 'c.tipo_id_tercero')
                 .on('b.tercero_id', 'c.tercero_id')
         })
-        .innerJoin('system_usuarios as d', 'a.usuario_id', 'd.usuario_id')
-        .innerJoin('inv_facturas_proveedores as e', function () {
+        .leftJoin('system_usuarios as d', 'a.usuario_id', 'd.usuario_id')
+        .leftJoin('inv_facturas_proveedores as e', function () {
             this.on('a.factura_proveedor', 'e.numero_factura')
                 .on('a.codigo_proveedor_id', 'e.codigo_proveedor_id')
         })
-        .innerJoin(join, function () {
+        .leftJoin(join, function () {
             this.on('e.numero_factura', 'f.numero_factura')
                 .on('e.codigo_proveedor_id', 'f.codigo_proveedor_id')
         })
@@ -585,9 +736,11 @@ NotasProveedoresModel.prototype.insertNotaProveedor = (nota, transaccion, callba
             valor_nota: nota.valorNota
         });
 
-    // console.log('Encabezado query: ', G.sqlformatter.format(insertNota.toString()));
+    if (transaccion) {
+        insertNota.transacting(transaccion);
+    }
 
-    if (transaccion){ insertNota.transacting(transaccion); }
+    // console.log('Query insert Encabezado: ', G.sqlformatter.format(insertNota.toString()));
 
     insertNota.then(response => {
         callback(false, response);
@@ -598,53 +751,76 @@ NotasProveedoresModel.prototype.insertNotaProveedor = (nota, transaccion, callba
 
 NotasProveedoresModel.prototype.insertNotaProveedorDetalle = (nota, transaccion, callback) => {
     let insertDetalle = {};
+    let insertDetalle2 = {};
     let updateInventario = {};
     let nuevoCosto = 0;
     const itemsTotal = nota.items.length;
     let contador = 0;
 
     nota.items.forEach(item => {
-        insertDetalle = G.knex(nota.tablaDetalle)
-            .insert({
-                item_id: G.knex.raw('DEFAULT'),
-                empresa_id: nota.encabezado.empresa_id,
-                prefijo: nota.prefijo,
-                numero: nota.numeracion,
-                cantidad: item.cantidad,
-                porc_iva: item.porcIva,
-                codigo_producto: item.codigo,
-                valor_concepto: item.valorConcepto,
-                valor_unitario: item.valor,
-                concepto: item.conceptoGeneralId.trim(),
-                concepto_especifico: item.conceptoEspecificoId.trim(),
-                observacion: item.observacion,
-                sube_baja_costo: item.subeBajaCosto
+        promesa
+            .then(response => {
+                insertDetalle = G.knex(nota.tablaDetalle)
+                    .insert({
+                        item_id: G.knex.raw('DEFAULT'),
+                        empresa_id: nota.encabezado.empresa_id,
+                        prefijo: nota.prefijo,
+                        numero: nota.numeracion,
+                        cantidad: item.cantidad,
+                        porc_iva: item.porcIva,
+                        codigo_producto: item.codigo,
+                        valor_concepto: item.valorConcepto,
+                        valor_unitario: item.valor,
+                        concepto: item.conceptoGeneralId.trim(),
+                        concepto_especifico: item.conceptoEspecificoId.trim(),
+                        observacion: item.observacion,
+                        sube_baja_costo: item.subeBajaCosto
+                    });
+
+                // console.log('Detalle Query: ', G.sqlformatter.format(insertDetalle.toString()));
+                nuevoCosto = item.valor - (item.valorConcepto / item.cantidad);
+
+                if (transaccion) {
+                    insertDetalle.transacting(transaccion);
+                }
+                return insertDetalle;
+            }).then(response => {
+                /*
+                    insertDetalle2 = G.knex('inv_facturas_proveedores_d')
+                        .insert({
+                            item_id: G.knex.raw('DEFAULT'),
+                            cantidad: item.cantidad,
+                            porc_iva: item.porcIva,
+                            codigo_producto: item.codigo,
+                            valor: item.valor
+                        });
+
+                    if (transaccion) {
+                        insertDetalle2.transacting(transaccion);
+                    }
+                    return insertDetalle2;
+                    }).then(response => {
+                */
+                updateInventario = G.knex('inventarios')
+                    .update({
+                        costo: nuevoCosto,
+                        costo_ultima_compra: nuevoCosto
+                    })
+                    .where('empresa_id', nota.parametros.empresa_id)
+                    .andWhere('codigo_producto', item.codigo);
+
+                if (transaccion) {
+                    updateInventario.transacting(transaccion);
+                }
+                return updateInventario;
+            }).then(response => {
+                contador++;
+                if (itemsTotal === contador) {
+                    callback(false, true);
+                }
+            }).catch(err => {
+                callback(err);
             });
-
-        // console.log('Detalle Query: ', G.sqlformatter.format(insertDetalle.toString()));
-
-        nuevoCosto = item.valor - (item.valorConcepto / item.cantidad);
-
-        if (transaccion){ insertDetalle.transacting(transaccion); }
-
-        insertDetalle.then(response => {
-            updateInventario = G.knex('inventarios')
-                .update({
-                    costo: nuevoCosto,
-                    costo_ultima_compra: nuevoCosto
-                })
-                .where('empresa_id', nota.parametros.empresa_id)
-                .andWhere('codigo_producto', item.codigo);
-
-            if (transaccion){ updateInventario.transacting(transaccion); }
-
-            return updateInventario;
-        }).then(response => {
-            contador++;
-            if(itemsTotal === contador){ callback(false, true); }
-        }).catch(err => {
-            callback(err);
-        });
     });
 };
 
@@ -662,26 +838,30 @@ NotasProveedoresModel.prototype.updateFacturasProveedores = (nota, transaccion, 
         .where('codigo_proveedor_id', nota.encabezado.codigo_proveedor_id)
         .andWhere('numero_factura', nota.encabezado.factura_proveedor);
 
-    if(transaccion) { updateSaldoValorNota.transacting(transaccion); }
+    if (transaccion) {
+        updateSaldoValorNota.transacting(transaccion);
+    }
 
     updateSaldoValorNota.then(response => {
-            let filtro = G.knex.raw('saldo <= 0');
-            let objUpdate2 = { sw_estado: '2' };
+        let filtro = G.knex.raw('saldo <= 0');
+        let objUpdate2 = {sw_estado: '2'};
 
-            const updateEstado = G.knex('inv_facturas_proveedores')
-                .update(objUpdate2)
-                .where('codigo_proveedor_id', nota.encabezado.codigo_proveedor_id)
-                .andWhere('numero_factura', nota.encabezado.factura_proveedor)
-                .andWhere(filtro);
+        const updateEstado = G.knex('inv_facturas_proveedores')
+            .update(objUpdate2)
+            .where('codigo_proveedor_id', nota.encabezado.codigo_proveedor_id)
+            .andWhere('numero_factura', nota.encabezado.factura_proveedor)
+            .andWhere(filtro);
 
-            if(transaccion) { updateEstado.transacting(transaccion); }
+        if (transaccion) {
+            updateEstado.transacting(transaccion);
+        }
 
-            return updateEstado;
-        }).then(response => {
-            callback(false, response);
-        }).catch(err => {
-            callback(err);
-        });
+        return updateEstado;
+    }).then(response => {
+        callback(false, response);
+    }).catch(err => {
+        callback(err);
+    });
 };
 
 NotasProveedoresModel.prototype.updateDocumentos = (nota, transaccion, callback) => {
@@ -690,19 +870,11 @@ NotasProveedoresModel.prototype.updateDocumentos = (nota, transaccion, callback)
         .where('empresa_id', nota.encabezado.empresa_id)
         .andWhere('documento_id', nota.documentoId);
 
-    if(transaccion) { updateDocumentos.transacting(transaccion) }
+    if (transaccion) {
+        updateDocumentos.transacting(transaccion)
+    }
 
     updateDocumentos.then(response => {
-        callback(false, response);
-    }).catch(err => {
-        callback(err);
-    });
-};
-
-NotasProveedoresModel.prototype.crearNota = (parametrosNota, temporal, transaccion, callback) => {
-
-    transaction.then(response => {
-        console.log('Transaction fine!!\nResponse: ', response);
         callback(false, response);
     }).catch(err => {
         callback(err);

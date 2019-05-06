@@ -1,10 +1,55 @@
 <div class="modal-header">
     <button type="button" class="close" style="opacity: 0.5;" ng-click="cerrarVentana()">&times;</button>
-    <h4 class="modal-title" style="color: #1c59b5;">Creación de Nota Proveedor</h4>
+    <h4 class="modal-title" style="color: #1c59b5;">
+        Notas Proveedor - Factura #<b>{{NotasGeneradas.encabezado.facturaId}}</b>
+    </h4>
 </div>
 <div class="modal-body">
-
+    <div ng-repeat="TipoNota in NotasGeneradas.notas track by $index" class="panel panel-primary">
+        <div class="panel-heading">
+            <b align="center" style="text-transform: uppercase;">Notas {{TipoNota.titulo}}</b>
+        </div>
+        <div class="panel-body">
+            <h3 align="center" ng-show="!TipoNota.detalle.length" style="margin: 0px;"><i>Sin notas {{TipoNota.nombre}}</i></h3>
+            <table class="table-responsive2 tr-hover" ng-show="TipoNota.detalle.length">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Tipo Nota</th>
+                        <th>Proveedor</th>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Valor Nota</th>
+                        <th>Imprimir</th>
+                        <!--
+                        <th>Sincronizar</th>
+                        -->
+                    </tr>
+                </thead>
+                <tbody ng-repeat="Nota in TipoNota.detalle track by $index">
+                    <tr>
+                        <td>{{Nota.documento}}</td>
+                        <td>{{Nota.tipoDoc}}</td>
+                        <td>{{Nota.tercero}}</td>
+                        <td>{{Nota.fechaRegistro}}</td>
+                        <td>{{Nota.Usuario}}</td>
+                        <td>{{Nota.valorNotaString}}</td>
+                        <td align="center">
+                            <button style="font-size: 16px;" ng-click="imprimir_pdf(Nota, TipoNota.nombre)" class="btn btn-default btn-xs">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                        </td>
+                        <!--
+                        <td>
+                            <button class="btn btn-danger" ng-click="sincronizarNota(Nota)">Sin Sincronizar</button>
+                        </td>
+                        -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="cerrarVentana()" ng-disabled="">Cerrar</button>
+    <button class="btn btn-primary" ng-click="cerrarVentana()">Cerrar</button>
 </div>

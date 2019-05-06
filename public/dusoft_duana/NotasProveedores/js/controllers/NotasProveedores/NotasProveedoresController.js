@@ -29,40 +29,62 @@ define(
                     $scope.details = [];
                     $scope.enableDetails = [];
                     $scope.glosasConceptoEspecifico = [];
+                    $scope.conceptoDefault = '-Seleccione un concepto-';
                     $scope.ConceptoGeneral = [];
-                    $scope.conceptoGeneralActual = [];
-                    $scope.conceptoEspecificoActual = [];
+                    $scope.conceptoGeneralActual = 'Facturacion';
+                    $scope.conceptoEspecificoActual = 'Medicamentos';
                     $scope.tituloConceptoGeneralActual = [];
                     $scope.tituloConceptoEspecificoActual = [];
                     $scope.baja_costo = true;
                     $scope.ultimaFacturaAbierta = {};
+                    $scope.NotasGeneradas = {};
+                    $scope.nombre_tercero = '';
 
                     var modalInstance = {};
                 };
 
                 var number_money = function(price){
-                    console.log('\nPrecio es: '+ price);
-                    var number = String(price.replace(/(\D)/g, ""));
-                    console.log('Precio sin comas ni puntos fue de: ', number, '\n');
+                    let number = String(price.replace(/(\D)/g, ""));
                     price = new Intl.NumberFormat("de-DE").format(price);
                     price ='$'+price.replace(/(,)/g, "coma").replace(/(\.)/g, "punto").replace(/(coma)/g, ".").replace(/(punto)/g, ",");
-
-                    console.log('Nuevo precio: ', price + '\n');
                     return price;
                 };
 
+                $scope.get = (url, obj, callback) => {
+                    Request.realizarRequest(url, "GET", obj, data => callback(data) );
+                };
+
+                $scope.post = (url, obj, callback) => {
+                    Request.realizarRequest(url, "POST", obj, data => callback(data) );
+                };
+
                 $scope.listarTiposDoc = function(){
-                    var obj = {
+                    let obj = {
                         session: $scope.session,
                         data: {}
                     };
 
-                    NotasProveedoresService.TiposDoc(obj, function(data) {
-                        if(data.status === 200){
+                    $scope.post(API.NOTAS_PROVEEDORES.TIPOS_DOC, obj, data => {
+                        if (data.status === 200) {
                             $scope.root.tiposDoc = data.obj.tiposDoc;
                             $scope.tipoDoc = 'Tipo Doc';
-                        }else{
+                        } else {
                             console.log('Error: ', data);
+                        }
+                    });
+                };
+
+                $scope.listarRetencionesAnuales = () => {
+                    let obj = {
+                        session: $scope.session,
+                        data: {}
+                    };
+
+                    $scope.post(API.NOTAS_PROVEEDORES.LISTAR_RETENCIONES_ANUALES, obj, data => {
+                        if(data.status === 200) {
+                            $scope.root.listarNotas.retencionAnual = data.obj;
+                        } else {
+                            alert('Hubo un error!!');
                         }
                     });
                 };
@@ -72,28 +94,25 @@ define(
                     nota.conceptoGeneralNombre = concepto;
                     nota.conceptoGeneralId = codigo;
                     nota.conceptoEspecificoActual = '';
+                    nota.conceptoEspecificoNombre = $scope.conceptoDefault;
+                    nota.conceptoEspecificoTitulo = $scope.conceptoDefault;
 
-                    console.log('Nuevo concepto, nota.conceptoGeneralActual: ', nota.conceptoGeneralActual);
-                    console.log('Concepto.length: ', concepto.length);
-                    var obj = {
+                    let obj = {
                         session: $scope.session,
                         data: {
                             conceptoGeneral: codigo
                         }
                     };
 
-                    NotasProveedoresService.conceptosEspecificos(obj, function(data){
+                    $scope.post(API.NOTAS_PROVEEDORES.CONCEPTOS_ESPECIFICOS, obj, data => {
                         if(data.status === 200){
                             nota.conceptosEspecificos = data.obj;
-                            console.log('Conceptos especificos son: ', nota.conceptosEspecificos);
                         }else{ console.log('A ocurrido un error: ', data.obj.err); }
                     });
                 };
 
                 $scope.updateConceptoEspecifico = function(nota, codigo, concepto){
-                    console.log('Nuevo concepto, nota.conceptoEspecificoActual: ', nota);
-
-                    var cantidadMaximaLetras = 30;
+                    let cantidadMaximaLetras = 30;
                     nota.conceptoEspecificoTitulo = concepto;
                     nota.conceptoEspecificoId = codigo;
 
@@ -105,7 +124,6 @@ define(
                 };
 
                 $scope.listarNotasProveedores = function(){
-                    console.log('Init "listarNotas"');
                     if($scope.tipoDoc !== 'Tipo Doc'){ var tipoDoc = $scope.tipoDoc; }
                     if($scope.tipoNota !== 'Tipo Nota'){ var tipoNota = $scope.tipoNota; }
 
@@ -129,7 +147,7 @@ define(
                             }
                         };
 
-                        NotasProveedoresService.listarNotas(obj, function(data) {
+                        $scope.post(API.NOTAS_PROVEEDORES.LISTAR_NOTAS, obj, data => {
 
                             if(data.status === 200){
                                 $scope.root.listarNotas = data.obj.notasProveedor;
@@ -142,7 +160,6 @@ define(
                                         nota.facturaValor = parseFloat(nota.facturaValor);
                                         nota.facturaSaldo = parseFloat(nota.facturaSaldo);
                                     }
-                                    console.log('Facturas listadas!');
                                 }
                                 // $scope.root.listarNotas.facturaValor = $scope.number_money(data.obj.notasProveedor.facturaValor);
                             }else{ console.log('Error: ', data.obj.err); }
@@ -151,7 +168,7 @@ define(
                 };
 
                 $scope.ListarPrefijos = function(){
-                    $scope.root.tiposNotas = ['Nota Debito', 'Nota Credito'];
+                    $scope.root.tiposNotas = ['NDD', 'NCD'];
                     $scope.tipoNota = 'Tipo Nota';
                 };
 
@@ -185,56 +202,47 @@ define(
                 };
 
                 $scope.eliminarProductoTemporal = function(nota){
-                    console.log('Eliminando producto!');
-
                     let obj = {
                         session: $scope.session,
                         data: nota
                     };
-                    NotasProveedoresService.eliminarProductoTemporal(obj, data => {
+                    $scope.post(API.NOTAS_PROVEEDORES.ELIMINAR_PRODUCTO_TEMPORAL, obj, data => {
                         if(data.status === 200){
-                            console.log('Fine!');
-                            $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, false);
+                            $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, false, false);
                         }else{ console.log('Ocurrio un error: ', data.obj); }
                     });
                 };
 
-                $scope.crearNotaTemporal = function(Factura, modal=true){
-                    console.log('This is the Note: ', Factura);
+                $scope.crearNotaTemporal = (Factura, verNotasTemporal=false, modal=true) => {
                     $scope.ultimaFacturaAbierta = Factura;
-                    var obj = {
+                    let obj = {
                         session: $scope.session,
                         data: Factura
                     };
 
-                    NotasProveedoresService.crearNotaTemporal(obj, data => {
+                    $scope.post(API.NOTAS_PROVEEDORES.CREAR_NOTA_TEMPORAL, obj, data => {
                         if(data.status === 200){
-                            console.log('All fine!!');
                             $scope.NotaTemporal = data.obj;
-                            console.log($scope.NotaTemporal);
                             if(modal){
                                 $scope.modal($scope.NotaTemporal);
+                            } else if (verNotasTemporal) {
+                                $scope.verNotasFactura(Factura);
                             }
-                        }else{
-                            console.log('Error: ', data.obj.err);
-                        }
-
+                        } else { console.log('Error: ', data.obj.err); }
                     });
                 };
 
                 $scope.crearNota = function() {
-                    console.log('Funcion para crear Nota Proveedor!!');
-
                     let obj = {
                         session: $scope.session,
                         data: $scope.NotaTemporal
                     };
 
-                    NotasProveedoresService.crearNota(obj, data => {
-                        console.log('Service finish!');
+                    $scope.post(API.NOTAS_PROVEEDORES.CREAR_NOTA, obj, data => {
                         if(data.status === 200){
-                            console.log('fine, response is: ', data.obj);
-                            $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, false);
+                            alert('Nota creada con exito!');
+                            modalInstance.close();
+                            $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, true, false);
                         }else{ console.log('Hubo un error: ', data.obj); }
                     });
                 };
@@ -243,38 +251,57 @@ define(
                     $scope.NotaTemporal.temporal.toUpdate = [];
                     let productos = $scope.NotaTemporal.factura.detalle;
                     let toUpdate = $scope.NotaTemporal.temporal.toUpdate;
+                    let sinConceptoEspecifico = true;
+                    let validacionError = 0;
+                    let availableCount = 0;
 
                     productos.forEach(element => {
-                        if(element.available) toUpdate.push(element);
+                        if(element.available) {
+                            availableCount++;
+                            sinConceptoEspecifico = element.conceptoEspecificoNombre === $scope.conceptoDefault;
+
+                            if(sinConceptoEspecifico){
+                                validacionError++;
+                                alert('Concepto especifico vacio en producto: '+element.codigo_producto);
+                            } else {
+                                toUpdate.push(element);
+                            }
+                        }
                     });
 
-                    if(toUpdate.length === 0) {
+                    if(validacionError > 0) {
+                        alert('Debe llenar correctamente el formulario!');
+                    } else if (toUpdate.length === 0) {
                         alert('Debe seleccionar al menos 1 producto!');
-                    }else{
-                        console.log('object finish: ', toUpdate);
+                    } else {
                         let obj = {
                             session: $scope.session,
                             data: toUpdate
                         };
 
-                        NotasProveedoresService.agregarDetalleTemporal(obj, data => {
+                        $scope.post(API.NOTAS_PROVEEDORES.AGREGAR_DETALLE_TEMPORAL, obj, data => {
                             if(data.status === 200){
-                                console.log('All fine in Ajax, data: ', data.obj);
-                                $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, false);
+                                $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, false, false);
                                 // modalInstance.close();
                             }else { console.log('Hubo un error!!', data.obj.err); }
                         });
                     }
                 };
 
-                $scope.modal = function (obj) {
+                $scope.modal = function (obj, opt=1) {
+                    let template = '';
+                    if(opt === 1){
+                        template = 'views/modals/createNote.html';
+                    }else if(opt === 2){
+                        template = 'views/modals/showNotes.html';
+                    }
 
                     $scope.opts = {
                         backdrop: true,
                         backdropClick: true,
                         dialogFade: true,
                         keyboard: true,
-                        templateUrl: 'views/modals/showNotes.html',
+                        templateUrl: template,
                         scope: $scope,
                         // controller: "VentanaMensajeSincronizacionController",
                         resolve: {
@@ -302,25 +329,77 @@ define(
                     return $scope.details[key];
                 };
 
-                $scope.verNotasFactura = function(factura){
-                    console.log('Visualizar Notas...');
-                    console.log('Object is: ', factura);
+                $scope.sincronizarNota = (Nota) => {
+                    alert('Sincronizando Nota!!');
+                    /*
+                        const obj = {
+                            prefijo: Nota.prefijo,
+                            facturaFiscal: Nota.numero,
+                            sincronizar: Nota.sw,
+                            servicio: Nota.servicio
+                        };
+                        // that.sincronizacionDocumentos(obj);
+                    */
+                };
 
+                $scope.verNotasFactura = function(factura){
                     let obj = {
                         session: $scope.session,
                         data: factura
                     };
 
-                    NotasProveedoresService.verNotasFactura(obj, data => {
-                        console.log('After Ajax!!');
+                    $scope.post(API.NOTAS_PROVEEDORES.VER_NOTAS_FACTURA, obj, data => {
 
                         if (data.status === 200) {
-                            console.log('Ajax fine!!');
-                            console.log('data is: ', data.obj);
-                            $scope.NotasGeneradas = data.obj;
-                            $scope.modal($scope.NotasGeneradas);
-                        } else { console.log('Hubo un error: ', data.obj); }
+                            if(data.obj.tipos.all.length > 0){
+                                $scope.NotasGeneradas = {
+                                    encabezado: data.obj.encabezado,
+                                    notas: [ data.obj.tipos.debito, data.obj.tipos.credito ]
+                                };
+                                $scope.modal($scope.NotasGeneradas, 2);
+                            }else{ alert('La factura no tiene notas creadas!!'); }
+                        } else { alert('No se encontraron notas!!'); }
                     });
+                };
+
+                $scope.imprimir_pdf = (nota, tipo) => {
+                    nota.tipoNota = tipo;
+                    console.log('nota: ', nota);
+                    let url = '';
+                    nota.retencionAnual = $scope.NotaTemporal.retencionAnual;
+                    if($scope.session.bodega === '06') {
+                        url = nota.url2;
+                    }else{
+                        url = nota.url;
+                    }
+
+                    let host = $location.protocol() + '://' + $location.host() + ':' + $location.port();
+
+                    let obj = {
+                        session: $scope.session,
+                        data: {
+                            reimprimir: true,
+                            host: host,
+                            rows: nota
+                        }
+                    };
+                    let request = new XMLHttpRequest();
+                    request.open('HEAD', url, false);
+                    request.send();
+                    if(request.status === 200) {
+                        window.open(url, '_blank');
+                    } else {
+                        $scope.post(API.NOTAS_PROVEEDORES.IMPRIMIR_NOTA, obj, data => {
+                            if (data.status === 200) {
+                                modalInstance.close();
+                                $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, true, false);
+                                window.open(data.obj, '_blank');
+                                // console.log('la url final es: ', data.obj);
+                            }else{
+                                console.log('Error en Ajax, status: ', data);
+                            }
+                        });
+                    }
                 };
 
                 $scope.listarNotas = {
@@ -340,7 +419,7 @@ define(
                         {field: 'facturaValorString', displayName: 'Valor Factura', width: "11%"},
                         {field: 'facturaSaldoString', displayName: 'Saldo', width: "11%"},
                         {displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity)" class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;"></i></div>'},
-                        {displayName: 'Ver', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="verNotasFactura(row.entity)" class="fa fa-file fa-2x" aria-hidden="true" style="color: #da8f07;"></i></div>'}
+                        {displayName: 'Ver', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity, true, false)" class="fa fa-file fa-2x" aria-hidden="true" style="color: #1c99d1;"></i></div>'}
                     ]
                 };
                 that.init();

@@ -14,7 +14,9 @@ define(["angular"], function(angular) {
                 'ELIMINAR_PRODUCTO_TEMPORAL': BASE_URL + '/notasProveedores/eliminarProductoTemporal',
                 'CREAR_NOTA': BASE_URL + '/notasProveedores/crearNota',
                 'CREAR_NOTA_TEMPORAL': BASE_URL + '/notasProveedores/crearNotaTemporal',
-                'VER_NOTAS_FACTURA': BASE_URL + '/notasProveedores/verNotasFactura'
+                'VER_NOTAS_FACTURA': BASE_URL + '/notasProveedores/verNotasFactura',
+                'IMPRIMIR_NOTA': BASE_URL + '/notasProveedores/imprimirNota',
+                'LISTAR_RETENCIONES_ANUALES': BASE_URL + '/notasProveedores/listarRetencionesAnuales'
             }
         }
     };

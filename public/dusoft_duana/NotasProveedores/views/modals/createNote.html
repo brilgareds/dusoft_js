@@ -59,8 +59,7 @@
                                     <label class="sr-only" for="exampleInputAmount">Concepto General</label>
                                     <div class="input-group">
                                         <div class="input-group-addon">Concepto General</div>
-                                        <button ng-if="nota.conceptoGeneralNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={{nota.conceptoGeneralTitulo}}>{{nota.conceptoGeneralNombre}} <span class="caret"></span></button>
-                                        <button ng-if="!nota.conceptoGeneralNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Seleccione Un Concepto'>-Seleccione Un Concepto- <span class="caret"></span></button>
+                                        <button type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={{nota.conceptoGeneralTitulo}}>{{nota.conceptoGeneralNombre}} <span class="caret"></span></button>
                                         <ul class="dropdown-menu">
                                             <li ng-repeat="conceptoGeneral in NotaTemporal.conceptosGenerales track by $index" class="ng-scope">
                                                 <a ng-click="updateConceptoGeneral(nota, conceptoGeneral.codigo, conceptoGeneral.nombre)" class="ng-binding">{{conceptoGeneral.nombre}}</a>
@@ -74,7 +73,7 @@
                                     <label class="sr-only" for="exampleInputAmount">Valor Concepto</label>
                                     <div class="input-group">
                                         <div class="input-group-addon">Valor Concepto</div>
-                                        <input ng-model="nota.valorConcepto" type="number" class="form-control" id="exampleInputAmount" placeholder="Ingrese valor" required>
+                                        <input ng-model="nota.valorConcepto" type="number" class="form-control" id="exampleInputAmount" placeholder="Ingrese valor" min="1" required>
                                     </div>
                                 </div>
                             </div>
@@ -98,8 +97,7 @@
                                     <label class="sr-only" for="exampleInputAmount">Concepto Especifico</label>
                                     <div class="input-group">
                                         <div class="input-group-addon">Concepto Especifico</div>
-                                        <button ng-if="nota.conceptoEspecificoNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={{nota.tituloConceptoEspecificoTitulo}}>{{nota.conceptoEspecificoNombre}} <span class="caret"></span></button>
-                                        <button ng-if="!nota.conceptoEspecificoNombre" type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title='Seleccione Un Concepto' ng-disabled="!nota.conceptoGeneralNombre">-Seleccione Un Concepto- <span class="caret"></span></button>
+                                        <button type="button" class="form-control btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={{nota.conceptoEspecificoTitulo}}>{{nota.conceptoEspecificoNombre}} <span class="caret"></span></button>
                                         <ul class="dropdown-menu">
                                             <li ng-repeat="conceptoEspecifico in nota.conceptosEspecificos track by $index">
                                                 <a ng-click="updateConceptoEspecifico(nota, conceptoEspecifico.codigo, conceptoEspecifico.nombre)">{{conceptoEspecifico.nombre}}</a>
@@ -142,7 +140,7 @@
     <div class="panel panel-primary">
         <div class="panel-heading title-detalle" align="center">Items en el Documento Temporal</div>
         <form ng-submit="crearNota()" ng-model="formulario" class="panel-body">
-            <table class="table-responsive2">
+            <table class="table-responsive">
                 <tbody>
                 <tr>
                     <td width="15%">Producto</td>
@@ -171,10 +169,10 @@
                         {{nota.cantidadString}}
                     </td>
                     <td>
-                        {{nota.valorConceptoString}}
+                        {{nota.valorConceptoUnitarioString}}
                     </td>
                     <td>
-                        {{nota.totalConceptoString}}
+                        {{nota.valorConceptoString}}
                     </td>
                     <td>
                         <span class="btn btn-danger" ng-click="eliminarProductoTemporal(nota)"><i class="glyphicon glyphicon-trash"></i></span>

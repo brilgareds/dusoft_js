@@ -1044,7 +1044,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var request = new XMLHttpRequest();
                 request.open('HEAD', url, false);
                 request.send();
-                if(request.status == 200) {
+                if(request.status === 200) {
                     console.log('PDF existe!!');
                     window.open(url, '_blank');
                 } else {

@@ -33,4 +33,12 @@ module.exports = function(app, di_container) {
     app.post(base + '/notasProveedores/verNotasFactura', (req, res) => {
         c_notasProveedores.verNotasFactura(req, res);
     });
+
+    app.post(base + '/notasProveedores/imprimirNota', (req, res) => {
+        c_notasProveedores.imprimirNota(req, res);
+    });
+
+    app.post(base + '/notasProveedores/listarRetencionesAnuales', (req, res) => {
+       c_notasProveedores.listarRetencionesAnuales(req, res);
+    });
 };

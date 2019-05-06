@@ -39,6 +39,21 @@
     width: 90%;
 }
 
+.table-responsive {
+    width: 100%;
+    height: auto;
+    border: 1px solid #dedede;
+    padding: 0px 0px 0px 0px;
+}
+
+.table-responsive > tbody > tr:nth-child(even):not(.tr-customer) {
+    background-color: #fdfdfd;
+}
+
+.table-responsive > tbody > tr:nth-child(odd):not(.tr-customer) {
+    background-color: #f3f3f3;
+}
+
 .table-responsive2 {
     width: 100%;
     height: auto;
@@ -58,27 +73,27 @@
     margin-right: 4px;
 }
 
-.table-responsive2 thead tr {
+.table-responsive2 thead tr, .table-responsive thead tr {
     background-color: #eaeaea;
 }
 
-.table-responsive2 tbody tr td {
+.table-responsive2 tbody tr td, .table-responsive tbody tr td {
     position: relative;
 }
 
-.table-responsive2 tr:not(.tr-customer):nth-child(even) {
+.table-responsive2 > *:nth-child(even):not(.tr-customer) {
     background-color: #fdfdfd;
 }
 
-.table-responsive2 tr:not(.tr-customer):nth-child(odd) {
+.table-responsive2 > *:nth-child(odd):not(.tr-customer) {
     background-color: #f3f3f3;
 }
 
-.table-responsive2 tbody .tr-customer {
+.table-responsive2 > tbody > .tr-customer, .table-responsive tbody > .tr-customer {
     background-color: #FFF;
 }
 
-.table-responsive2 tbody .tr-customer *{
+.table-responsive2 > tbody > .tr-customer *, .table-responsive > tbody > .tr-customer * {
     text-transform: capitalize;
 }
 
@@ -86,15 +101,16 @@
     font-weight: bolder;
 }
 
-.table-responsive2 tbody tr:hover {
+.table-responsive2 tbody tr:hover, .table-responsive tbody tr:hover {
     background-color: #E5E5E5;
 }
 
-.table-responsive2 tbody tr input{
+.table-responsive2 tbody tr input, .table-responsive tbody tr input{
     cursor: pointer;
 }
 
-.table-responsive2 th:not(:first-child), .table-responsive2 td:not(:first-child) {
+.table-responsive2 th:not(:first-child), .table-responsive2 td:not(:first-child),
+.table-responsive th:not(:first-child), .table-responsive td:not(:first-child){
     border-left: 2px solid #dedede;
 }
 
@@ -107,39 +123,45 @@
     white-space: nowrap;
 }
 
-.table-responsive2 td:nth-child(1){
+.table-responsive2 td:nth-child(1), .table-responsive td:nth-child(1){
     width: 20%;
 }
-.table-responsive2 td:nth-child(2){
+.table-responsive2 td:nth-child(2), .table-responsive td:nth-child(2){
     width: 15%;
 }
-.table-responsive2 td:nth-child(3){
+.table-responsive2 td:nth-child(3), .table-responsive td:nth-child(3){
     width: 15%;
 }
-.table-responsive2 td:nth-child(4){
+.table-responsive2 td:nth-child(4), .table-responsive td:nth-child(4){
     width: 15%;
 }
-.table-responsive2 td:nth-child(5){
+.table-responsive2 td:nth-child(5), .table-responsive td:nth-child(5){
     width: 10%;
 }
 .table-responsive2 td:nth-child(6){
     width: 15%;
 }
+.table-responsive td:nth-child(6){
+    width: 10%;
+}
 .table-responsive2 td:nth-child(7){
     width: 5%;
 }
+.table-responsive td:nth-child(7){
+    width: 15%;
+}
 
-.table-responsive2 input[type=radio] {
+.table-responsive2 input[type=radio], .table-responsive input[type=radio] {
     position: relative;
 }
 
-.table-responsive2 th, .table-responsive2 td {
+.table-responsive2 th, .table-responsive2 td, .table-responsive th, .table-responsive td {
     padding: 5px;
     height: 35px;
     min-height: 35px;
     max-height: 35px;
 }
-.table-responsive2 tbody button[type=button] {
+.table-responsive2 tbody button[type=button], .table-responsive tbody button[type=button] {
     max-width: max-content;
     text-transform: capitalize;
 }

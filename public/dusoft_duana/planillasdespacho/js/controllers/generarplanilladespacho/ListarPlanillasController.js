@@ -88,6 +88,8 @@ define(["angular", "js/controllers",
                     tipo_planilla = "MEDICAMENTOS";
                 } else if (data.tipo_planilla === 'I') {
                     tipo_planilla = "INSUMOS";
+                } else if (data.tipo_planilla === 'N') {
+                    tipo_planilla = "NUTRICION";
                 }
                     
                     var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario,

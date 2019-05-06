@@ -38,7 +38,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.datos_view.prefijosPlanilla = [
                 {prefijo: 'I', descripcion: "INSUMOS"},
-                {prefijo: 'M', descripcion: "MEDICAMENTOS"}
+                {prefijo: 'M', descripcion: "MEDICAMENTOS"},
+                {prefijo: 'N', descripcion: "NUTRICION"}
             ];
 
             $scope.datos_planilla = [];
@@ -189,6 +190,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     tipo_planilla = {prefijo: 'M', descripcion: "MEDICAMENTOS"};
                 } else if (datos.tipo_planilla === 'I') {
                     tipo_planilla = {prefijo: 'I', descripcion: "INSUMOS"};
+                } else if (datos.tipo_planilla === 'N') {
+                    tipo_planilla = {prefijo: 'N', descripcion: "NUTRICION"};
                 }
                 $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro,
                         datos.fecha_despacho, datos.estado, datos.descripcion_estado, tipo_planilla);

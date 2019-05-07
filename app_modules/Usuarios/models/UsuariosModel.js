@@ -225,6 +225,7 @@ UsuariosModel.prototype.obtenerRolUsuarioPorEmpresa = function(empresa_id, usuar
         callback(false, rol, resultado);
 
     }).catch(function(err){
+        console.log("Error obtenerRolUsuarioPorEmpresa:",err);
         callback(err);
     });
     

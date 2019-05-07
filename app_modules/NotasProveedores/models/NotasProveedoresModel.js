@@ -869,6 +869,9 @@ NotasProveedoresModel.prototype.updateDocumentos = (nota, transaccion, callback)
         .update('numeracion', G.knex.raw('numeracion+1'))
         .where('empresa_id', nota.encabezado.empresa_id)
         .andWhere('documento_id', nota.documentoId);
+    // query.then(function(response){
+    //
+    // });
 
     if (transaccion) {
         updateDocumentos.transacting(transaccion)

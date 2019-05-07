@@ -37340,7 +37340,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -48135,7 +48135,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-console.log("key",key);
+//console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -48185,7 +48185,7 @@ console.log("key",key);
             };
             
             self.irAlHome = function(mensaje){
-                console.log("ir al home");
+//                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 

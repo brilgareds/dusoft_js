@@ -75,7 +75,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             };
         
             AprobacionDespacho.prototype.setObservacion = function (observacion) {
-                 this.observacion = observacion;
+                this.observacion = observacion;
             };
             
             AprobacionDespacho.prototype.getObservacion = function () {

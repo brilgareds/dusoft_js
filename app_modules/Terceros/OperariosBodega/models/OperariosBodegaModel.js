@@ -167,5 +167,21 @@ OperariosBodegaModel.prototype.seleccionar_operario_por_usuario_id = function(us
     
 };
 
+OperariosBodegaModel.prototype.listarOperarios= function(callback) {
+
+    var query = G.knex.select(
+        'operario_id',
+        'nombre as nombre_operario')
+        .from('operarios_bodega as a')
+        .where('a.estado','1');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+    
+};
+
 
 module.exports = OperariosBodegaModel;

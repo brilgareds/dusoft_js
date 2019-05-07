@@ -51704,7 +51704,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-console.log("key",key);
+//console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -51754,7 +51754,7 @@ console.log("key",key);
             };
             
             self.irAlHome = function(mensaje){
-                console.log("ir al home");
+//                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 
@@ -67482,7 +67482,7 @@ define('app',[
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
-                    url: "/NotasProveedores",
+                    url: "/FacturasProveedores",
                     text: "Facturacion Proveedores",
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",

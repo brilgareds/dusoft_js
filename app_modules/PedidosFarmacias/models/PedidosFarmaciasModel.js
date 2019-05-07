@@ -175,7 +175,9 @@ PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function (emp
                farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5\
                and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8 ";
 
-    G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: codigo_producto, 5: usuario_id, 6: empresa_origen_producto, 7: centro_utilidad_origen_producto, 8: bodega_origen_producto}).then(function (resultado) {
+    var query = G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: codigo_producto, 5: usuario_id, 6: empresa_origen_producto, 7: centro_utilidad_origen_producto, 8: bodega_origen_producto});
+  
+        query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {
         console.log("existe_registro_detalle_temporal error  ", err);
@@ -241,19 +243,19 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = func
 
             var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, \
                         tipo_producto, cantidad_pendiente, usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombre_bodega) \
-            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 , :10, :11, :12 , :13) ;";
+            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 , :10, :11, :12 , :13);";
 
             return  G.knex.raw(sql, {1: numero_pedido, 2: empresa_id, 3: centro_utilidad_id, 4: bodega_id, 5: codigo_producto,
                 6: cantidad_solicitada, 7: tipo_producto_id, 8: cantidad_pendiente, 9: usuario_id, 10: empresa_origen_producto,
                 11: centro_utilidad_origen_producto, 12: bodega_origen_producto, 13: nombreBodega});
         } else {
-            throw {msj: "La cantidad ingresada del producto no es valida", status: 403};
+            throw {msj: "La cantidad ingresada o existente es "+cantidad_solicitada+" no se admite por la Unidad de Medida: "+resultado[0].resultado, status: 403};           
         }
 
     }).then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).fail(function (err) {
-        console.log("PedidosFarmaciasModel => insertar_detalle_pedido_farmacia_temporal ", err);
+        console.log("PedidosFarmaciasModel => insertar_detalle_pedido_farmacia_temporal ", err);        
         callback(err);
     });
 
@@ -371,7 +373,7 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function (empresa_id, c
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {
-        console.log(pedido_cliente + ") errorr >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+        console.log(pedido_cliente + ") error", err);
         callback(err);
     });
 
@@ -1203,7 +1205,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
         return registros;
 
     }).then(function (rows) {
-console.log(G.sqlformatter.format(query.toString()));
+
         callback(false, rows, query.totalRegistros);
     }).
             catch (function (err) {
@@ -1681,7 +1683,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function (empresa_id, centro_u
     var sql_aux = "";
     var noIncluir = "";
     var parametros = {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: empresa_destino,
-        5: centro_destino, 6: bodega_destino, 7: "%" + filtro.termino_busqueda + "%"};
+        5: centro_destino, 6: bodega_destino, 7: "%" + filtro.termino_busqueda + "%",8:filtro.termino_busqueda };
     var sql_filtro = "";
     var existe = bodega_id === '06' ? '03' : '06';
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
@@ -1693,6 +1695,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function (empresa_id, centro_u
         sql_filtro = " and fc_descripcion_producto(a.codigo_producto) " + G.constants.db().LIKE + "  :7 ";
     } else if (filtro.tipo_busqueda === 1) {
         sql_filtro = " and e.descripcion " + G.constants.db().LIKE + " :7 ";
+    } else if (filtro.tipo_busqueda === 5) {
+        sql_filtro = " and a.codigo_producto = :8 ";    
     } else {
         sql_filtro = " and a.codigo_producto " + G.constants.db().LIKE + " :7 ";
     }
@@ -1814,7 +1818,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function (empresa_id, centro_u
 
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
-            offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC").then(function (resultado) {
+            offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC");
+        query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("error biscat ", err);
@@ -1832,17 +1837,17 @@ PedidosFarmaciasModel.prototype.listarBodegasPedidos = function (objBodegaPedido
         "a.bodega as bodega_id",
         "a.orden"
     ];
-    G.knex.column(columnas).
-            from("bodegas_pedidos as a").
-            where("a.estado", estado).
-            andWhere("a.sw_modulo", objBodegaPedido.sw_modulo).
-            orderByRaw("orden desc").
-            then(function (rows) {
-                callback(false, rows);
-            }).
-            catch (function (err) {
-                callback(err);
-            }).done();
+    var query =  G.knex.column(columnas).
+                from("bodegas_pedidos as a").
+                where("a.estado", estado).
+                andWhere("a.sw_modulo", objBodegaPedido.sw_modulo).
+                orderByRaw("orden desc"); 
+        query.then(function (rows) {
+            callback(false, rows);
+        }).
+        catch (function (err) {
+            callback(err);
+        }).done();
 
 };
 

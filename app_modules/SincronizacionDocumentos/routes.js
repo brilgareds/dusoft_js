@@ -40,4 +40,8 @@ module.exports = function(app, di_container) {
     app.post('/api/SincronizacionDocumentos/buscarServicio', function(req, res) {
         c_SincronizacionDoc.buscarServicio(req, res);
     });
+    
+    app.post('/api/SincronizacionDocumentos/listarPrefijosEspecial', function(req, res) {
+        c_SincronizacionDoc.listarPrefijosEspecial(req, res);
+    });
 };

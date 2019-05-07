@@ -570,25 +570,21 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                     (\
                         (\
                         SELECT  'CLIENTES'  as tipo_de_despacho,\
-                            a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as cliente\
-                            /*a.pedido_cliente_id AS numero_pedido,*/\
-                            /*b.direccion AS direccion*/\
-                            /*b.telefono AS telefono*/\
-                            FROM    inv_bodegas_movimiento_despachos_clientes as a,\
-                            terceros as b\
+                            a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as cliente,\
+                            d.nombre_tercero as sede\
+                            FROM    inv_bodegas_movimiento_despachos_clientes as a\
+                            inner join terceros as b on (b.tipo_id_tercero = a.tipo_id_tercero AND b.tercero_id = a.tercero_id )\
+                            left join ventas_ordenes_pedidos as c on (c.pedido_cliente_id = a.pedido_cliente_id)\
+                            left join terceros as d on (d.tipo_id_tercero = c.tipo_id_sede AND d.tercero_id = c.sede_id)\
                             WHERE   a.empresa_id = :3\
                             AND a.prefijo = :2\
                             AND a.numero = :1\
-                            AND b.tipo_id_tercero = a.tipo_id_tercero\
-                            AND b.tercero_id = a.tercero_id\
                         )\
                         UNION ALL\
                         (\
                             SELECT  'FARMACIAS'  as tipo_de_despacho,\
-                            e.empresa_id || ' - '|| e.razon_social ||' ::: '||c.descripcion as farmacia\
-                            /*a.solicitud_prod_a_bod_ppal_id AS numero_pedido,*/\
-                            /*e.direccion AS direccion*/\
-                           /*e.telefonos AS telefono*/\
+                            e.empresa_id || ' - '|| e.razon_social ||' ::: '||c.descripcion as farmacia,\
+                            null as sede\
                             FROM    inv_bodegas_movimiento_despachos_farmacias as a\
                             JOIN solicitud_productos_a_bodega_principal as b ON (a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id)\
                             JOIN bodegas as c ON (b.farmacia_id = c.empresa_id)\
@@ -605,7 +601,9 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
             break;
     }
 
-    G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa_id}).
+   var query = G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa_id});
+
+            query.
             then(function (resultado) {
                 callback(false, resultado.rows, resultado);
             }).catch(function (err) {

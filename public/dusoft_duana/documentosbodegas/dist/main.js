@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -52002,7 +52002,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-console.log("key",key);
+//console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -52052,7 +52052,7 @@ console.log("key",key);
             };
             
             self.irAlHome = function(mensaje){
-                console.log("ir al home");
+//                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 
@@ -65534,7 +65534,8 @@ define('controllers/I002/I002Controller',[
                         $scope.valorRetIca = 0;
                     }
                 if (parametros[0].sw_reteiva === '2' || parametros[0].sw_reteiva === '3')
-                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_reteiva)) {
+//                    if ($scope.valorSubtotal >= parseFloat(parametros[0].base_reteiva)) {
+                    if ($scope.gravamen >= parseFloat(parametros[0].base_reteiva)) {
                         $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
                     } else {
                         $scope.valorRetIva = 0;

@@ -301,7 +301,7 @@ NotasProveedores.prototype.imprimirNota = (req, res) => {
                     <p><b>OBSERVACION:</b></p>                                                                                                                                                                                                                            
                 </td>
                 <td colspan="6" style="border-left: 0px; text-align: justify;">
-                    <p>${item.observacion} askdasjiod jasiodjasjd klasjldjasljd klasjkldjaskldj klasjdkl jaskldjsklj dklsjadaskld</p>
+                    <p>${item.observacion}</p>
                 </td>                        
             </tr>
         `;

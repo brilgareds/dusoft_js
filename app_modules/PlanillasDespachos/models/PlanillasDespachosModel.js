@@ -535,6 +535,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     b.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                     f.cantidad_cajas,\
                     f.cantidad_neveras,\
+                    f.cantidad_bolsas,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     '' as descripcion_sede,\
@@ -557,8 +558,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                     inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
                     inner join (\n\
-                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo \
-                        FROM aprobacion_despacho_planillas f \n\
+                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo ,f.cantidad_bolsas \
+                        FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as f ON (f.numero = a.numero and f.prefijo = a.prefijo)\
                     UNION \
@@ -583,6 +584,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     b.pedido_cliente_id as numero_pedido,\
                     e.cantidad_cajas,\
                     e.cantidad_neveras,\
+                    e.cantidad_bolsas,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     f.nombre_tercero as descripcion_sede,\
@@ -606,7 +608,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
                     left join terceros f on c.tipo_id_sede = f.tipo_id_tercero and c.sede_id = f.tercero_id\
                     inner join (\n\
-                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo,f.cantidad_bolsas\
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as e ON (e.numero = a.numero and e.prefijo = a.prefijo)\
@@ -632,6 +634,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     0 as numero_pedido,\
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
+                    a.cantidad_bolsas,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     '' as descripcion_sede,\
@@ -640,7 +643,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
                     inner join (\
-                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo,f.cantidad_bolsas\
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
@@ -664,6 +667,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         a.pedido_cliente_id as numero_pedido,\
 	h.cantidad_cajas,\
 	h.cantidad_neveras,\
+	h.cantidad_bolsas,\
 	 cast('0.0' as double precision )  as temperatura_neveras,\
 	a.observacion,\
 	'' as descripcion_sede,\
@@ -688,7 +692,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     f.prefijo,\
                     f.numero,\
                     f.cantidad_cajas,\
-                    f.cantidad_neveras\
+                    f.cantidad_neveras,\
+                    f.cantidad_bolsas\
                 FROM\
                     aprobacion_despacho_planillas_d f\
                 UNION\
@@ -696,7 +701,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     g.prefijo,\
                     g.numero,\
                     g.cantidad_cajas,\
-                    g.cantidad_neveras\
+                    g.cantidad_neveras,\
+                    g.cantidad_bolsas\
                 FROM\
                     aprobacion_despacho_planillas g\
         ) as h on h.prefijo = a.prefijo and h.numero = a.numero\
@@ -731,7 +737,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
     var sql3 =   sql+" union "+sql2;
     
     var query = G.knex.raw(sql3, {1: planilla_id, 2: '%' + termino_busqueda + '%', 3: obj.tercero_id , 4: obj.tipo_id_tercero});
- 
+// console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {

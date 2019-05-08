@@ -668,7 +668,7 @@ function __registroSalidaDetalle(obj, index, callback) {
                 return true;
             }
             detalle.estadoEntrega = 3;
-            console.log("entro cliente");
+//            console.log("entro cliente");
             return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'actualizarEstadoActualPedidoCliente', detalle);
         } else {
             return true;
@@ -683,7 +683,7 @@ function __registroSalidaDetalle(obj, index, callback) {
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertarResponsablesPedidos',{numero_pedido: detalle.numero_pedido,estado: detalle.sw_estado,usuario: detalle.usuario,responsable: obj.operario, transaccion: detalle.transaccion,sw_terminado : '1'});
 
         } else if (detalle.tipo === '1') {
-            console.log("entro cliente estado"); 
+//            console.log("entro cliente estado"); 
             obj.that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
             return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertarResponsablesPedidos',{numero_pedido: detalle.numero_pedido,estado_pedido: detalle.estado_pedido,responsable: obj.operario,usuario: detalle.usuario, transaccion: detalle.transaccion,sw_terminado : '1'});
             

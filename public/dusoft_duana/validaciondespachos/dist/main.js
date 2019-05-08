@@ -49699,6 +49699,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             {field: 'numero', displayName: 'Documento', width: "10%"},
                             {field: 'cantidad_cajas', displayName: 'Caja', width: "6%"},
                             {field: 'cantidad_neveras', displayName: 'Nevera', width: "8%"},
+                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "8%"},
                             {field: 'temperatura_neveras', displayName: '°C', width: "6%"},
                             {field: 'ciudad', displayName: 'Ciudad', width: "10%"}
                         ]

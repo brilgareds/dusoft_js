@@ -178,7 +178,7 @@ PlanillasDespachos.prototype.consultarDocumentosPlanillaDespachoDetalle = functi
     var that = this;
 
     var args = req.body.data;
-    console.log("args::: ", args);
+
     if (args.planillas_despachos === undefined) {
         res.send(G.utils.r(req.url, 'No se definieron parametros de consulta', 404, {}));
         return;

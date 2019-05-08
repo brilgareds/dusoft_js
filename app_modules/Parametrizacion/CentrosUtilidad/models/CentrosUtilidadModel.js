@@ -54,6 +54,47 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad = function (obj, c
 
 /**
  *@author German Galvis
+ *@fecha  08/05/2019
+ *+Descripcion Metodo que contiene el SQL encargado de consultar las farmacias desde planilla
+ *             medipol  
+ *             
+ **/
+CentrosUtilidadModel.prototype.listar_centros_utilidad_bodega = function (obj, callback) {
+
+    var where = "";
+    var parametros = {};
+     if(obj.estado === '3'){
+        where = "where a.empresa_id in ('FD','99','01') AND b.descripcion " + G.constants.db().LIKE + " :1 ";
+        parametros = {1: "%" + obj.termino_busqueda + "%"};
+    } else {
+        where = "where b.descripcion " + G.constants.db().LIKE + " :1 ";
+        parametros = {1: "%" + obj.termino_busqueda + "%"};
+    }
+
+    var sql = " select \
+                a.tipo_pais_id,\
+                a.tipo_dpto_id,\
+                a.tipo_mpio_id,\
+                a.empresa_id,\
+                b.centro_utilidad as centro_utilidad_id, \
+                b.descripcion,\
+                b.ubicacion,\
+                a.telefono\
+                from centros_utilidad a \
+                INNER JOIN bodegas b ON (a.centro_utilidad = b.centro_utilidad and a.empresa_id = b.empresa_id)" + where;
+
+    var query = G.knex.raw(sql, parametros);
+
+    query.then(function (resultado) {
+        callback(false, resultado.rows, resultado);
+    }).catch(function (err) {
+        console.log("err [listar_centros_utilidad_ciudad]:: ", err)
+        callback(err);
+    });
+};
+
+/**
+ *@author German Galvis
  *@fecha  29/03/2019
  *+Descripcion Metodo que contiene el SQL encargado de consultar las farmacias de
  *             medipol  

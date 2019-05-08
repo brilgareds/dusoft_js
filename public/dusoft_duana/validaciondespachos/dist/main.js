@@ -42382,7 +42382,7 @@ define('url',["angular"], function (angular) {
                 'LISTAR_REGISTRO_SALIDA': BASE_URL + '/ValidacionDespachos/listarRegistroSalida',
             },
             'CENTROS_UTILIDAD': {
-                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadbodega',
             },
             'CLIENTES':{
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
@@ -49699,6 +49699,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             {field: 'numero', displayName: 'Documento', width: "10%"},
                             {field: 'cantidad_cajas', displayName: 'Caja', width: "6%"},
                             {field: 'cantidad_neveras', displayName: 'Nevera', width: "8%"},
+                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "8%"},
                             {field: 'temperatura_neveras', displayName: '°C', width: "6%"},
                             {field: 'ciudad', displayName: 'Ciudad', width: "10%"}
                         ]

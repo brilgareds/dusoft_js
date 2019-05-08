@@ -121,7 +121,7 @@
                     </tr>
                     <tr>
                         <td style="width: 50%" colspan="3">
-                            <h6><strong>{{:tercero}}</strong></h6> {{:direccion}}</td>
+                            <h4><strong>{{:tercero}}</strong></h4> {{:direccion}}</td>
                         <td style="width: 50%" colspan="3" class="table-border">
                             <div class="form-group">
                                 <label class="" for="inputBody">Comentarios del despacho</label>                                
@@ -134,6 +134,7 @@
                         <th>Nro de Cajas</th>
                         <th>Nro de Neveras</th>
                         <th>Toma Temperatura</th>
+                        <th>Observacion</th>
                     </tr>                    
                     {{for detalle}}                    
                     <tr>
@@ -142,6 +143,7 @@
                         <td align="center">{{:cantidad_cajas}}</td>
                         <td align="center">{{:cantidad_neveras}}</td>
                         <td align="center">{{:temperatura_neveras}}</td>
+                        <td align="center">{{:observacion}}</td>
                     </tr>                                        
                     {{/for}}
                     <tr>
@@ -192,7 +194,15 @@
                                 mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
                             </p>
                         </td>                            
-                    </tr>                                          
+                    </tr>
+<!--                    <tr>
+                        <td style="width: 50%" colspan="3">
+                            <h4><strong>OBSERVACIONES</strong></h4></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%" colspan="3">
+                            <p>{{:planilla_despacho.observacion }}</p>
+                    </tr>-->
                 </table> 
                 <table class='footer'>
                     <tr align='center'>

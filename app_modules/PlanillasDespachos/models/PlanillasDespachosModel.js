@@ -124,7 +124,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
     } else {
         columnas.push(G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"));
     }
-        
+
 
     var query = G.knex.select(columnas)
             .from("inv_bodegas_movimiento_despachos_farmacias as a")
@@ -247,7 +247,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                     a.pedido_cliente_id :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%')"));
     });
     query.orderBy('a.fecha_registro', 'desc');
-    
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -338,14 +338,14 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
  * @returns {callback}
  */
 PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = function (planilla_id, termino_busqueda, callback) {
-    var sql= "";
-    if(planilla_id !== undefined && planilla_id !== ""){
-       sql = " and a.planilla_id = :1 ";
+    var sql = "";
+    if (planilla_id !== undefined && planilla_id !== "") {
+        sql = " and a.planilla_id = :1 ";
     }
-    if(termino_busqueda !== undefined && termino_busqueda !== ""){
+    if (termino_busqueda !== undefined && termino_busqueda !== "") {
         sql += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
     }
-    
+
     var sql = " select *,false as chequeado from (\
                     select \
                     '0' as tipo,\
@@ -470,7 +470,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
                     inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
-                ) as a where true "+sql+";";  
+                ) as a where true " + sql + ";";
     var query = G.knex.raw(sql, {1: planilla_id, 2: '%' + termino_busqueda + '%'});
     query.then(function (resultado) {
         callback(false, resultado.rows);
@@ -490,14 +490,14 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
     }
 
-    if (obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null) {
+    if (obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null && (planilla_id === "" || planilla_id === undefined)) {
         sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
         sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
     }
     if (obj.modificar === 1) {
         sql1 += " AND b.planilla_id is not null";
         if (planilla_id !== "" && planilla_id !== undefined) {
-            if (obj.registro_salida_bodega_id !== undefined && obj.registro_salida_bodega_id !== "") {            
+            if (obj.registro_salida_bodega_id !== undefined && obj.registro_salida_bodega_id !== "") {
                 sql3 += " AND q.registro_salida_bodega_id = " + obj.registro_salida_bodega_id;
                 sql1 += " AND b.registro_salida_bodega_id = " + obj.registro_salida_bodega_id;
             } else {
@@ -511,8 +511,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
             sql3 += " AND q.planilla_id = :1";
         }
         sql3 += " AND q.planilla_id is null";
-    } 
-    
+    }
+
     var sql = "( select a.*,case when b.planilla_id is not null then true else false end  as chequeado from (\
                     select \
                     '0' as tipo,\
@@ -650,8 +650,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
                 ) as a \
                  left join inv_registro_salida_bodega_detalle as b on (b.prefijo_id=a.prefijo and a.numero=b.numero and a.tipo=b.tipo and a.id=b.id and a.planilla_id=b.planilla_id and a.empresa_id=b.empresa_id)\
-                 where true "+sql1+")";
-     var sql2 = "(select\
+                 where true " + sql1 + ")";
+    var sql2 = "(select\
         '1' as tipo,\
         'CLIENTES' as descripcion_tipo,\
         a.numero as id,\
@@ -719,7 +719,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
             (\
                b.estado_pedido in (\
                     '2', '3', '8', '9','4','5'\
-                ) "+sql3+"\
+                ) " + sql3 + "\
                 and a.prefijo || '-' || a.numero NOT IN(\
                     select\
                         b.prefijo || '-' || b.numero\
@@ -734,10 +734,11 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
             )\
         order by\
             a.fecha_registro desc)";
-    var sql3 =   sql+" union "+sql2;
-    
-    var query = G.knex.raw(sql3, {1: planilla_id, 2: '%' + termino_busqueda + '%', 3: obj.tercero_id , 4: obj.tipo_id_tercero});
-// console.log(G.sqlformatter.format(query.toString())); 
+
+    var sql3 = sql + " union " + sql2;
+
+    var query = G.knex.raw(sql3, {1: planilla_id, 2: '%' + termino_busqueda + '%', 3: obj.tercero_id, 4: obj.tipo_id_tercero});
+
     query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {
@@ -1010,6 +1011,34 @@ PlanillasDespachosModel.prototype.modificarLioDocumento = function (obj, callbac
     }).done();
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de traer el id de la planilla por documento
+ * @fecha  08/05/2019
+ * @returns {callback}
+ */
+PlanillasDespachosModel.prototype.ConsultarIdPlanilla = function (parametros, callback) {
+
+
+    var query = G.knex.select("inv_planillas_despacho_id")
+            .from("inv_planillas_detalle_farmacias")
+            .where('prefijo', parametros.prefijo)
+            .andWhere('numero', parametros.numero);
+
+    query.union(function () {
+        this.select("inv_planillas_despacho_id")
+                .from("inv_planillas_detalle_clientes")
+                .where('prefijo', parametros.prefijo)
+                .andWhere('numero', parametros.numero);
+    });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [ConsultarIdPlanilla]:", err);
+        callback(err);
+    });
+};
 
 function __insertarLioDocumento(obj, index, callback) {
 

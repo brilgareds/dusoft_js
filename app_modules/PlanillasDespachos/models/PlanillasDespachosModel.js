@@ -29,6 +29,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
         "a.observacion",
         "g.total_cajas",
         "g.total_neveras",
+        "g.total_bolsas",
         "a.usuario_id",
         "f.nombre as nombre_usuario",
         "a.estado",
@@ -54,14 +55,14 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
             })
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
-            .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
+            .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras, sum(a.cantidad_bolsas) as total_bolsas\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
                       union\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all\
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {

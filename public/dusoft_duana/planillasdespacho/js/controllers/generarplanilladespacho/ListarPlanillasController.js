@@ -96,6 +96,7 @@ define(["angular", "js/controllers",
                     data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado, tipo_planilla);
                     planilla.set_cantidad_cajas(data.total_cajas);
                     planilla.set_cantidad_neveras(data.total_neveras);
+                    planilla.set_cantidad_bolsas(data.total_bolsas);
                     $scope.Empresa.set_planillas(planilla);
                 });
             };
@@ -133,7 +134,8 @@ define(["angular", "js/controllers",
                     {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Ciudad Despacho', width: "15%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "6%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "6%"},
-                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "15%"},
+                    {field: 'get_cantidad_bolsas()', displayName: 'Cant. Bolsas', width: "5%"},
+                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "10%"},
                     {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
                     {field: 'get_fecha_despacho()', displayName: "F. Despacho", width: "9%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",

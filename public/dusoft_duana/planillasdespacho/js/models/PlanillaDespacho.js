@@ -15,6 +15,7 @@ define(["angular", "js/models"], function (angular, models) {
                 this.descripcion_estado = descripcion_estado || 'Activa'; // 0 Anulada - 1 Activa - 2 Despachada                
                 this.cantidad_cajas = '';
                 this.cantidad_neveras = '';
+                this.cantidad_bolsas = '';
                 this.numero_guia_externo = '';
                 this.numero_placa_externo = '';
                 this.documento = '';
@@ -67,6 +68,10 @@ define(["angular", "js/models"], function (angular, models) {
 
             PlanillaDespacho.prototype.set_cantidad_neveras = function (cantidad_neveras) {
                 this.cantidad_neveras = cantidad_neveras;
+            };
+
+            PlanillaDespacho.prototype.set_cantidad_bolsas = function (cantidad_bolsas) {
+                this.cantidad_bolsas = cantidad_bolsas;
             };
 
             PlanillaDespacho.prototype.set_numero_guia_externo = function (numero_guia_externo) {
@@ -143,6 +148,10 @@ define(["angular", "js/models"], function (angular, models) {
 
             PlanillaDespacho.prototype.get_cantidad_neveras = function () {
                 return this.cantidad_neveras;
+            };
+
+            PlanillaDespacho.prototype.get_cantidad_bolsas = function () {
+                return this.cantidad_bolsas;
             };
 
             PlanillaDespacho.prototype.get_numero_guia_externo = function () {

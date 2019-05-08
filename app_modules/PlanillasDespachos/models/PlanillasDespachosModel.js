@@ -172,6 +172,9 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                     a.solicitud_prod_a_bod_ppal_id :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%')"));
     });
     query.orderBy('a.fecha_registro', 'desc');
+    console.log("Query resultado", G.sqlformatter.format(
+               query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -359,8 +362,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     ) as ciudad,\
                     a.inv_planillas_despacho_id as planilla_id,\
                     a.empresa_id,\
-                    e.descripcion as descripcion_destino,\
-                    e.ubicacion as direccion_destino,\
+                    d.descripcion as descripcion_destino,\
+                    d.ubicacion as direccion_destino,\
                     a.prefijo,\
                     a.numero,\
                     b.solicitud_prod_a_bod_ppal_id as numero_pedido,\

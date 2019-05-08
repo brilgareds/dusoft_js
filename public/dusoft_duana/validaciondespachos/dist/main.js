@@ -42382,7 +42382,7 @@ define('url',["angular"], function (angular) {
                 'LISTAR_REGISTRO_SALIDA': BASE_URL + '/ValidacionDespachos/listarRegistroSalida',
             },
             'CENTROS_UTILIDAD': {
-                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadbodega',
             },
             'CLIENTES':{
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'

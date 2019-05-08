@@ -7,10 +7,14 @@
 <div class="modal-body">
     <div ng-repeat="TipoNota in NotasGeneradas.notas track by $index" class="panel panel-primary">
         <div class="panel-heading">
-            <b align="center" style="text-transform: uppercase;">Notas {{TipoNota.titulo}}</b>
+            <h5 style="text-align: center; margin: 0px; text-transform: uppercase;">
+                <b>Notas {{TipoNota.titulo}}</b>
+            </h5>
         </div>
         <div class="panel-body">
-            <h3 align="center" ng-show="!TipoNota.detalle.length" style="margin: 0px;"><i>Sin notas {{TipoNota.nombre}}</i></h3>
+            <h3 ng-show="!TipoNota.detalle.length" style="text-align: center; margin: 0px;">
+                <i>Sin notas {{TipoNota.nombre}}</i>
+            </h3>
             <table class="table-responsive2 tr-hover" ng-show="TipoNota.detalle.length">
                 <thead>
                     <tr>

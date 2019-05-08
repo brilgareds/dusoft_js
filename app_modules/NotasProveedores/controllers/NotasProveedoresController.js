@@ -98,40 +98,40 @@ NotasProveedores.prototype.crearNotaTemporal = (req, res) => {
             data.temporal.encabezado = response;
             return G.Q.ninvoke(that.m_notasProveedores, 'temporalDetalle', parametros);
         }).then(response => {
-        data.temporal.detalle = response;
-        data.temporal.detalle.totalBajaCostoString = number_money(String(data.temporal.detalle.totalBajaCosto));
-        data.temporal.detalle.totalSubeCostoString = number_money(String(data.temporal.detalle.totalSubeCosto));
-        return G.Q.ninvoke(that.m_notasProveedores, 'ParametrosNota', parametros);
-    }).then(response => {
-        data.parametrosNota = response;
-        return G.Q.ninvoke(that.m_notasProveedores, 'conceptosGenerales', parametros);
-    }).then(response => {
-        data.conceptosGenerales = response;
-        return G.Q.ninvoke(that.m_notasProveedores, 'conceptosEspecificos', {conceptoGeneral: concepGenId});
-    }).then(response => {
-        data.conceptosEspecificos = response;
-        return G.Q.ninvoke(that.m_notasProveedores, 'facturaDetalle', parametros, data.temporal.detalle.all, response);
-    }).then(response => {
-        data.factura.detalle = response;
-        return G.Q.ninvoke(that.m_notasProveedores, 'ParametrosRetencion', parametros, data.temporal);
-    }).then(response => {
-        data.retencionAnual = response;
-        data.temporal.encabezado.totalConRetenciones =
-            (
+            data.temporal.detalle = response;
+            data.temporal.detalle.totalBajaCostoString = number_money(String(data.temporal.detalle.totalBajaCosto));
+            data.temporal.detalle.totalSubeCostoString = number_money(String(data.temporal.detalle.totalSubeCosto));
+            return G.Q.ninvoke(that.m_notasProveedores, 'ParametrosNota', parametros);
+        }).then(response => {
+            data.parametrosNota = response;
+            return G.Q.ninvoke(that.m_notasProveedores, 'conceptosGenerales', parametros);
+        }).then(response => {
+            data.conceptosGenerales = response;
+            return G.Q.ninvoke(that.m_notasProveedores, 'conceptosEspecificos', {conceptoGeneral: concepGenId});
+        }).then(response => {
+            data.conceptosEspecificos = response;
+            return G.Q.ninvoke(that.m_notasProveedores, 'facturaDetalle', parametros, data.temporal.detalle.all, response);
+        }).then(response => {
+            data.factura.detalle = response; //
+            return G.Q.ninvoke(that.m_notasProveedores, 'ParametrosRetencion', parametros, data.temporal);
+        }).then(response => {
+            data.retencionAnual = response;
+            data.temporal.encabezado.totalConRetenciones =
                 (
                     (
                         (
-                            (data.temporal.encabezado.total) -
-                            data.retencionAnual.retencionFuente) -
-                        data.retencionAnual.retencionIca) -
-                    data.retencionAnual.retencionIva) -
-                data.temporal.encabezado.valor_descuento);
-        data.temporal.encabezado.totalConRetencionesString = number_money(String(data.temporal.encabezado.totalConRetenciones));
-        return res.send(G.utils.r(req.url, 'Temporal guardado con exito', 200, data));
-    }).fail(err => {
-        console.log('Error: ', err);
-        return res.send(G.utils.r(req.url, 'Error al guardar temporal', 500, {err: err}));
-    });
+                            (
+                                (data.temporal.encabezado.total) -
+                                data.retencionAnual.retencionFuente) -
+                            data.retencionAnual.retencionIca) -
+                        data.retencionAnual.retencionIva) -
+                    data.temporal.encabezado.valor_descuento);
+            data.temporal.encabezado.totalConRetencionesString = number_money(String(data.temporal.encabezado.totalConRetenciones));
+            return res.send(G.utils.r(req.url, 'Temporal guardado con exito', 200, data));
+        }).fail(err => {
+            console.log('Error: ', err);
+            return res.send(G.utils.r(req.url, 'Error al guardar temporal', 500, {err: err}));
+        });
 };
 
 NotasProveedores.prototype.crearNota = (req, res) => {
@@ -471,7 +471,6 @@ function __guardarTemporalDetalle(detalles, index=0, callback) {
     }
     detalle.empresaId = detalles.empresaId;
     detalle.usuarioId = detalles.usuarioId;
-    console.log('producto: ', detalle);
 
     G.Q.ninvoke(that.m_notasProveedores, 'guardarTemporalDetalle', detalle)
         .then(response => {
@@ -508,15 +507,14 @@ function __recorrerNotas(notas, index, transaccion, callback) {
 
     G.Q.ninvoke(that.m_notasProveedores, 'insertNotaProveedor', nota, transaccion)
         .then(response => {
-            console.log('1');
-            return G.Q.ninvoke(that.m_notasProveedores, 'insertNotaProveedorDetalle', nota, transaccion)
+            return G.Q.ninvoke(that.m_notasProveedores, 'insertNotaProveedorDetalle', nota, transaccion);
         }).then(response => {
-            console.log('2');
-            return G.Q.ninvoke(that.m_notasProveedores, 'updateFacturasProveedores', nota, transaccion)
+            return G.Q.ninvoke(that.m_notasProveedores, 'updateFacturasProveedores', nota, transaccion);
         }).then(response => {
-            console.log('3');
-            return G.Q.ninvoke(that.m_notasProveedores, 'updateDocumentos', nota, transaccion)
-        }).then(response =>{
+            return G.Q.ninvoke(that.m_notasProveedores, 'updateDocumentos', nota, transaccion);
+        }).then(response => {
+            return G.Q.ninvoke(that.m_notasProveedores, 'eliminarProductosTemporal', nota, transaccion);
+        }).then(response => {
             index++;
             __recorrerNotas(notas, index, transaccion, callback);
         }).fail(err => {

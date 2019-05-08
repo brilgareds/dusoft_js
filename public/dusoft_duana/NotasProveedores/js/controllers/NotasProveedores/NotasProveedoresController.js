@@ -149,9 +149,9 @@ define(
 
                         $scope.post(API.NOTAS_PROVEEDORES.LISTAR_NOTAS, obj, data => {
 
-                            if(data.status === 200){
+                            if(data.status === 200) {
                                 $scope.root.listarNotas = data.obj.notasProveedor;
-                                if($scope.root.listarNotas.length === 0){
+                                if($scope.root.listarNotas.length === 0) {
                                     alert('No se encontro ninguna factura!');
                                 }else{
                                     for(var nota of $scope.root.listarNotas) {
@@ -410,12 +410,11 @@ define(
                     enableRowSelection: false,
                     enableColumnResize: true,
                     columnDefs: [
-                        {field: 'facturaNumero', displayName: "Factura", width: "12%"},
-                        {field: 'documentoTipo', displayName: 'Tipo Doc.', width: "7%"},
-                        {field: 'documentoId', displayName: 'Documento', width: "9%"},
-                        {field: 'proveedorNombre', displayName: 'Nombre', width: "12%"},
-                        {field: 'facturaObservacion', displayName: 'Observaciones', width: "17%"},
-                        {field: 'fecha', displayName: 'Fecha', width: "12%"},
+                        {field: 'facturaNumero', displayName: "Factura", width: "10%"},
+                        {field: 'proveedorNombre', displayName: 'Proveedor', width: "12%"},
+                        {field: 'documento', displayName: 'Documento', width: "12%"},
+                        {field: 'facturaObservacion', displayName: 'Observaciones', width: "21%"},
+                        {field: 'fecha', displayName: 'Fecha', width: "13%"},
                         {field: 'facturaValorString', displayName: 'Valor Factura', width: "11%"},
                         {field: 'facturaSaldoString', displayName: 'Saldo', width: "11%"},
                         {displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity)" class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;"></i></div>'},

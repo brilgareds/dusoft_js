@@ -18,6 +18,7 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) 
     var query = G.knex.select([
         "c.tipo_id_tercero as documentoTipo",
         "c.tercero_id as documentoId",
+        G.knex.raw("c.tipo_id_tercero || '-' || c.tercero_id AS documento"),
         "c.nombre_tercero as proveedorNombre",
         "b.codigo_proveedor_id as proveedorId",
         "a.numero_factura as facturaNumero",
@@ -65,13 +66,32 @@ NotasProveedoresModel.prototype.listarNotasProveedor = function (obj, callback) 
                 this.where(false);
             }
         });
-     // console.log('Sql es: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (response) {
         callback(false, response);
     }).catch(function (err) {
         callback(err);
     });
+};
+
+NotasProveedoresModel.prototype.eliminarProductosTemporal = (nota, transaccion, callback) => {
+    promesa
+        .then(response => {
+            let query = G.knex('inv_notas_facturas_proveedor_d_tmp')
+                .where('numero_factura', nota.encabezado.factura_proveedor)
+                .andWhere('codigo_proveedor_id', nota.encabezado.codigo_proveedor_id)
+                .del();
+
+            if (transaccion) {
+               query.transacting(transaccion);
+            }
+            return query;
+        }).then(response => {
+            callback(false, response);
+        }).catch(err => {
+            console.log('Error: ', err);
+            callback(err);
+        });
 };
 
 NotasProveedoresModel.prototype.guardarTemporalDetalle = (detalle, callback) => {
@@ -511,6 +531,7 @@ NotasProveedoresModel.prototype.facturaDetalle = (obj, temporales, conceptosEspe
                 element.conceptoEspecificoTitulo = obj.conceptoEspecificoDefaultNombre;
                 element.conceptoEspecificoNombre = obj.conceptoEspecificoDefaultNombre;
                 element.conceptosEspecificos = conceptosEspecificos;
+                element.mayorValor = true;
 
                 if (Array.isArray(temporales)) {
                     busqueda = temporales.find(temporal => temporal.codigo === element.codigo_producto);

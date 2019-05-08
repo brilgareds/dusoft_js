@@ -21,7 +21,14 @@
                     <span>DESCUENTO: <label>{{NotaTemporal.temporal.encabezado.valor_descuentoString}}</label></span>
                     <span>VALOR TOTAL: <label>{{NotaTemporal.temporal.encabezado.totalConRetencionesString}}</label></span>
                 </div>
-                <div class="col-sm-12" style="padding: 0px;"><span class="col-sm-offset-10 col-sm-2 total-saldo">SALDO: <label>{{NotaTemporal.temporal.encabezado.totalSaldoString}}</label></span></div>
+                <div class="col-sm-12" style="padding: 0px;">
+                    <span class="col-sm-offset-10 col-sm-2 total-saldo" style="font-size: 14px; font-weight: bolder;">
+                        SALDO:
+                        <label style="font-size: 16px;">
+                            {{NotaTemporal.temporal.encabezado.totalSaldoString}}
+                        </label>
+                    </span>
+                </div>
             </div>
         </div>
     </div>

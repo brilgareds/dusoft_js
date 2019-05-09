@@ -230,7 +230,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 documentos.forEach(function (data) {
 
-                    var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.cantidad_cajas, data.cantidad_neveras, data.temperatura_neveras, data.observacion, data.tipo);
+                    var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.cantidad_cajas, data.cantidad_neveras, data.cantidad_bolsas, data.temperatura_neveras, data.observacion, data.tipo);
                     documento.set_tercero(data.descripcion_destino);
                     documento.lio_id = data.lio_id;
 
@@ -465,14 +465,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                     <td class="left"><strong>Total Neveras</strong></td>\
                                                     <td class="right">{{ planilla.get_cantidad_neveras() }}</td>                                        \
                                                 </tr>\
+                                                <tr>\
+                                                    <td class="left"><strong>Total Bolsas</strong></td>\
+                                                    <td class="right">{{ planilla.get_cantidad_bolsas() }}</td>                                        \
+                                                </tr>\
                                             </tbody>\
                                         </table>\
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "35%"},
-                    {field: 'get_descripcion()', displayName: 'Documento', width: "25%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "30%"},
+                    {field: 'get_descripcion()', displayName: 'Documento', width: "20%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
+                    {field: 'get_cantidad_bolsas()', displayName: 'Cant. Bolsas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
                     {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
 //                    {field: 'lio_id', displayName: 'Lio', width: "10%"},
@@ -565,7 +570,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     disabled = true;
                                 } else if ($scope.DocModificar.cantidad_neveras === undefined || $scope.DocModificar.cantidad_neveras === "" || parseInt($scope.DocModificar.cantidad_neveras) < 0) {
                                     disabled = true;
-                                } else if (parseInt($scope.DocModificar.cantidad_cajas) == 0 && parseInt($scope.DocModificar.cantidad_neveras) == 0) {
+                                } else if ($scope.DocModificar.cantidad_bolsas === undefined || $scope.DocModificar.cantidad_bolsas === "" || parseInt($scope.DocModificar.cantidad_bolsas) < 0) {
+                                    disabled = true;
+                                } else if (parseInt($scope.DocModificar.cantidad_cajas) == 0 && parseInt($scope.DocModificar.cantidad_neveras) == 0 && parseInt($scope.DocModificar.cantidad_bolsas) == 0) {
                                     disabled = true;
                                 }
 

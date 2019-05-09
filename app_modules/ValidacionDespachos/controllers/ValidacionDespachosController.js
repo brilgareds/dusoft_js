@@ -665,6 +665,7 @@ function __registroSalidaDetalle(obj, index, callback) {
                 detalle.sw_estado = 5;
                 detalle.estado_pedido = 5;
             }else{
+                throw {status:403, msj:"El Documento "+detalle.prefijo+"-"+detalle.numero+" se encuentra en estado : "+resultado[0].estado_pedido};
                 return true;
             }
             detalle.estadoEntrega = 3;

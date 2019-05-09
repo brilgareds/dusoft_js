@@ -197,6 +197,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         datos.fecha_despacho, datos.estado, datos.descripcion_estado, tipo_planilla);
                 $scope.planilla.set_cantidad_cajas(datos.total_cajas);
                 $scope.planilla.set_cantidad_neveras(datos.total_neveras);
+                $scope.planilla.set_cantidad_bolsas(datos.total_bolsas);
                 $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
                 $scope.planilla.set_numero_placa_externo(datos.numero_placa_externo);
             };

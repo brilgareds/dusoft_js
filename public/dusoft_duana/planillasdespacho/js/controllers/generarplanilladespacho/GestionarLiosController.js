@@ -79,7 +79,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.onIngresarLios = function () {
 
                 if (!self.validarLios()) {
-                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas, neveras o lios no son correctos");
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas, neveras, bolsas o lios no son correctos");
 
                     return;
                 }
@@ -103,14 +103,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 var totalCajas = 0;
                 var totalNeveras = 0;
+                var totalBolsas = 0;
 
                 documentos.forEach(function (data) {
                     totalCajas += data.cantidad_cajas_auditadas;
                     totalNeveras += data.cantidad_neveras_auditadas;
+                    totalBolsas += data.cantidad_bolsas_auditadas;
                 });
 
-                if (parseInt(totalCajas) !== parseInt($scope.root.cantidadCajas) || parseInt(totalNeveras) !== parseInt($scope.root.cantidadNeveras)) {
-                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "El número de cajas o neveras es diferente al auditado.\n Nro cajas auditadas: " + totalCajas + ", Nro Neveras auditadas: " + totalNeveras);
+                if (parseInt(totalCajas) !== parseInt($scope.root.cantidadCajas) || parseInt(totalNeveras) !== parseInt($scope.root.cantidadNeveras) || parseInt(totalBolsas) !== parseInt($scope.root.cantidadBolsas)) {
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "El número de cajas, neveras o bolsas es diferente al auditado.\n Nro cajas auditadas: " + totalCajas + "\
+                                                      , Nro Neveras auditadas: " + totalNeveras + ", Nro Bolsas auditadas: " + totalBolsas);
 
                     return;
                 }

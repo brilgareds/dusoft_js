@@ -173,9 +173,6 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                     a.solicitud_prod_a_bod_ppal_id :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%')"));
     });
     query.orderBy('a.fecha_registro', 'desc');
-    console.log("Query resultado", G.sqlformatter.format(
-               query.toString()));
-
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

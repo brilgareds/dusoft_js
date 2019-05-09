@@ -1,5 +1,5 @@
 
-var ValidacionDespachos = function (induccion, m_pedidos_farmacias,m_pedidos_clientes, e_pedidos_farmacias, e_pedidos_clientes,m_terceros) {
+var ValidacionDespachos = function (induccion, m_pedidos_farmacias, m_pedidos_clientes, e_pedidos_farmacias, e_pedidos_clientes, m_terceros) {
 
     this.m_ValidacionDespachos = induccion;
     this.m_pedidos_farmacias = m_pedidos_farmacias;
@@ -348,9 +348,9 @@ ValidacionDespachos.prototype.listarNumeroPrefijoOtrasSalidas = function (req, r
 
 
     var prefijo = args.validacionDespachos.prefijo.toUpperCase();
+    var termino_busqueda = args.validacionDespachos.termino_busqueda;
 
-
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo: prefijo}).then(function (resultado) {
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo: prefijo, termino_busqueda: termino_busqueda}).then(function (resultado) {
 
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {planillas_despachos: resultado}));
 
@@ -528,8 +528,8 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
 
     var args = req.body.data.obj;
     var registro_salida_bodega_id = "";
-    if(args.numeroGuia === ""){
-       args.numeroGuia = '100'; 
+    if (args.numeroGuia === "") {
+        args.numeroGuia = '100';
     }
     var obj = {
         "prefijo": args.prefijo,
@@ -573,9 +573,9 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
         }).then(function (respuesta) {
             registro_salida_bodega_id = respuesta;
             return G.Q.ninvoke(that.m_terceros, 'seleccionar_operario_por_usuario_id', req.session.user.usuario_id);
-            
-        }).then(function (respuesta) {    
-            
+
+        }).then(function (respuesta) {
+
             if (args.documentos.length > 0) {
                 obj.operario = respuesta[0].operario_id;
                 obj.registro_salida_bodega_id = registro_salida_bodega_id;
@@ -602,7 +602,7 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
         res.send(G.utils.r(req.url, "ingreso Correcto", 200, {validacionDespachos: resultado}));
 
     }).catch(function (err) {
-console.log("err ",err);
+        console.log("err ", err);
         var mensaje = 'Error en el registro';
 
         if (err.msj !== undefined) {
@@ -630,7 +630,7 @@ function __registroSalidaDetalle(obj, index, callback) {
     G.Q.ninvoke(obj.that.m_ValidacionDespachos, 'registroSalidaDetalle', detalle).then(function (resultado) {
 
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
-   
+
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'consultarEstadoActualPedidoFarmacia', detalle);
         } else if (detalle.tipo === '1') {
 
@@ -642,21 +642,21 @@ function __registroSalidaDetalle(obj, index, callback) {
 
     }).then(function (resultado) {
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
-  
+
             if (resultado[0].estado === '3') {
 
                 detalle.sw_estado = 4;
             } else if (resultado[0].estado === '9') {
 
                 detalle.sw_estado = 5;
-            }else{
- 
+            } else {
+
                 return true;
             }
             detalle.sw_despacho = 1;
-            
+
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'actualizarEstadoActualPedidoFarmacia', detalle);
-            
+
         } else if (detalle.tipo === '1') {
             if (resultado[0].estado_pedido === '3') {
                 detalle.sw_estado = 4;
@@ -664,7 +664,8 @@ function __registroSalidaDetalle(obj, index, callback) {
             } else if (resultado[0].estado_pedido === '9') {
                 detalle.sw_estado = 5;
                 detalle.estado_pedido = 5;
-            }else{
+            } else {
+                throw {status: 403, msj: "El Documento " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado : " + resultado[0].estado_pedido};
                 return true;
             }
             detalle.estadoEntrega = 3;
@@ -676,17 +677,17 @@ function __registroSalidaDetalle(obj, index, callback) {
     }).then(function (resultado) {//registro en la tablas de estados
 
         detalle.usuario = obj.usuarioId;
-        
+
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
-            
+
             obj.that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
-            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertarResponsablesPedidos',{numero_pedido: detalle.numero_pedido,estado: detalle.sw_estado,usuario: detalle.usuario,responsable: obj.operario, transaccion: detalle.transaccion,sw_terminado : '1'});
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertarResponsablesPedidos', {numero_pedido: detalle.numero_pedido, estado: detalle.sw_estado, usuario: detalle.usuario, responsable: obj.operario, transaccion: detalle.transaccion, sw_terminado: '1'});
 
         } else if (detalle.tipo === '1') {
 //            console.log("entro cliente estado"); 
             obj.that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
-            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertarResponsablesPedidos',{numero_pedido: detalle.numero_pedido,estado_pedido: detalle.estado_pedido,responsable: obj.operario,usuario: detalle.usuario, transaccion: detalle.transaccion,sw_terminado : '1'});
-            
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertarResponsablesPedidos', {numero_pedido: detalle.numero_pedido, estado_pedido: detalle.estado_pedido, responsable: obj.operario, usuario: detalle.usuario, transaccion: detalle.transaccion, sw_terminado: '1'});
+
         } else {
             return true;
         }
@@ -764,6 +765,6 @@ ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function (req, res
     }).done();
 };
 
-ValidacionDespachos.$inject = ["m_ValidacionDespachos","m_pedidos_farmacias","m_pedidos_clientes", "e_pedidos_farmacias", "e_pedidos_clientes","m_terceros"];
+ValidacionDespachos.$inject = ["m_ValidacionDespachos", "m_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_farmacias", "e_pedidos_clientes", "m_terceros"];
 
 module.exports = ValidacionDespachos;

@@ -265,7 +265,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         validacionDespachos: {
-                            prefijo: $scope.datos_view.tercero_seleccionado.getNombre()
+                            prefijo: $scope.datos_view.tercero_seleccionado.getNombre(),
+                            termino_busqueda: $scope.datos_view.termino_busqueda_documentos
                         }
                     }
                 };
@@ -536,9 +537,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'lios', displayName: "", width: "40", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
-                    {field: 'get_id()', displayName: 'Grupo', width: "10%"},
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "25%"},
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "25%", cellClass: "txt-center dropdown-button",
+                    {field: 'get_id()', displayName: 'Grupo', width: "8%"},
+                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "20%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "23%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                      <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >{{row.entity.tercero.nombre}}<span class="caret"></span></button>\
                      <ul class="dropdown-menu dropdown-options">\
@@ -547,8 +548,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                      </li>\
                      </ul>\
                      </div>'},
-                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\

@@ -6,29 +6,29 @@
         <tab heading="Clientes" ng-controller="PedidosClientesController">
             <div class ="row">
                 <div class="col-md-1" style="padding-left:15px; padding-right: 15px;">
-                   <p>
-                       <fieldset>   
-                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{opcionesModulo.btnAsignarPedidosClientes}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                                <span class="glyphicon glyphicon-ok" ></span> Asignar
-                            </button>
-                       </fieldset>   
+                    <p>
+                    <fieldset>   
+                        <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{opcionesModulo.btnAsignarPedidosClientes}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                            <span class="glyphicon glyphicon-ok" ></span> Asignar
+                        </button>
+                    </fieldset>   
                     </p>
                 </div>
-           
-            <div class="col-md-2">
+
+                <div class="col-md-2">
                     <p>
-                        <fieldset>                           
-                           <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
-                               <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
-                                <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
-                                    <span ng-bind="estado_pedido.nombre"></span>
-                                </ui-select-choices>
-                           </ui-select>
-                        </fieldset>  
-                      </p>
+                    <fieldset>                           
+                        <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
+                            <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
+                            <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
+                                <span ng-bind="estado_pedido.nombre"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </fieldset>  
+                    </p>
                 </div>
-                
-                
+
+
                 <div class="col-md-2">
                     <p></p>
                     <p class="input-group">
@@ -53,60 +53,45 @@
                         </span>
                     </p>
                 </div>
-         
-                 <div class="col-md-3 pull-right">
+
+                <div class="col-md-3 pull-right">
                     <p> 
-                   <!--  <div class="input-group">
-                    <input type="text" class="form-control"
-                           ng-keypress="onKeyPress($event, termino_busqueda)" 
-                           ng-model="termino_busqueda" 
-                           placeholder="Buscar" 
-                           name="srch-term" 
-                           id="srch-term">
-                    <div class="input-group-btn" >
-                    <button class="btn btn-default" 
-                            type="submit" 
-                            ng-click="buscarPedidosCliente(termino_busqueda)">
-                    <i class="glyphicon glyphicon-search"></i></button> </div>
-                   
-                  </div> //-->
-                   
-                 <div class="input-group">
-                   <div class="input-group-btn">                
-                       <button type="button" class="btn btn-default dropdown-toggle" 
-                               data-toggle="dropdown" 
-                               aria-haspopup="true" 
-                               aria-expanded="false"><span ng-bind="rootSeleccionPedido.filtro.nombre"></span> <span class="caret"></span></button>
-                       <ul class="dropdown-menu">
-                           <li ng-repeat="filtro in rootSeleccionPedido.filtros">
-                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)"><span ng-bind="filtro.nombre"></span></a>
-                           </li>
-                           <li>
-                       </ul>     
-                   </div><!-- /btn-group -->
-                   
-                   <input type="text" class="form-control"
-                           ng-keypress="onKeyPress($event, termino_busqueda)" 
-                           ng-model="termino_busqueda" 
-                           placeholder="Buscar" 
-                           name="srch-term" 
-                           id="srch-term"
-                           ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
-                  
+                    <div class="input-group">
+                        <div class="input-group-btn">                
+                            <button type="button" class="btn btn-default dropdown-toggle" 
+                                    data-toggle="dropdown" 
+                                    aria-haspopup="true" 
+                                    aria-expanded="false"><span ng-bind="rootSeleccionPedido.filtro.nombre"></span> <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="filtro in rootSeleccionPedido.filtros">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)"><span ng-bind="filtro.nombre"></span></a>
+                                </li>
+                                <li>
+                            </ul>     
+                        </div><!-- /btn-group -->
+
+                        <input type="text" class="form-control"
+                               ng-keypress="onKeyPress($event, termino_busqueda)" 
+                               ng-model="termino_busqueda" 
+                               placeholder="Buscar" 
+                               name="srch-term" 
+                               id="srch-term"
+                               ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
 
 
-                   <div class="input-group-btn" >
-                       <button class="btn btn-default" 
-                            type="submit" 
-                            ng-click="onKeyPress({which:13}, termino_busqueda)">
-                    <i class="glyphicon glyphicon-search"></i></button>
-                   </div>
-               </div>
-          
-             
-            </div> 
-       
-           </div>
+
+                        <div class="input-group-btn" >
+                            <button class="btn btn-default" 
+                                    type="submit" 
+                                    ng-click="onKeyPress({which:13}, termino_busqueda)">
+                                <i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+
+
+                </div> 
+
+            </div>
             <p>
             <div class="table-responsive" >
                 <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_clientes">
@@ -126,50 +111,50 @@
                 </button>
             </div>
         </tab> 
-        
-        
-        
+
+
+
         <tab heading="Farmacias" ng-controller="PedidosFarmaciasController">
-            
+
             <div class ="row">
-                
-               <div class="col-md-1" style="padding-left:15px; padding-right: 15px;">
-                   <p>
-                   <fieldset>   
-                    <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{opcionesModulo.btnAsignarPedidosFarmacias}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                        <span class="glyphicon glyphicon-ok" ></span> Asignar
-                    </button>
-                   </fieldset>   
+
+                <div class="col-md-1" style="padding-left:15px; padding-right: 15px;">
+                    <p>
+                    <fieldset>   
+                        <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{opcionesModulo.btnAsignarPedidosFarmacias}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                            <span class="glyphicon glyphicon-ok" ></span> Asignar
+                        </button>
+                    </fieldset>   
                     </p>
                 </div>
-                
-               <div class="col-md-2">
-                  <p>
+
+                <div class="col-md-2">
+                    <p>
                     <fieldset>                           
-                       <ui-select  ng-model="$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                           <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
+                        <ui-select  ng-model="$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
+                            <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
                             <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
                                 <span ng-bind="empresa.nombre"></span>
                             </ui-select-choices>
                         </ui-select> 
                     </fieldset>  
-                   </p>
+                    </p>
                 </div>
-                
+
                 <div class="col-md-2">
                     <p >
-                        <fieldset>                           
-                           <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
-                               <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
-                                <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
-                                    <span ng-bind="estado_pedido.nombre"></span>
-                                </ui-select-choices>
-                           </ui-select>
-                        </fieldset>  
-                      </p>
+                    <fieldset>                           
+                        <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
+                            <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
+                            <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
+                                <span ng-bind="estado_pedido.nombre"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </fieldset>  
+                    </p>
                 </div>
-                
-                
+
+
                 <div class="col-md-2">
                     <p></p>
                     <p class="input-group">
@@ -194,68 +179,49 @@
                         </span>
                     </p>
                 </div>
-                
-                
-                <!--div class="col-md-2 pull-right">
+
+                <div class="col-md-3 pull-right">
                     <p> 
-                     <div class="input-group">
-                    <input type="text" class="form-control"
-                           ng-keypress="onKeyPress($event, termino_busqueda)" 
-                           ng-model="termino_busqueda" 
-                           placeholder="Buscar" 
-                           name="srch-term" 
-                           id="srch-term">
-                    <div class="input-group-btn" >
-                    <button class="btn btn-default" 
-                            type="submit" 
-                            ng-click="buscarPedidosFarmacias(termino_busqueda)">
-                    <i class="glyphicon glyphicon-search"></i></button> </div>
-                   
-                  </div>
-             
-            </div-->
-            <div class="col-md-3 pull-right">
-                    <p> 
-                   
-                 <div class="input-group">
-                   <div class="input-group-btn">                
-                       <button type="button" class="btn btn-default dropdown-toggle" 
-                               data-toggle="dropdown" 
-                               aria-haspopup="true" 
-                               aria-expanded="false"><span ng-bind="filtroBusqueda.nombre"></span> <span class="caret"></span></button>
-                       <ul class="dropdown-menu">
-                           <li ng-repeat="filtro in filtros">
-                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)"><span ng-bind="filtro.nombre"></span></a>
-                           </li>
-                           <li>
-                       </ul>     
-                   </div><!-- /btn-group -->
-                   
-                   <input type="text" class="form-control"
-                           ng-keypress="onKeyPress($event, termino_busqueda)" 
-                           ng-model="termino_busqueda" 
-                           placeholder="Buscar" 
-                           name="srch-term" 
-                           id="srch-term"
-                           ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
-                  
+
+                    <div class="input-group">
+                        <div class="input-group-btn">                
+                            <button type="button" class="btn btn-default dropdown-toggle" 
+                                    data-toggle="dropdown" 
+                                    aria-haspopup="true" 
+                                    aria-expanded="false"><span ng-bind="filtroBusqueda.nombre"></span> <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="filtro in filtros">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)"><span ng-bind="filtro.nombre"></span></a>
+                                </li>
+                                <li>
+                            </ul>     
+                        </div><!-- /btn-group -->
+
+                        <input type="text" class="form-control"
+                               ng-keypress="onKeyPress($event, termino_busqueda)" 
+                               ng-model="termino_busqueda" 
+                               placeholder="Buscar" 
+                               name="srch-term" 
+                               id="srch-term"
+                               ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
 
 
-                   <div class="input-group-btn" >
-                       <button class="btn btn-default" 
-                            type="submit" 
-                            ng-click="onKeyPress({which:13}, termino_busqueda)">
-                    <i class="glyphicon glyphicon-search"></i></button>
-                   </div>
-               </div>
-          
-             
-            </div> 
-                
-            
+
+                        <div class="input-group-btn" >
+                            <button class="btn btn-default" 
+                                    type="submit" 
+                                    ng-click="onKeyPress({which:13}, termino_busqueda)">
+                                <i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+
+
+                </div> 
+
+
             </div>
             <p>
-             <div class="table-responsive" >
+            <div class="table-responsive" >
                 <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_farmacias">
                 </div>
             </div>

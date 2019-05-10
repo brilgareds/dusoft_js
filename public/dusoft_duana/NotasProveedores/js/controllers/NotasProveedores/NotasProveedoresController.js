@@ -364,7 +364,6 @@ define(
 
                 $scope.imprimir_pdf = (nota, tipo) => {
                     nota.tipoNota = tipo;
-                    console.log('nota: ', nota);
                     let url = '';
                     nota.retencionAnual = $scope.NotaTemporal.retencionAnual;
                     if($scope.session.bodega === '06') {

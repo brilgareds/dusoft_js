@@ -739,7 +739,10 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
                 parametros.usuario
                 );
     }).fail(function (err) {
-
+        if (!idProceso) {
+            console.log('(crontab) Sin facturas en proceso!');
+            return true;
+        }
         G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id: idProceso.id, estado: '2'}).then(function (resultado) {
 
         }).fail(function (err) {
@@ -765,7 +768,6 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
         logger.error("-----------------------------------");
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
     });
-
 };
 
 /*

@@ -384,22 +384,26 @@ define(
                         }
                     };
                     let request = new XMLHttpRequest();
-                    request.open('HEAD', url, false);
-                    request.send();
-                    if(request.status === 200) {
-                        window.open(url, '_blank');
-                    } else {
-                        $scope.post(API.NOTAS_PROVEEDORES.IMPRIMIR_NOTA, obj, data => {
-                            if (data.status === 200) {
-                                modalInstance.close();
-                                $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, true, false);
-                                window.open(data.obj, '_blank');
-                                // console.log('la url final es: ', data.obj);
-                            }else{
-                                console.log('Error en Ajax, status: ', data);
+                    request.onreadystatechange = function() {
+                        if (this.readyState === this.DONE) {
+                            if(this.status === 200) {
+                                window.open(url, '_blank');
+                            } else {
+                                $scope.post(API.NOTAS_PROVEEDORES.IMPRIMIR_NOTA, obj, data => {
+                                    if (data.status === 200) {
+                                        modalInstance.close();
+                                        $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, true, false);
+                                        window.open(data.obj, '_blank');
+                                        // console.log('la url final es: ', data.obj);
+                                    } else {
+                                        console.log('Error en Ajax, status: ', data);
+                                    }
+                                });
                             }
-                        });
-                    }
+                        }
+                    };
+                    request.open('HEAD', url);
+                    request.send();
                 };
 
                 $scope.listarNotas = {

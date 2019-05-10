@@ -121,9 +121,10 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
     if (obj.estadoListarValidacionDespachos !== 1) {
         columnas.push("h.cantidad_cajas");
         columnas.push("h.cantidad_neveras");
+        columnas.push("h.cantidad_bolsas");
         columnas.push("h.id_aprobacion_planillas");
     } else {
-        columnas.push(G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0) ) as id_aprobacion_planillas"));
+        columnas.push(G.knex.raw("(SELECT id_aprobacion_planillas FROM aprobacion_despacho_planillas_d as bb WHERE bb.prefijo = a.prefijo AND bb.numero = a.numero and (bb.cantidad_cajas > 0 or bb.cantidad_neveras > 0 or bb.cantidad_bolsas > 0) ) as id_aprobacion_planillas"));
     }
 
 
@@ -150,8 +151,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                     .on("h.numero", "a.numero");
         });
     } else {
-        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f\
-                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g) as h"), function () {
+        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras, f.cantidad_bolsas, f.id_aprobacion_planillas FROM aprobacion_despacho_planillas_d f\
+                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras, g.cantidad_bolsas, g.id_aprobacion_planillas FROM aprobacion_despacho_planillas g) as h"), function () {
 
             this.on("h.prefijo", "a.prefijo")
                     .on("h.numero", "a.numero");
@@ -215,6 +216,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
     if (obj.estadoListarValidacionDespachos !== 1) {
         columnas.push("h.cantidad_cajas");
         columnas.push("h.cantidad_neveras");
+        columnas.push("h.cantidad_bolsas");
     }
 
     var query = G.knex.select(columnas)
@@ -228,8 +230,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                     .on("h.numero", "a.numero");
         });
     } else {
-        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras FROM aprobacion_despacho_planillas_d f\
-                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras FROM aprobacion_despacho_planillas g) as h"), function () {
+        query.innerJoin(G.knex.raw("( SELECT f.prefijo, f.numero, f.cantidad_cajas, f.cantidad_neveras, f.cantidad_bolsas FROM aprobacion_despacho_planillas_d f\
+                                           UNION SELECT g.prefijo, g.numero, g.cantidad_cajas, g.cantidad_neveras, g.cantidad_bolsas FROM aprobacion_despacho_planillas g) as h"), function () {
 
             this.on("h.prefijo", "a.prefijo")
                     .on("h.numero", "a.numero");
@@ -285,6 +287,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
         "a.observacion",
         "g.total_cajas",
         "g.total_neveras",
+        "g.total_bolsas",
         "a.usuario_id",
         "f.nombre as nombre_usuario",
         "a.estado",
@@ -310,14 +313,14 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
             })
             .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
-            .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
-                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 1\
+            .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras, sum(a.cantidad_bolsas) as total_bolsas\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 1\
                       from inv_planillas_detalle_farmacias a\
                       union \
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 2\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 2\
                       from inv_planillas_detalle_clientes a\
                       union all \
-                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.observacion, a.fecha_registro, 3\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 3\
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g "), function () {
@@ -367,6 +370,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     b.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
+                    a.cantidad_bolsas,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     '' as descripcion_sede,\
@@ -390,7 +394,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                     inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
                     inner join (\n\
-                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo \
+                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras,g.cantidad_bolsas, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.cantidad_bolsas, g.numero, g.prefijo \
                         FROM aprobacion_despacho_planillas f \n\
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as f ON (f.numero = a.numero and f.prefijo = a.prefijo)\
@@ -414,6 +418,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     b.pedido_cliente_id as numero_pedido,\
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
+                    a.cantidad_bolsas,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     f.nombre_tercero as descripcion_sede,\
@@ -457,6 +462,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     0 as numero_pedido,\
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
+                    a.cantidad_bolsas,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     '' as descripcion_sede,\
@@ -466,7 +472,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.lio_id\
                     from inv_planillas_detalle_empresas a\
                     inner join (\
-                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras,g.cantidad_bolsas, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, f.cantidad_bolsas, g.numero, g.prefijo\
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
@@ -791,12 +797,14 @@ PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function (tabla
         query.insert({inv_planillas_despacho_id: obj.planilla_id, empresa_id: obj.empresa_id, prefijo: obj.prefijo,
             numero: obj.numero, cantidad_cajas: obj.cantidad_cajas, cantidad_neveras: obj.cantidad_neveras,
             temperatura_neveras: obj.temperatura_neveras, observacion: obj.observacion, usuario_id: obj.usuario_id,
-            empresa_destino: obj.empresa_cliente, centro_utilidad: obj.centro_cliente, bodega: obj.bodega_cliente
+            empresa_destino: obj.empresa_cliente, centro_utilidad: obj.centro_cliente, bodega: obj.bodega_cliente,
+            cantidad_bolsas: obj.cantidad_bolsas
         });
     } else {
         query.insert({inv_planillas_despacho_id: obj.planilla_id, empresa_id: obj.empresa_id, prefijo: obj.prefijo,
             numero: obj.numero, cantidad_cajas: obj.cantidad_cajas, cantidad_neveras: obj.cantidad_neveras,
-            temperatura_neveras: obj.temperatura_neveras, observacion: obj.observacion, usuario_id: obj.usuario_id
+            temperatura_neveras: obj.temperatura_neveras, observacion: obj.observacion, usuario_id: obj.usuario_id,
+            cantidad_bolsas: obj.cantidad_bolsas
         });
     }
 
@@ -829,18 +837,16 @@ PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function 
         callback(err);
     });
 };
-// Consultar las cajas y neveras de un documento (se usa en aprobacion de despachos y planillas)
+// Consultar las cajas, bolsas y neveras de un documento (se usa en aprobacion de despachos y planillas)
 PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function (obj, callback) {
 
     var params = {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero};
     var sql = "";
     if (obj.esPlanillas) {
-        sql = " SELECT bb.cantidad_cajas as total_cajas, bb.cantidad_neveras as total_neveras\
-                FROM aprobacion_despacho_planillas aa \n\
-                INNER JOIN aprobacion_despacho_planillas_d AS bb ON (aa.id_aprobacion_planillas = bb.id_aprobacion_planillas) \n\
-                WHERE bb.prefijo = :2 AND bb.numero = :3; ";
-        /*aa.empresa_id = :1 \
-         AND */
+        sql = " SELECT bb.cantidad_cajas as total_cajas, bb.cantidad_neveras as total_neveras, bb.cantidad_bolsas as total_bolsas\
+                FROM aprobacion_despacho_planillas aa \
+                INNER JOIN aprobacion_despacho_planillas_d AS bb ON (aa.id_aprobacion_planillas = bb.id_aprobacion_planillas) \
+                WHERE bb.prefijo = :2 AND bb.numero = :3; ";        
     } else {
 
         sql = " SELECT\
@@ -853,7 +859,8 @@ PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function (obj, c
                             SELECT coalesce(max(b.numero_caja),'0') as total_neveras\
                             FROM inv_bodegas_movimiento_d b  where b.empresa_id = :1\
                             AND  b.prefijo = :2 AND b.numero = :3  and b.tipo_caja = '1'\
-                    ) as total_neveras; ";
+                    ) as total_neveras,\
+                    0 as total_bolsas; ";
     }
 
 
@@ -887,10 +894,10 @@ PlanillasDespachosModel.prototype.gestionarLios = function (obj, callback) {
 
     }
     ;
-    var sql = "SELECT SUM(a.totalCajas) as totalCajas, SUM(a.totalNeveras) as totalNeveras\
+    var sql = "SELECT SUM(a.totalCajas) as totalCajas, SUM(a.totalNeveras) as totalNeveras, SUM(a.totalBolsas) as totalBolsas\
             FROM (\
-              SELECT distinct on(aa.id_aprobacion_planillas,aa.cantidad_cajas,aa.cantidad_neveras)\
-               aa.id_aprobacion_planillas, aa.cantidad_cajas as totalCajas, aa.cantidad_neveras as totalNeveras \
+              SELECT distinct on(aa.id_aprobacion_planillas,aa.cantidad_cajas,aa.cantidad_neveras,aa.cantidad_bolsas)\
+               aa.id_aprobacion_planillas, aa.cantidad_cajas as totalCajas, aa.cantidad_neveras as totalNeveras, aa.cantidad_bolsas as totalBolsas \
                FROM aprobacion_despacho_planillas aa \
                INNER JOIN aprobacion_despacho_planillas_d as bb ON (aa.id_aprobacion_planillas = bb.id_aprobacion_planillas)\
                WHERE bb.prefijo::varchar IN (" + vPrefijo.toString() + ")\
@@ -972,6 +979,7 @@ PlanillasDespachosModel.prototype.modificarDocumento = function (parametros, tra
             .update({
                 cantidad_cajas: parametros.documento.cantidad_cajas,
                 cantidad_neveras: parametros.documento.cantidad_neveras,
+                cantidad_bolsas: parametros.documento.cantidad_bolsas,
                 temperatura_neveras: temperatura
             });
 
@@ -1052,6 +1060,7 @@ function __insertarLioDocumento(obj, index, callback) {
 
     var cantidadCaja = index === 0 ? obj.totalCaja : 0;
     var cantidadNeveras = index === 0 ? obj.cantidadNeveras : 0;
+    var cantidadBolsas = index === 0 ? obj.cantidadBolsas : 0;
     var tabla;
     if (documento.tipo === '0') {
         tabla = "inv_planillas_detalle_farmacias";
@@ -1062,13 +1071,14 @@ function __insertarLioDocumento(obj, index, callback) {
     var observacion = obj.observacion.lenght === 0 ? documento.prefijo + " - " + documento.numero : "'" + obj.observacion + "'";
     if (documento.tipo !== '2') {
 
-        sql = "INSERT INTO " + tabla + " (\n\
-                inv_planillas_despacho_id, \n\
+        sql = "INSERT INTO " + tabla + " (\
+                inv_planillas_despacho_id, \
                 empresa_id, \
                 prefijo,\
                 numero, \
                 cantidad_cajas,\
                 cantidad_neveras,\
+                cantidad_bolsas,\
                 temperatura_neveras,\
                 observacion, \
                 usuario_id,\
@@ -1081,6 +1091,7 @@ function __insertarLioDocumento(obj, index, callback) {
                 numero,\
                 " + cantidadCaja + " as totalCajas,\
                 " + cantidadNeveras + " as cantidad_neveras,\
+                " + cantidadBolsas + " as cantidad_bolsas,\
                 " + obj.temperatura + " as temperatura_neveras,\
                 " + observacion + " as observacion,\
                 " + parseInt(obj.usuario_id) + " as usuario_id,\
@@ -1101,6 +1112,7 @@ function __insertarLioDocumento(obj, index, callback) {
                 numero, \
                 cantidad_cajas,\
                 cantidad_neveras,\
+                cantidad_bolsas,\
                 temperatura_neveras,\
                 observacion, \
                 usuario_id,\
@@ -1117,6 +1129,7 @@ function __insertarLioDocumento(obj, index, callback) {
                 bb.numero,\
                 " + cantidadCaja + " as totalCajas,\
                 " + cantidadNeveras + " as cantidad_neveras,\
+                " + cantidadBolsas + " as cantidad_bolsas,\
                 " + obj.temperatura + " as temperatura_neveras,\
                 " + observacion + " as observacion,\
                 " + parseInt(obj.usuario_id) + " as usuario_id,\
@@ -1175,6 +1188,7 @@ function __modificarLioDocumento(obj, index, callback) {
             .update({
                 cantidad_cajas: index === 0 ? obj.totalCaja : 0,
                 cantidad_neveras: index === 0 ? obj.cantidadNeveras : 0,
+                cantidad_bolsas: index === 0 ? obj.cantidadBolsas : 0,
                 temperatura_neveras: obj.temperatura,
                 observacion: obj.observacion,
                 numero_lios: obj.cantidadLios

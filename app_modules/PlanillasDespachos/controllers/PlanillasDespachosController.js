@@ -286,8 +286,8 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req,
         return;
     }
 
-    if (args.planillas_despachos.cantidad_cajas === undefined || args.planillas_despachos.cantidad_neveras === undefined || args.planillas_despachos.temperatura_neveras === undefined || args.planillas_despachos.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'cantidad_cajas, cantidad_neveras, temperatura_neveras u observacion no esta definido', 404, {}));
+    if (args.planillas_despachos.cantidad_cajas === undefined || args.planillas_despachos.cantidad_neveras === undefined || args.planillas_despachos.cantidad_bolsas === undefined || args.planillas_despachos.temperatura_neveras === undefined || args.planillas_despachos.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad_cajas, cantidad_neveras, cantidad_bolsas, temperatura_neveras u observacion no esta definido', 404, {}));
         return;
     }
 
@@ -335,6 +335,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req,
         numero: args.planillas_despachos.numero,
         cantidad_cajas: args.planillas_despachos.cantidad_cajas,
         cantidad_neveras: (args.planillas_despachos.cantidad_neveras === '') ? 0 : args.planillas_despachos.cantidad_neveras,
+        cantidad_bolsas: (args.planillas_despachos.cantidad_bolsas === '') ? 0 : args.planillas_despachos.cantidad_bolsas,
         temperatura_neveras: (args.planillas_despachos.temperatura_neveras === '') ? null : args.planillas_despachos.temperatura_neveras,
         observacion: args.planillas_despachos.observacion,
         tipo: tipo,
@@ -842,8 +843,9 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function (req, res) {
 
         obj.totalCajas = (resultado.length > 0) ? resultado[0].total_cajas : 0;
         obj.totalNeveras = (resultado.length > 0) ? resultado[0].total_neveras : 0;
+        obj.totalBolsas = (resultado.length > 0) ? resultado[0].total_bolsas : 0;
 
-        res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: obj}));
+        res.send(G.utils.r(req.url, 'Cantidades de cajas,bolsas y neveras', 200, {planillas_despachos: obj}));
     }).
             fail(function (err) {
                 res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
@@ -891,6 +893,11 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
         return;
     }
 
+    if (args.planillas_despachos.cantidadBolsas === undefined || args.planillas_despachos.cantidadBolsas === '' || args.planillas_despachos.cantidadBolsas === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de bolsas debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
     args.planillas_despachos.usuario_id = req.session.user.usuario_id;
     var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
 
@@ -917,7 +924,7 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
 /**
  * @author German Galvis
  * @fecha 29/04/2019
- *+Descripcion Controlador encargado de actualizar la cantidad de cajas o neveras de un lio
+ *+Descripcion Controlador encargado de actualizar la cantidad de cajas,bolsas o neveras de un lio
  **/
 PlanillasDespachos.prototype.modificarLios = function (req, res) {
 
@@ -948,6 +955,11 @@ PlanillasDespachos.prototype.modificarLios = function (req, res) {
 
     if (args.planillas_despachos.cantidadNeveras === undefined || args.planillas_despachos.cantidadNeveras === '' || args.planillas_despachos.cantidadNeveras === '0') {
         res.send(G.utils.r(req.url, 'la cantidad de neveras debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadBolsas === undefined || args.planillas_despachos.cantidadBolsas === '' || args.planillas_despachos.cantidadBolsas === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de bolsas debe estar definido y no puede estar en cero', 404, {}));
         return;
     }
 
@@ -1026,7 +1038,7 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function (req, res) {
 /**
  * @author German Galvis
  * @fecha 29/04/2019
- * +Descripcion: Controlador encargado de actualizar la cantidad de cajas o neveras de un documento
+ * +Descripcion: Controlador encargado de actualizar la cantidad de cajas, bolsas o neveras de un documento
  * @param {type} req
  * @param {type} res
  * @returns {undefined}

@@ -333,6 +333,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     var documento = Documento.get(data.id_aprobacion_planillas, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
                     documento.set_cantidad_cajas_auditadas(data.cantidad_cajas);
                     documento.set_cantidad_neveras_auditadas(data.cantidad_neveras);
+                    documento.set_cantidad_bolsas_auditadas(data.cantidad_bolsas);
                     documento.tipo = data.tipo;
 
                     if ($scope.datos_view.despachoPorLios) {
@@ -376,6 +377,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 //                    }
                 }
 
+                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
+                    disabled = false;
+                }
+
                 return disabled;
             };
 
@@ -399,13 +404,15 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     if (data.status === 200) {
 
                         if (parseInt(documento.get_cantidad_cajas()) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras) {
+                                parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras &&
+                                parseInt(documento.get_cantidad_bolsas()) === data.obj.planillas_despachos.totalBolsas) {
 
                             $scope.datos_view.documento_seleccionado = documento;
 
                             that.gestionar_planilla_despacho();
                         } else {
-                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ", Nro neveras Auditadas: " + data.obj.planillas_despachos.totalNeveras);
+                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas,bolsas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ",\
+                                                         Nro neveras Auditadas: " + data.obj.planillas_despachos.totalNeveras + ", Nro bolsas Auditadas: " + data.obj.planillas_despachos.totalBolsas);
                         }
 
                     }
@@ -550,6 +557,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                      </div>'},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -571,6 +579,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -589,8 +598,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                     for (var i in documentos) {
                         var _documento = documentos[i];
-                        if(_documento.tipo === '2'){
-                        _documento.tercero = farmacia;
+                        if (_documento.tipo === '2') {
+                            _documento.tercero = farmacia;
                         }
                     }
                 } else {
@@ -733,7 +742,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             observacion: $scope.planilla.get_observacion(),
                             numero_guia_externo: $scope.planilla.get_numero_guia_externo(),
                             numero_placa_externo: $scope.planilla.get_numero_placa_externo(),
-                            tipo_planilla:$scope.planilla.tipo_planilla.prefijo
+                            tipo_planilla: $scope.planilla.tipo_planilla.prefijo
                         }
                     }
                 };
@@ -763,6 +772,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             numero: $scope.planilla.get_documento().get_numero(),
                             cantidad_cajas: $scope.planilla.get_documento().get_cantidad_cajas(),
                             cantidad_neveras: $scope.planilla.get_documento().get_cantidad_neveras(),
+                            cantidad_bolsas: $scope.planilla.get_documento().get_cantidad_bolsas(),
                             temperatura_neveras: $scope.planilla.get_documento().get_cantidad_neveras() > 0 ? '3.2' : '', //$scope.planilla.get_documento().get_temperatura_neveras(),
                             observacion: $scope.planilla.get_documento().get_observacion(),
                             tipo: $scope.datos_view.opcion_predeterminada

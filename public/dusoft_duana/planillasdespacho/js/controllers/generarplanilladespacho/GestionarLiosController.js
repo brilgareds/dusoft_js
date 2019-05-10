@@ -17,6 +17,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cantidadCajas: 0,
                     cantidadLios: 0,
                     cantidadNeveras: 0,
+                    cantidadBolsas: 0,
                     observacion: ""
                 };
 
@@ -33,14 +34,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var cantidadCajas = parseInt($scope.root.cantidadCajas);
                 var cantidadLios = parseInt($scope.root.cantidadLios);
                 var cantidadNeveras = parseInt($scope.root.cantidadNeveras);
+                var cantidadBolsas = parseInt($scope.root.cantidadBolsas);
 
-                if (isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
-                        || (cantidadCajas === 0 && cantidadNeveras === 0)) {
+                if (isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || isNaN(cantidadBolsas) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
+                        || cantidadBolsas < 0 || (cantidadCajas === 0 && cantidadNeveras === 0 && cantidadBolsas === 0)) {
                     return false;
                 } else if (!isNaN(cantidadCajas) && !isNaN(cantidadLios) &&
-                        ((cantidadCajas > 0 && cantidadLios > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras))) {
+                        ((cantidadCajas > 0 && cantidadLios > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras) || (cantidadBolsas > 0 && cantidadLios > cantidadBolsas))) {
                     return false;
-                }
+                } 
 
 
                 return true;
@@ -126,6 +128,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
                             cantidadNeveras: $scope.root.cantidadNeveras,
+                            cantidadBolsas: $scope.root.cantidadBolsas,
                             numeroGuia: numeroGuia,
                             observacion: $scope.root.observacion
                         }
@@ -165,6 +168,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
                             cantidadNeveras: $scope.root.cantidadNeveras,
+                            cantidadBolsas: $scope.root.cantidadBolsas,
                             numeroGuia: numeroGuia,
                             observacion: $scope.root.observacion
                         }

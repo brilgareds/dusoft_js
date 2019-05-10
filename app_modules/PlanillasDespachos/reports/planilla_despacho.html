@@ -129,28 +129,30 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>Documento Cruce</th>
+                        <th>Doc. Cruce</th>
                         <th>Factura Asociada</th>
-                        <th>Nro de Cajas</th>
-                        <th>Nro de Neveras</th>
-                        <th>Toma Temperatura</th>
-                        <th>Observacion</th>
+                        <th>Nro Cajas</th>
+                        <th>Nro Bolsas</th>
+                        <th>Nro Neveras</th>
+                        <th>Temperatura</th>
+                        <!--<th>Observacion</th>-->
                     </tr>                    
                     {{for detalle}}                    
                     <tr>
                         <td align="center">{{:prefijo}}-{{:numero}}</td>
                         <td align="center">{{:factura}}</td>
                         <td align="center">{{:cantidad_cajas}}</td>
+                        <td align="center">{{:cantidad_bolsas}}</td>
                         <td align="center">{{:cantidad_neveras}}</td>
                         <td align="center">{{:temperatura_neveras}}</td>
-                        <td align="center">{{:observacion}}</td>
+                        <!--<td align="center">{{:observacion}}</td>-->
                     </tr>                                        
                     {{/for}}
                     <tr>
                         <td colspan="3">
                             <p>
                                 Se despacha a <b>{{:tercero}} ({{:~count(detalle)}} Remisiones de despacho)</b>
-                                Con un total de <b>{{:~total_cajas(detalle)}} Caja(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
+                                Con un total de <b>{{:~total_cajas(detalle)}} Caja(s), {{:~total_bolsas(detalle)}} Bolsa(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
                             </p>
                         </td>
                         <td colspan="3">
@@ -191,7 +193,7 @@
                             <p>
                                 Como mecanismo para definir responsabilidades el TRANSPORTISTA INDEPENDIENTE firmará la presente
                                 planilla entre tanto devuelva la misma con las respectivas firmas de recibido de cada sede donde se entregue la
-                                mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
+                                mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_bolsas }} Bolsa(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
                             </p>
                         </td>                            
                     </tr>

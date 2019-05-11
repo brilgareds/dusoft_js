@@ -92,6 +92,18 @@ OperariosBodega.prototype.crearOperariosBodega = function (req, res) {
     });
 };
 
+OperariosBodega.prototype.listarOperarios = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    
+    G.Q.ninvoke(that.m_operarios, 'listarOperarios').then(function (result) {
+        res.send(G.utils.r(req.url, 'Listado de Operarios!!!!', 200, {listarOperarios: result}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error Listando Operarios', 500, {err: err}));
+    }).done();
+};
+
 OperariosBodega.prototype.modificarOperariosBodega = function (req, res) {
 
     var that = this;

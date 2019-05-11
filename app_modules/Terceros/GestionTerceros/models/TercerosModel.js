@@ -89,13 +89,19 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback) {
     ];
 
     var query = G.knex.select(columnas).
-            from('terceros').
-            where("empresa_id", parametros.tercero.empresa_id);
+            from('terceros')
+            .where(function () {
+            if (parametros.tercero.empresa_id !== undefined) {
+                this.andWhere('empresa_id', parametros.tercero.empresa_id);
+            }
+        });
 
     if (parametros.tercero.terminoBusqueda.length > 0) {
         if (parametros.tercero.busquedaDocumento.length > 0) {
-            query.where("tipo_id_tercero", parametros.tercero.busquedaDocumento).
-                    andWhere("tercero_id", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");
+            if(parametros.tercero.busquedaDocumento[0].entra !== 0 || parametros.tercero.busquedaDocumento[0].entra === undefined){
+            query.where("tipo_id_tercero", parametros.tercero.busquedaDocumento);
+            }
+            query.andWhere("tercero_id", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");             
 
         } else {
             query.where("nombre_tercero", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");
@@ -103,7 +109,9 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback) {
     }
 
     query.limit(G.settings.limit).
-            offset((parametros.tercero.paginaActual - 1) * G.settings.limit).then(function(resultado) {
+            offset((parametros.tercero.paginaActual - 1) * G.settings.limit);
+ 
+    query.then(function(resultado) {
 	
         callback(false, resultado);
     }). catch (function(err) {

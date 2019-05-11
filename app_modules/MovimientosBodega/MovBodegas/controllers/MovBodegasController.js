@@ -107,7 +107,7 @@ MovBodegasController.prototype.eliminar_producto_movimiento_bodega_temporal= fun
     * @return integer numero de item_id del documento creado.
     * @access public
     */
-MovBodegasController.prototype.addItemDocTemporal=function(req,res){
+MovBodegasController.prototype.addItemDocTemporal=function(req,res){    
    var that = this;
    var args = req.body.data;
 
@@ -163,7 +163,7 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
     if(args.movimientos_bodegas.prefijo !== ''){
         bodega=args.movimientos_bodegas.prefijo;
     }
- console.log("AAAAAAAAAA",bodega);
+
   
     parametros ={
                  usuarioId: args.movimientos_bodegas.usuario_id,
@@ -192,16 +192,12 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
 //            parametros.centroUtilidad=result[0].centro_utilidad;
             parametros.centroUtilidad  = (bodega!=='' && bodega!==undefined)?'1 ':result[0].centro_utilidad;
             parametros.bodega          = (bodega!=='' && bodega!==undefined)?bodega:result[0].bodega;
-             console.log("BBBB::: ",parametros);
-             console.log("result[0]::: ",result[0]);
-             console.log("bodega:::: ",bodega);
+            
             return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
         }
     }).then(function(result) {
-        console.log("isBodegaDestino ",result);
-        console.log("result.length ",result.length);
         if(result.length!==0){
-            console.log("Entro traslado **********************",result.bodega_destino);
+           
             parametros.bodegaDestino=result.bodega_destino;
              return G.Q.nfcall(__traslado,that,parametros);
         }
@@ -448,7 +444,7 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
     
     var docTmpId= args.movimientos_bodegas.doc_tmp_id;
     
-    console.log("execCrearDocumento docTmpId ",docTmpId);
+   
     
     G.knex.transaction(function(transaccion) {  
         
@@ -458,10 +454,10 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
                
                     
            }).then(function(err){
-               console.log("execCrearDocumento::: ",err);
+            
                  return G.Q.nfcall(__eliminar_documento_temporal_farmacias,documento_temporal_id, usuario_id, transaccion);
            }).fail(function(err){
-               console.log("error generado >>>>>>>>>>>>", err);
+               console.log("execCrearDocumento error generado >", err);
                transaccion.rollback(err);
            }).
            done();
@@ -475,134 +471,7 @@ MovBodegasController.prototype.execCrearDocumento=function(req,res){
     }).
     done();
     
-//    var parametros = {usuario_id: usuarioId, orden_pedido_id: ordenPedidoID}; 
-//    G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros).then(function(result) {
-//        
-//        if (result.length > 0) {
-//          console.log("result::: ",result);  
-//          return G.Q.ninvoke(that.m_movimientos_bodegas,"consultarDocumentoBodegaTemporal",docTmpId, usuarioId);                
-//        }else{
-//          throw {msj:"NO HAY REGISTROS EN EL DOCUMENTO TEMPORAL "+docTmpId+" DEL USUARIO "+usuarioId+" PARA CREAR UN DOCUMENTO.", status:403};   
-//        }
-//        
-//    }).then(function(result) {
-//        if (result.length === 0) {
-//           throw {msj:"NO HAY REGISTROS EN LA CABECERA TEMPORAL.", status:403};        
-//        }else{
-//            
-//               G.knex.transaction(function(transaccion) {
-//     ///////////////////////       
-//                var parametros={documentoId:'',empresaId:''};
-//                G.Q.nfcall(that.m_movimientos_bodegas.lokTableDocumetos,parametros, transaccion).then(function(result) {
-//                  if (result.length === 0) {
-//                    throw {msj:"NO HAY REGISTROS EN LA CABECERA TEMPORAL.", status:403};        
-//                  }else{
-//                    return G.Q.nfcall(that.m_movimientos_bodegas.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
-//                  }
-//                }).then(function() {
-//                    transaccion.commit(parametros.documentoId);
-//                }).fail(function(err) {                   
-//                    transaccion.rollback(err);
-//                }).done();
-//            
-//        }).then(function(movimiento_temporal_id) {
-//            res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
-//        }).catch (function(err) {
-//            res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
-//        }).done();
-//            
-//    //////////////////        
-//          console.log("result::: ",result);
-//          res.send(G.utils.r(req.url, 'crearDocumento', 200, {crearDocumento: result})); 
-//        }
-//    }).fail(function(err) {
-//        res.send(G.utils.r(req.url, 'Error al Listar Items Documento Temporal', 500, {}));
-//    }).done();
-
 };
-
-/*MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
-    var that = this;
-    var args = req.body.data;
-    
-    
-    if (args.movimientos_bodegas === undefined || args.movimientos_bodegas.numero === undefined || args.movimientos_bodegas.prefijo === undefined
-        || args.movimientos_bodegas.empresa === undefined) {
-    
-        res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan definidos', 404, {}));
-        return;
-    }
-    
-    if (args.movimientos_bodegas.numero === "" || args.movimientos_bodegas.prefijo === "" || args.movimientos_bodegas.empresa === "") {
-        res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan vacios', 404, {}));
-        return;
-    }
-    
-    var numero = args.movimientos_bodegas.numero;
-    var prefijo = args.movimientos_bodegas.prefijo;
-    var empresa = args.movimientos_bodegas.empresa;
-    var datos_documento = {};
-    
-    that.m_movimientos_bodegas.obtenerEncabezadoDocumentoDespacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows){
-        if (err || rows.length === 0) {
-
-            res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
-            return;
-        }
-        datos_documento.encabezado = rows[0];
-        
-        that.m_movimientos_bodegas.obtenerDetalleDocumentoDespacho(numero, prefijo, empresa, function(err, rows){
-            if (err) {
-                res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
-                return;
-            }
-            
-            datos_documento.detalle = rows;
-            that.m_movimientos_bodegas.obtenerDatosAdicionalesPorDocumento(numero, prefijo, empresa, datos_documento.encabezado.tipo_doc_bodega_id, function(err, rows){
-                if (err || rows.length === 0 ) {
-                    res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
-                    return;
-                }
-                                
-                datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
-                
-                __generarPdfDespacho(datos_documento, function(nombre_pdf){
-                    console.log("nombre generado ", nombre_pdf);
-                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {movimientos_bodegas: {nombre_pdf:nombre_pdf}}));
-                });
-
-            });
-            
-            
-        });
-        
-    });
-    
-};*/
-
-
-/*function __generarPdfDespacho(datos, callback){
-    G.jsreport.reporter.render({
-        template: {
-            content: G.fs.readFileSync('app_modules/MovimientosBodega/MovBodegas/reports/despacho.html', 'utf8'),
-            recipe: "phantom-pdf",
-            engine: 'jsrender',
-            phantom: {
-                margin: "10px",
-                width:'700px'
-            }
-        },
-        data: datos
-    }).then(function(response) {
-
-        var name = response.result.path;
-        var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + ".pdf";
-        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-
-        callback(nombreTmp);
-    });
-}*/
-
 
 MovBodegasController.$inject = ["m_movimientos_bodegas","m_ordenes_compra","m_i002"];
 

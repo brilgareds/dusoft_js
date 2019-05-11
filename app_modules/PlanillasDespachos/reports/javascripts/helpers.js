@@ -24,6 +24,14 @@ function total_neveras(datos) {
     return total_neveras;
 }
 
+function total_bolsas(datos) {
+    var total_bolsas = 0;
+    datos.forEach(function(obj) {
+        total_bolsas += obj.cantidad_bolsas;
+    });
+    return total_bolsas;
+}
+
 /****************/
 function getSubTotal(data) {
   var result = 0;

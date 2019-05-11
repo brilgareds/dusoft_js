@@ -20,4 +20,8 @@ module.exports = function(app, di_container) {
          c_operarios.modificarOperariosBodega(req, res);
     });
     
+    app.post('/api/Terceros/operariosBodega/listarOperarios', function(req, res) {
+         c_operarios.listarOperarios(req, res);
+    });
+    
 };

@@ -1,6 +1,6 @@
 
 define(["angular", "js/controllers",
-], function(angular, controllers) {
+], function (angular, controllers) {
 
     controllers.controller('ListarPlanillasController', [
         '$scope', '$rootScope', 'Request',
@@ -12,7 +12,7 @@ define(["angular", "js/controllers",
         "UsuarioPlanillaDespacho",
         "PlanillaDespacho",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Sesion) {
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Sesion) {
 
             var that = this;
 
@@ -45,14 +45,14 @@ define(["angular", "js/controllers",
             $scope.pagina_actual = 1;
 
 
-            $scope.buscador_planillas_despacho = function(ev) {
+            $scope.buscador_planillas_despacho = function (ev) {
 
                 if (ev.which == 13) {
                     $scope.buscar_planillas_despacho();
                 }
             };
 
-            $scope.buscar_planillas_despacho = function() {
+            $scope.buscar_planillas_despacho = function () {
 
                 var obj = {
                     session: $scope.session,
@@ -65,7 +65,7 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.PLANILLAS.LISTAR_PLANILLAS, "POST", obj, function(data) {
+                Request.realizarRequest(API.PLANILLAS.LISTAR_PLANILLAS, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         that.render_planillas(data.obj.planillas_despachos);
@@ -73,23 +73,35 @@ define(["angular", "js/controllers",
                 });
             };
 
-            that.render_planillas = function(planillas) {
+            that.render_planillas = function (planillas) {
 
                 $scope.Empresa.limpiar_planillas();
 
-                planillas.forEach(function(data) {
+                planillas.forEach(function (data) {
 
                     var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);
                     var transportadora = Transportadora.get(data.transportadora_id, data.nombre_transportadora, data.placa_vehiculo, data.estado_transportadora);
                     var usuario = UsuarioPlanilla.get(data.usuario_id, data.nombre_usuario);
-                    var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario, data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado);
+                    var tipo_planilla = '';
+
+                    if (data.tipo_planilla === 'M') {
+                        tipo_planilla = "MEDICAMENTOS";
+                    } else if (data.tipo_planilla === 'I') {
+                        tipo_planilla = "INSUMOS";
+                    } else if (data.tipo_planilla === 'N') {
+                        tipo_planilla = "NUTRICION";
+                    }
+
+                    var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario,
+                            data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado, tipo_planilla);
                     planilla.set_cantidad_cajas(data.total_cajas);
                     planilla.set_cantidad_neveras(data.total_neveras);
+                    planilla.set_cantidad_bolsas(data.total_bolsas);
                     $scope.Empresa.set_planillas(planilla);
                 });
             };
 
-            $scope.abrir_fecha_inicial = function($event) {
+            $scope.abrir_fecha_inicial = function ($event) {
 
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -99,7 +111,7 @@ define(["angular", "js/controllers",
 
             };
 
-            $scope.abrir_fecha_final = function($event) {
+            $scope.abrir_fecha_final = function ($event) {
 
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -117,11 +129,13 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "5%"},
+                    {field: 'get_tipo_planilla()', displayName: 'Tipo Guía', width: "8%"},
                     {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
                     {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Ciudad Despacho', width: "15%"},
-                    {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
-                    {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
-                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "15%"},
+                    {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "6%"},
+                    {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "6%"},
+                    {field: 'get_cantidad_bolsas()', displayName: 'Cant. Bolsas', width: "5%"},
+                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "10%"},
                     {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
                     {field: 'get_fecha_despacho()', displayName: "F. Despacho", width: "9%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
@@ -136,13 +150,13 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
- 
-            $scope.validar_envio_email = function(planilla){
+
+            $scope.validar_envio_email = function (planilla) {
                 return {'click': planilla.get_estado() == '2'};
             };
 
 
-            $scope.gestionar_planilla_despacho = function(planilla_despacho, opcion) {
+            $scope.gestionar_planilla_despacho = function (planilla_despacho, opcion) {
 
                 localStorageService.add("numero_guia", 0);
 
@@ -155,19 +169,19 @@ define(["angular", "js/controllers",
 
             };
 
-            $scope.pagina_anterior = function() {
+            $scope.pagina_anterior = function () {
                 $scope.pagina_actual--;
                 $scope.buscar_planillas_despacho($scope.termino_busqueda, true);
             };
 
-            $scope.pagina_siguiente = function() {
+            $scope.pagina_siguiente = function () {
                 $scope.pagina_actual++;
                 $scope.buscar_planillas_despacho($scope.termino_busqueda, true);
             };
 
             $scope.buscar_planillas_despacho();
 
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });
 

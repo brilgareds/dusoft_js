@@ -3,7 +3,10 @@ module.exports = function(app, di_container) {
     var c_facturacion_clientes = di_container.get("c_facturacion_clientes");
     var j_facturacion_clientes = di_container.get("j_facturacion_clientes");
     var c_sincronizacion = di_container.get("c_sincronizacion");
-  
+
+    app.get('/api/Sincronizacion/facturacionPrueba', function(req, res) {
+        c_sincronizacion.facturacionElectronica(req, res);
+    });
   
     //j_facturacion_clientes.ejecutarJobProcesarDespachos();
   
@@ -49,6 +52,11 @@ module.exports = function(app, di_container) {
     app.post('/api/FacturacionClientes/consultaFacturaGeneradaDetalle', function(req, res) {     
         c_facturacion_clientes.consultaFacturaGeneradaDetalle(req, res);
     });
+    
+     app.post('/api/FacturacionClientes/generarReporteFacturaGeneradaDian', function(req, res) {     
+        c_facturacion_clientes.generarReporteFacturaGeneradaDian(req, res);
+    });
+ 
      
     app.post('/api/FacturacionClientes/generarReporteFacturaGenerada', function(req, res) {     
         c_facturacion_clientes.generarReporteFacturaGenerada(req, res);

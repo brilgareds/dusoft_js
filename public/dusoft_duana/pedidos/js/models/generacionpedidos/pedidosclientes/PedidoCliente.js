@@ -110,6 +110,16 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 return this.vendedor;
             };
 
+            // Vendedor
+            PedidoCliente.prototype.set_sede = function(sede) {
+                this.sede = sede;
+                return this;
+            };
+
+            PedidoCliente.prototype.get_sede = function() {
+                return this.sede;
+            };
+
             // Observacion
             PedidoCliente.prototype.set_observacion = function(observacion) {
                 this.observacion = observacion;

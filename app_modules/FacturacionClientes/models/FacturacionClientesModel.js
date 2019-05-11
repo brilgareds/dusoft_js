@@ -148,6 +148,7 @@ function __consultaDetalleFacturaGenerada(parametros, tabla1, tabla2, campo) {
         G.knex.raw("trunc(((a.valor_unitario * (a.porc_iva/100))* a.cantidad),2) as iva_total"),
         G.knex.raw("to_char((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))),'LFM9,999,999.00') as valor_unitario_iva"),
         G.knex.raw("to_char((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))),'LFM9,999,999.00') as total"),
+        G.knex.raw("((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))))) as total1"),
         G.knex.raw("(c.observacion ||''|| (case when c.observacion is null or c.observacion='' then (select \
                                     observacion from\
                                     productos_consumo\
@@ -213,7 +214,8 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
             G.knex.raw("sum(cantidad) as cantidad"),
             G.knex.raw("to_char(round(sum(valor_unitario2),2),'LFM9,999,999.00') as valor_unitario"),
             G.knex.raw("to_char(round(sum(subtotal2),2),'LFM9,999,999.00') as subtotal"),
-            G.knex.raw("sum(porc_iva) as porc_iva")
+            G.knex.raw("sum(porc_iva) as porc_iva"),
+            G.knex.raw("round(sum(subtotal2),2) as subtotal_detalle")
         ];
 
     }
@@ -239,7 +241,8 @@ FacturacionClientesModel.prototype.consultaDetalleFacturaGenerada = function (ob
                 )
     }
 
-//    console.log(G.sqlformatter.format(query.toString())); 
+//    console.log('SQL en consultaDetalleFacturaGenerada: ', G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -357,7 +360,7 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
                 .on("a.tercero_id", "cntrtos.tercero_id")
                 .on('cntrtos.empresa_id', "b.empresa_id")
 
-    }).join('inv_bodegas_movimiento_despachos_clientes as d', function () {
+    }).leftJoin('inv_bodegas_movimiento_despachos_clientes as d', function () {
         this.on("a.tipo_id_tercero", "b.tipo_id_tercero")
                 .on("a.tercero_id", "d.tercero_id")
     }).leftJoin('tipo_mpios as e', function () {
@@ -442,7 +445,7 @@ function __camposListaFacturasGeneradas() {
         G.knex.raw("k.departamento as departamento_empresa"),
         G.knex.raw("j.municipio as municipio_empresa"),
         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY') as anio_factura"),
-        "m.subtotal",
+        "m.subtotal",       
         "m.iva_total",
         G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.factura_fiscal and prefijo=a.prefijo and sw_factura_dian ='1') as sincronizacion"),
     ];
@@ -459,7 +462,7 @@ function __camposListaFacturasGeneradas() {
  */
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
 
-    var consulta = G.knex.select(columna)
+ var consulta = G.knex.select(columna)
             .from(tabla1)
             .join('terceros as c', function () {
                 this.on("a.tipo_id_tercero", "c.tipo_id_tercero")
@@ -548,7 +551,7 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
  */
 FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, callback) {
 
-    var colQuery = [G.knex.raw("a.*"),
+ var colQuery = [G.knex.raw("a.*"),
         "b.estado",
         G.knex.raw("case when b.estado=0 then 'Sincronizado' else 'NO sincronizado' end as descripcion_estado"),
         "b.mensaje"
@@ -1091,7 +1094,7 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function (estado, o
     }
 
     var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);
-
+ 
     if (transaccion)
         query.transacting(transaccion);
     query.then(function (resultado) {
@@ -2245,6 +2248,30 @@ function __guardarDespachoIndividual(that, index, documentos, consultaCompleta, 
 
 }
 ;
+/*
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.despachoClientes = function (obj, callback) {
+    var columnas =  [
+                        "prefijo",
+                        "numero"
+                    ];
+    var query = G.knex.distinct(columnas)
+            .from('inv_bodegas_movimiento_despachos_clientes')
+            .where('prefijo', obj.prefijo).
+             andWhere('numero', obj.numero).
+             andWhere("factura_gener", '0');
+     
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error eliminarDocumentoTemporal_d", err);
+        callback(err);
+    });
+}
 
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 
@@ -2288,7 +2315,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
 
             return G.Q.ninvoke(that, 'insertarPcFactura', {parametros: obj, swTipoFactura: '1'}, transaccion);
         }).then(function () {
-            console.log("obj.parametros", obj.parametros.pedido.facturaEspecial);
+        
             if (obj.parametros.pedido.facturaEspecial !== undefined && obj.parametros.pedido.facturaEspecial >= 0) {
                 return G.Q.nfcall(__DatosProductoConsumo, that, obj.parametros.pedido);
             } else {
@@ -2493,7 +2520,7 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumoBarranquilla =
                         this.andWhere(G.knex.raw("nombre_producto_consumo " + G.constants.db().LIKE + "'%" + obj.terminoBusqueda + "%'"));
                     }
                 }
-            });
+            }).andWhere("empresa_id", obj.empresa_id);
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -2601,6 +2628,31 @@ FacturacionClientesModel.prototype.consultarUltimoGrupo = function (callback) {
 };
 
 /**
+ * @fecha 2019-01-03
+ * +Descripcion Metodo encargado de consultar los productos del archivo plano si ya fueron 
+ * agregados a la tabla productos_consumo
+ * @author German Galvis
+ */
+FacturacionClientesModel.prototype.consultarProductosRepetido = function (obj, callback) {
+
+    var query = G.knex.column("*")
+            .from('productos_consumo as a')
+            .where(function () {
+                this.andWhere(G.knex.raw("a.grupo_id = " + obj.grupo));
+                this.andWhere(G.knex.raw("a.codigo_producto = '" + obj.codigo_producto + "'"));
+                this.andWhere(G.knex.raw("a.lote = '" + obj.lote + "'"));
+                this.andWhere(G.knex.raw("a.fecha_vencimiento = '" + obj.fecha_vencimiento + "'"));
+            });
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [consultarProductosRepetido]: ", err);
+        callback({err: err, msj: "Error al consultarProductosRepetido]"});
+    });
+};
+
+/**
  * @fecha 22/10/2018
  * +Descripcion Metodo encargado de insertar los productos del archivo plano a 
  * la tabla productos_consumo
@@ -2631,6 +2683,36 @@ FacturacionClientesModel.prototype.insertar_productos_consumo = function (obj, c
     }).catch(function (err) {
         console.log("err (/catch) [insertar_productos_consumo]: ", err);
         callback({err: err, msj: "Error al guardar la insertar_productos_consumo"});
+    });
+};
+
+/**
+ * +Descripcion Funcion encargada de actualizar en la tabla donde se almacenan
+ *	        los productos de las facturas de consumo
+ * @author German Galvis
+ * @fecha 2019-01-03
+ */
+FacturacionClientesModel.prototype.actualizar_productos_consumo = function (obj, callback) {
+
+    var parametros = {
+        empresa_id: obj.empresa_id,
+        centro_utilidad: obj.centro_id,
+        bodega: obj.bodega_id,
+        codigo_producto: obj.codigo_producto,
+        lote: obj.lote,
+        fecha_vencimiento: obj.fecha_vencimiento,
+        grupo_id: obj.grupo
+    };
+
+    var query = G.knex("productos_consumo")
+            .where(parametros)
+            .update({ cantidad: G.knex.raw('cantidad +' + obj.cantidad)});
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err (/catch) [actualizar_productos_consumo]: ", err);
+        callback({err: err, msj: "Error al actualizar la cantidad del producto"});
     });
 };
 

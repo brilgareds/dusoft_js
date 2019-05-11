@@ -115,14 +115,14 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
         }
         
     }).then(function(parametrizacion){
-           
+          
         var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dashboard) ? parametrizacion.modulosJson.dashboard.opciones : {};
         
         
-        if(conexiones.length > 0 && !opciones.sw_multiples_conexiones){
+        if((conexiones.length > 0 && !opciones.sw_multiples_conexiones) && usuario.device!=='android'){
             throw {status:403, msj:"El usuario tiene sesiones activas", obj: {conexiones : conexiones}};
         } else {
-console.log("socket>>>>>>>>>>>>>>>> ",usuario);
+
             return G.Q.ninvoke(G.auth, "set", usuario);
         }
       
@@ -383,7 +383,6 @@ function __cerrarSesiones(conexiones, callback){
 
 
 Autenticacion.prototype.logoutUsuario = function(req, res) {
-
     G.auth.logout(req.session.user.usuario_id, req.session.user.auth_token, function(err, rows) {
         if (err)
             res.send(G.utils.r(req.url, 'Se ha Generado un Error Cerrando la Sesion del Usuario', 500, {sesion: {}}));

@@ -1,6 +1,8 @@
 var fs = require('fs'),
 rootPath = "public/dusoft_duana";
 path = require('path');
+var cmd = '';
+var error = '';
 var exec = require('child_process').exec;
 
 function listarDirectorios(srcpath) {
@@ -15,21 +17,41 @@ function minificarModulo(modulos, callback){
         callback();
         return;
     }
-    
-    //Comando que permite minificar todos los javascripts de los modulos y librerias
-    var cmd = 'r.js.cmd -o ' + rootPath + "/" + modulo + '/build.js';
 
+    //Comando que permite minificar todos los javascripts de los modulos y librerias
+    cmd = 'r.js.cmd -o ' + rootPath + "/" + modulo + '/build.js';
+
+    compilar(modulos, modulo, cmd, function(respuesta, err){
+        if(!respuesta){
+            error = err;
+            cmd = 'r.js -o ' + rootPath + "/" + modulo + '/build.js';
+
+            compilar(modulos, modulo, cmd, function(respuesta, err){
+                if(respuesta){
+                    console.log('Compilado en Linux, con el comando: "' + cmd + '"');
+                    modulos.splice(0, 1);
+                    minificarModulo(modulos, callback);
+                }else{
+                    error += err;
+                    console.log('Imposible compilar, error: ', error);
+                }
+            });
+        }else{
+            console.log('Compilado en Windows, con el comando: "' + cmd + '"');
+            modulos.splice(0, 1);
+            minificarModulo(modulos, callback);
+        }
+        console.log('Modulo: "' + modulo + '"');
+    });
+}
+
+function compilar(modulos, modulo, cmd, callback){
     exec(cmd, function(error, stdout, stderr) {
         if(error){
-            console.log("Error:", error);
-            console.log("Stdout:", stdout);
-            console.log("Stderr:", stderr);
+            callback(false, error);
+        }else{
+            callback(true);
         }
-        
-        console.log("modulo compilado ", modulo, cmd);
-        modulos.splice(0, 1);
-        minificarModulo(modulos, callback);
-        
     });
 }
 

@@ -21,12 +21,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         "E009Service",
         "E017Service",
         "I007Service",
+        "I008Service",
         "I011Service",
         "I012Service",
         "I015Service",
         "TipoDocumentos",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion, GeneralService,
-                E007Service, E009Service, E017Service, I007Service, I011Service, I012Service, I015Service, TipoDocumentos) {
+                E007Service, E009Service, E017Service, I007Service, I008Service, I011Service, I012Service, I015Service, TipoDocumentos) {
 
             var that = this;
             $scope.claseDoc;
@@ -112,13 +113,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             that.render_documentos = function (documentos) {
 
                 $scope.Empresa.limpiar_documentos();
-
+                //console.log(documentos);
                 documentos.forEach(function (data) {
 
                     var documento = Documento.get(data.bodegas_doc_id, data.prefijo);
                     documento.set_empresa(data.empresa_id).set_centro_utilidad(data.centro_utilidad).set_bodega(data.bodega);
                     documento.set_tipo_movimiento(data.tipo_movimiento).set_tipo(data.tipo_doc_bodega_id).set_tipo_clase_documento(data.tipo_clase_documento);
                     documento.set_descripcion(data.descripcion);
+
 
                     $scope.Empresa.set_documentos(documento);
                 });
@@ -132,7 +134,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var result = $state.get().filter(function (obj) {
                     return obj.name === documento.tipo_doc_bodega_id;
                 });
-
                 if (result.length > 0) {
                     var numero = documento.numero || '';
                     var datosAdicionales;
@@ -140,6 +141,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, orden: documento.orden, codigo_proveedor_id: documento.codigo_proveedor_id};
                     }
                     if (documento.tipo_doc_bodega_id === 'E007') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
+                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'ABC1') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
+                            tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'ASC1') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_egreso: documento.bodegatf};
                     }
@@ -153,6 +162,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     if (documento.tipo_doc_bodega_id === 'I007') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, terceroId: documento.tercero_id,
                             tipoTerceroId: documento.tipo_id_tercero, tipo_prestamo: documento.bodegatf};
+                    }
+                    if (documento.tipo_doc_bodega_id === 'I008') {
+                        datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_factura,
+                            prefijo: documento.prefijo_idc, empresa_id: documento.empresa_id};
                     }
                     if (documento.tipo_doc_bodega_id === 'I011') {
                         datosAdicionales = {doc_tmp: documento.doc_tmp_id, observacion: documento.observacion, numero: documento.numero_edb,
@@ -252,6 +265,31 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 ]
             };
 
+
+
+            that.listarAgrupar = function (parametro, callback) {
+                console.log('Parametro en controlador : '+parametro);
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        relacion_id: parametro.relacion_id
+                    }
+                };
+
+                Request.realizarRequest(
+                    API.RADICACION.LISTAR_AGRUPAR,
+                    "POST",
+                    obj,
+                    function (data) {
+                        if (data.status === 200) {
+                            // $scope.root.listarAgrupar = data.obj.listarAgrupar;
+                            parametro = {};
+                            callback(data.obj.listarAgrupar);
+                        }
+                    }
+                );
+            };
+
             $scope.listaDocumentos = {
                 data: 'Documento',
                 enableColumnResize: true,
@@ -293,7 +331,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var disabled = false;
 
                 if (documento.tipo_movimiento === "I011" || documento.tipo_movimiento === "E009" || documento.tipo_movimiento === "I012" || documento.tipo_movimiento === "E017"
-                        || documento.tipo_movimiento === "I015" || documento.tipo_movimiento === "E007" || documento.tipo_movimiento === "I007") {
+                        || documento.tipo_movimiento === "I015" || documento.tipo_movimiento === "E007" || documento.tipo_movimiento === "I007" || documento.tipo_movimiento === "I008") {
                     disabled = true;
                 }
                 return disabled;
@@ -334,6 +372,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     obj.data.terceroId = documentos.terceroId;
                     obj.data.tipo_prestamo_id = documentos.numeroFactura;
                     Request.realizarRequest(API.I007.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "I008") {
+
+                    Request.realizarRequest(API.I008.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }
@@ -391,6 +440,32 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     obj.data.terceroId = documentos.terceroId;
                     obj.data.egreso_id = documentos.numeroFactura;
                     Request.realizarRequest(API.E007.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "ABC1") {
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.egreso_id = documentos.numeroFactura;
+                    Request.realizarRequest(API.ABC1.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
+                        if (data.status === 200) {
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+                } else if (documentos.tipo_movimiento === "ASC1") {
+                    obj.data.tipoTercero = documentos.tipoTercero;
+                    obj.data.terceroId = documentos.terceroId;
+                    obj.data.egreso_id = documentos.numeroFactura;
+                    Request.realizarRequest(API.AAC1.CREAR_DOCUMENTO_IMPRIMIR, "POST", obj, function (data) {
                         if (data.status === 200) {
                             callback(data);
                         }
@@ -540,6 +615,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             if (data.tipo_doc_bodega_id === "E007") {
                                 that.eliminarGetDocTemporalE007(data);
                             }
+                            if (data.tipo_doc_bodega_id === "ABC1") {
+                                that.eliminarGetDocTemporalABC1(data);
+                            }
+                            if (data.tipo_doc_bodega_id === "ASC1") {
+                                that.eliminarGetDocTemporalAAC1(data);
+                            }
                             if (data.tipo_doc_bodega_id === "E009") {
                                 that.eliminarGetDocTemporalE009(data);
                             }
@@ -548,6 +629,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                             if (data.tipo_doc_bodega_id === "I007") {
                                 that.eliminarGetDocTemporalI007(data);
+                            }
+                            if (data.tipo_doc_bodega_id === "I008") {
+                                that.eliminarGetDocTemporalI008(data);
                             }
                             if (data.tipo_doc_bodega_id === "I011") {
                                 that.eliminarGetDocTemporalI011(data);
@@ -602,6 +686,42 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     }
                 };
                 E007Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+
+            that.eliminarGetDocTemporalABC1 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                ABC1Service.eliminarGetDocTemporal(obj, function (data) {
+                    if (data.status === 200) {
+                        that.listarDocumetosTemporales(true);
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+
+            that.eliminarGetDocTemporalAAC1 = function (datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+                AAC1Service.eliminarGetDocTemporal(obj, function (data) {
                     if (data.status === 200) {
                         that.listarDocumetosTemporales(true);
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -676,6 +796,73 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 });
             };
 
+            that.eliminarGetDocTemporalI008 = function (datos) {
+
+                that.listarProductosValidadosI008(datos.doc_tmp_id, function (condicional) {
+
+                    if (condicional) {
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listado: $scope.listado_productos,
+                                doc_tmp_id: datos.doc_tmp_id,
+                                empresa_id: datos.empresa_id
+                            }
+                        };
+
+                        I008Service.eliminarGetDocTemporal(obj, function (data) {
+                            if (data.status === 200) {
+                                that.listarDocumetosTemporales(true);
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 404) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                            }
+                        });
+                    }
+                });
+            };
+
+            that.listarProductosValidadosI008 = function (doc_id, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        numero_doc: doc_id
+
+                    }
+                };
+
+
+                Request.realizarRequest(API.I008.CONSULTAR_PRODUCTOS_VALIDADOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        that.renderProductosValidadosI008(data.obj.listarProductos);
+                        callback(true);
+                    } else {
+                        callback(false);
+
+                    }
+
+                });
+            };
+
+            that.renderProductosValidadosI008 = function (productos) {
+                $scope.listado_productos = [];
+                productos.forEach(function (data) {
+
+                    var producto = {};
+                    producto.itemIdCompra = data.item_id_compras;
+                    producto.cantidad = data.cantidad;
+                    $scope.listado_productos.push(producto);
+                });
+            };
+            
             that.eliminarGetDocTemporalI011 = function (datos) {
 
                 that.listarProductosEliminar(datos.doc_tmp_id, function (condicional) {

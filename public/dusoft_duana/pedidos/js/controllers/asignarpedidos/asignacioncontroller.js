@@ -89,7 +89,7 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
                 for (var i  in pedidosSeleccionados) {
                     var pedido = pedidosSeleccionados[i];
                     if ((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && 
-                         pedido.estado_actual_pedido !== '5' && pedido.estado_actual_pedido !== '8' )||
+                         pedido.estado_actual_pedido !== '5' && pedido.estado_actual_pedido !== '8' && pedido.estado_actual_pedido !== '9' )||
                          pedido.estado === '2' || pedido.estado_separacion) {
                         pedidosSeleccionados.splice(i, 1);
                         $scope.validarEstado(pedidosSeleccionados);

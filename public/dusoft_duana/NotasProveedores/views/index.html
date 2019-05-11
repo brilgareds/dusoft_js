@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notas Proveedores</title>
+</head>
+<body>
+
+<div class="panel panel-primary">
+    <div class="panel-heading" style="background: #0f528c;">Buscar Proveedores</div>
+    <div class="panel-body" id="search_provider">
+        <div class="col-md-12">
+            <div class="col-md-2 col-lg-1">
+                <label for="">Tipo Documento </label>
+                <button type="button" class="form-control btn btn-default dropdown-toggle ng-binding" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{tipoDoc}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" ng-selected="onColumnaSizeNota(root.prefijoBusquedaNota)">
+                    <li ng-model="tipoDocActual" ng-repeat="tipoDoc in root.tiposDoc" class="ng-scope">
+                        <a ng-click="ActualizarTipoDoc(tipoDoc)" class="ng-binding">{{tipoDoc}}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <label for="">Nº Documento </label><input type="text" class="form-control" ng-model="numero_documento" placeholder="Nº Documento">
+            </div>
+            <div class="col-md-2">
+                <label for="">Nombre</label><input type="text" class="form-control" ng-model="nombre_tercero" placeholder="Nombre Tercero">
+            </div>
+            <div class="col-md-2">
+                <label for="">Nº Factura </label><input type="text" class="form-control" ng-model="numero_factura" placeholder="Nº Factura">
+            </div>
+            <div class="col-md-2 col-lg-1">
+                <label for="">Tipo de Nota</label>
+                <button type="button" class="btn btn-default dropdown-toggle ng-binding form-control" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{tipoNota}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" ng-selected="onColumnaSizeNota(root.prefijoBusquedaNota)">
+                    <li ng-model="prefijoActual" ng-repeat="tipoNota in root.tiposNotas" class="ng-scope">
+                        <a ng-click="ActualizarTipoNota(tipoNota)" class="ng-binding">{{tipoNota}}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+                <label for="">Nº Nota</label>
+                <input type="text" class="form-control" ng-model="numero_nota" placeholder="Nº Nota">
+            </div>
+
+            <div class="col-sm-12 col-lg-2" style="display: flex; justify-content: center; min-width: 10%">
+                <div class="col-sm-3 col-lg-12">
+                    <label for=""><br></label>
+                    <button ng-click="listarNotasProveedores()" class="form-control btn cyan">
+                        <i class="glyphicon glyphicon-search"></i> FILTRAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div><br>
+</div><br>
+
+<div class="panel panel-primary">
+    <div class="panel-heading title-container-nota">Notas del Proveedor</div>
+    <div class="panel-body">
+        <div class="container-table">
+            <div class="table-responsive">
+                <div class="defaultGrid grid-responsive col-sm-12" style="padding: 0px;" ng-grid="listarNotas">
+                </div>
+            </div>
+        </div>
+    </div><br>
+</div><br>
+
+</body>
+</html>

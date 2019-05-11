@@ -1,0 +1,26 @@
+{
+    "module": "GestionRotaciones",
+    "dependency": {
+        "controllers": [{
+                "rotacion_controller": {
+                    "module": "GestionRotaciones",
+                    "controller": "RotacionController",
+                    "alias": "c_rotacion"
+                }
+            }],
+        "models": [{
+                "rotacion_model": {
+                    "module": "GestionRotaciones",
+                    "model": "RotacionModel",
+                    "alias": "m_rotacion"
+                },               
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

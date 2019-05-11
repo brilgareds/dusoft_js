@@ -1,4 +1,4 @@
-
+/* global G */
 
 var ValidacionDespachosModel = function () {
 
@@ -9,43 +9,76 @@ var ValidacionDespachosModel = function () {
  * @fecha  04/02/2016
  * +Descripcion Metodo encargado listar los despachos aprobados
  */
-ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, callback){
-   
-    var fecha = "";
-    var subfijo = "AND";
-    if(!obj.registroUnico){
-        fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
-        subfijo = "OR";
-    }
-    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = "a.id_aprobacion_planillas, b.empresa_id, b.razon_social, prefijo, numero, cantidad_cajas, cantidad_neveras, observacion, sw_otras_salidas, fecha_registro, c.nombre \
-               FROM aprobacion_despacho_planillas a INNER JOIN empresas b ON a.empresa_id = b.empresa_id \
-               INNER JOIN system_usuarios c ON a.usuario_id = c.usuario_id\n\
-               WHERE "+fecha+"\
-                ( \
-                    a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and \
-                    a.numero  :: varchar "+G.constants.db().LIKE+"  :numero  \
-                   \
-                ) "+subfijo+" a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id";
-    // paginaActual 
-   
-    var parametros = {
-        fechaInicial: obj.fechaInicial, 
-        fechaFinal: obj.fechaFinal, 
-        prefijo: "%"+ obj.prefijo +"%", 
-        numero: "%"+ obj.numero  +"%",
-        empresa_id: obj.empresa_id
-    };
-    
-    var query = G.knex.select(G.knex.raw(sql, parametros)).
-    limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
-        
+
+ValidacionDespachosModel.prototype.listarDespachosAprobados = function (obj, callback) {
+
+    var columnas = [
+        G.knex.raw("distinct on (todo.fecha_registro, todo.id_aprobacion_planillas,todo.observacion, todo.empresa_id,todo.razon_social,\
+                todo.nombre, todo.sw_otras_salidas, todo.cantidad_cajas, todo.cantidad_neveras, todo.cantidad_bolsas) todo.fecha_registro"),
+        "todo.id_aprobacion_planillas",
+        "todo.observacion",
+        "todo.empresa_id",
+        "todo.razon_social",
+        "todo.nombre",
+        "todo.sw_otras_salidas",
+        "todo.cantidad_cajas",
+        "todo.cantidad_neveras",
+        "todo.cantidad_bolsas",
+        "todo.prefijo",
+        "todo.numero"
+    ];
+
+    var columnas_subquery = [
+        G.knex.raw("distinct on (fecha_registro, a.id_aprobacion_planillas, observacion, b.empresa_id, b.razon_social, c.nombre, a.sw_otras_salidas,\
+                    a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas) fecha_registro"),
+        "a.id_aprobacion_planillas",
+        "observacion",
+        "b.empresa_id",
+        "b.razon_social",
+        "c.nombre",
+        "a.sw_otras_salidas",
+        "a.cantidad_cajas",
+        "a.cantidad_neveras",
+        "a.cantidad_bolsas"
+    ];
+
+    var subQuery = G.knex.select(G.knex.raw(columnas_subquery + ", d.prefijo,d.numero"))
+            .from('aprobacion_despacho_planillas as a')
+            .innerJoin("empresas as b", "b.empresa_id", "a.empresa_id")
+            .innerJoin("system_usuarios as c", "c.usuario_id", "a.usuario_id")
+            .innerJoin("aprobacion_despacho_planillas_d as d", "d.id_aprobacion_planillas", "a.id_aprobacion_planillas")
+            .union(function () {
+                this.select(G.knex.raw(columnas_subquery + ", a.prefijo,a.numero"))
+                        .from('aprobacion_despacho_planillas as a')
+                        .innerJoin("empresas as b", "b.empresa_id", "a.empresa_id")
+                        .innerJoin("system_usuarios as c", "c.usuario_id", "a.usuario_id")
+                        .leftJoin("aprobacion_despacho_planillas_d as d", "d.id_aprobacion_planillas", "a.id_aprobacion_planillas");
+            });
+
+    var query = G.knex.select(columnas)
+            .from(G.knex.raw("( " + subQuery + " ) as todo"))
+            .where(function () {
+                if (!obj.registroUnico) {
+                    this.andWhere(G.knex.raw("todo.fecha_registro between '" + obj.fechaInicial + "' and '" + obj.fechaFinal + "'"));
+                    this.andWhere(G.knex.raw("( todo.prefijo :: varchar " + G.constants.db().LIKE + "'%" + obj.prefijo + "%' \
+                                                and todo.numero  :: varchar " + G.constants.db().LIKE + "'%" + obj.numero + "%' )"));
+
+                } else {
+
+                    this.andWhere('todo.id_aprobacion_planillas', obj.idPlantilla);
+                }
+
+            });
+
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit).orderBy("fecha_registro", "desc");
+
+    query.then(function (resultado) {
         callback(false, resultado);
-    }).catch(function(err){
-        
+    }).catch(function (err) {
+        console.log("err [resultado]:: ", err);
         callback(err);
-       
+
     });
 };
 
@@ -54,19 +87,18 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
  * @fecha:  26/12/2016
  * Descripcion :  Permite insertar el registro de una imagen
  */
-ValidacionDespachosModel.prototype.agregarImagen = function(obj, callback) {
-    
+ValidacionDespachosModel.prototype.agregarImagen = function (obj, callback) {
+
     G.knex("aprobacion_despacho_planillas_imagenes").
-    returning("id").
-    insert({"id_aprobacion":obj.id_aprobacion, "path":obj.path}).
-    then(function(resultado){
-        
-        callback(false, resultado);
-        
-    }).catch(function(err){
-        console.log("error sql",err);
-        callback(err);       
-    }); 
+            returning("id").
+            insert({"id_aprobacion": obj.id_aprobacion, "path": obj.path})
+            .then(function (resultado) {
+                callback(false, resultado);
+            })
+            .catch(function (err) {
+                console.log("error sql", err);
+                callback(err);
+            });
 };
 
 /*
@@ -74,31 +106,31 @@ ValidacionDespachosModel.prototype.agregarImagen = function(obj, callback) {
  * @fecha:  26/12/2016
  * Descripcion :  Permite eliminar el registro de una imagen
  */
-ValidacionDespachosModel.prototype.eliminarImagen = function(obj, callback) {
-    
+ValidacionDespachosModel.prototype.eliminarImagen = function (obj, callback) {
+
     G.knex("aprobacion_despacho_planillas_imagenes").
-    del().
-    where("id", obj.id).
-    then(function(resultado){
-        
-        callback(false, resultado);
-        
-    }).catch(function(err){
-        console.log("error sql",err);
-        callback(err);       
-    }); 
+            del().
+            where("id", obj.id).
+            then(function (resultado) {
+
+                callback(false, resultado);
+
+            }).catch(function (err) {
+        console.log("error sql", err);
+        callback(err);
+    });
 };
 
 
 
 
 /*
-* funcion que realiza consulta a la tabla Empresas
-* @param {type} callback
-* @returns {datos de consulta}
-*/
+ * funcion que realiza consulta a la tabla Empresas
+ * @param {type} callback
+ * @returns {datos de consulta}
+ */
 // json
-ValidacionDespachosModel.prototype.listarImagenes = function (obj,callback) {
+ValidacionDespachosModel.prototype.listarImagenes = function (obj, callback) {
 
     var column = [
         "id",
@@ -107,45 +139,171 @@ ValidacionDespachosModel.prototype.listarImagenes = function (obj,callback) {
     ];
 
     var query = G.knex.column(column)
-    .select()
-    .from('aprobacion_despacho_planillas_imagenes')
-    .where("id_aprobacion", obj.id_aprobacion)
-    .then(function (rows) {
-        callback(false, rows);
+            .select()
+            .from('aprobacion_despacho_planillas_imagenes')
+            .where("id_aprobacion", obj.id_aprobacion)
+            .then(function (rows) {
+                callback(false, rows);
 
-    }).catch(function (error) {
+            }).catch(function (error) {
         callback(error);
     }).done();
 };
 
+/**
+ * @author Cristian Ardila
+ * +Descripcion Transaccion encargada de registrar la cabecera y el detalle de
+ *              el despacho ya validado
+ * @fecha 06/10/2017
+ */
+ValidacionDespachosModel.prototype.transaccionRegistrarAprobacion = function (obj, callback) {
+    var that = this;
+    var idPlanilla;
+    G.knex.transaction(function (transaccion) {
+        G.Q.ninvoke(that, 'registrarAprobacion', obj, transaccion).then(function (resultado) {
+            idPlanilla = resultado.id_aprobacion_planillas;
+            return G.Q.nfcall(__registrarDetalleAprobacion, that, 0, resultado.id_aprobacion_planillas, obj.detalle, transaccion);
 
+        }).then(function () {
+
+            transaccion.commit();
+        }).fail(function (err) {
+            transaccion.rollback(err);
+        }).done();
+    }).then(function () {
+        callback(false, {id_aprobacion_planillas: idPlanilla});
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
+};
+
+
+function __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, transaccion, callback) {
+
+    var documento = documentos[index];
+
+    if (!documento) {
+        callback(false);
+        return;
+    }
+
+    index++;
+
+    G.Q.ninvoke(contexto, 'registrarDetalleAprobacion', idPlanilla, documento, transaccion).then(function (resultado) {
+
+        return  G.Q.ninvoke(contexto, 'modificarEstadoPedido', documento, transaccion);
+
+    }).then(function (resultado) {
+
+        setTimeout(function () {
+
+            __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, transaccion, callback);
+
+        }, 0);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
+}
 /*
  * @author : Cristian Ardila
  * @fecha:  05/11/2015
- * Descripcion :  Funcion encargada de almacenar el detalle del pedido
+ * Descripcion :  Funcion encargada de almacenar la cabecera de la aprobacion
+ *                de los despachos por parte del encargado de seguridad
  */
-ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback) {
- 
- var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras,observacion,sw_otras_salidas, fecha_registro, usuario_id) \
-                 VALUES ( :1, :2, :3, :4, :5, :6, :7, NOW(), :8 ) returning id_aprobacion_planillas;";
+ValidacionDespachosModel.prototype.registrarAprobacion = function (obj, transaccion, callback) {
 
-    G.knex.raw(sql, {1:obj.empresa_id, 2:obj.prefijo, 3:obj.numero, 4:obj.cantidad_cajas, 5:obj.cantidad_neveras, 
-                     6:obj.observacion, 7: obj.estado, 8: obj.usuario_id}).
-     then(function(resultado){
-       callback(false, resultado.rows[0]);
-    }).catch(function(err){
+    var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, observacion, fecha_registro, cantidad_cajas, cantidad_neveras, cantidad_bolsas, usuario_id) \
+                 VALUES ( :1, :2,  NOW(), :3, :4, :5, :6) returning id_aprobacion_planillas;";
+
+    var query = G.knex.raw(sql, {1: obj.empresaId, 2: obj.observacion, 3: obj.cantidadTotalCajas, 4: obj.cantidadTotalNeveras, 5: obj.cantidadTotalBolsas, 6: obj.usuarioId});
+
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado.rows[0]);
+    }).catch(function (err) {
         console.log("err ", err);
-       callback(err);
+        callback(err);
     });
 };
 
 /*
-* funcion que realiza consulta a la tabla Empresas
-* @param {type} callback
-* @returns {datos de consulta}
-*/
+ * @author : Cristian Ardila
+ * @fecha:  05/11/2015
+ * Descripcion :  Funcion encargada de almacenar el detalle de la aprobacion 
+ *                Esta incluye los EFC
+ */
+ValidacionDespachosModel.prototype.registrarDetalleAprobacion = function (idPlanilla, obj, transaccion, callback) {
+
+
+    var sql = "INSERT INTO aprobacion_despacho_planillas_d (id_aprobacion_planillas, prefijo, numero, cantidad_cajas, cantidad_neveras, cantidad_bolsas, sw_otras_salidas) \
+                 VALUES ( :1, :2, :3, :4, :5, :6, :7) returning id_aprobacion_planillas;";
+
+    var query = G.knex.raw(sql, {1: idPlanilla, 2: obj.prefijo.toUpperCase(), 3: obj.numero, 4: obj.cantidadCajas, 5: obj.cantidadNeveras, 6: obj.cantidadBolsas, 7: obj.estado});
+
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado.rows[0]);
+    }).catch(function (err) {
+        console.log("err ", err);
+        callback(err);
+    });
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de actualizar el estado del pedido
+ * @fecha 2019-04-23 YYYY-MM-DD
+ * @returns {callback}
+ */
+ValidacionDespachosModel.prototype.modificarEstadoPedido = function (documento, transaccion, callback) {
+
+    var query = '';
+    var estado = 3;
+
+    if (documento.estadoPedido === '8') {
+        estado = 9;
+    }
+
+    if (documento.tipo === '0') {
+
+
+
+        query = G.knex('solicitud_productos_a_bodega_principal')
+                .where('solicitud_prod_a_bod_ppal_id', documento.numeroPedido)
+                .update({
+                    estado: estado
+                });
+    } else if (documento.tipo === '1') {
+        query = G.knex('ventas_ordenes_pedidos')
+                .where('empresa_id', documento.empresaId)
+                .andWhere('pedido_cliente_id', documento.numeroPedido)
+                .update({
+                    estado_pedido: estado
+                });
+    } else {
+        callback(false, true);
+    }
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/*
+ * funcion que realiza consulta a la tabla Empresas
+ * @param {type} callback
+ * @returns {datos de consulta}
+ */
 // json
-ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre,callback) {
+ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre, callback) {
 
     var column = [
         "empresa_id",
@@ -153,70 +311,500 @@ ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre,call
     ];
 
     var query = G.knex.column(column)
-    .select()
-    .from('empresas')
-    .where(G.knex.raw("razon_social :: varchar"), G.constants.db().LIKE, "%" + empresaNombre + "%")
-    .limit(5)//;
+            .select()
+            .from('empresas')
+            .where(G.knex.raw("razon_social :: varchar"), G.constants.db().LIKE, "%" + empresaNombre + "%")
+            .limit(5)//;
 //             callback(false, query.toSQL());
-    .then(function (rows) {
-        callback(false, rows);
-    })
-    .catch(function (error) {
-        callback(error);
-    }).done();
+            .then(function (rows) {
+                callback(false, rows);
+            })
+            .catch(function (error) {
+                callback(error);
+            }).done();
 };
 
-ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj ,callback) {
-    
+ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj, callback) {
+
     //Para el caso de otras salidas se valida que las cantidades pasadas por despacho sean menores a las aprobadas por seguridad
-    var sql = "SELECT DISTINCT ON  (a.prefijo) a.numero, a.prefijo, a.observacion FROM\
-                aprobacion_despacho_planillas AS a WHERE (\
-                  SELECT count(b.numero) as total FROM inv_planillas_detalle_empresas as b WHERE b.prefijo = a.prefijo\
-                ) < (\
-                  SELECT count(c.numero) as total FROM aprobacion_despacho_planillas as c WHERE c.prefijo = a.prefijo\
-                ) AND (a.prefijo "+G.constants.db().LIKE+" :1 OR  a.numero::VARCHAR "+G.constants.db().LIKE+" :1)";
-    
-    
-    G.knex.raw(sql, {1: "%"+ obj.termino_busqueda + "%"})
-    .then(function (resultado) {
-        callback(false, resultado.rows);
+    var sql = "SELECT DISTINCT ON  (b.prefijo) b.numero, b.prefijo, a.observacion FROM\
+                aprobacion_despacho_planillas AS a \
+                inner join aprobacion_despacho_planillas_d as b on a.id_aprobacion_planillas = b.id_aprobacion_planillas\
+                WHERE b.sw_otras_salidas = 1\
+                 AND a.fecha_registro  >= '2019-01-01'\n\
+                 AND ( SELECT COUNT ( d.numero ) AS total FROM inv_planillas_detalle_empresas AS d WHERE d.prefijo = b.prefijo ) < ( SELECT COUNT ( C.numero ) AS total\
+                 FROM aprobacion_despacho_planillas_d AS C WHERE	C.prefijo = b.prefijo)\
+                 AND (b.prefijo " + G.constants.db().LIKE + " :1 OR  b.numero::VARCHAR " + G.constants.db().LIKE + " :1)";
+
+
+    G.knex.raw(sql, {1: "%" + obj.termino_busqueda + "%"})
+            .then(function (resultado) {
+                callback(false, resultado.rows);
+            })
+            .catch(function (error) {
+
+                callback(error);
+            }).done();
+};
+
+ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj, callback) {
+
+    var columnas = [
+        G.knex.raw(" '2' as tipo"),
+        "a.numero",
+        "a.prefijo",
+        "b.observacion",
+        "b.empresa_id",
+        "a.cantidad_cajas",
+        "a.cantidad_neveras",
+        "a.cantidad_bolsas"
+    ];
+
+
+    var query = G.knex.select(columnas)
+            .from("aprobacion_despacho_planillas_d as a")
+            .innerJoin("aprobacion_despacho_planillas as b", "b.id_aprobacion_planillas", "a.id_aprobacion_planillas")
+            .where("a.prefijo", obj.prefijo)
+            .andWhere(G.knex.raw("a.numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo ='" +obj.prefijo+ "')"))
+            .andWhere(G.knex.raw("a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%'"))
+            .orderBy('a.numero', 'desc');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
     })
-    .catch(function (error) {
-       
+            .catch(function (error) {
+
+                callback(error);
+            }).done();
+};
+
+ValidacionDespachosModel.prototype.validarExistenciaMultiplesDocumentos = function (obj, callback) {
+    var that = this;
+
+    G.Q.nfcall(__validarExistenciaMultiplesDocumentos, that, 0, obj.documentos, obj.empresa_id, [], []).then(function (resultado) {
+
+        callback(false, resultado);
+    }).catch(function (error) {
         callback(error);
     }).done();
 };
 
-ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj ,callback) {
-    
-    var sql = "SELECT numero, prefijo, observacion, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1\
-               AND numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo = :1)"
+ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (obj, callback) {
 
-    G.knex.raw(sql, {1:obj.prefijo})
-    .then(function (resultado) {
-        callback(false, resultado.rows);
-    })
-    .catch(function (error) {
-      
-        callback(error);
-    }).done();
+    var query = G.knex("inv_registro_entrada_bodega").
+            where('registro_entrada_bodega_id', obj.registro_entrada_bodega_id).
+            update(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "transportadora_id ": obj.transportadoraId,
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operario_id
+                    });
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
 };
 
+function __validarExistenciaMultiplesDocumentos(contexto, index, documentos, empresa, documentosAprobados, documentosNoAprobados, callback) {
 
-ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj ,callback) {
-    
-    var sql = "SELECT numero, prefijo, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1\
-               AND numero = :2 AND empresa_id = :3"
-    
-    G.knex.raw(sql, {1:obj.prefijo, 2:obj.numero, 3:obj.empresa_id})
-    .then(function (resultado) {
-       
-        callback(false, resultado.rows);
-    })
-    .catch(function (error) {
-      
-        callback(error);
-    }).done();
+    var documento = documentos[index];
+
+    if (!documento) {
+        callback(false, {documentosNoAprobados: documentosNoAprobados, documentosAprobados: documentosAprobados});
+        return;
+    }
+
+    index++;
+
+    G.Q.ninvoke(contexto, 'validarExistenciaDocumento', {prefijo: documento.prefijo, numero: documento.numero, empresa_id: empresa}).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            documentosAprobados.push(documento);
+        } else {
+            documentosNoAprobados.push(documento);
+        }
+    });
+    setTimeout(function () {
+
+        __validarExistenciaMultiplesDocumentos(contexto, index, documentos, empresa, documentosAprobados, documentosNoAprobados, callback);
+
+    }, 300);
+
+}
+
+ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj, callback) {
+
+    var sql = "SELECT b.numero, b.prefijo, a.empresa_id \
+               FROM aprobacion_despacho_planillas as a\
+               INNER JOIN aprobacion_despacho_planillas_d as b \
+               ON a.id_aprobacion_planillas = b.id_aprobacion_planillas\
+               WHERE b.prefijo = :1\
+               AND b.numero = :2 AND a.empresa_id = :3";
+
+    G.knex.raw(sql, {1: obj.prefijo, 2: obj.numero, 3: obj.empresa_id})
+            .then(function (resultado) {
+                callback(false, resultado.rows);
+            })
+            .catch(function (error) {
+                console.log("error [validarExistenciaDocumento] ", error);
+                callback(error);
+            }).done();
 };
 
+ValidacionDespachosModel.prototype.modificarRegistroEntradaBodega = function (obj, callback) {
+
+    var query = G.knex("inv_registro_entrada_bodega").
+            where('registro_entrada_bodega_id', obj.registro_entrada_bodega_id).
+            update(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "transportadora_id ": obj.transportadoraId,
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operario_id
+                    });
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql modificarRegistroEntradaBodega", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.modificarRegistroSalidaBodega = function (obj, callback) {
+
+    var query = G.knex("inv_registro_salida_bodega").
+            where('registro_salida_bodega_id', obj.registro_salida_bodega_id).
+            update(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "tipo_pais_id": obj.tipoPaisId,
+                        "tipo_dpto_id": obj.tipoDptoid,
+                        "tipo_mpio_id": obj.tipoMpioId,
+                        "placa": obj.placa,
+                        "conductor": obj.conductor,
+                        "ayudante": obj.ayudante,
+                        "usuario_id": obj.usuarioId,
+                        "fecha_envio": obj.fechaEnvio,
+                        "fecha_registro": 'now()',
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operarioId
+                    });
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql modificarRegistroSalidaBodega", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.registroSalida = function (obj, callback) {
+
+    var query = G.knex("inv_registro_salida_bodega").
+            insert(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "tipo_pais_id": obj.tipoPaisId,
+                        "tipo_dpto_id": obj.tipoDptoid,
+                        "tipo_mpio_id": obj.tipoMpioId,
+                        "placa": obj.placa,
+                        "conductor": obj.conductor,
+                        "ayudante": obj.ayudante,
+                        "usuario_id": obj.usuarioId,
+                        "fecha_envio": obj.fechaEnvio,
+                        "fecha_registro": 'now()',
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operarioId
+                    }).returning('registro_salida_bodega_id');
+    if (obj.transaccion)
+        query.transacting(obj.transaccion);
+    query.then(function (resultado) {
+
+        callback(false, resultado[0]);
+
+    }).catch(function (err) {
+        console.log("error sql registroSalida", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.registroSalidaDetalle = function (obj, callback) {
+
+    var query = G.knex("inv_registro_salida_bodega_detalle").
+            insert(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "tipo": obj.tipo,
+                        "id": obj.id,
+                        "planilla_id": obj.planilla_id,
+                        "empresa_id": obj.empresa_id,
+                        "fecha_registro": 'now()',
+                        "registro_salida_bodega_id": obj.registro_salida_bodega_id
+                    });
+
+    if (obj.transaccion)
+        query.transacting(obj.transaccion);
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroSalidaDetalle", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.deleteSalidaDetalle = function (obj, callback) {
+
+
+    var query = G.knex('inv_registro_salida_bodega_detalle')
+            .where('registro_salida_bodega_id', obj.registro_salida_bodega_id)
+            .del();
+
+    if (obj.transaccion)
+        query.transacting(obj.transaccion);
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err (/catch) [deleteSalidaDetalle]: ", err);
+        callback({err: err, msj: "Error al eliminar deleteSalidaDetalle"});
+    });
+};
+
+ValidacionDespachosModel.prototype.listarOneSalidaDetalle = function (obj, callback) {
+
+    var column = ["a.registro_salida_bodega_id"];
+    var query = G.knex.column(column)
+            .select()
+            .from('inv_registro_salida_bodega as a')
+            .where(function () {
+                this.andWhere("a.numero_guia", obj.numeroGuia);
+                this.andWhere(G.knex.raw("a.numero_guia not in (100)"));
+            });
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql listarRegistroSalida", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj, callback) {
+
+    var column = ["a.prefijo_id",
+        "a.numero",
+        "a.numero_guia",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.tipo_pais_id",
+        "a.tipo_dpto_id",
+        "a.tipo_mpio_id",
+        "a.cantidad_caja",
+        "a.cantidad_nevera",
+        "a.cantidad_bolsa",
+        "a.placa",
+        "a.conductor",
+        "a.ayudante",
+        G.knex.raw("to_char(a.fecha_envio,'YYYY-MM-DD HH24:MI:SS') as fecha_envio"),
+        G.knex.raw("(select count(*) from inv_registro_salida_bodega_detalle where planilla_id = a.numero_guia ) as guia_multiple"),
+        "f.municipio",
+        "a.usuario_id",
+        "a.observacion",
+        "d.nombre as nombre_usuario",
+        "b.nombre_tercero",
+        "a.registro_salida_bodega_id",
+        "a.operario_id",
+        "e.nombre as nombre_operario",
+        "g.nombre as nombre_ayudante",
+        "h.nombre as nombre_conductor",
+        "a.fecha_registro"];
+
+    var query = G.knex.column(column)
+            .select()
+            .from('inv_registro_salida_bodega as a')
+            .leftJoin('terceros as b', function () {
+                this.on("b.tipo_id_tercero", "a.tipo_id_tercero")
+                        .on("b.tercero_id", "a.tercero_id");
+            })
+            .innerJoin('system_usuarios as d', function () {
+                this.on("d.usuario_id", "a.usuario_id")
+            })
+            .innerJoin('operarios_bodega as g', function () {
+                this.on("g.operario_id", "a.ayudante")
+            })
+            .innerJoin('operarios_bodega as h', function () {
+                this.on("h.operario_id", "a.conductor")
+            })
+            .innerJoin('operarios_bodega as e', function () {
+                this.on("e.operario_id", "a.operario_id")
+            })
+            .leftJoin('tipo_mpios as f', function () {
+                this.on("f.tipo_pais_id", "a.tipo_pais_id")
+                        .on("f.tipo_dpto_id", "a.tipo_dpto_id")
+                        .on("f.tipo_mpio_id", "a.tipo_mpio_id")
+            })
+            .where(function () {
+                if (obj.busqueda !== undefined && obj.busqueda.trim() !== "") {
+                    this.orWhere("numero_guia", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("numero", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("d.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("e.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("f.municipio", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("a.placa", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("g.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("h.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("a.fecha_envio", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("b.nombre_tercero", 'ilike', '%' + obj.busqueda + '%');
+                }
+            }).orderBy("a.fecha_registro", "desc")
+            .limit(G.settings.limit).
+            offset((obj.pagina - 1) * G.settings.limit);
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql listarRegistroSalida", err);
+        callback(err);
+
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.registroEntrada = function (obj, callback) {
+
+    var query = G.knex("inv_registro_entrada_bodega").
+            insert(
+                    {
+                        "prefijo_id": obj.prefijo,
+                        "numero": obj.numero,
+                        "numero_guia": obj.numeroGuia,
+                        "tipo_id_tercero": obj.tipoIdtercero,
+                        "tercero_id": obj.terceroId,
+                        "cantidad_caja": obj.cantidadCaja,
+                        "cantidad_nevera": obj.cantidadNevera,
+                        "cantidad_bolsa": obj.cantidadBolsa,
+                        "transportadora_id ": obj.transportadoraId,
+                        "usuario_id": obj.usuarioId,
+                        "fecha_registro": 'now()',
+                        "observacion": obj.observacion,
+                        "operario_id": obj.operario_id
+                    });
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
+};
+
+ValidacionDespachosModel.prototype.listarRegistroEntrada = function (obj, callback) {
+
+    var column = ["a.prefijo_id",
+        "a.numero",
+        "a.numero_guia",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.cantidad_caja",
+        "a.cantidad_nevera",
+        "a.cantidad_bolsa",
+        "a.transportadora_id",
+        "a.usuario_id",
+        "a.observacion",
+        "c.descripcion as nombre_transportadora",
+        "d.nombre as nombre_usuario",
+        "b.nombre_tercero",
+        "a.registro_entrada_bodega_id",
+        "a.operario_id",
+        "e.nombre as nombre_operario",
+        "a.fecha_registro"];
+
+    var query = G.knex.column(column)
+
+            .select()
+            .from('inv_registro_entrada_bodega as a')
+            .innerJoin('terceros as b', function () {
+                this.on("b.tipo_id_tercero", "a.tipo_id_tercero")
+                        .on("b.tercero_id", "a.tercero_id");
+            })
+            .leftJoin('inv_transportadoras as c', function () {
+                this.on("c.transportadora_id", "a.transportadora_id");
+            })
+            .innerJoin('system_usuarios as d', function () {
+                this.on("d.usuario_id", "a.usuario_id");
+            })
+            .innerJoin('operarios_bodega as e', function () {
+                this.on("e.operario_id", "a.operario_id");
+            })
+            .where(function () {
+                if (obj.busqueda !== undefined && obj.busqueda.trim() !== "") {
+                    this.orWhere("numero_guia", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("numero", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("d.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("c.descripcion", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("e.nombre", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("b.nombre_tercero", 'ilike', '%' + obj.busqueda + '%');
+                }
+            }).orderBy("a.fecha_registro", "desc").limit(G.settings.limit).
+            offset((obj.pagina - 1) * G.settings.limit);
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("error sql registroEntrada", err);
+        callback(err);
+    });
+
+};
 module.exports = ValidacionDespachosModel;

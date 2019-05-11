@@ -104,8 +104,8 @@
                     </tr>
                     <tr>
                         <td  style="width: 150px"><b>Transpotador (a):</b></td>
-                        <td>{{:planilla_despacho.nombre_transportadora }} </td>
-                        <td > <b>Guia Nro :</b> M-{{:planilla_despacho.numero_guia}}</td>                            
+                        <td>{{:planilla_despacho.nombre_transportadora }} {{:planilla_despacho.numero_placa_externo}}</td>
+                        <td > <b>Guia Nro :</b> {{:planilla_despacho.tipo_planilla}}-{{:planilla_despacho.numero_guia}}</td>                            
                     </tr>
                     <tr>
                         <td ><b>Fecha Salida :</b></td>
@@ -117,39 +117,45 @@
                 {{for documentos_planilla}}
                 <table class="table" width='100%'>                        
                     <tr class="contenedor-despacho" style="background-color:#BDBDBD; margin-bottom: 5px;">
-                        <td colspan="4"><strong>Ciudad de despacho : </strong> {{:tercero}} </td>
+                        <td colspan="6"><strong>Ciudad de despacho : </strong> {{:ciudad}} </td>
                     </tr>
                     <tr>
-                        <td style="width: 50%" colspan="2">
-                            <h6><strong>{{:tercero}}</strong></h6>CALLE 6N No. 12 - 47</td>
-                        <td style="width: 50%" colspan="2" class="table-border">
+                        <td style="width: 50%" colspan="3">
+                            <h4><strong>{{:tercero}}</strong></h4> {{:direccion}}</td>
+                        <td style="width: 50%" colspan="3" class="table-border">
                             <div class="form-group">
                                 <label class="" for="inputBody">Comentarios del despacho</label>                                
                             </div>
                         </td>
                     </tr>
                     <tr>
-                        <th>Documento Cruce</th>
-                        <th>Nro de Cajas</th>
-                        <th>Nro de Neveras</th>
-                        <th>Toma Temperatura</th>
+                        <th>Doc. Cruce</th>
+                        <th>Factura Asociada</th>
+                        <th>Nro Cajas</th>
+                        <th>Nro Bolsas</th>
+                        <th>Nro Neveras</th>
+                        <th>Temperatura</th>
+                        <!--<th>Observacion</th>-->
                     </tr>                    
                     {{for detalle}}                    
                     <tr>
-                        <td>{{:prefijo}}-{{:numero}}</td>
+                        <td align="center">{{:prefijo}}-{{:numero}}</td>
+                        <td align="center">{{:factura}}</td>
                         <td align="center">{{:cantidad_cajas}}</td>
+                        <td align="center">{{:cantidad_bolsas}}</td>
                         <td align="center">{{:cantidad_neveras}}</td>
                         <td align="center">{{:temperatura_neveras}}</td>
+                        <!--<td align="center">{{:observacion}}</td>-->
                     </tr>                                        
                     {{/for}}
                     <tr>
-                        <td colspan="2">
+                        <td colspan="3">
                             <p>
                                 Se despacha a <b>{{:tercero}} ({{:~count(detalle)}} Remisiones de despacho)</b>
-                                Con un total de <b>{{:~total_cajas(detalle)}} Caja(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
+                                Con un total de <b>{{:~total_cajas(detalle)}} Caja(s), {{:~total_bolsas(detalle)}} Bolsa(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
                             </p>
                         </td>
-                        <td colspan="2">
+                        <td colspan="3">
                             <table width='100%'>
                                 <tr align='center'>
                                     <td>
@@ -187,16 +193,27 @@
                             <p>
                                 Como mecanismo para definir responsabilidades el TRANSPORTISTA INDEPENDIENTE firmará la presente
                                 planilla entre tanto devuelva la misma con las respectivas firmas de recibido de cada sede donde se entregue la
-                                mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
+                                mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_bolsas }} Bolsa(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
                             </p>
                         </td>                            
-                    </tr>                                          
+                    </tr>
+<!--                    <tr>
+                        <td style="width: 50%" colspan="3">
+                            <h4><strong>OBSERVACIONES</strong></h4></td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%" colspan="3">
+                            <p>{{:planilla_despacho.observacion }}</p>
+                    </tr>-->
                 </table> 
                 <table class='footer'>
                     <tr align='center'>
                         <td>
                             _______________________________
                         </td>                        
+                        <td>
+                            _______________________________
+                        </td>
                         <td>
                             _______________________________
                         </td>
@@ -208,6 +225,9 @@
                         <td>
                             RECIBIDO TRANSPORTADOR
                         </td>
+                        <td>
+                            AUX. TRASPORTADOR
+                        </td> 
                     </tr>
                 </table>
             </div>

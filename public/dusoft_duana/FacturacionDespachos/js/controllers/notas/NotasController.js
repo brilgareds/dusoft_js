@@ -163,7 +163,19 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'Fecha Factura', width: "7%", displayName: 'Fecha Factura', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistroFactura() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
                             {field: 'Tipo Nota', width: "6%", displayName: 'Tipo Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoNota()}}</p></div>'},
                             {field: 'concepto', width: "5%", displayName: 'concepto', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getConcepto()}}</p></div>'},
-                            {field: 'Imprimir', width: "5%", displayName: 'Imprimir', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onImprimirNota(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button></div>'},
+                            {displayName: "Opc", width: "5%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '<div class="btn-group">\
+                           <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                           <ul class="dropdown-menu dropdown-options">\
+                                <li>\
+                                   <a href="javascript:void(0);" ng-click="onImprimirNota(row.entity)" class = "glyphicon glyphicon-print"> Imprimir </a>\
+                                </li>\
+                                <li ng-if="verificaFactuta(row.entity.getPrefijo())">\
+                                   <a href="javascript:void(0);" ng-click="imprimirReporteFacturaDian(row.entity)" class = "glyphicon glyphicon-print"> Nota DIAN </a>\
+                                </li>\
+                           </ul>\
+                      </div>'
+                            },
                             {displayName: "DUSOFT FI", cellClass: "txt-center dropdown-button", width: "6%",
                                 cellTemplate: ' <div class="row">\
 							  <div ng-if="validarSincronizacion(row.entity.estado)" >\
@@ -378,6 +390,36 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     /**
+                     * +Descripcion Metodo encargado de imprimir la factura desde certicamara
+                     * @author German Galvis
+                     * @fecha 25/11/2018
+                     * @returns {undefined}
+                     */
+                    $scope.imprimirReporteFacturaDian = function (entity) {
+                        
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                imprimir_reporte_factura: {
+                                    numero: entity.numeroNota,
+                                    tipo_documento: entity.tipoImpresion === "C" ? 3 : 2
+                                }
+                            }
+                        };
+
+                        notasService.imprimirReporteFacturaDian(obj, function (data) {
+                            
+                            if (data.status === 200) {
+                                var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;
+                                $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");
+                            } else if (data.status === 500) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<p class='bg-danger'><h3 align='justify'>" + data.msj + "</h3></br></p>");
+                                return;
+                            }
+                        });
+                    };
+
+                    /**
                      * +Descripcion Metodo encargado de sincronizar en WS certicamara
                      * @author German Galvis
                      * @fecha 04/09/2018
@@ -397,6 +439,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 if (data.status === 200) {
                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                    that.listarNotas({empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(), numero: datos.numeroNota, tipoConsulta: "ND"});
                                     return;
                                 } else {
                                     if (data.obj.response.statusCode === 500) {
@@ -415,6 +458,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 if (data.status === 200) {
                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "<h3 align='justify'>" + data.msj + "</h3></br><p class='bg-success'>&nbsp;</p></br>");
+                                    that.listarNotas({empresaId: Usuario.getUsuarioActual().getEmpresa().getCodigo(), numero: datos.numeroNota, tipoConsulta: "NC"});
                                     return;
                                 } else {
                                     if (data.obj.response.statusCode === 500) {
@@ -627,7 +671,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                      */
                                     $scope.calcularValor = function (producto) {
                                         var suma;
-                                        suma = (parseInt(producto.cantidad) * parseInt(producto.cantidad_ingresada));
+                                        suma = (parseFloat(producto.cantidad) * parseFloat(producto.cantidad_ingresada));
 
                                         producto.setTotalNota(suma);
 
@@ -680,7 +724,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
                                             {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
                                             {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
-                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-decimal  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
                                             {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
                                             {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
                                                 cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},
@@ -1029,7 +1073,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             {field: 'Lote', width: "6%", displayName: 'Lote', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getLote()}}</p></div>'},
                                             {field: 'Valor Unitario', width: "10%", displayName: 'Valor Unitario', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getValorUnitario()}}</p></div>'},
                                             {field: 'Valor Nota', width: "10%", displayName: 'Valor Nota', cellClass: "ngCellText",
-                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-hide="ocultarValor()" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
+                                                cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-hide="ocultarValor()" ng-disabled="row.entity.seleccionado" ng-keyup ="calcularValor(row.entity)" ng-model="row.entity.cantidad_ingresada" validacion-numero-decimal  class="form-control grid-inline-input" name="cantidad_ingresada" id="cantidad_ingresada" /> </div>'},
                                             {field: 'Total Nota', width: "10%", displayName: 'Total Nota', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTotalNota()}}</p></div>'},
                                             {field: 'Observacion', width: "20%", displayName: 'Observacion', cellClass: "ngCellText",
                                                 cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-model="row.entity.observacion" class="form-control grid-inline-input" name="observacion" id="observacion" /> </div>'},
@@ -1124,8 +1168,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     empresaId: $scope.root.empresaSeleccionada.getCodigo()
                                 };
                                 that.listarNotas(parametros);
-                            } else {
-
                             }
                         }
                     };

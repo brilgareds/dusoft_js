@@ -10,3 +10,5 @@ files/*
 files/tmp/*
 dump.rdb
 !.gitignore
+.idea/
+dump.rdb

@@ -406,7 +406,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
                         })
                         .where('evolucion_id',obj.evolucionId).andWhere("d.todo_pendiente","!=", 1);                 
                       
-           
+        console.log(G.sqlformatter.format(query.toString()));    
     query.then(function(resultado){ 
 
       callback(false, resultado);
@@ -832,7 +832,8 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
                
             
     query.limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
+    offset((obj.paginaActual - 1) * G.settings.limit);
+    query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulasPendientes]: ", err)
@@ -981,8 +982,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                   "hc.evolucion_id").as("b")
                    
     
-    var query = G.knex.select(colSubQuery).from(subQueryB);
-              
+    var query = G.knex.select(colSubQuery).from(subQueryB);          
         query.then(function(resultado){       
 
             callback(false, resultado);
@@ -2128,7 +2128,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 var formato = 'YYYY-MM-DD hh:mm:ss a';
                 var fechaToday = G.moment(resultado[0]).format(formato);
                 obj.parametro1.fecha_ultima_entrega = fechaToday;
-console.log("obj.parametro2 ",obj.parametro2);
+
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion); //obj.parametro2 producto a entregar
                                   
         }).then(function(){

@@ -123,7 +123,7 @@ define(["angular",
             };
 
             $scope.habilitar_asignacion_pedidos = function(pedido) {
-
+console.log("ingreso",pedido);
                 var disabled = true;
 
                 if (pedido.estado_actual_pedido === '0') {
@@ -139,6 +139,10 @@ define(["angular",
                 }
 
                 if (pedido.estado_actual_pedido === '8') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '9') {
                     disabled = false;
                 }
                 

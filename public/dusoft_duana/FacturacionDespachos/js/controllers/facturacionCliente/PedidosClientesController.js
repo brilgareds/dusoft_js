@@ -276,10 +276,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                     <ul class="dropdown-menu dropdown-options">\
                         <li>\n\
-                            <a href="javascript:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                            <a href="javascripts:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
                         </li>\
                         <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
-                            <a href="javascript:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                            <a href="javascripts:void(0);" ng-click="imprimirReportePedido(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
                         </li>\
                     </ul>\
                 </div>'
@@ -456,7 +456,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 2017-08-05
          */
         $scope.generarFacturasAgrupadas = function () {
-
+            
             var resultadoStorage = localStorageService.get("clientePedidoDespacho");
 
             if (resultadoStorage) {

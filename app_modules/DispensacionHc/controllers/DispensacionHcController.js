@@ -191,7 +191,6 @@ DispensacionHc.prototype.sincronizacionFormulasDispensadas = function(){
     
     G.Q.nfcall(__sincronizacionFormulasDispensadas,that).then(function(resultado){
         
-        console.log("Termina ------------",resultado);
     
     }).fail(function(err){      
         console.log(" err ", err);  
@@ -305,8 +304,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
                 
     }).spread(function(result,raw,soapHeader){
 
-       console.log("result.return.msj[$value]",result.return.message["$value"]);
-//       
+        
 
      G.logError(result.return.message["$value"]);          
      
@@ -316,7 +314,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
             obj.mensaje = result.return.message["$value"];
             obj.isProducto = false;
             if(result.return.productsWithoutExistence !== undefined){
-                console.log("result.return.productsWithoutExistence.item[$value]",result.return.productsWithoutExistence.item[0]["$value"]);
+               
             obj.codigoProducto = result.return.productsWithoutExistence.item;
             obj.isProducto = true;
             }
@@ -1437,7 +1435,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
   
         if(resultado.length > 0){
            temporales = resultado;
-           console.log("temporal",temporales);
+          
            return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');            
         }else{
             throw 'No hay temporales separados'
@@ -1882,7 +1880,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     }).then(function(resultado){
         temporales = resultado;
-        console.log("temporales22 ",temporales);
+       
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:0});   
        
     }).then(function(resultado){
@@ -1929,7 +1927,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                     planId: planId
                 }
             };
-            console.log("AAAA",parametrosGenerarDispensacion);
+          
             /**
              * Inserta bodegas_documentos
              * Inserta hc_formulacion_despachos_medicamentos
@@ -2472,6 +2470,7 @@ function __generarPdf(datos, callback) {
         template: {
             content: G.fs.readFileSync('app_modules/DispensacionHc/reports/'+datos.archivoHtml, 'utf8'),
             recipe: "html",
+           // style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             engine: 'jsrender',
             phantom: {
                 margin: "10px",

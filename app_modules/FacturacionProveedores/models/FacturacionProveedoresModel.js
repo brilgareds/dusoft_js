@@ -209,7 +209,9 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
     var columnas = [
         "b.porcentaje_rtf",
         "b.porcentaje_ica",
-        "b.porcentaje_reteiva"
+        "b.porcentaje_reteiva",
+        "b.tercero_id",
+        "b.cxp_proveedor"
     ];
     
     var query = G.knex.select(columnas)
@@ -228,7 +230,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedor = function(obj, 
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-        console.log("err [consultarFacturaProveedorDetalle]:", err);
+        console.log("err [consultarTerceroProveedor]:", err);
         callback(err);
     });
  }
@@ -266,6 +268,7 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
         G.knex.raw("((a.valor/((a.porc_iva/100)+1))*a.cantidad) as subtotal"),
         G.knex.raw("((a.valor-(a.valor/((a.porc_iva/100)+1)))*a.cantidad) as iva_total"),
         G.knex.raw("(a.valor * a.cantidad) as total"),
+        G.knex.raw("(a.valor * a.cantidad) as total1"),
         G.knex.raw("c.descripcion as documento")
     ];
     
@@ -297,7 +300,6 @@ FacturacionProveedoresModel.prototype.consultarFacturaProveedorDetalle = functio
             this.andWhere("b.orden_pedido_id",obj.numero_orden)
         }
     });
-      
 
     query.then(function(resultado) {
          console.log(G.sqlformatter.format(query.toString()));
@@ -423,6 +425,7 @@ FacturacionProveedoresModel.prototype.ingresarFacturaCabecera = function(obj,tra
         callback(false, resultado[0]);
 
     }). catch (function(err) {
+        console.log(G.sqlformatter.format(query.toString()));
         console.log("ERROR:::inv_facturas_proveedores ", err);
         callback(err);
     }).done();
@@ -475,6 +478,60 @@ FacturacionProveedoresModel.prototype.eliminarFactura = function(obj, callback) 
         callback(error);
     });
 };
+/**
+ * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de consultar inv_facturas_proveedores
+ *              inv_facturas_proveedores                                                    
+ * @fecha 2019-02-25 (YYYY-MM-DD)
+ */
+FacturacionProveedoresModel.prototype.facturaProveedorCabecera = function(obj, callback) {
+
+ var columnas = [
+        "a.numero_factura",
+        "a.valor_factura",
+        "b.nombre",
+        "a.observaciones",
+        "a.codigo_proveedor_id",
+        "a.empresa_id",
+        "a.valor_descuento",
+        G.knex.raw("a.porc_rtf as porcentajeRtf"),
+        G.knex.raw("a.porc_ica as porcentajeIca"),
+        G.knex.raw("a.porc_rtiva as porcentajeReteiva"),
+        G.knex.raw("a.porc_cree as porcentajeCree"),
+        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY') as anio_factura"),
+        G.knex.raw("TO_CHAR(a.fecha_factura,'dd/mm/yy') as fecha_factura_n"),
+        G.knex.raw("TO_CHAR(a.fecha_radicacion_factura,'dd/mm/yy') as fecha_radicacion_n"),
+        G.knex.raw("to_char(a.fecha_registro,'dd-MM-yyyy') as fecha_registro")
+    ];
+    
+    var query = G.knex.select(columnas)
+            .from('inv_facturas_proveedores as a')
+            .innerJoin('system_usuarios as b',
+                    function () {
+                        this.on("a.usuario_id", "b.usuario_id")
+                    }).where(function () {
+        if (obj.facturaFiscal !== undefined) {
+            this.andWhere("a.numero_factura",obj.facturaFiscal)
+        }
+        if (obj.empresaId !== undefined) {
+            this.andWhere("a.empresa_id",obj.empresaId)
+        }
+        if (obj.codigoProveedor !== undefined) {
+            this.andWhere("a.codigo_proveedor_id",obj.codigoProveedor)
+        }
+    });
+                        
+//                  where('a.numero_factura',obj.facturaFiscal)
+//                  .andWhere('a.empresa_id', obj.empresa_id);
+//          console.log("facturaProveedorCabecera::",G.sqlformatter.format(query.toString())); 
+          query.then(function(resultado) {
+                callback(false, resultado);
+            }). catch (function(error) {
+                console.log("err [facturaProveedorCabecera]: ", error);
+                callback(error);
+            });
+};
+
 /**
  * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de eliminar el detalle en la tabla

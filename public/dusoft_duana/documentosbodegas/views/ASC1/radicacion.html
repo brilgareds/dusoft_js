@@ -1,0 +1,186 @@
+<div class="panel panel-defaul">
+    <!--
+    <div class="row"> 
+        <div class="col-xs-6 col-sm-3 col-md-3">
+            <label class="col-md-12  control-label">Fecha de vencimiento</label>
+
+            <p class="input-group">
+                <input type="text" class="form-control readonlyinput" 
+                       datepicker-popup="{{format}}" 
+                       ng-model="root.fecha_vencimiento" 
+                       is-open="abrir_fecha" 
+                       min="minDate"   
+                       readonly  close-text="Cerrar" 
+                       ng-change="" 
+                       clear-text="Borrar" 
+                       current-text="Hoy" 
+                       placeholder="Fecha Inicial" 
+                       show-weeks="false" 
+                       toggle-weeks-text="#"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>            
+            </p>
+        </div>
+        <div class="col-xs-6 col-sm-3 col-md-3">   
+            <label class="col-md-12 control-label">Cargar Archivo</label>
+
+            <div>
+                <div class="input-group form-group">
+                    <input title="Adjuntar archivo" type="file" ng-model="root.archivo" class="uploadChat" onchange="angular.element(this).scope().onArchivoSeleccionado(this.files)" />
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-6 col-sm-2 col-md-3">
+            <label class="col-md-12  control-label" >Proveedor</label>
+
+            <ui-select ng-model="root.conceptoSeleccionado"
+                       theme="select2"
+                       class="form-control selectgeneral pull-left col-md-8"
+                       ng-change="onSeleccionConcepto()"
+                       >
+                <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.observacion}}</ui-select-match>
+                <ui-select-choices refresh="onSeleccionConcepto()"  refresh-delay="0"  repeat="filtros in root.concepto | filter:$select.search">
+                    {{ filtros.observacion}}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+
+        <div class="col-xs-6 col-sm-2 col-md-3">
+            <label class="col-md-12  control-label" >&nbsp;</label>
+
+            <p class="text-center">
+                <button type="button" class="btn btn-primary" class="btn btn-default dropdown-toggle" 
+                        aria-haspopup="true" aria-expanded="false" ng-click="modalConcepto()" > <i class="glyphicon glyphicon-list-alt"></i> Agregar Proveedor
+                </button>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <p class="text-left">
+                <button type="button" class="glyphicon glyphicon-floppy-disk btn btn-success btn-md" ng-click="onGuardarFactura()">Guardar</button>
+            </p>
+        </div>
+    </div> 
+</div>
+ -->
+
+<!--
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12"> 
+        <legend>Factura </legend>
+        <div class="row">
+            <div class="col-sm-12 col-md-12">
+                <p class="text-left">
+                    <button type="button" class="glyphicon glyphicon-paperclip btn btn-success btn-md" ng-click="onVistaAgrupar()">Agrupar</button>
+                </p>
+            </div>
+        </div> 
+        <div class="table-responsive" >
+            <div class="defaultGrid grid-responsive" style="height: 240px" ng-grid="listar_factura">
+            </div>
+        </div>
+    </div>
+</div>
+-->
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="col-md-12">
+            <legend> Actualización Precio Producto <span style="color: #006400">(Sube Costo)</span><br></legend>
+            <div class="row">
+                <!--
+                <div class="col-md-2 col-lg-1">
+                    <p class="input-group">
+                        <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="onSeleccionarEmpresa()">
+                            <span class="glyphicon glyphicon-ok"></span> Empresa</button>
+                    </p>
+                </div>
+                -->
+                <div class="col-md-2" ng-show="dateShow">
+                    <p class="input-group">
+
+                        <input type="text" class="form-control readonlyinput" value="{{producto_fecha1 | date:'dd-MM-yyyy'}}" datepicker-popup="{{format}}" ng-model="producto_fecha1" ng-change="buscarProductos()" ng-keyup="buscarProductos()" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
+                        <!--input type="text" ng-datepickerange /-->
+                        <span class="input-group-btn">
+
+                    <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+                    </p>
+                </div>
+                <div class="col-md-2" ng-show="dateShow">
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" value="{{producto_fecha2 | date:'dd-MM-yyyy'}}" name="fechain" datepicker-popup="{{format}}" ng-model="producto_fecha2" ng-change="buscarProductos()" ng-keyup="buscarProductos()" is-open="abrirfechafinal" min="fechainicial" readonly close-text="Cerrar"
+                               clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </div>
+                <div class="col-lg-3 pull-right">
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span ng-bind="filtroProducto.nombre"></span> <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="filtro in filtros">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
+                                </li>
+                            </ul>
+                        </div><!-- /btn-group -->
+                        <input type="text" class="form-control" ng-model="producto" ng-change="buscarProductos()" placeholder="Buscar" name="srch-term" id="srch-term" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                        </span>
+                    </div><!-- /input-group -->
+                </div>
+
+
+                <!--
+                    <div class="col-xs-4 col-sm-4 col-md-3">
+                        <b style="font-size: 14px;"> Codigo Producto:</b><br><br><input type="text" class="form-control" ng-model="producto" ng-change="buscarProductos()" ng-keyup="buscarProductos()" id="colFmLabelSm" placeholder="Digite el codigo del producto" required>
+                    </div>
+                -->
+
+                <!--
+                <div class="col-xs-4 col-sm-4 col-md-3" ng-show="dateShow">
+                    <b style="font-size: 14px;"> Fecha Inicio:</b><br><br><input type="date" value="{{producto_fecha1 | date:'dd-MM-yyyy'}}"  class="form-control" ng-model="producto_fecha1" ng-change="buscarProductos()" ng-keyup="buscarProductos()" id="colFmLabelSm2" required>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-3" ng-show="dateShow">
+                    <!-- pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" -->
+                    <!--
+                    <b style="font-size: 14px;"> Fecha Final:</b><br><br><input type="date" value="{{produto_fecha2 | date:'dd-MM-yyyy'}}"  class="form-control" ng-model="producto_fecha2" ng-change="buscarProductos()" ng-keyup="buscarProductos()" id="colFmLabelSm3" required>
+                </div>
+                -->
+            </div><br>
+            <tabset>
+                <tab ng-click="tab('1')">
+                    <tab-heading >
+                        <i class=""></i> Documentos Generados
+                    </tab-heading>
+                    <br>
+                    <div class="row">
+                        <div ng-include="'views/ASC1/documentosGenerados.html'"></div>
+                    </div>
+                </tab>
+                <tab ng-click="tab('2')">
+                    <tab-heading >
+                        <i class=""></i> Realizar Ajuste
+                    </tab-heading>
+                    <br>
+                    <div class="row">
+                        <div ng-include="'views/ASC1/ajustarPrecio.html'" class="col-sm-12"></div>
+                    </div>
+                </tab>
+            </tabset>
+        </div>
+    </div>
+</div>
+<div ng-if="true" class="modal-footer col-md-12 ng-scope">
+    <button class="btn btn-default" ng-click="cancelar_documento()">
+        <span class="glyphicon glyphicon-share-alt"></span> Volver
+    </button>
+</div>
+<visualizar-reporte></visualizar-reporte>
+<!-- DIV QUE APARENTEMENTE FALTABA -->
+</div>

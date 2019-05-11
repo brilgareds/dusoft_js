@@ -1,0 +1,207 @@
+<div class="row">    
+    <div class="col-md-12 col-lg-12">
+        <div class="panel panel-success" style="display: inline-block; float: left; padding: 10px; margin-bottom: 0px; margin-top: 3px;">
+            <div class="panel-body" style="padding: 0px; margin-bottom: 4px;">
+                <div class="col-md-1">
+                    <div class="form-group">
+                        <label class="col-form-label">&nbsp;</label>
+                        <div class="input-group form-group">
+                            <label class="btn btn-success" ng-click="crearCuenta()" ><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Crear Cuenta</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-offset-1 col-md-9 panel panel-default" style="padding: 8px; margin-bottom: 15px;">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="col-form-label">Prefijo</label>
+                            <ui-select ng-model="root.prefijo2"
+                                       theme="select2"
+                                       class="form-control selectgeneral pull-left col-md-4"
+                                       ng-change="prefijo_actualizado($select.selected.prefijo)">
+                                <ui-select-match placeholder="Seleccionar Prefijo">{{$select.selected.prefijo}}</ui-select-match>
+                                <ui-select-choices repeat="filtro in root.listarPrefijosFiltrados | filter:$select.search">
+                                    {{ filtro.prefijo }}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label">Servicios (Funciones)</label>
+                            <ui-select ng-model="root.listarTiposServicios2"
+                                       theme="select2"
+                                       class="form-control selectgeneral pull-left col-md-4"
+                                       ng-disabled="!servicios"
+                                       ng-change="servicio_actualizado($select.selected.id)">
+                                <ui-select-match placeholder="Seleccionar Servicio">{{ $select.selected.descripcion}}</ui-select-match>
+                                <ui-select-choices repeat="filtro in root.listarTiposServiciosFiltrados | filter:$select.search">
+                                    {{ filtro.descripcion }}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>        
+</div>
+<br>
+<div class="row">    
+    <form ng-model="formulario" ng-submit="guardar_cuentas()" class="col-md-12 col-lg-12">
+        <!--<div class="container">-->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6 tipos-cuenta">
+                            <div class="col-md-12">
+                                <div class="col-md-12 contenedor-tipos-cuentas panel panel-primary">
+                                    <h1 class="col-form-label panel-heading titulo-tipo-cuenta"><b>Debito</b></h1>
+                                    <div class="col-md-12 panel-body">
+                                        <span class="checkbox col-md-12" style="margin-top: 0px; margin-bottom: 0px;" ng-repeat="category in root.listarTiposCuentas.debito track by category.cuenta_id">
+                                            <div ng-if="category.cuenta_id" class="col-md-12 sin-padding" style="margin-bottom: 15px;">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" ng-disabled="!seccion_1" ng-model="root.listarTiposCuentas.debito[$index].check">
+                                                    <label for="{{root.listarTiposCuentas.debito[$index]}}"><span class="numero-cuenta" ng-model="root.listarTiposCuentas.debito[$index].cuenta_id"><b>{{category.cuenta_id}}</b></span><b> {{category.categoria_descripcion}}</b></label>
+                                                </div><br class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.debito[$index].centro_costos_asientos" ng-disabled="!root.listarTiposCuentas.debito[$index].check" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.debito[$index].centro_utilidad_asiento" ng-disabled="!root.listarTiposCuentas.debito[$index].check" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.debito[$index].cod_linea_costo_asiento" ng-disabled="!root.listarTiposCuentas.debito[$index].check" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.debito[$index].id_tercero_asiento" ng-disabled="!root.listarTiposCuentas.debito[$index].check" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                                                    </div>
+                                                    <div class="col-md-4 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.debito[$index].observacion_asiento" ng-disabled="!root.listarTiposCuentas.debito[$index].check" placeholder="Observacion Asiento" title="Observacion Asiento">
+                                                    </div>
+                                                </div><br class="col-md-12"><br class="col-md-12">
+                                            </div>
+                                            <!-- BLOQUE1 HTML QUE MOSTRABA CON DATOS VACIOS LAS CUENTAS QUE FALTABAN POR SER CREADAS
+                                            <div ng-if="!category.cuenta_id" class="col-md-12" style="margin-bottom: 15px;">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" style="opacity: 0;" disabled="disabled">
+                                                    <label><span class="numero-cuenta" style="background: #999da2; border-color: #999da2;">{{category.cuenta_id}}</span> {{category.categoria_descripcion}} - SIN CREAR!!</label>
+                                                </div><br class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-4 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                </div><br class="col-md-12"><br class="col-md-12">
+                                            </div>
+                                            -->
+                                            <hr class="linea-separadora"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 tipos-cuenta">
+                            <div class="col-md-12">
+                                <div class="col-md-12 contenedor-tipos-cuentas panel panel-primary">
+                                    <h1 class="col-form-label titulo-tipo-cuenta panel-heading"><b>Credito</b></h1>
+                                    <div class="col-md-12 panel-body">
+                                        <span class="checkbox col-md-12" style="margin-top: 0px; margin-bottom: 0px;" ng-repeat="category in root.listarTiposCuentas.credito track by category.cuenta_id">
+                                            <div ng-if="category.cuenta_id" class="col-md-12 sin-padding" style="margin-bottom: 15px;">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" ng-disabled="!seccion_1" ng-model="root.listarTiposCuentas.credito[$index].check">
+                                                    <label for="{{category}}"><span class="numero-cuenta" ng-model="root.listarTiposCuentas.credito[$index].cuenta_id"><b>{{category.cuenta_id}}</b></span><b> {{category.categoria_descripcion}}</b></label>
+                                                </div><br class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.credito[$index].centro_costos_asientos" ng-disabled="!root.listarTiposCuentas.credito[$index].check" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.credito[$index].centro_utilidad_asiento" ng-disabled="!root.listarTiposCuentas.credito[$index].check" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.credito[$index].cod_linea_costo_asiento" ng-disabled="!root.listarTiposCuentas.credito[$index].check" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.credito[$index].id_tercero_asiento" ng-disabled="!root.listarTiposCuentas.credito[$index].check" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                                                    </div>
+                                                    <div class="col-md-4 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.listarTiposCuentas.credito[$index].observacion_asiento" ng-disabled="!root.listarTiposCuentas.credito[$index].check" placeholder="Observacion Asiento" title="Observacion Asiento">
+                                                    </div>
+                                                </div><br class="col-md-12"><br class="col-md-12">
+                                            </div>
+                                            <!-- BLOQUE2 HTML QUE MOSTRABA CON DATOS VACIOS LAS CUENTAS QUE FALTABAN POR SER CREADAS
+                                            <div ng-if="!category.cuenta_id" class="col-md-12" style="margin-bottom: 15px;">
+                                                <div class="col-md-12">
+                                                    <input type="checkbox" style="opacity: 0;" disabled="disabled">
+                                                    <label><span class="numero-cuenta" style="background: #999da2; border-color: #999da2">{{category.cuenta_id}}</span> {{category.categoria_descripcion}} - SIN CREAR!!</label>
+                                                </div><br class="col-md-12">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-2 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                    <div class="col-md-4 contenedor-campos">
+                                                        <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
+                                                        <input type="text" class="form-control ng-pristine ng-valid ng-touched" disabled="disabled">
+                                                    </div>
+                                                </div><br class="col-md-12"><br class="col-md-12">
+                                            </div> -->
+                                            <hr class="linea-separadora"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 pull-right">
+                            <label ng-disabled="!boton" ng-click="guardar_cuentas()" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Guardar</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!--</div>-->
+    </form>
+</div>
+<!--<visualizar-reporte></visualizar-reporte>-->

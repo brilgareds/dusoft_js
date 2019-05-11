@@ -1469,7 +1469,7 @@ OrdenesCompraModel.prototype.listarLogsOrdenesCompras = function(parametros, cal
         G.knex.raw("case when accion=0 then 'DELETE' when accion=1 then 'INSERT' when accion=2 then 'UPDATE' end as accion"),
 	"detalle",
 	"b.nombre",
-	G.knex.raw("to_char(fecha,'dd-MM-yyyy HH:MM:ss')as fecha"),
+	G.knex.raw("to_char(fecha,'dd-MM-yyyy HH:MI:ss')as fecha"),
 	"tabla",
 	"anterior",
 	"actual"
@@ -1588,7 +1588,7 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
 * @returns {datos de consulta}
 */
 OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(datos, callback) {
-   
+
     var sql = " insert into \
                 inv_bodegas_movimiento_tmp_d ( \
                         usuario_id,\
@@ -1629,7 +1629,6 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(dato
 
 
     var query=G.knex.raw(sql, parametros);
-console.log("8-ingresarBodegaMovimientoTmpProducto ",G.sqlformatter.format(query.toString())); 
             query.then(function(resultado) {
       
         callback(false, resultado.rows, resultado);

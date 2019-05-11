@@ -52,7 +52,7 @@ CiudadesModel.prototype.listar_ciudades_departamento = function(departamento_id,
     }).done();
 };
 
-CiudadesModel.prototype.listar_ciudades_pais = function(termino_busqueda, pais_id, callback) {
+CiudadesModel.prototype.listar_ciudades_pais = function(pais_id, callback) {
 
 
     var sql = " select \

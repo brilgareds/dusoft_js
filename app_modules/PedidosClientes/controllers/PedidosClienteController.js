@@ -304,21 +304,48 @@ PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
-PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
-
+PedidosCliente.prototype.asignarResponsablesPedidoAutomatico = function(req, callback) {
     var that = this;
+    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
+        callback(false,send);
+    }).fail(function(err) {
+	callback(err);
+    }).done(); 
+};
+
+PedidosCliente.prototype.asignarResponsablesPedido= function(req, res) {
+    var that = this;
+    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
+        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
+    }).fail(function(err) {
+	console.log("listarGetDocTemporal ",err);
+        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
+    }).done();    
+};
+
+function __asignarResponsablesPedido(req,that, callback) {
+  
+    var send = {};
 
     var args = req.body.data;
 
     if (args.asignacion_pedidos === undefined || args.asignacion_pedidos.pedidos === undefined || args.asignacion_pedidos.estado_pedido === undefined || args.asignacion_pedidos.responsable === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+       // res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        send.msj='Algunos Datos Obligatorios No Estan Definidos';
+        send.status=404;
+        send.respuesta="";
+        callback(false,send);;
         return;
     }
 
     var params = args.asignacion_pedidos;
 
     if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "") {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+//        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+        send.msj='Algunos Datos Obligatorios No Estan Definidos';
+        send.status=404;
+        send.respuesta="";
+        callback(false,send);;
         return;
     }
 
@@ -334,7 +361,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
 
         G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function (cabecera_pedido) {
             if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ||
-                    cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
+                    cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' || cabecera_pedido[0].estado_actual_pedido === '1') {
                 return  G.Q.ninvoke(that.m_pedidos_clientes, "asignar_responsables_pedidos", numero_pedido, estado_pedido, responsable, usuario);
 
             } else {
@@ -358,7 +385,12 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
 
                 // Notificacion al operario de los pedidos que le fueron asignados
                 that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
-                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+//                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+                send.msj='Asignacion de Resposables';
+                send.status=200;
+                send.respuesta={};
+                callback(false,send);;
+                return;
             }
 
         }).fail(function (err) {
@@ -368,7 +400,11 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
                 err.msj = "Se ha generado un error..";
             }
 
-            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+//            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+            send.msj=err.msj;
+            send.status=err.status;
+            send.respuesta={};
+            callback(send);
         }).done();
 
     });
@@ -390,6 +426,78 @@ PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
+
+PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
+   var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacÃ­o', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    var estado_pedido = ''; // 0 = No asignado
+    var responsables_pedido;
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', numero_pedido).then(function (pedido_cliente) {
+        
+        var pedido = pedido_cliente[0];
+        
+        if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'obtener_responsables_del_pedido', numero_pedido);
+        } else {
+            res.send(G.utils.r(req.url, 'El Pedido No puede cambiar de estado', 200, {}));
+            return;
+        }
+        
+    }).then(function (result) {
+        responsables_pedido=result;
+       
+        if (responsables_pedido === undefined || responsables_pedido.length < 2) {
+            res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
+            return;
+        }
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_responsables_pedidos', numero_pedido);
+        
+    }).then(function (result) {
+       
+        estado_pedido = responsables_pedido[0].estado;
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizar_estado_actual_pedido', numero_pedido,estado_pedido);
+        
+    }).then(function (result) {
+      
+        return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificarPedidosActualizados', {numero_pedido: numero_pedido});
+    
+    }).then(function (result) {
+       
+        if (responsables_pedido.length > 0) {
+
+           var responsable_estado_pedido = responsables_pedido[0];
+          return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificacionOperarioPedidosReasignados', {numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
+       
+        }else{
+          return true;
+        }
+        
+    }).then(function (result) {
+        
+        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
+        
+    }).fail(function (err) {
+        console.log("Error eliminarResponsablesPedido ", err);
+        res.send(G.utils.r(req.url, "Se ha generado un error interno", 500, {}));
+    }).done();
+     
+}
 
 PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
 
@@ -413,7 +521,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
     that.m_pedidos_clientes.consultar_pedido(numero_pedido, function (err, pedido_cliente) {
 
         if (err || pedido_cliente.length === 0) {
-
+             console.log("Error",err,pedido_cliente.length);
         } else {
             var pedido = pedido_cliente[0];
 
@@ -458,7 +566,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
                                             that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
                                         }
 
-                                        res.send(G.utils.r(req.url, 'El Pedido cambiÃ³ de estado correctamente', 200, {}));
+                                        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
                                     }
                                 });
                             }
@@ -969,9 +1077,10 @@ PedidosCliente.prototype.__insertarCotizacion = function (obj, cotizacion, callb
                     return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
                 }
 
-            }).spread(function (rows, result) {
+            }).then(function (result) {
 
-        var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
+        var numero_cotizacion = result[0] ;
+//        var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
         callback(false, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}});
 
 
@@ -1450,23 +1559,13 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
 
     }).then(function (resultado) {
-//        console.log("parametros.bodegaActual",parametros.bodegaActual);
-//        console.log("cabecera.bodega",cabecera.bodega);
         if (parametros.bodegaActual !== cabecera.bodega) {//validar
-//            console.log("111111111");
             idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
             idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
         } else {
-//            console.log("22222222");
             idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
             idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
         }
-        // var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
-
-        //   return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
-
-        //  }).then(function (resultado) {
-
         __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
 
     }).fail(function (err) {
@@ -1474,12 +1573,6 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         callback(err);
 
     }).done();
-
-//    }else{ 
-//        
-//     __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
-//    
-//    }
 }
 
 
@@ -2575,12 +2668,7 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         return;
 
     }).then(function (resultado) {
-        console.log("resultado::1 ", (resultado.length > 0 && resultado[0].valido === '1' && (producto.bodega !== obj.pedidos_clientes.cotizacion.bodega_id && producto.existe_producto_bodega_actual === 1)));
-        console.log("resultado::2 ", resultado.length);
-        console.log("resultado::3 ", resultado[0].valido);
-        console.log("resultado::4 ", producto.bodega);
-        console.log("resultado::5 ", obj.pedidos_clientes.cotizacion.bodega_id);
-        console.log("resultado::6 ", producto.existe_producto_bodega_actual);
+        
         if (!resultado) {
 
             setTimeout(function () {
@@ -4675,19 +4763,19 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
                     productoUnidadMedida = resultado[0];
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productosSinDisponible.push(resultado[0]);
-                    console.log("entro ");
+                  
                     def.resolve();
                 } else {
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productoUnidadMedida = resultado[0];
-                    console.log("else ");
+                   
                     return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
                 }
 
 
             }).then(function (resultado) {
-        console.log("resultado ", resultado);
+       
         index++;
 
         if (!resultado) {
@@ -5254,7 +5342,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
         return;
     }
 
-    console.log("__insertarProductosFarmaciaCotizacion", producto);
+   
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion_multiple', cotizacion, producto).then(function (resultado) {
 
@@ -5670,8 +5758,10 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 };
 
 PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function (req, callback) {
+    
     var that = this;
     G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
+      
         callback(false, send);
     }).fail(function (err) {
         callback(err);
@@ -5691,7 +5781,14 @@ PedidosCliente.prototype.pedidoClienteAPedidoFarmacia = function (req, res) {
 function __pedidoClienteAPedidoFarmacia(req, that, callback) {
     var that = that;
     var args = req.body.data;
-    var usuario_id = req.session.user.usuario_id;
+    var usuario_id;
+
+    if(args.usuario_id!==undefined && args.usuario_id!==''){
+       usuario_id = args.usuario_id;
+    }else{
+       usuario_id = req.session.user.usuario_id;
+    }
+    
     var obj = {pedidoDestino: args.numero_pedido};
     var send = {};
     var farmacia_id;

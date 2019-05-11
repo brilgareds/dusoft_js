@@ -50,16 +50,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "includes/cl
                               <button class="btn btn-default btn-xs dropdown-toggle"  data-toggle="dropdown">Accion<span class="caret"></span></button>\
                               <ul class="dropdown-menu dropdown-options">\
                                 <li>\n\
-                                  <a href="javascript:void(0);" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" class="glyphicon glyphicon-tasks">&nbsp;Dispensar</a>\
+                                  <a href="javascripts:void(0);" ng-click="abrirModalLotesMedicamentosFormulados(row.entity)" class="glyphicon glyphicon-tasks">&nbsp;Dispensar</a>\
                                 </li>\
                                 <li>\n\
-                                  <a href="javascript:void(0);" ng-click="abrirModalDescartarPendiente(row.entity.esm_pendiente_dispensacion_id)" class="glyphicon glyphicon-minus">&nbsp;Descartar</a>\
+                                  <a href="javascripts:void(0);" ng-click="abrirModalDescartarPendiente(row.entity.esm_pendiente_dispensacion_id)" class="glyphicon glyphicon-minus">&nbsp;Descartar</a>\
                                 </li>\
                                 <li ng-if="sw_cambio_codigo_pendiente">\
-                                  <a href="javascript:void(0);" ng-click="abrirModalProductos(row.entity)" class="glyphicon glyphicon-transfer">&nbsp;Cambiar</a>\
+                                  <a href="javascripts:void(0);" ng-click="abrirModalProductos(row.entity)" class="glyphicon glyphicon-transfer">&nbsp;Cambiar</a>\
                                 </li>\
                                 <li>\
-                                  <a href="javascript:void(0);" ng-click="abrirModalCambioCantidadPendiente(row.entity)" class="glyphicon glyphicon-wrench">&nbsp;Cantidad</a>\
+                                  <a href="javascripts:void(0);" ng-click="abrirModalCambioCantidadPendiente(row.entity)" class="glyphicon glyphicon-wrench">&nbsp;Cantidad</a>\
                                 </li>\
                               </ul>\
                             </div>'

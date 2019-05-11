@@ -138,7 +138,7 @@ CajaGeneralModel.prototype.listarNotasGeneradas = function (obj, callback) {
         G.knex.raw("d.tipo_id_tercero ||' '|| d.tercero_id AS identificacion"),
         "d.tercero_id",
         "d.tipo_id_tercero",
-        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.factura_fiscal and prefijo= a.prefijo and sw_factura_dian ='1') as sincronizacion")
+        G.knex.raw("(select count(*) from  facturas_dian where factura_fiscal=a.numero_nota and prefijo= a.prefijo_nota and sw_factura_dian ='1') as sincronizacion")
     ];
 
     var query = G.knex.select(columna_a)
@@ -395,6 +395,46 @@ CajaGeneralModel.prototype.listarFacConceptosNotas = function (obj, callback) {
 };
 /**
  * @author Andres Mauricio Gonzalez
+ * +Descripcion Metodo encargado de consultar fac_facturas
+ * @fecha 2019-02-13 YYYY-MM-DD
+ */
+CajaGeneralModel.prototype.listarFacturaTalonario = function (obj, callback) {
+
+    var columna = [
+        G.knex.raw("to_char(a.fecha_registro,'YYYY') as anio_factura"),
+        "a.empresa_id",
+        "a.prefijo",
+        "a.factura_fiscal",
+        "a.documento_id",
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.porcentaje_rtf",
+        "a.porcentaje_ica",
+        "a.porcentaje_reteiva",
+        G.knex.raw("cast(a.total_factura as double precision ) as total_factura"),
+        "a.fecha_registro",
+        G.knex.raw("to_char(a.fecha_registro, 'dd/mm/yyyy') as fecha_factura"),
+        "a.gravamen",
+    ];
+
+    var query = G.knex.select(columna)
+            .from('fac_facturas as a')
+            .where(function () {
+                this.andWhere('a.factura_fiscal', obj.facturaFiscal)
+                    .andWhere('a.prefijo', obj.prefijo)
+                    .andWhere('a.empresa_id', obj.empresa_id)
+            });
+
+    query.then(function (resultado) {
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [listarFacConceptosNotas]:", query.toSQL());
+        console.log("err [listarFacConceptosNotas]:", err);
+        callback(err);
+    });
+};
+/**
+ * @author Andres Mauricio Gonzalez
  * +Descripcion Metodo encargado de listar RECIBOS CAJA
  * @fecha 2017-06-02 YYYY-MM-DD
  * @returns {callback}
@@ -447,6 +487,59 @@ CajaGeneralModel.prototype.listarRecibosCaja = function (obj, callback) {
 
     }).catch(function (err) {
         console.log("err [listarPrefijos]:", query.toSQL());
+        console.log("err [listarPrefijos]:", err);
+        callback(err);
+    });
+};
+
+CajaGeneralModel.prototype.listarRecibosCajaPorPrefijo = function (obj, callback) {
+    var empresa = obj.empresaId;
+    var prefijo = obj.prefijoId;
+
+
+    var columna = [
+        "a.empresa_id",
+        "a.centro_utilidad",
+        "a.factura_fiscal as recibo_caja",
+        "a.fecha_registro as fecha_ingcaja",
+        "b.caja_id",
+        "b.descripcion as caja",
+        "a.total_efectivo",
+        "a.total_cheques",
+        "a.total_bonos",
+        "a.total_tarjetas",
+        "a.usuario_id",
+        "a.prefijo",
+        G.knex.raw("(a.total_efectivo + a.total_cheques + a.total_tarjetas + a.total_bonos) as suma"),
+        G.knex.raw("CASE WHEN b.estado ='0' THEN a.total_abono ELSE -1 END AS total_abono")
+    ];
+
+    console.log('Despues de columna!!');
+
+    var query = G.knex.select(columna)
+        .from('fac_facturas as b')
+        .leftJoin('fac_facturas_contado as a',
+            function () {
+                this.on("a.documento_id", "b.documento_id")
+            })
+        .leftJoin('fac_facturas_conceptos as c',
+            function () {
+                this.on("b.factura_fiscal", "c.factura_fiscal")
+                    .on("b.prefijo", "c.prefijo")
+            })
+        .leftJoin('cajas_rapidas as d',
+            function () {
+                this.on("c.caja_id", "d.caja_id")
+            })
+        .where('a.empresa_id', empresa)
+        .andWhere('a.prefijo', prefijo);
+
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        //console.log("err [listarPrefijos]:", query.toSQL());
         console.log("err [listarPrefijos]:", err);
         callback(err);
     });
@@ -519,7 +612,8 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
         "a.cantidad",
         "a.precio",
         "a.valor_total",
-        "a.valor_total as valorTotal",
+//        "a.valor_total as valorTotal",
+        G.knex.raw("TO_CHAR(a.valor_total,'FM999,999,999.00') as valorTotal"),
         "a.porcentaje_gravamen",
         "a.valor_gravamen as totalGravamen",
         "a.valor_gravamen",
@@ -531,7 +625,10 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
         "d.fecha_registro",
         "c.descripcion as desconcepto",
         "c.concepto_id",
-        "c.grupo_concepto"
+        "c.grupo_concepto",
+        "doc.texto1",
+        "doc.texto2",
+        "doc.texto3"
     ];
 
     var query = G.knex.select(columna)
@@ -551,6 +648,11 @@ CajaGeneralModel.prototype.listarFacturasNotas = function (obj, callback) {
                         this.on("a.prefijo", "d.prefijo")
                                 .on("a.factura_fiscal", "d.factura_fiscal")
                                 .on("a.empresa_id", "d.empresa_id")
+                    })
+            .innerJoin('documentos as doc',
+                    function () {
+                        this.on("a.empresa_id", "doc.empresa_id")
+                                .on("d.documento_id", "doc.documento_id")
                     })
             .where(function () {
                 if (obj.conceptoId !== '') {
@@ -639,24 +741,39 @@ CajaGeneralModel.prototype.listarConceptosDetalle = function (obj, callback) {
         "a.valor_gravamen",
         "a.tipo_pago_id"
     ];
+    
+        if(obj.documento_id){
+                   columna.push("doc.texto1");
+                   columna.push("doc.texto2");
+                   columna.push("doc.texto3");
+    }
+    
 
     var query = G.knex.select(columna)
             .from('tmp_detalle_conceptos as a')
             .innerJoin('grupos_conceptos as  b ',
                     function () {
-                        this.on("a.grupo_concepto", "b.grupo_concepto")
+                        this.on("a.grupo_concepto", "b.grupo_concepto");
                     })
             .innerJoin('conceptos_caja_conceptos as  c',
                     function () {
                         this.on("c.grupo_concepto", "b.grupo_concepto")
-                                .on("a.concepto_id", "c.concepto_id")
+                                .on("a.concepto_id", "c.concepto_id");
                     }).where(function () {
         this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
                 .andWhere("a.tercero_id", obj.terceroId)
                 .andWhere("b.empresa_id", obj.empresaId)
                 .andWhere("a.concepto_id", obj.conceptoId);
     });
-
+    
+    if(obj.documento_id){
+                    query.innerJoin('documentos as doc',
+                    function () {
+                        this.on("a.empresa_id", "doc.empresa_id")
+                                .on("doc.documento_id",obj.documento_id);
+                        });
+    }
+    
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit);
 
@@ -1129,7 +1246,9 @@ CajaGeneralModel.prototype.listarEmpresa = function (obj, callback) {
         "a.direccion",
         "a.telefonos",
         "a.tipo_id_tercero",
+        "a.digito_verificacion",
         "b.departamento	",
+        "tp.pais",
         "c.municipio"
     ];
 
@@ -1138,13 +1257,17 @@ CajaGeneralModel.prototype.listarEmpresa = function (obj, callback) {
             .innerJoin('tipo_dptos as b',
                     function () {
                         this.on("b.tipo_pais_id", "a.tipo_pais_id")
-                                .on("b.tipo_dpto_id", "a.tipo_dpto_id")
+                                .on("b.tipo_dpto_id", "a.tipo_dpto_id");
+                    })
+            .innerJoin('tipo_pais as tp',
+                    function () {
+                        this.on("tp.tipo_pais_id", "b.tipo_pais_id");
                     })
             .innerJoin('tipo_mpios as c',
                     function () {
                         this.on("c.tipo_pais_id", "a.tipo_pais_id")
                                 .on("c.tipo_dpto_id", "a.tipo_dpto_id")
-                                .on("c.tipo_mpio_id", "a.tipo_mpio_id")
+                                .on("c.tipo_mpio_id", "a.tipo_mpio_id");
                     }).where("empresa_id", obj.empresaId);
 
     query.limit(G.settings.limit).

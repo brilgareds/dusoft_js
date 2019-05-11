@@ -3,7 +3,6 @@ define(["angular"], function (angular) {
 
     var BASE_URL = "/api";
 
-
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
@@ -15,6 +14,40 @@ define(["angular"], function (angular) {
                 'GET_TIPOS_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getTiposDocumentosBodegaUsuario',
                 'GET_TIPOS_DOCUMENTOS_BODEGA_EMPRESA': BASE_URL + '/movBodegas/getTiposDocumentosBodegaEmpresa',
                 'GET_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getDocumentosBodegaUsuario',
+            },
+            'RADICACION': {
+                'LISTAR_CONCEPTO': BASE_URL + "/Radicacion/listarConcepto",
+
+                'LISTAR_FACTURA': BASE_URL + "/Radicacion/listarFactura",
+
+                'GUARDAR_CONCEPTO': BASE_URL + "/Radicacion/guardarConcepto",
+
+                'GUARDAR_FACTURA': BASE_URL + "/Radicacion/guardarFactura",
+
+                'MODIFICAR_FACTURA': BASE_URL + "/Radicacion/modificarFactura",
+
+                'SUBIR_ARCHIVO': BASE_URL + "/Radicacion/subirArchivo",
+
+                'SUBIR_ARCHIVO_FACTURA': BASE_URL + "/Radicacion/subirArchivoFactura",
+
+                'AGRUPAR_FACTURA': BASE_URL + "/Radicacion/agruparFactura",
+
+                'LISTAR_AGRUPAR': BASE_URL + "/Precios_productos/listarAgrupar",
+
+                'MODIFICAR_ENTREGADO': BASE_URL + "/Radicacion/modificarEntregado",
+
+                'ELIMINAR_GRUPO_FACTURA':BASE_URL + "/Radicacion/eliminarGrupoFactura",
+
+                'LISTAR_FACTURA_ENTREGADO' :BASE_URL + "/Radicacion/listarFacturaEntregado",
+
+                'AGREGAR_FACTURA_ENTREGADO' :BASE_URL + "/Radicacion/agregarFacturaEntregado",
+
+                'PLANILLA_RADICACION' :BASE_URL + "/Radicacion/planillaRadicacion",
+
+                'MODIFICAR_NOMBRE_ARCHIVO' :BASE_URL + "/Radicacion/modificarNombreArchivo",
+
+                'LISTAR_PRODUCTOS' :BASE_URL + "/Radicacion/listarProducto"
+
             },
             'I002': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
@@ -53,6 +86,19 @@ define(["angular"], function (angular) {
                 'LISTAR_PRESTAMO_ID': BASE_URL + "/movBodegas/I007/listarPrestamoId",
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I007/crearDocumento',
                 'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I007/crearHtmlDocumento'
+
+            },
+            'I008': {
+                'LISTAR_DOCUMENTOS': BASE_URL + '/movBodegas/I008/listarTraslados',
+                'LISTAR_PRODUCTOS_TRASLADO': BASE_URL + '/movBodegas/I008/listarProductosTraslados',
+                'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I008/newDocTemporal',
+                'ELIMINAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I008/eliminarGetDocTemporal',
+                'AGREGAR_ITEM': BASE_URL + '/movBodegas/I008/agregarItem',
+                'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I008/listarProductosValidados',
+                'ELIMINAR_PRODUCTO': BASE_URL + '/movBodegas/I008/eliminarItem',
+                'LISTAR_DOCUMENTO_SELECCIONADO': BASE_URL + '/movBodegas/I008/listarDocumentoId',
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/I008/crearDocumento',
+                'CREAR_DOCUMENTO_IMPRIMIR': BASE_URL + '/movBodegas/I008/crearHtmlDocumento'
 
             },
             'I011': {
@@ -151,7 +197,21 @@ define(["angular"], function (angular) {
                 'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
             },
             'FACTURACIONPROVEEDOR': {
-                'INSERTAR_FACTURA': BASE_URL + "/FacturacionProveedores/ingresarFactura"
+                'INSERTAR_FACTURA': BASE_URL + "/NotasProveedores/ingresarFactura"
+            },
+            'PRODUCTOS': {
+                'SUBE_COSTO': BASE_URL + '/Productos/subeCosto',
+                'BAJE_COSTO': BASE_URL + '/Productos/bajeCosto'
+            },
+            'KARDEX':{
+                "LISTAR_PRODUCTOS":BASE_URL+"/Kardex/listarProductos",
+                "OBTENER_MOVIMIENTO":BASE_URL+"/Kardex/obtenerMovimientosProducto",
+                'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
+                'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
+                'BODEGAS_EMPRESA':BASE_URL+'/Bodegas/listarBodegasEmpresas',
+                'CONSULTAR_EXISTENCIAS':BASE_URL+'/Kardex/consultarExistenciasProducto',
+                'LISTAR_EMPRESAS_FARMACIAS':BASE_URL+'/Empresas/listarEmpresasFarmacias',
+                'LISTAR_HOMOLOGACION_PRODUCTOS':BASE_URL+'/Productos/listarHomologacionProductos'
             }
         }
     };

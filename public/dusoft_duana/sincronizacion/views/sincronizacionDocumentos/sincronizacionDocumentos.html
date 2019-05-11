@@ -1,0 +1,127 @@
+<div class="row">    
+    <div class="col-md-12 col-lg-12">
+        <div class="panel-group">
+            <div class="col-md-2 col-lg-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Sincronizacion de Documentos</div>
+                    <div class="panel-body" style="height: 500px;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="col-form-label">Servicios (Funciones)</label>
+                                    <ui-select ng-model="root.listarTiposServicios2"
+                                               theme="select2"
+                                               class="form-control selectgeneral pull-left col-md-4"
+                                               ng-change="servicio_actualizado($select.selected.id)">
+                                        <ui-select-match placeholder="Seleccionar Servicio">{{ $select.selected.descripcion}}</ui-select-match>
+                                        <ui-select-choices repeat="filtro in root.listarTiposServicios | filter:$select.search">
+                                            {{ filtro.descripcion }}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div ng-if="servicioProveedor" class="col-md-12">
+                                <div class="form-group">
+                                    <label  class="col-form-label">Proveedor:</label>
+                                    <ui-select ng-model="recepcion.proveedor" theme="select2" class="ui-select-z-index-11 form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(recepcion)">
+                                        <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                        <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                                            {{ proveedor.get_nombre() }}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div ng-if="servicioPrefijo" class="col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    <label  class="col-form-label">Prefijo:</label>
+                                    <ui-select ng-model="root.prefijo2"
+                                               theme="select2"
+                                               class="form-control selectgeneral pull-left"
+                                               ng-change="prefijo_actualizado($select.selected.prefijo)">
+                                        <ui-select-match  placeholder="Seleccionar Prefijo ">{{ $select.selected.prefijo}}</ui-select-match>
+                                        <ui-select-choices repeat="filtro in root.listarPrefijos | filter:$select.search">
+                                            {{ filtro.prefijo}}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    <label  class="col-form-label">Numero:</label>
+                                    <input ng-model="root.numero" class="form-control form-control-sm" type="text" placeholder="#">
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    <div><br></div>
+                                    <div class="col-md-6 col-lg-6">
+                                        <button type="submit" ng-click="buscar()" class="btn btn-primary form-control-sm">Buscar</button>
+                                    </div>
+                                    <div class="col-md-6 col-lg-6" ng-if="root.estado" >
+                                        <button type="submit" ng-click="sincronizar()" class="btn btn-success form-control-sm">Sincronizar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row" ng-if="root.estado"> 
+                            <div class="col-md-12 col-lg-12 pull-center"> 
+                                <label  class="col-form-label pull-center">CABECERA</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Pefijo: {{encabezado.coddocumentoencabezado}}</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Numero: {{encabezado.numerodocumentoencabezado}}</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Cod. Empresa: {{encabezado.codempresa}}</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Estado: {{encabezado.estadoencabezado}}</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">T. Tercero: {{encabezado.tipotercero}}</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Documento: {{encabezado.identerceroencabezado}}</label>
+                            </div>  
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Fecha: {{encabezado.fecharegistroencabezado}}</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12"> 
+                                <label  class="col-form-label">Observación: {{encabezado.observacionencabezado}}</label>
+                            </div>                            
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10 col-lg-10">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Asientos Contables</div>
+                    <div class="panel-body">
+                        <div class="row">    
+                            <div class="col-md-12 col-lg-12">
+                                <a href="#" class="btn {{color_boton}} btn-lg" >
+                                    <span class="{{iconos}}"></span> {{root.asientosContables.descripcion}}
+                                </a>
+                                <br>
+                                <br>
+                            </div>    
+                        </div>    
+                        <div class="row">    
+                            <div class="col-md-12 col-lg-12">
+                                <div class="table-responsive" >
+                                    <div class="defaultGrid grid-responsive" ng-grid="lista_reportesGenerados">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>

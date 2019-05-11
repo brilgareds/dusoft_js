@@ -588,14 +588,13 @@ define(["angular", "js/controllers",
             };
            
             
-            $scope.generarDocumento = function(documento) { 
+            $scope.generarDocumento = function(documento) {
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-                
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -682,10 +681,13 @@ define(["angular", "js/controllers",
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                                    
+                                  if(empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() !=='03'){
                                    that.sincronizarDocumento(documento, $scope.documento_generado);
+                               }
                             }
 
                         });
+
 
 
                     }  else if(parseInt(data.status) !== 500 ) { 
@@ -693,6 +695,7 @@ define(["angular", "js/controllers",
                      if(parseInt(data.status) === 404 ) {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                      }
+
                        
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];

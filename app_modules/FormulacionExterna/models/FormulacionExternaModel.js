@@ -82,7 +82,7 @@ FormulacionExternaModel.prototype.obtenerAfiliadosExternos = function(estructura
     var query = G.knex.raw(queryText);
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
-        console.log(resultado.rows[0]);
+//        console.log(resultado.rows[0]);
         callback(false,  resultado.rows);
     }).catch(function(err){
         G.logError("err FormulacionExternaModel [obtenerAfiliado]: " + err);
@@ -259,6 +259,7 @@ FormulacionExternaModel.prototype.insertarFormulaTmp = function(formula_papel, e
         tipo_dpto_id: tipo_dpto_id,
         tipo_mpio_id: tipo_mpio_id
     }).returning('tmp_formula_id');
+    console.log('Eyyyy -->');
     //G.logError(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){    
         callback(false, resultado[0]);
@@ -1687,7 +1688,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensarNoOcul
                                 .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").groupBy("ip.producto_id", "dc.codigo_medicamento").as("a");
                         })
                         .groupBy("producto_id", "codigo_medicamento");
-    //G.logError(G.sqlformatter.format(query.toString()));
+
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   
@@ -1721,7 +1722,7 @@ FormulacionExternaModel.prototype.listarMedicamentosPendientesPorDispensar = fun
                                 .where("dc.formula_id", formula_id).andWhere("dc.sw_estado","=" ,"0").groupBy("fem.fe_medicamento_id", "dc.codigo_medicamento", "fem.sw_autorizado", "med.cod_principio_activo", "dc.esm_pendiente_dispensacion_id").as("a");
                         })
                         .groupBy("fe_medicamento_id","codigo_medicamento", "sw_autorizado", "cod_principio_activo", "esm_pendiente_dispensacion_id");
-    //G.logError(G.sqlformatter.format(query.toString()));
+  
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   
@@ -1932,7 +1933,7 @@ FormulacionExternaModel.prototype.obtenerPendientesEnt = function(formula_id, im
                     }
                 });
 
-    //G.logError(G.sqlformatter.format(query.toString()));
+
      query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){   

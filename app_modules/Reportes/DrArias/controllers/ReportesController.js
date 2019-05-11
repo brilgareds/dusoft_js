@@ -48,10 +48,10 @@ Reportes.prototype.listarDrArias = function (req, res) {
             return 0;
         }
 
-    }).then(function (tamaño) {
+    }).then(function (tamanio) {
 
         datos.fecha_fin = G.moment().format();
-        if (tamaño > 0) {
+        if (tamanio > 0) {
             datos.estado = '1';
             return G.Q.nfcall(__generarDetalle, resultado, datos, that);
         } else {
@@ -96,9 +96,9 @@ Reportes.prototype.listarDrArias0 = function (req, res) {
     G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
         if (resultado !== -1) {
 
-            __generarCsvDrArias(resultado, filtro, function (tamaño) {
+            __generarCsvDrArias(resultado, filtro, function (tamanio) {
                 datos.fecha_fin = G.moment().format();
-                if (tamaño > 0) {
+                if (tamanio > 0) {
                     datos.estado = '1';
                     __generarDetalle(resultado, datos, that, function () {
                     });
@@ -171,7 +171,7 @@ Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'}).then(function (rotacionZonas) {
                   
         return G.Q.nfcall(__ordenarZonas, rotacionZonas, 0, [], '', []);
 
@@ -189,8 +189,13 @@ Reportes.prototype.rotacionZonas = function (req, res) {
 Reportes.prototype.rotacionZonasMovil = function (req, res) {
     var that = this;
     var args = req.body.data;
+    console.log("---------rotacionZonasMovil---------",args)
+    var filtro="";
+    if(args.filtro!==undefined && args.filtro!== ""){
+        filtro = args.filtro; 
+    }
 
-    G.Q.ninvoke(that.m_drArias, 'rotacionZonas','1').then(function (rotacionZonas) {
+    G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'1',filtro: filtro}).then(function (rotacionZonas) {
          
         res.send(rotacionZonas);
     }).fail(function (err) {
@@ -365,6 +370,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
     idsRemitentes = idsRemitentes.split(",");
 
 
+
     G.Q.ninvoke(that.m_drArias, 'consultarCorreoUsuario', idsRemitentes).then(function (correos) {
         var correosRemitentes = '';
         if (correos.length > 0) {
@@ -419,7 +425,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var controlRotacionId;
     var listarPlanes;
     var farmacias;
-
+console.log("bodega:::  ",bodega);
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
 
         bodega.controlRotacionId = respuesta[0]; 
@@ -453,7 +459,7 @@ function __rotacionesBodegas(that, bodega, callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -568,7 +574,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
     }).then(function (respuesta) {
         
-        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas','0');
+        return G.Q.ninvoke(that.m_drArias, 'rotacionZonas',{sw:'0'});
         
     }).then(function (respuesta) {
         
@@ -614,7 +620,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         }
 
         if (bodega.remitente === 1) {
-            remitente = G.settings.email_miguel_duarte;//+","+sistemas;
+            remitente = G.settings.email_miguel_duarte;
         }
 
         if (bodega.remitentes.trim() !== "") {
@@ -654,7 +660,6 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
 function __creaExcel(data, callback) {
     
-    console.log("__creaExcel");
     
     var workbook = new G.Excel.Workbook();
     var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
@@ -1002,19 +1007,8 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 
     var style = {font: font, border: border, alignment: alignment};
 
-//    worksheet.getCell('A1').style = style;
-//    worksheet.getCell('B1').style = style;
-//    worksheet.getCell('C1').style = style;
-//    worksheet.getCell('D1').style = style;
-//    worksheet.getCell('E1').style = style;
-//    worksheet.getCell('F1').style = style;
-//    worksheet.getCell('G1').style = style;
-//    worksheet.getCell('H1').style = style;
-//    worksheet.getCell('I1').style = style;
-//    worksheet.getCell('J1').style = style;
-//    worksheet.getCell('K1').style = style;
     workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
-        console.log("saved");
+        
         callback(false, data.nameArchivo);
         return;
     });
@@ -1041,21 +1035,20 @@ function sortJSON(data, key, orden) {
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
         port: G.settings.email_port, // port for secure SMTP
         auth: {
-            user: G.settings.email_user,
-            pass: G.settings.email_password
+            user: G.settings.email_rotaciones,
+            pass:  G.settings.email_rotaciones_pass
         }
     });
 
     var settings = {
-        from: G.settings.email_desarrollo1,
+        from: G.settings.email_rotaciones,
         to: to,
-        cc: "amgonzalez80@hotmail.com",
+        cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
         html: message
     };
@@ -1065,10 +1058,12 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     }
     smtpTransport.sendMail(settings, function (error, response) {
         if (error !== null) {
+            console.log("Error :: ",error);
             callback({estado: 505, mensaje: error});
             return;
-        } else {
+        } else {            
             smtpTransport.close();
+            console.log("Correo enviado");
             callback(false, {estado: 200, mensaje: "Correo Enviado"});
             return;
         }

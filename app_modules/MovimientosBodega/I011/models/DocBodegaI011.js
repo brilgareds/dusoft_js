@@ -64,7 +64,7 @@ DocumentoBodegaI011.prototype.listarDevoluciones = function (parametros, callbac
             .andWhere('empresa_destino', parametros)
             .andWhere('numero', 'not in', subquery)
             .orderBy('numero', 'desc');
-
+    
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -541,10 +541,6 @@ DocumentoBodegaI011.prototype.creacion_documento = function (parametros, transac
 
     // Ingresar Cabecera Documento temporal
     __ingresar_documento_verificacion(parametros, transaccion, function (err, result) {
-
-        console.log('=============== __ingresar_documento_verificacion ========================');
-        console.log(err, result);
-        console.log('=====================================================================');
 
         if (err) {
             callback(err);

@@ -40,7 +40,9 @@
         <div class="height:50%">
             <div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
             <div>DESTINATARIO:</div>
-            <h1>{{:cliente}}</h1>
+            <h2>{{:cliente}}</h2>
+            <div>SEDE:</div>
+            <h2>{{:sede}}</h2>
             <div>DIRECCION:</div>
             <h2>{{:direccion}}</h2>
             <div class="documentos">DOCUMENTO: <b>{{:documentoDespacho.prefijo}} - {{:documentoDespacho.numero}}</b></div>
@@ -52,26 +54,37 @@
 
                 {{:numero_caja}} DE ______
             </strong>
-            <h1>((((( DELICADO ))))</h1>
+            <h2>((((( DELICADO ))))</h2>
 
             <hr class="separador"/>
-            {{if numero_caja % 2 == 0}}
+<!--            {{if numero_caja % 2 == 0}}
                 <div class='page-break'></div>
-            {{/if}}
+            {{/if}}-->
         </div>
-            <!--div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
+        <div class="height:50%">
+            <div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
             <div>DESTINATARIO:</div>
-            <h1>{{:cliente}}</h1>
+            <h2>{{:cliente}}</h2>
+            <div>SEDE:</div>
+            <h2>{{:sede}}</h2>
             <div>DIRECCION:</div>
             <h2>{{:direccion}}</h2>
-            <div class="documentos">DOCUMENTOS:</div>
+            <div class="documentos">DOCUMENTO: <b>{{:documentoDespacho.prefijo}} - {{:documentoDespacho.numero}}</b></div>
+            
             <br/>
+            <!--span class="numero_caja_span">NUMERO </span-->
             <strong> 
                 {{if tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
 
                 {{:numero_caja}} DE ______
             </strong>
-            <h1>((((( DELICADO ))))</h1-->
+            <h2>((((( DELICADO ))))</h2>
+
+            <hr class="separador"/>
+<!--            {{if numero_caja % 2 == 0}}
+                <div class='page-break'></div>
+            {{/if}}-->
+        </div>
         {{/for}}
     </body>
 </html>

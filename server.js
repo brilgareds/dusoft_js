@@ -37,6 +37,8 @@ G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
 //G.Excel = require('exceljs');;
+//G.pdfBase64 = require('pdf-to-base64');
+G.base64 = require('base64topdf');
 G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
@@ -48,6 +50,9 @@ G.Excel = require('exceljs');
 G.fcmPush = require('fcm-push');
 G.sqlformatter = require('sqlformatter');
 G.xmlformatter = require('xml-formatter');
+G.base64Img = require('base64-img');
+G.scp = require('scp2');
+G.sequest = require('sequest');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 G.logError =  function logError(texto) {  
@@ -208,8 +213,9 @@ if (cluster.isMaster) {
 
 */
     //crea servidor http
-    var app = express();    
+    var app = express();
     var server = app.listen(G.settings.server_port);
+    //console.log('Server en el Socket es: ',server);
     var container = intravenous.create();
     var io = require('socket.io').listen(server);
 
@@ -305,8 +311,8 @@ if (cluster.isMaster) {
     
     app.get('/*', function (req, res, next) {
         if (req.url.indexOf("/images/") === 0 || req.url.indexOf("/stylesheets/") === 0) {
-            res.setHeader("Cache-Control", "public, max-age=2592000");
-            res.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());
+            res.setHeader("Cache-Control", "public, max-age=2592000000");
+            res.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());                       
         }
         next();
     });

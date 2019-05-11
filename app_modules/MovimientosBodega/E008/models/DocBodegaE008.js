@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedidos_farmacias) {
 
     this.m_movimientos_bodegas = movientos_bodegas;
@@ -233,7 +235,7 @@ DocumentoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
         then(function(movimiento_temporal_id){
             callback(false, movimiento_temporal_id);
         }).catch(function(err){
-            console.log("error ingresar_despacho_clientes_temporal >>>>>>>>>>>>", err);
+            console.log("error [ingresar_despacho_clientes_temporal]", err);
             callback(err);
         }).
         done();        
@@ -248,11 +250,11 @@ DocumentoBodegaE008.prototype.ingresarMovimientoTmpClientes = function(movimient
                                 VALUES ( :1, :2, :3, :4, :5 ) ; ";
     
     var query = G.knex.raw(sql, {1:movimiento_temporal_id, 2:numero_pedido, 3:tipo_tercero_id, 4:tercero_id, 5:usuario_id});
-    if(transaccion) query.transacting(transaccion);
-            
+    if(transaccion) query.transacting(transaccion);      
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("error [ingresarMovimientoTmpClientes]", err);
         callback(err);
     });
 };
@@ -270,6 +272,7 @@ DocumentoBodegaE008.prototype.ingresarMovimientoTmpFarmacias = function(movimien
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("error [ingresarMovimientoTmpFarmacias]", err);
         callback(err);
     });
 };
@@ -307,7 +310,7 @@ DocumentoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
         then(function(movimiento_temporal_id){
             callback(false, movimiento_temporal_id);
         }).catch(function(err){
-            console.log("error ingresar_despacho_farmacias_temporal >>>>>>>>>>>>", err);
+            console.log("error [ingresar_despacho_farmacias_temporal]", err);
             callback(err);
         }).
         done();        
@@ -520,7 +523,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("error consultar_documentos_temporales_clientes", err);
+        console.log("error [consultar_documentos_temporales_clientes]", err);
         callback(err);
     });
    
@@ -608,7 +611,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("error consultar_documentos_temporales_farmacias ", err);
+        console.log("error [consultar_documentos_temporales_farmacias]", err);
         callback(err);
     });
     
@@ -664,6 +667,7 @@ DocumentoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
+       console.log("error [consultar_documento_temporal_clientes]", err);
        callback(err);
    });
 
@@ -720,7 +724,7 @@ DocumentoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
     then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
-        console.log("Error consultar_documento_temporal_farmacias ",err);
+        console.log("error [consultar_documento_temporal_farmacias]", err);
         callback(err);
     });
     
@@ -757,7 +761,7 @@ DocumentoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
     }).then(function(re){
         callback(false);
     }).catch(function(err){
-        console.log("error eliminar_documento_temporal_clientes >>>>>>>>>>>>", err);
+         console.log("error [eliminar_documento_temporal_clientes]", err);
         callback(err);
     }).
     done();
@@ -775,6 +779,7 @@ DocumentoBodegaE008.prototype.eliminarDespachoTemporalClientes = function(doc_tm
         callback(false, resultado);
     }).catch(function(err){
         transaccion.rollback();
+        console.log("error [eliminarDespachoTemporalClientes]", err);
         callback(err);
     });
 };
@@ -790,6 +795,7 @@ DocumentoBodegaE008.prototype.eliminarDespachoTemporalFarmacias = function(doc_t
         callback(false, resultado);
     }).catch(function(err){
         transaccion.rollback();
+        console.log("error [eliminarDespachoTemporalFarmacias]", err);
         callback(err);
     });
 };
@@ -826,7 +832,7 @@ DocumentoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
     }).then(function(re){
         callback(false);
     }).catch(function(err){
-        console.log("error eliminar_documento_temporal_farmacias >>>>>>>>>>>>", err);
+        console.log("error [eliminar_documento_temporal_farmacias]", err);
         callback(err);
     }).
     done();
@@ -869,6 +875,7 @@ DocumentoBodegaE008.prototype.consultar_justificaciones_temporales_pendientes = 
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [consultar_justificaciones_temporales_pendientes]", err);
        callback(err);
     });
 };
@@ -886,6 +893,7 @@ justificacion, existencia, justificacion_auditor, observacionSeparador, observac
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [ingresar_justificaciones_temporales_pendientes]", err);
        callback(err);
     });
     
@@ -915,6 +923,7 @@ DocumentoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes =
    then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
+       console.log("error [actualizar_justificaciones_temporales_pendientes]", err);
        callback(err);
    });
     
@@ -933,6 +942,7 @@ DocumentoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = f
     query.then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){
+         console.log("error [eliminar_justificaciones_temporales_pendientes]", err);
        callback(err);
     });
     
@@ -946,6 +956,7 @@ DocumentoBodegaE008.prototype.eliminar_justificaciones_temporales_producto = fun
     G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+         console.log("error [eliminar_justificaciones_temporales_producto]", err);
        callback(err);
     });
 };
@@ -960,6 +971,7 @@ DocumentoBodegaE008.prototype.actualizar_estado_documento_temporal_clientes = fu
     then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [actualizar_estado_documento_temporal_clientes]", err);
         callback(err);
     });
 
@@ -974,6 +986,7 @@ DocumentoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
     then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [actualizar_estado_documento_temporal_farmacias]", err);
         callback(err);
     });
 
@@ -1010,24 +1023,41 @@ DocumentoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, num
    then(function(resultado){  
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
+       console.log("error [consultar_rotulo_caja]", err);
+       callback(err);
+   });
+    
+};
+
+DocumentoBodegaE008.prototype.consultar_rotulo_caja_tipo = function(numero_pedido,callback) {
+ 
+    var sql = " select * from inv_rotulo_caja a where a.solicitud_prod_a_bod_ppal_id = :1 limit 1; ";
+
+        
+   G.knex.raw(sql, {1:numero_pedido}).
+   then(function(resultado){  
+       callback(false, resultado.rows, resultado);
+   }).catch(function(err){
+       console.log("error [consultar_rotulo_caja_tipo]", err);
        callback(err);
    });
     
 };
 
 // Inserta el rotulo de una caja
-DocumentoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta,
-                                                             contenido, numero_caja, usuario_id, tipo, tipoPedido, callback) {
-    
-    var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja, tipo, documento_temporal_id, tipo_pedido) \
-                VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, NOW(), :9, :10, :1, :11 ) ;";
-    
-    G.knex.raw(sql, {1:documento_id, 2:numero_pedido, 3:cliente, 4:direccion, 5:cantidad, 6:ruta, 7:contenido, 8:usuario_id,
-                     9:numero_caja, 10:tipo, 11:tipoPedido}).
-    then(function(resultado){
+DocumentoBodegaE008.prototype.generar_rotulo_caja = function(parametros, callback) {
+      
+       var query = G.knex("inv_rotulo_caja").
+            insert({documento_id: parametros.documento_temporal_id, solicitud_prod_a_bod_ppal_id: parametros.numero_pedido, cliente: parametros.nombre_cliente,
+                direccion: parametros.direccion_cliente, cantidad: parametros.cantidad, ruta: parametros.ruta,contenido:parametros.contenido,
+                usuario_registro: parametros.usuario_id, numero_caja: parametros.numero_caja,tipo: parametros.tipo,
+                documento_temporal_id: parametros.documento_temporal_id, tipo_pedido: parametros.tipoPedido, sede:parametros.sede
+            });
+            
+    query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("error generar_rotulo_caja ",err);
+        console.log("error [generar_rotulo_caja]", err);
        callback(err);
     });
     
@@ -1043,6 +1073,7 @@ DocumentoBodegaE008.prototype.validarTemporal = function(doc_tmp_id, usuario_id,
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [validarTemporal]", err);
        callback(err);
     });
 
@@ -1056,6 +1087,7 @@ DocumentoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [marcar_cajas_como_despachadas]", err);
        callback(err);
     });
     
@@ -1070,6 +1102,7 @@ DocumentoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [cerrar_caja]", err);
        callback(err);
     });
 
@@ -1078,14 +1111,14 @@ DocumentoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 DocumentoBodegaE008.prototype.actualizarCajaDeTemporal = function(item_id, numero_caja, tipo, callback) {
    var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET numero_caja= :2, tipo_caja = :3 WHERE item_id = :1 ";
        
-   G.knex.raw(sql, {1:item_id, 2:numero_caja, 3:tipo}).
-   then(function(resultado){
+   var query=G.knex.raw(sql, {1:item_id, 2:numero_caja, 3:tipo});
+  
+   query.then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
+       console.log("error [actualizarCajaDeTemporal]", err);
        callback(err);
    });
-    
-    
 };
 
 
@@ -1126,7 +1159,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
             transaccion.commit();
         }).
         fail(function(err){
-            console.log("error generado >>>>>>>>>>>>", err);
+            console.log("error [actualizarCajaDeTemporal]", err);
             transaccion.rollback(err);
         }).
         done();
@@ -1136,7 +1169,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        console.log("error generar_documento_despacho_farmacias >>>>>>>>>>>>", err);
+        console.log("error [actualizarCajaDeTemporal]", err);
         callback(err);
     }).
     done();   
@@ -1178,7 +1211,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
             transaccion.commit();
         }).
         fail(function(err){
-            console.log("error generar_documento_despacho_clientes >>>>>>>>>>>>", err);
+            console.log("error [generar_documento_despacho_clientes]", err);
             transaccion.rollback(err);
         }).
         done();
@@ -1188,7 +1221,7 @@ DocumentoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        console.log("error generar_documento_despacho_clientes >>>>>>>>>>>>", err);
+        console.log("error [generar_documento_despacho_clientes]", err);
         callback(err);
     }).
     done();        
@@ -1216,7 +1249,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 '1' as tipo_pedido,\
                 '' as farmacia_id,\
                 j.observacion as descripcion_pedido, \
-                (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_tercero AND terc.tercero_id = j.tercero_id) as direccion\
+                (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_tercero AND terc.tercero_id = j.tercero_id) as direccion,\
+                (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_sede AND terc.tercero_id = j.sede_id) as direccion_sede\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -1249,7 +1283,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 '2' as tipo_pedido,\
                 j.farmacia_id,\
                 j.observacion as descripcion_pedido,\
-                '' as direccion\
+                '' as direccion,\
+                null as direccion_sede\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -1269,7 +1304,7 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
     query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("err consultar_documento_despacho ", err)
+       console.log("error [consultar_documento_despacho]", err);
        callback(err);
     });
     
@@ -1284,6 +1319,7 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
 
 function __errorGenerandoDocumento(err, callback) {
     if (err) {
+        console.log("error [__errorGenerandoDocumento]", err);
         callback(err);
     }
 }
@@ -1302,6 +1338,7 @@ function __ingresar_documento_despacho_farmacias(documento_temporal_id, usuario_
     query.then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [__ingresar_documento_despacho_farmacias]", err);
         callback(err);
     });
     
@@ -1325,6 +1362,7 @@ function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_i
     query.then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [__ingresar_documento_despacho_clientes]", err);
         callback(err);
     });
     
@@ -1345,6 +1383,7 @@ function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id,
     query.then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [__ingresar_justificaciones_despachos]", err);
         callback(err);
     });
     
@@ -1369,6 +1408,7 @@ function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_
     }).then(function(){
         callback(false);
     }).catch(function(err){
+        console.log("error [__eliminar_documento_temporal_farmacias]", err);
         callback(err);
     });
 
@@ -1392,6 +1432,7 @@ function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_i
     }).then(function(){
         callback(false);
     }).catch(function(err){
+        console.log("error [__eliminar_documento_temporal_clientes]", err);
         callback(err);
     });
     
@@ -1407,6 +1448,7 @@ function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_do
     query.then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("error [__asignar_responsable_despacho]", err);
         callback(err);
     });
     
@@ -1420,7 +1462,7 @@ DocumentoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
      G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-      
+      console.log("error [obtenerDocumento]", err);
         callback(err);
     });
 };
@@ -1529,6 +1571,7 @@ var sql1 =" a.*,\
                 a.numero,\
                 b.razon_social,\
                 a.empresa_id,\
+                a.bodega,\
                 to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
                 a.empresa_destino,\
                (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \
@@ -1566,6 +1609,7 @@ var sql1 =" a.*,\
         query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
+        console.log("error [listarDespachosAuditados]", err);
         callback(err);
        
     });
@@ -1601,7 +1645,7 @@ DocumentoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback)
      G.knex.raw(sql, parametros). then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-     
+         console.log("error [detalleDocumentoAuditado]", err);
         callback(err);
     });        
 };
@@ -1656,6 +1700,8 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     fc_descripcion_producto(b.codigo_producto) as nombre,\
                     (a.porcentaje_gravamen) as porcentaje_gravamen,\
                     (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+                    (a.valor_unitario) as valor_unitario_sin_iva,\
+                    (a.valor_unitario*a.cantidad) as valor_total_sin_iva,\
                     (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
                     ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
                     (((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
@@ -1687,7 +1733,7 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
      G.knex.raw(sql, parametros). then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-     
+        console.log("error [obtenerTotalDetalleDespacho]", err);
         callback(err);
     });        
 };
@@ -1730,11 +1776,10 @@ DocumentoBodegaE008.prototype.obtenerTotalDetalleDespachoAutomatico = function(o
        
      var query = G.knex.raw(sql, parametros);
     
-    console.log(G.sqlformatter.format(query.toString())); 
      query.then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-     
+        console.log("error [obtenerTotalDetalleDespachoAutomatico]", err);
         callback(err);
     });        
 };
@@ -1784,7 +1829,7 @@ DocumentoBodegaE008.prototype.detallePedidoClienteDocumento = function(obj, call
          
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-      
+        console.log("error [detallePedidoClienteDocumento]", err);
         callback(err);
     });
 };
@@ -1807,7 +1852,7 @@ DocumentoBodegaE008.prototype.detallePedidoFarmaciaDocumento = function(obj, cal
        
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-       
+        console.log("error [detallePedidoFarmaciaDocumento]", err);
         callback(err);
     });
 };
@@ -1826,7 +1871,7 @@ DocumentoBodegaE008.prototype.obtenerJustificaciones = function(obj, callback) {
        
         callback(false, resultado);   
     }).catch(function(err) { 
-       
+        console.log("error [obtenerJustificaciones]", err);
         callback(err);
     });
 };

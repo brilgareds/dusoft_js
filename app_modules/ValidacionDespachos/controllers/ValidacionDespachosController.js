@@ -650,8 +650,12 @@ function __registroSalidaDetalle(obj, index, callback) {
 
                 detalle.sw_estado = 5;
             } else {
-
-                return true;
+                if(resultado[0].estado === '4' || resultado[0].estado === '5'){
+                    detalle.sw_estado = resultado[0].estado;
+                    return true;
+                }else{
+                    throw {status: 403, msj: "El Documento " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado farmacia: " + resultado[0].estado};
+                }
             }
             detalle.sw_despacho = 1;
 

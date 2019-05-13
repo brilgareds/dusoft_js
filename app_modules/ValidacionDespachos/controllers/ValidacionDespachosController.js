@@ -646,12 +646,15 @@ function __registroSalidaDetalle(obj, index, callback) {
             if (resultado[0].estado === '3') {
 
                 detalle.sw_estado = 4;
+                detalle.estado_pedido = 4;
             } else if (resultado[0].estado === '9') {
 
                 detalle.sw_estado = 5;
+                detalle.estado_pedido = 5;
             } else {
                 if(resultado[0].estado === '4' || resultado[0].estado === '5'){
                     detalle.sw_estado = resultado[0].estado;
+                    detalle.estado_pedido = resultado[0].estado;
                     return true;
                 }else{
                     throw {status: 403, msj: "El Documento " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado farmacia: " + resultado[0].estado};
@@ -669,8 +672,13 @@ function __registroSalidaDetalle(obj, index, callback) {
                 detalle.sw_estado = 5;
                 detalle.estado_pedido = 5;
             } else {
-                throw {status: 403, msj: "El Documento " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado : " + resultado[0].estado_pedido};
-                return true;
+                if(resultado[0].estado_pedido === '4' || resultado[0].estado_pedido === '5'){
+                    detalle.sw_estado = resultado[0].estado_pedido;
+                    detalle.estado_pedido = resultado[0].estado_pedido;
+                    return true;
+                }else{
+                   throw {status: 403, msj: "El Document**o " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado : " + resultado[0].estado_pedido};                
+                }
             }
             detalle.estadoEntrega = 3;
 //            console.log("entro cliente");
@@ -683,12 +691,12 @@ function __registroSalidaDetalle(obj, index, callback) {
         detalle.usuario = obj.usuarioId;
 
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
-
+      
             obj.that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertarResponsablesPedidos', {numero_pedido: detalle.numero_pedido, estado: detalle.sw_estado, usuario: detalle.usuario, responsable: obj.operario, transaccion: detalle.transaccion, sw_terminado: '1'});
 
         } else if (detalle.tipo === '1') {
-//            console.log("entro cliente estado"); 
+        
             obj.that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
             return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertarResponsablesPedidos', {numero_pedido: detalle.numero_pedido, estado_pedido: detalle.estado_pedido, responsable: obj.operario, usuario: detalle.usuario, transaccion: detalle.transaccion, sw_terminado: '1'});
 

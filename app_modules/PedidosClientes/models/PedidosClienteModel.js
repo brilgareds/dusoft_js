@@ -1302,7 +1302,7 @@ PedidosClienteModel.prototype.insertarResponsablesPedidos = function (obj, callb
 
                 callback(false, resultado);
             }).catch(function (err) {
-        console.log("err [insertar_responsables_pedidos]: ", err);
+        console.log("err [insertarResponsablesPedidos]: ", err);
         callback(err);
     }).done();
 
@@ -1313,7 +1313,7 @@ PedidosClienteModel.prototype.consultarEstadoActualPedidoCliente = function (obj
     var query = G.knex("ventas_ordenes_pedidos").
             where("pedido_cliente_id", obj.numero_pedido).
             select(['estado_pedido']);
-console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

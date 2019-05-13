@@ -12,8 +12,9 @@ DocumentoBodegaE009.prototype.listarBodegas = function (callback) {
     var query = G.knex
             .select()
             .from('bodegas')
-            .where('bodega', '06')
-            
+            .whereIn('bodega', ['03', '06']);
+//            .where('bodega', '06')
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -324,7 +325,7 @@ DocumentoBodegaE009.prototype.actualizarExistenciasBodegasLotesFv = function (ob
 
     if (transaccion)
         query.transacting(transaccion);
-        
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -349,7 +350,7 @@ DocumentoBodegaE009.prototype.actualizarExistenciasBodegas = function (obj, ids,
 
     if (transaccion)
         query.transacting(transaccion);
-    
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

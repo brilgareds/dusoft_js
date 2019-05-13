@@ -571,11 +571,12 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                         (\
                         SELECT  'CLIENTES'  as tipo_de_despacho,\
                             a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as cliente,\
-                            d.nombre_tercero as sede\
+                            d.nombre_tercero as sede,k.departamento\
                             FROM    inv_bodegas_movimiento_despachos_clientes as a\
                             inner join terceros as b on (b.tipo_id_tercero = a.tipo_id_tercero AND b.tercero_id = a.tercero_id )\
                             left join ventas_ordenes_pedidos as c on (c.pedido_cliente_id = a.pedido_cliente_id)\
                             left join terceros as d on (d.tipo_id_tercero = c.tipo_id_sede AND d.tercero_id = c.sede_id)\
+                            left join tipo_dptos as k on k.tipo_pais_id=b.tipo_pais_id and k.tipo_dpto_id =b.tipo_dpto_id\
                             WHERE   a.empresa_id = :3\
                             AND a.prefijo = :2\
                             AND a.numero = :1\
@@ -584,7 +585,7 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                         (\
                             SELECT  'FARMACIAS'  as tipo_de_despacho,\
                             e.empresa_id || ' - '|| e.razon_social ||' ::: '||c.descripcion as farmacia,\
-                            null as sede\
+                            null as sede,f.departamento\
                             FROM    inv_bodegas_movimiento_despachos_farmacias as a\
                             JOIN solicitud_productos_a_bodega_principal as b ON (a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id)\
                             JOIN bodegas as c ON (b.farmacia_id = c.empresa_id)\
@@ -593,6 +594,7 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                             JOIN centros_utilidad as d ON (c.centro_utilidad = d.centro_utilidad)\
                             AND (c.empresa_id = d.empresa_id)\
                             JOIN empresas as e ON (d.empresa_id = e.empresa_id)\
+                            JOIN tipo_dptos as f on f.tipo_pais_id=d.tipo_pais_id and f.tipo_dpto_id =d.tipo_dpto_id\
                             WHERE   a.empresa_id = :3\
                             AND a.prefijo = :2\
                             AND a.numero = :1\

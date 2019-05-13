@@ -3185,6 +3185,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 }
 
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
+
                 datos_documento.serverUrl = req.protocol + '://' + req.get('host') + "/";
 
                 //Calculo de totales
@@ -3197,8 +3198,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
                 datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
                 datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
-
-
+                datos_documento.encabezado.departamento = datos_documento.adicionales.departamento;
                 //Se ordena por caja
                 datos_documento.detalle.sort(function (a, b) {
                     if (a.numero_caja > b.numero_caja) {
@@ -3862,6 +3862,7 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
 }
 
 function __generarPdfDespacho(datos, callback) {
+//    console.log("datos ",datos.adicionales);
 
     G.jsreport.render({
         template: {

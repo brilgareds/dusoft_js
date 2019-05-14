@@ -3198,8 +3198,8 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
                 datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
                 datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
-                
-                if(datos_documento.encabezado.departamento  !== "" || datos_documento.encabezado.departamento !== null){
+               
+                if(datos_documento.encabezado.departamento  !== "" && datos_documento.encabezado.departamento !== null){
                  datos_documento.encabezado.departamentos = { valor: datos_documento.encabezado.departamento};
                 }else{
                  datos_documento.encabezado.departamentos = datos_documento.adicionales.departamento;

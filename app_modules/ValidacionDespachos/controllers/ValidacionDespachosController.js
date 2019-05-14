@@ -602,9 +602,13 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
         res.send(G.utils.r(req.url, "ingreso Correcto", 200, {validacionDespachos: resultado}));
 
     }).catch(function (err) {
-        console.log("err ", err);
-        var mensaje = 'Error en el registro';
-
+        console.log("Error  ", err);
+        var mensaje = '';
+        if(err.code === '23505'){
+         mensaje = 'El Registro ya se encuentra Almacenado';
+        }else{
+         mensaje = 'Error en el registro';
+        }
         if (err.msj !== undefined) {
             mensaje = err.msj;
         }

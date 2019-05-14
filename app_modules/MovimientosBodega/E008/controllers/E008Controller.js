@@ -3198,7 +3198,12 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
                 datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
                 datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
-                datos_documento.encabezado.departamento = datos_documento.adicionales.departamento;
+                
+                if(datos_documento.encabezado.departamento  !== "" || datos_documento.encabezado.departamento !== null){
+                 datos_documento.encabezado.departamentos = { valor: datos_documento.encabezado.departamento};
+                }else{
+                 datos_documento.encabezado.departamentos = datos_documento.adicionales.departamento;
+                }
                 //Se ordena por caja
                 datos_documento.detalle.sort(function (a, b) {
                     if (a.numero_caja > b.numero_caja) {
@@ -3861,9 +3866,11 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
     });
 }
 
+const promesa = new Promise((resolve, reject) => { resolve(true); });
+
 function __generarPdfDespacho(datos, callback) {
 //    console.log("datos ",datos.adicionales);
-
+promesa.then(function (respuesta){
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
@@ -3891,6 +3898,9 @@ function __generarPdfDespacho(datos, callback) {
 
         });
     });
+  }).catch(function(error){
+    console.log("Erorr ",error);  
+  });
 }
 
 

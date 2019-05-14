@@ -647,11 +647,11 @@ function __registroSalidaDetalle(obj, index, callback) {
     }).then(function (resultado) {
         if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
 
-            if (resultado[0].estado === '3') {
+            if (resultado[0].estado === '3' || resultado[0].estado === '2') {
 
                 detalle.sw_estado = 4;
                 detalle.estado_pedido = 4;
-            } else if (resultado[0].estado === '9') {
+            } else if (resultado[0].estado === '9' || resultado[0].estado === '8') {
 
                 detalle.sw_estado = 5;
                 detalle.estado_pedido = 5;
@@ -669,10 +669,10 @@ function __registroSalidaDetalle(obj, index, callback) {
             return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'actualizarEstadoActualPedidoFarmacia', detalle);
 
         } else if (detalle.tipo === '1') {
-            if (resultado[0].estado_pedido === '3') {
+            if (resultado[0].estado_pedido === '3' || resultado[0].estado_pedido === '2') {
                 detalle.sw_estado = 4;
                 detalle.estado_pedido = 4;
-            } else if (resultado[0].estado_pedido === '9') {
+            } else if (resultado[0].estado_pedido === '9' || resultado[0].estado_pedido === '8') {
                 detalle.sw_estado = 5;
                 detalle.estado_pedido = 5;
             } else {

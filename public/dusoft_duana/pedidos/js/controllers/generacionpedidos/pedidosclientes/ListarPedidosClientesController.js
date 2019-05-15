@@ -566,13 +566,13 @@ define(["angular", "js/controllers",
             $scope.pagina_anterior_cotizaciones = function () {
                 $scope.datos_view.paginando_cotizaciones = true;
                 $scope.datos_view.pagina_actual_cotizaciones--;
-                that.buscar_cotizaciones('');
+                that.buscar_cotizaciones(6);
             };
 
             $scope.pagina_siguiente_cotizaciones = function () {
                 $scope.datos_view.paginando_cotizaciones = true;
                 $scope.datos_view.pagina_actual_cotizaciones++;
-                that.buscar_cotizaciones('');
+                that.buscar_cotizaciones(6);
             };
 
             // Pedidos

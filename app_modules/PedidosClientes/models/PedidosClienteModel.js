@@ -2483,7 +2483,6 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
 
     }
 
-
     var sql = "a.empresa_id,\
      a.centro_destino as centro_utilidad_id,\
      a.bodega_destino as bodega_id,\
@@ -2612,14 +2611,14 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
                         on("a.tercero_id", "j.tercero_id").on("a.empresa_id", "j.empresa_id").
                         on(G.knex.raw("j.estado = '1'"));
             });
-    queryPrincipal.then(function (resultado) {
 
-        callback(false, resultado);
-    }).catch(function (err) {
-        console.log("err [listar_cotizaciones]: ", err);
-        callback(err);
-
-    });
+    queryPrincipal
+        .then(resultado => {
+            callback(false, resultado);
+        }).catch(err => {
+            console.log("err [listar_cotizaciones]: ", err);
+            callback(err);
+        });
 };
 
 /*

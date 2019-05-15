@@ -2104,6 +2104,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
      *              proseguira a crearse en los siguientes metodos
      */
+    console.log("cotizacion.numero_cotizacion ",cotizacion.numero_cotizacion);
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         /**
@@ -2222,8 +2223,12 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
         }
 
     }).then(function (rows, result) {
-
-        cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;
+   
+        if(rows[0][0] !== undefined){
+            cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;
+        }else{
+            cotizacion.numero_cotizacion = rows[0]; 
+        }
         productosPreparadosCotizacion = [];
         productosPreparadosCotizacionInvalidos = [];
 

@@ -2457,6 +2457,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
         filtroEstadoCotizacion = " AND (a.estado " + G.constants.db().LIKE + " :7)";
         if(estadoCotizacion === 6){
             parametros["7"] = estadoCotizacion + '%';
+            filtroEstadoCotizacion += " AND observacion_cartera = ''";
         }else{
             parametros["7"] = '%' + estadoCotizacion + '%';
         }
@@ -2607,9 +2608,11 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
             leftJoin("inv_tipo_producto as g", "a.tipo_producto", "g.tipo_producto_id").
             leftJoin("ventas_ordenes_pedidos as h", "a.numero_cotizacion", "h.pedido_cliente_id_tmp").
             leftJoin("vnts_contratos_clientes as j", function () {
-                this.on("a.tipo_id_tercero", "j.tipo_id_tercero").
-                        on("a.tercero_id", "j.tercero_id").on("a.empresa_id", "j.empresa_id").
-                        on(G.knex.raw("j.estado = '1'"));
+                this.on("a.tipo_id_tercero", "j.tipo_id_tercero")
+                    .on("a.tercero_id", "j.tercero_id")
+                    .on("a.empresa_id", "j.empresa_id")
+                    .on(G.knex.raw('a.bodega_id = ' + parametros[4]))
+                    .on(G.knex.raw("j.estado = '1'"));
             });
 
     queryPrincipal

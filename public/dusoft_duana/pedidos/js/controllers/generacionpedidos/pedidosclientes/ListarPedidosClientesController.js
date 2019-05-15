@@ -1198,7 +1198,7 @@ define(["angular", "js/controllers",
                         }, 90000);
                     }
                 });
-            }
+            };
 
             /*
              * @Author: Cristian Ardila

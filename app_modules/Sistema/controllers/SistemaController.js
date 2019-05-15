@@ -271,9 +271,15 @@ Sistema.prototype.sshConnection = (req, res) => {
                     } else if (modulo === 'PM2') {
                         if((j !== cantidadLineas-2) && (j !== cantidadLineas-1)) {
                             if (accion === 'status') {
-                                if (j === 1) {
+                                if ((server === 117 && j === 1)
+                                    || (server === 191 && j === 1)
+                                    || (server === 216 && j === 1)
+                                    || server === 229 && j === 1) {
                                     resultadoArray[0].header = palabrasFiltradas;
-                                } else if (j > 2 && j !== 7 && j !== 8) {
+                                } else if ((server === 191 && j === 2)
+                                    || (server === 191 && j > 2)
+                                    || (server === 191 && j !== 7 && j !== 8))
+                                {
                                     resultadoArray[0].rows.push(palabrasFiltradas);
                                 }
                             } else if (accion === 'resurrect') {

@@ -108,7 +108,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             // Creando servidores, Agregando Modulos y agregando Sockets
-            // $scope.crearServer(117, ['PM2']); // Creando servidor 117
+            $scope.crearServer(117, ['PM2']); // Creando servidor 117
             $scope.crearServer(191, ['PC', 'PM2']); // Creando servidor 191
             $scope.crearServer(216, ['PC', 'JASPER', 'PM2']); // Creando servidor 216
             $scope.crearServer(229, ['PC', 'PM2']); // Creando servidor 229

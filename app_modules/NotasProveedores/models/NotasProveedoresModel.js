@@ -200,9 +200,7 @@ NotasProveedoresModel.prototype.conceptosEspecificos = function (obj, callback) 
     });
 };
 
-const promesa = new Promise((resolve, reject) => {
-    resolve(true);
-});
+const promesa = new Promise((resolve, reject) => { resolve(true); });
 
 NotasProveedoresModel.prototype.updateUrlNota = (obj, callback) => {
     let columnaUrl = '';

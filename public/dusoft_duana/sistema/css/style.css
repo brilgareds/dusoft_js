@@ -22,21 +22,34 @@
     text-transform: uppercase;
 }
 
-.tablePc th, .tablePc td{
+.tablePc:not(.cells-auto) th, .tablePc:not(.cells-auto) td{
     width: 12%;
 }
 
-.tablePc th:first-child, .tablePc td:first-child{
+.tablePc:not(.cells-auto) th:first-child, .tablePc:not(.cells-auto) td:first-child{
     width: 28%;
+}
+.tablePc.cells-auto th {
+    text-align: center;
+    padding-bottom: 5px;
 }
 .tablePc td:first-child{
     font-weight: bolder;
 }
+.tableBorder td {
+    border: 1px solid #dedede;
+}
 .console-format{
     background-color: #000;
     color: #FFF;
+    min-height: 50px;
 }
 .contenedor-modulos-btns{
     display: flex;
     justify-content: space-between;
+}
+.contenedor-estadisticas > nvd3-line-chart > svg {
+    border: 2px solid #428aca;
+    border-radius: 30px;
+    padding-right: 40px;
 }

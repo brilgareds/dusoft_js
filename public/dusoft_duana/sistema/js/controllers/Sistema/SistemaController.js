@@ -18,78 +18,122 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.promedioActual = 0;
             $scope.promedioTotal = 0;
             $scope.monitorModulos = {};
-            $scope.serverModulos216 = {};
-            $scope.serverModulos216.modulos = [];
-            $scope.serverModulos229 = {};
-            $scope.serverModulos229.modulos = [];
             $scope.monitoreo = { servers: [] };
 
-            $scope.crearServer = function(server){
-                $scope.monitoreo[server] = {};
-                $scope.monitoreo.servers.push(server);
-            };
-
-            $scope.agregarModulo = function(server, modulo){
-                if($scope.monitorModulos[modulo] !== undefined && $scope.monitoreo[server] !== undefined){
-                    if($scope.monitoreo[server].modulos === undefined){
-                        $scope.monitoreo[server].modulos = [];
-                    }
-                    $scope.monitoreo[server].modulos.push(modulo);
-                    $scope.monitoreo[server][modulo] = JSON.parse(JSON.stringify($scope.monitorModulos[modulo]));
-                }else{
-                    console.log('Error!!');
-                    if($scope.monitoreo[server] !== undefined){
-                        console.log('Servidor: '+ server +', no existe!!');
-                    }
-                    if($scope.monitorModulos[modulo] !== undefined){
-                        console.log('Modulo: '+ modulo +', no existe!!');
-                    }
-                }
-            };
-
-            $scope.monitorModulos.PC = {
-                title: 'PC',
-                actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-info', disable: false}
-                ],
-                obj: []
-            };
-            $scope.monitorModulos.JASPER = {
-                title: 'JasperServer',
-                actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-info', disable: false},
-                    {title: 'Start', name: 'start', class: serverBtnSize + 'btn btn-primary', disable: false},
-                    {title: 'Stop', name: 'stop', class: serverBtnSize + 'btn btn-danger', disable: false}
-                ],
-                obj: []
-            };
-            $scope.monitorModulos.PM2 = {
-                title: 'PM2',
-                actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-info', disable: false},
-                    {title: 'Reload', name: 'reload', class: serverBtnSize + 'btn btn-primary', disable: false},
-                    {title: 'Resurrect', name: 'resurrect', class: serverBtnSize + 'btn btn-danger', disable: false}
-                ],
-                obj: []
-            };
-            // Creando servidores
-            $scope.crearServer(216); // Creando servidor 216
-            $scope.crearServer(229); // Creando servidor 229
-
-            // Agregando Modulos a los servidores
-            $scope.agregarModulo(216, 'PC');
-            $scope.agregarModulo(216, 'JASPER');
-            $scope.agregarModulo(216, 'PM2');
-
-            $scope.agregarModulo(229, 'PC');
-            $scope.agregarModulo(229, 'PM2');
-
+            // Variables Globales
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
+            // Funcion para realizar peticiones GET y POST
+            $scope.get = (url, obj, callback) => {
+                Request.realizarRequest(url, "GET", obj, data => callback(data) );
+            };
+            $scope.post = (url, obj, callback) => {
+                Request.realizarRequest(url, "POST", obj, data => callback(data) );
+            };
+
+            // Creando Modulos
+            $scope.monitorModulos.PC = {
+                title: 'PC',
+                width: 'col-xs-6 col-sm-6 col-md-6 col-lg-6',
+                tableClass: 'tablePc',
+                actions: [
+                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'}
+                ],
+                obj: []
+            };
+            $scope.monitorModulos.JASPER = {
+                title: 'JasperServer',
+                width: 'col-xs-6 col-sm-6 col-md-6 col-lg-6',
+                tableClass: 'tablePc',
+                actions: [
+                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
+                    {title: 'Start', name: 'start', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-play'},
+                    {title: 'Stop', name: 'stop', class: serverBtnSize + 'btn btn-danger', disable: false, icono: 'glyphicon glyphicon-stop'}
+                ],
+                obj: []
+            };
+            $scope.monitorModulos.PM2 = {
+                title: 'PM2',
+                width: 'col-xs-6 col-sm-6 col-md-6 col-lg-6',
+                tableClass: 'tablePc tableBorder cells-auto',
+                actions: [
+                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
+                    {title: 'Reload', name: 'reload', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-refresh'},
+                    {title: 'Resurrect', name: 'resurrect', class: serverBtnSize + 'btn btn-danger', disable: false, icono: 'glyphicon glyphicon-eject'}
+                ],
+                obj: []
+            };
+
+            // Funcion para crear Servidor con Modulos y Sockets
+            $scope.crearServer = (server, Modulos) => {
+                $scope.monitoreo[server] = {};
+                $scope.monitoreo.servers.push(server);
+
+                // Agregando Modulos al servidor
+                if(Array.isArray(Modulos) && Modulos.length > 0) {
+                    for (let Modulo of Modulos) {
+                        if($scope.monitorModulos[Modulo] !== undefined
+                            && Array.isArray(Modulos)
+                            && $scope.monitoreo[server] !== undefined)
+                        {
+                            if($scope.monitoreo[server].modulos === undefined) {
+                                $scope.monitoreo[server].modulos = [];
+                            }
+                            $scope.monitoreo[server].modulos.push(Modulo);
+                            $scope.monitoreo[server][Modulo]=JSON.parse(JSON.stringify($scope.monitorModulos[Modulo]));
+
+                            // Crear Socket
+                            const modulo = Modulo.toLowerCase();
+                            const nombreSocket = modulo+server;
+                            socket.on(nombreSocket, datos => {
+                                if (datos.status === 200) $scope.monitoreo[server][Modulo].obj = datos.obj;
+                            });
+                        } else {
+                            console.log('Error!!');
+                            if ($scope.monitoreo[server] !== undefined) {
+                                console.log('Servidor: '+ server +', no existe!!');
+                            }
+                            if ($scope.monitorModulos[Modulo] !== undefined) {
+                                console.log('Modulo: '+ Modulo +', no existe!!');
+                            }
+                        }
+                    }
+                } else {
+                    console.log('Error: formato incorrecto en array "Modulos"!!');
+                }
+            };
+
+            // Creando servidores, Agregando Modulos y agregando Sockets
+            // $scope.crearServer(117, ['PM2']); // Creando servidor 117
+            $scope.crearServer(191, ['PC', 'PM2']); // Creando servidor 191
+            $scope.crearServer(216, ['PC', 'JASPER', 'PM2']); // Creando servidor 216
+            $scope.crearServer(229, ['PC', 'PM2']); // Creando servidor 229
+
+            // Funcion para la conexion por SSH con los servidores
+            $scope.sshConnection = (modulo, accion, server) => {
+                const obj = {
+                    session: $scope.session,
+                    data: {
+                        accion: accion,
+                        modulo: modulo,
+                        server: server
+                    }
+                };
+                $scope.post(API.LOGS.SSH, obj, data => {
+                    if (data.status === 200) {
+                        console.log('Repuesta 200');
+                        if (modulo === 'PM2' && accion === 'reload') {
+                            $scope.sshConnection(modulo, 'status', server);
+                        }
+                    }
+                });
+            };
+
+            // Variables y funciones para Estadistica de Memoria
             $scope.datosGrafico = [{
                 "key": "Uso de Memoria",
                 "values": []
@@ -154,48 +198,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 return function (d) {
                     return d3.time.format('%x-%H:%M')(new Date(d * 1000));
                 };
-            };
-
-            // Socket del SERVER 216
-            socket.on("pc216", function (datos) {
-                console.log('pc216');
-                if (datos.status === 200) { $scope.monitoreo[216].PC.obj = datos.obj; }
-                console.log('$scope.monitoreo: ', $scope.monitoreo);
-            });
-            socket.on("jasper216", function (datos) {
-                if (datos.status === 200) { $scope.monitoreo[216].JASPER.obj = datos.obj; }
-            });
-            socket.on("pm2216", function (datos) {
-                if (datos.status === 200) { $scope.monitoreo[216].PM2.obj = datos.obj; }
-            });
-
-            // Socket del SERVER 229
-            socket.on("pc229", function (datos) {
-                console.log('pc229');
-                if (datos.status === 200) { $scope.monitoreo[229].PC.obj = datos.obj; }
-            });
-            socket.on("jasper229", function (datos) {
-                if (datos.status === 200) { $scope.monitoreo[229].JASPER.obj = datos.obj; }
-            });
-            socket.on("pm2229", function (datos) {
-                if (datos.status === 200) { $scope.monitoreo[229].PM2.obj = datos.obj; }
-            });
-
-            $scope.sshConnection = function (modulo, accion, server) {
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        accion: accion,
-                        modulo: modulo,
-                        server: server
-                    }
-                };
-
-                Request.realizarRequest(API.LOGS.JASPER_REPORT, "POST", obj, function (data) {
-                    if (data.status === 200) {
-                        console.log('Repuesta 200');
-                    }
-                });
             };
         }]);
 });

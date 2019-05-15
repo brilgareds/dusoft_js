@@ -39,6 +39,12 @@
     width: 90%;
 }
 
+.table-responsive .ngHeaderContainer {
+    background: #337ab7;
+    color: #FFF;
+    border: #337ab7 !important;
+}
+
 .table-responsive {
     width: 100%;
     height: auto;

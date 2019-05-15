@@ -147,7 +147,12 @@
     <div class="panel panel-primary">
         <div class="panel-heading title-detalle" align="center">Items en el Documento Temporal</div>
         <form ng-submit="crearNota()" ng-model="formulario" class="panel-body">
-            <table class="table-responsive">
+            <div ng-show="!NotaTemporal.temporal.detalle.all.length">
+                <h4 style="text-align: center; margin: 0px; background: #eaeaea; padding: 10px; font-size: 20px;">
+                    <i>Sin Items Temporales</i>
+                </h4>
+            </div>
+            <table class="table-responsive" ng-show="NotaTemporal.temporal.detalle.all.length">
                 <tbody>
                 <tr>
                     <td width="15%">Producto</td>
@@ -190,7 +195,7 @@
             <span style="margin-right: 20px">Total Debito: <label>{{NotaTemporal.temporal.detalle.totalBajaCostoString}}</label></span>
             <span>Total Credito: <label>{{NotaTemporal.temporal.detalle.totalSubeCostoString}}</label></span>
             <div class="cajaCentrada">
-                <button class="col-sm-2 btn cajaCentrada" type="submit" style="background: #399039; color: #FFF;">
+                <button ng-disabled="!NotaTemporal.temporal.detalle.all.length" class="col-sm-2 btn cajaCentrada" type="submit" style="background: #399039; color: #FFF;">
                     <span class="btn-icon glyphicon glyphicon-floppy-disk"></span>
                     Crear Documento
                 </button>

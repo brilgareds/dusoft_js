@@ -59,9 +59,37 @@ Sistema.prototype.verificarSincronizacion = function (req, res) {
     });
 };
 
-Sistema.prototype.jasperReport = (req, res) => {
-    console.log('In controller "jasperReport"');
-    res.send(G.utils.r(req.url, 'jasperReport', 200, {jasperReport: {}}));
+const limpiarRespuesta = (lineas) => {
+    const cantidadLineas = lineas.length;
+    let palabras = [];
+    let palabra = '';
+    let responseLineas = [];
+    let responsePalabras = [];
+    let cantidadPalabras = 0;
+
+    for (let j = 0; j < cantidadLineas; j++) {
+        palabras = lineas[j].split(' ');
+        cantidadPalabras = palabras.length;
+        responsePalabras = [];
+
+        for (let k = 0; k < cantidadPalabras; k++) {
+            palabra = palabras[k].trim();
+            if (palabra.length > 0 && palabra !== '│') {
+                responsePalabras.push(palabra);
+            }
+        }
+        if (responsePalabras.length > 0) {
+            responseLineas.push(responsePalabras);
+        }
+    }
+    return responseLineas;
+};
+
+
+
+Sistema.prototype.sshConnection = (req, res) => {
+    console.log('In controller "sshConnection"');
+    res.send(G.utils.r(req.url, 'sshConnection', 200, {sshConnection: {}}));
     let args = req.body.data;
     let accion = args.accion;
     let modulo = args.modulo;
@@ -75,7 +103,21 @@ Sistema.prototype.jasperReport = (req, res) => {
     // var urlPM2 = '/var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js';
     // console.log('Modulo es: ', modulo, ''); // Nombre del modulo
 
-    if (server === 216) {
+    if (server === 117) {
+        credentialRoot = 'echo 301206. | sudo -S ';
+        parametros = {
+            host: "10.0.2.117",
+            user: "duana",
+            password: "301206."
+        };
+    } else if (server === 191) {
+        credentialRoot = 'echo 301206. | sudo -S ';
+        parametros = {
+            host: '10.0.2.191',
+            user: 'gabriel',
+            password: 'gear777'
+        };
+    } else if (server === 216) {
         credentialRoot = 'echo 301206. | sudo -S ';
         parametros = {
             host: "10.0.2.216",
@@ -131,48 +173,62 @@ Sistema.prototype.jasperReport = (req, res) => {
 
     G.Q.nfcall(__asistenteSSH, parametros)
         .then(resultados => {
-            let lineas = resultados.split('\n');
-            let cantidadLineas = lineas.length;
-            let palabrasFiltradas = [];
-            let palabra = '';
             let headerDefault = ['App', 'Status'];
+            let palabrasFiltradas = [];
+            let palabras = [];
+            let palabra = '';
+            let cantidadPalabras = 0;
+            let lineas = limpiarRespuesta(resultados.split('\n'));
+            const cantidadLineas = lineas.length;
 
-            for (let i = 0; i < cantidadObjetos; i++){  // Declarar propiedades del objeto a responder
+            for (let i = 0; i < cantidadObjetos; i++) {  // Declarar propiedades del objeto a responder
                 resultadoArray[i] = { header: [], title: modulo, rows: [] };
             }
 
             for (let j = 0; j < cantidadLineas; j++) {
-                let palabras = lineas[j].split(' ');
-                let cantidadPalabras = palabras.length;
+                palabras = lineas[j];
+                cantidadPalabras = palabras.length;
 
                 for (let k = 0; k < cantidadPalabras; k++) {
-                    palabras[k] = palabras[k].trim();
-                    if (palabras[k].length > 0) {
-                        palabra += palabras[k] + ' '; // El espacio agregado es para luego poder concatenar
-                        // console.log('J es: '+ j + ', K es: ' + k + ', palabra es: ', palabra); // Columna,linea y palabra
-
-                        if (modulo === 'PC') {
-                            if (!(j === 2 && k === 0)
-                                && !(server === 216 && j === 4 && k === 17)
-                                && !(server === 229 && j === 4 && k === 10))
-                            {   // En caso de "false" concatenará la palabra
-                                palabra = palabra.trim();
-                                if (j > 4 && k === 0) {
-                                    palabra = palabra + ':';
-                                }
-                                if(j === 0 && palabrasFiltradas.length === 0){
-                                    palabrasFiltradas.push('');
-                                }
+                    palabra += palabras[k] + ' '; // El espacio agregado es para luego poder concatenar
+                    if (modulo === 'PC') {
+                        if (!(server === 191 && j === 3 && k === 5)
+                            && !(server === 216 && j === 2 && k === 0)
+                            && !(server === 216 && j === 4 && k === 5)
+                            && !(server === 229 && j === 2 && k === 0)
+                            && !(server === 229 && j === 4 && k === 5))
+                        {   // En caso de "false" concatenará la palabra
+                            palabra = palabra.trim();
+                            if ((server === 191 && j > 3 && k === 0)
+                                || (server === 216 && j > 4 && k === 0)
+                                || (server === 229 && j > 4 && k === 0)) { // Agrega dos puntos a la primera palabra de la linea 4
+                                palabra = palabra + ':';
+                            }
+                            if(j === 0 && palabrasFiltradas.length === 0){
+                                palabrasFiltradas.push('');
+                            }
+                            palabrasFiltradas.push(palabra);
+                            palabra = '';
+                        }
+                    } else if (modulo === 'JASPER') {
+                        if (k !== 1) { // En caso de "false" concatenará la palabra
+                            palabra = palabra.trim();
+                            if (k === 0) { // Agrega dos puntos a la primera palabra de cada linea
+                                palabra = palabra + ':';
+                            }
+                            // console.log('Palabra ESSSSSS: ', palabra);
+                            palabrasFiltradas.push(palabra);
+                            palabra = '';
+                        }
+                    } else if (modulo === 'PM2') {
+                        if (accion === 'status') {
+                            if (!(j === 1 && k === 0)
+                                && !(j > 2 && k === 9)) {
                                 palabrasFiltradas.push(palabra);
                                 palabra = '';
                             }
-                        } else if (modulo === 'JASPER') {
-                            if (k !== 1) { // En caso de "false" concatenará la palabra
-                                palabra = palabra.trim();
-                                if (k === 0) {
-                                    palabra = palabra + ':';
-                                }
-                                // console.log('Palabra ESSSSSS: ', palabra);
+                        } else if (accion === 'resurrect') {
+                            if (!(j === 3 && k === 0) && !(j > 3 && k === 9)) {
                                 palabrasFiltradas.push(palabra);
                                 palabra = '';
                             }
@@ -188,21 +244,49 @@ Sistema.prototype.jasperReport = (req, res) => {
                             if (j === 0) {
                                 resultadoArray[0].title = 'Memoria Ram & Swap';
                                 resultadoArray[0].header = palabrasFiltradas;
-                            } else if (j < 4) {
+                            } else if ((server === 191 && j < 3)
+                                || (server === 216 && j < 4)
+                                || (server === 229 && j < 4))
+                            {
                                 resultadoArray[0].rows.push(palabrasFiltradas);
-                            } else if (j === 4) {
+                            } else if ((server === 191 && j === 3)
+                                || (server === 216 && j === 4)
+                                || (server === 229 && j === 4))
+                            {
                                 resultadoArray[1].title = 'Disco Duro';
                                 resultadoArray[1].header = palabrasFiltradas;
-                            } else if (j > 4) {
+                            } else if ((server === 191 && j > 3)
+                                || (server === 216 && j > 4)
+                                || (server === 229 && j > 4)) {
                                 resultadoArray[1].rows.push(palabrasFiltradas);
                             }
                             palabrasFiltradas = [];
                         }
-                    } else {
+                    } else if (modulo === 'JASPER') {
                         if (j === 0) {
                             resultadoArray[0].header = headerDefault;
                         }
                         resultadoArray[0].rows.push(palabrasFiltradas);
+                        palabrasFiltradas = [];
+                    } else if (modulo === 'PM2') {
+                        if((j !== cantidadLineas-2) && (j !== cantidadLineas-1)) {
+                            if (accion === 'status') {
+                                if (j === 1) {
+                                    resultadoArray[0].header = palabrasFiltradas;
+                                } else if (j > 2 && j !== 7 && j !== 8) {
+                                    resultadoArray[0].rows.push(palabrasFiltradas);
+                                }
+                            } else if (accion === 'resurrect') {
+                                if(j === 1) {
+                                    palabrasFiltradas = [palabrasFiltradas.join(' ')];
+                                    resultadoArray[0].title = palabrasFiltradas[0];
+                                } else if (j === 3) {
+                                    resultadoArray[0].header = palabrasFiltradas;
+                                } else if (j > 4) {
+                                    resultadoArray[0].rows.push(palabrasFiltradas);
+                                }
+                            }
+                        }
                         palabrasFiltradas = [];
                     }
                 }
@@ -215,26 +299,21 @@ Sistema.prototype.jasperReport = (req, res) => {
             that.e_sistema.enviarInformacion(retorno);
         }).catch(err => {
             console.log("error generado ", err);
-            // res.send(G.utils.r(req.url, 'Error jasperReport', 500, {jasperReport: err}));
         }).done();
 };
 
-function __asistenteSSH(parametros, callback) {
-    var respuesta = "";
-    var resp = false;
-    var host = parametros.user + '@' + parametros.host;
-    var seq = G.sequest.connect(host, {username: parametros.user, password: parametros.password});
-    seq(parametros.sentencia, function (err, stdout) {
-        console.log("respuesta: \n", stdout, '\n'); // Respuesta del servidor
-        if (err !== undefined) {
-            callback(stdout);
-        } else {
-            callback(false, stdout);
-        }
+const __asistenteSSH = (parametros, callback) => {
+    const host = parametros.user + '@' + parametros.host;
+    const opts = { username: parametros.user, password: parametros.password };
+    const seq = G.sequest.connect(host, opts);
+    seq(parametros.sentencia, (err, stdout) => {
+        // console.log('parametros.sentencia: ', parametros.sentencia);
+        // console.log("respuesta: \n", stdout, '\n'); // Respuesta del servidor
+        if (err !== undefined || stdout === undefined) { callback(stdout); }
+        else { callback(false, stdout); }
         seq.end() // will keep process open if you don't end it
     });
-
-}
+};
 
 Sistema.$inject = ["m_sistema", "socket", "e_sistema"];
 module.exports = Sistema;

@@ -16,8 +16,8 @@ module.exports = function(app, di_container) {
          c_sistema.jasperReport(req, res);
     });
     
-    app.post('/api/Sistema/jasperReport', function(req, res) {
-         c_sistema.jasperReport(req, res);
+    app.post('/api/Sistema/sshConnection', function(req, res) {
+         c_sistema.sshConnection(req, res);
     });
 
         // ======== Events E008 ========

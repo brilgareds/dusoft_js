@@ -7,7 +7,7 @@ define(["angular"], function(angular) {
             'LOGS': {
                 "LISTAR_LOGS": BASE_URL + "/Sistema/listarLogs",
                 "LISTAR_LOGS_VERSION": BASE_URL + "/Sistema/listarLogsVersion",
-                "JASPER_REPORT": BASE_URL + "/Sistema/jasperReport",
+                "SSH": BASE_URL + "/Sistema/sshConnection",
             },
             'VERSION' : {
                 "VERIFICAR_SINCRONIZACION": BASE_URL + "/Sistema/verificarSincronizacion",

@@ -186,16 +186,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableFiltering: true,
                         showSelectionCheckbox: true,
                         enableRowSelection: true,
+                        showFilter:true,
+                        
                         selectedItems: $scope.listaAgrupados,
                         columnDefs: [
-                            {field: 'descripcion_destino', displayName: 'Cliente', width: "40%"},
+                            {field: 'descripcion_destino', displayName: 'Cliente', width: "38%"},
                             {field: 'factura', displayName: 'Factura', width: "10%"},
                             {field: 'prefijo', displayName: 'Prefijo', width: "10%"},
                             {field: 'numero', displayName: 'Documento', width: "10%"},
-                            {field: 'cantidad_cajas', displayName: 'Caja', width: "6%"},
-                            {field: 'cantidad_neveras', displayName: 'Nevera', width: "8%"},
-                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "8%"},
-                            {field: 'temperatura_neveras', displayName: '°C', width: "6%"},
+                            {field: 'cantidad_cajas', displayName: 'Caja', width: "5%"},
+                            {field: 'cantidad_neveras', displayName: 'Nevera', width: "6%"},
+                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "6%"},
+                            {field: 'temperatura_neveras', displayName: '°C', width: "5%"},
                             {field: 'ciudad', displayName: 'Ciudad', width: "10%"}
                         ]
                     };

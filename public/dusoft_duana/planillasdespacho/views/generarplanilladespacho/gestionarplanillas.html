@@ -13,8 +13,8 @@
                     </div>
                     <div class="panel-body">                    
                         <div class="row">
-                            <div class="col-md-5">
-                                <div class="col-md-6">
+                            <div class="col-md-9">
+<!--                                <div class="col-md-6">
                                     <fieldset>
                                         <legend>Ciudad</legend>      
 
@@ -25,11 +25,11 @@
                                             </ui-select-choices>
                                         </ui-select>                                   
                                     </fieldset>
-                                </div>                        
-                                <div class="col-md-6">
+                                </div>                        -->
+                                <div class="col-md-4">
                                     <fieldset>
                                         <legend>Tipo Guia</legend>    
-                                        <ui-select ng-model="planilla.tipo_planilla" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-model="planilla.tipo_planilla" theme="select2" class="form-control selectgeneral pull-left" >
                                             <ui-select-match  placeholder="Seleccionar Tipo">{{ $select.selected.descripcion}}</ui-select-match>
                                             <ui-select-choices repeat="prefijo in datos_view.prefijosPlanilla">
                                                 {{prefijo.descripcion}}
@@ -37,12 +37,12 @@
                                         </ui-select> 
                                     </fieldset>
                                 </div>                        
-                            </div>  
-                            <div class="col-md-5">
-                                <div class="col-md-6">
+<!--                            </div>  
+                            <div class="col-md-5">-->
+                                <div class="col-md-4">
                                     <fieldset>
                                         <legend>Transportador</legend> 
-                                        <ui-select ng-model="planilla.transportadora" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
+                                        <ui-select ng-model="planilla.transportadora" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
                                             <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion()}}</ui-select-match>
                                             <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
                                                 {{ transportadora.get_descripcion()}}
@@ -50,12 +50,12 @@
                                         </ui-select>
                                     </fieldset>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <fieldset>
                                         <legend>Numero Guia</legend>                                 
                                         <div class="row">  
                                             <div class="col-md-12">                                          
-                                                <input type="text" ng-model="planilla.numero_guia_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_solicitar_guia() == '' || planilla.get_transportadora().get_solicitar_guia() == '0'" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
+                                                <input type="text" ng-model="planilla.numero_guia_externo" ng-disabled="planilla.get_transportadora() == undefined || planilla.get_transportadora().get_solicitar_guia() == '' || planilla.get_transportadora().get_solicitar_guia() == '0'" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
                                             </div>
                                         </div>
                                     </fieldset>
@@ -80,7 +80,7 @@
                                     <legend>Observación</legend>                                 
                                     <div class="row">  
                                         <div class="col-md-12">                                          
-                                            <textarea  ng-model="planilla.observacion" ng-disabled="planilla.get_numero_guia() > 0" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                            <textarea  ng-model="planilla.observacion" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -91,7 +91,7 @@
                                         <legend>Numero Placa</legend>                                 
                                         <div class="row">  
                                             <div class="col-md-12">                                          
-                                                <input type="text" ng-model="planilla.numero_placa_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_id() != '38'" class="form-control"  placeholder="Ingrese Numero Placa" name="" id="" />
+                                                <input type="text" ng-model="planilla.numero_placa_externo" ng-disabled="planilla.get_transportadora() == undefined || planilla.get_transportadora().get_id() != '38'" class="form-control"  placeholder="Ingrese Numero Placa" name="" id="" />
                                             </div>
                                         </div>
                                     </fieldset>
@@ -100,12 +100,12 @@
                                     <legend>Conductor</legend>                                 
                                     <div class="row">  
                                         <div class="col-md-12">                                          
-                                            <input type="text" ng-model="planilla.nombre_conductor" ng-disabled="planilla.get_numero_guia() > 0" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
+                                            <input type="text" ng-model="planilla.nombre_conductor" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
                                         </div>
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <fieldset>
                                     <legend>Estado</legend> 
                                     <div class="row">
@@ -159,6 +159,9 @@
                                     </button>
                                     <button class="btn btn-default" ng-disabled="planilla.get_estado() == '0' || planilla.get_estado() == '1' || planilla.get_documentos().length === 0" ng-click="descargar_enviar_reporte()">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
+                                    </button>
+                                    <button class="btn btn-default" ng-show="planilla.get_numero_guia() > '0' && planilla.get_estado() == '1'" ng-click="actualizar_planilla_despacho()">
+                                        <span class="glyphicon glyphicon-cog" ></span> Actualizar Tmp
                                     </button>
                                     <button class="btn btn-default" ng-disabled="planilla.get_estado() == '2' || planilla.get_documentos().length === 0" ng-click="confirmar_despacho_planilla()">
                                         <span class="glyphicon glyphicon-ok" ></span> Despachar

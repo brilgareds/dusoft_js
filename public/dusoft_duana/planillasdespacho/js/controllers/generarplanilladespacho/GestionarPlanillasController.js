@@ -46,10 +46,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             that.gestionar_consultas = function () {
 
-                that.buscar_ciudades(function (ciudades) {
-
-                    if ($scope.planilla.get_numero_guia() > 0)
-                        that.render_ciudades(ciudades);
+//                that.buscar_ciudades(function (ciudades) {
+//
+//                    if ($scope.planilla.get_numero_guia() > 0)
+//                        that.render_ciudades(ciudades);
 
                     that.buscar_transportadoras(function () {
 
@@ -61,7 +61,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             });
                         }
                     });
-                });
+//                });
             };
 
             $scope.gestionar_consultas = function () {
@@ -181,7 +181,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             that.render_planilla = function (datos) {
 
-                var ciudad = Ciudad.get(datos.pais_id, datos.nombre_pais, datos.departamento_id, datos.nombre_departamento, datos.ciudad_id, datos.nombre_ciudad);
+//                var ciudad = Ciudad.get(datos.pais_id, datos.nombre_pais, datos.departamento_id, datos.nombre_departamento, datos.ciudad_id, datos.nombre_ciudad);
+                var ciudad = '';
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
                 var tipo_planilla = {};
@@ -224,6 +225,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
+            
             that.render_documentos = function (documentos) {
 
                 $scope.planilla.limpiar_documentos();
@@ -239,13 +241,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-
             $scope.validar_btn_ingreso_documentos = function () {
 
                 var disabled = false;
 
                 // Validar que todos los campos esten diligenciados
-                if ($scope.planilla.get_ciudad() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
+                if (/*$scope.planilla.get_ciudad() === null ||*/ $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
                     disabled = true;
 
                 // Si la transportadora es externa solicita obligatoriamente el numero de guia    
@@ -339,7 +340,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-
             $scope.confirmar_despacho_planilla = function () {
 
 
@@ -353,7 +353,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4>¿Desea despachar la <b>Guía No {{ planilla.get_numero_guia() }} </b> con destino a la ciudad de<br><b>{{ planilla.get_ciudad().get_nombre_ciudad() }}</b>?</h4>\
+                                        <h4>¿Desea despachar la <b>Guía No {{ planilla.get_numero_guia() }} </b> ?</h4>\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-warning" ng-click="cancelar_despacho()">Cancelar</button>\
@@ -440,13 +440,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
             };
 
-
-
             $scope.cancelar_planilla_despacho = function () {
 
                 $state.go('GestionarPlanillas');
             };
-
 
             $scope.lista_documentos_bodega = {
                 data: 'planilla.get_documentos()',
@@ -490,7 +487,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 ]
             };
 
-
             $scope.modificar_documento_planilla = function (docSelec) {
                 var documentos = $scope.planilla.get_documentos();
                 var DocsLio = [];
@@ -511,7 +507,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             };
-
 
             that.mostrarVentanaLiosModificar = function (documentos) {
                 $scope.opts = {
@@ -608,6 +603,38 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
 
 
+            };
+
+            $scope.actualizar_planilla_despacho = function () {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+                            transportador_id: $scope.planilla.get_transportadora().get_id(),
+                            nombre_conductor: $scope.planilla.get_nombre_conductor(),
+                            observacion: $scope.planilla.get_observacion(),
+                            numero_guia_externo: $scope.planilla.get_numero_guia_externo(),
+                            numero_placa_externo: $scope.planilla.get_numero_placa_externo(),
+                            tipo_planilla: $scope.planilla.tipo_planilla.prefijo,
+                            numeroPlanilla:  $scope.planilla.get_numero_guia()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.MODIFICAR_PLANILLA, "POST", obj, function (data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    /*if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }*/
+                });
             };
 
 

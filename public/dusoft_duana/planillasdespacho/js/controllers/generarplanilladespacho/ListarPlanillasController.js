@@ -79,7 +79,8 @@ define(["angular", "js/controllers",
 
                 planillas.forEach(function (data) {
 
-                    var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);
+//                    var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);
+                    var ciudad = '';
                     var transportadora = Transportadora.get(data.transportadora_id, data.nombre_transportadora, data.placa_vehiculo, data.estado_transportadora);
                     var usuario = UsuarioPlanilla.get(data.usuario_id, data.nombre_usuario);
                     var tipo_planilla = '';
@@ -131,7 +132,8 @@ define(["angular", "js/controllers",
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "5%"},
                     {field: 'get_tipo_planilla()', displayName: 'Tipo Guía', width: "8%"},
                     {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
-                    {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Ciudad Despacho', width: "15%"},
+//                    {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Ciudad Despacho', width: "15%"},
+                    {field: 'get_observacion()', displayName: 'Observacion', width: "15%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "6%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "6%"},
                     {field: 'get_cantidad_bolsas()', displayName: 'Cant. Bolsas', width: "5%"},

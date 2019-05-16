@@ -45,6 +45,10 @@ module.exports = function (app, di_container) {
         c_planillas_despachos.despacharPlanilla(req, res);
     });
 
+    app.post('/api/PlanillasDespachos/modificarPlanilla', function (req, res) {
+        c_planillas_despachos.modificarPlanilla(req, res);
+    });
+
     //Generar Reporte Planilla Despacho
     app.post('/api/PlanillasDespachos/reportePlanillaDespacho', function (req, res) {
         c_planillas_despachos.reportePlanillaDespacho(req, res);

@@ -64,10 +64,10 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_bodega = function (obj, c
     var where = "";
     var parametros = {};
      if(obj.estado === '3'){
-        where = "where a.empresa_id in ('FD','99','01') AND b.descripcion " + G.constants.db().LIKE + " :1 ";
+        where = "where a.empresa_id in ('FD','99','01') AND b.estado ='1' AND b.descripcion " + G.constants.db().LIKE + " :1 ";
         parametros = {1: "%" + obj.termino_busqueda + "%"};
     } else {
-        where = "where b.descripcion " + G.constants.db().LIKE + " :1 ";
+        where = "where b.estado ='1' and b.descripcion " + G.constants.db().LIKE + " :1 ";
         parametros = {1: "%" + obj.termino_busqueda + "%"};
     }
 
@@ -88,7 +88,7 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_bodega = function (obj, c
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);
     }).catch(function (err) {
-        console.log("err [listar_centros_utilidad_ciudad]:: ", err)
+        console.log("err [listar_centros_utilidad_bodega]:: ", err)
         callback(err);
     });
 };
@@ -106,13 +106,16 @@ CentrosUtilidadModel.prototype.listar_farmacias_medipol = function (obj, callbac
     
     var sql = " select \
                 c.empresa_id,\
-                c.centro_utilidad as centro_utilidad_id,\n\
+                c.centro_utilidad as centro_utilidad_id,\
                 b.bodega,\
                 b.descripcion\
                 from bodegas as b\
                 inner join centros_utilidad as c on (b.centro_utilidad = c.centro_utilidad and c.empresa_id = b.empresa_id)\
-                where b.empresa_id ='99'  and c.tipo_dpto_id= :2 and c.tipo_mpio_id= :3 and c.estado = '1' and b.descripcion " + G.constants.db().LIKE + " :4 ";
-        parametros = {2: obj.departamento_id, 3: obj.ciudad_id, 4: "%" + obj.termino_busqueda + "%"};
+                where b.empresa_id ='99'  and c.estado = '1' and b.estado = '1' and b.descripcion " + G.constants.db().LIKE + " :4 \
+                order By b.descripcion ASC";
+//                where b.empresa_id ='99'  and c.tipo_dpto_id= :2 and c.tipo_mpio_id= :3 and c.estado = '1' and b.descripcion " + G.constants.db().LIKE + " :4 ";
+//        parametros = {2: obj.departamento_id, 3: obj.ciudad_id, 4: "%" + obj.termino_busqueda + "%"};
+        parametros = {4: "%" + obj.termino_busqueda + "%"};
     var query = G.knex.raw(sql, parametros);
     query.then(function (resultado) {
         callback(false, resultado.rows, resultado);

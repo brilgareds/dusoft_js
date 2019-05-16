@@ -162,7 +162,7 @@ ValidacionDespachosModel.prototype.transaccionRegistrarAprobacion = function (ob
     G.knex.transaction(function (transaccion) {
         G.Q.ninvoke(that, 'registrarAprobacion', obj, transaccion).then(function (resultado) {
             idPlanilla = resultado.id_aprobacion_planillas;
-            return G.Q.nfcall(__registrarDetalleAprobacion, that, 0, resultado.id_aprobacion_planillas, obj.detalle, transaccion);
+            return G.Q.nfcall(__registrarDetalleAprobacion, that, 0, resultado.id_aprobacion_planillas, obj.detalle, obj.usuarioId, transaccion);
 
         }).then(function () {
 
@@ -179,7 +179,7 @@ ValidacionDespachosModel.prototype.transaccionRegistrarAprobacion = function (ob
 };
 
 
-function __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, transaccion, callback) {
+function __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, usuario_id, transaccion, callback) {
 
     var documento = documentos[index];
 
@@ -196,9 +196,13 @@ function __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, t
 
     }).then(function (resultado) {
 
+        return  G.Q.ninvoke(contexto, 'registraEstadoPedido', documento, usuario_id, transaccion);
+
+    }).then(function (resultado) {
+
         setTimeout(function () {
 
-            __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, transaccion, callback);
+            __registrarDetalleAprobacion(contexto, index, idPlanilla, documentos, usuario_id, transaccion, callback);
 
         }, 0);
     }).catch(function (err) {
@@ -297,6 +301,45 @@ ValidacionDespachosModel.prototype.modificarEstadoPedido = function (documento, 
     }).done();
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion Metodo encargado de registrar el cambio de el estado del pedido
+ * @fecha 2019-05-14 YYYY-MM-DD
+ * @returns {callback}
+ */
+ValidacionDespachosModel.prototype.registraEstadoPedido = function (documento, usuario_id, transaccion, callback) {
+
+    var query = '';
+    var estado = 3;
+
+    if (documento.estadoPedido === '8') {
+        estado = 9;
+    }
+
+    if (documento.tipo === '0') {
+
+        query = G.knex('solicitud_productos_a_bodega_principal_estado')
+                .where('solicitud_prod_a_bod_ppal_id', documento.numeroPedido)
+                .insert({solicitud_prod_a_bod_ppal_id: documento.numeroPedido, estado: estado,
+                    usuario_id: usuario_id, sw_terminado: '1'
+                });
+    } else if (documento.tipo === '1') {
+        query = G.knex('ventas_ordenes_pedidos_estado')
+                .insert({pedido_cliente_id: documento.numeroPedido, estado: estado,
+                    usuario_id: usuario_id, sw_terminado: '1'
+                });
+    } else {
+        callback(false, true);
+    }
+    if (transaccion)
+        query.transacting(transaccion);
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
 /*
  * funcion que realiza consulta a la tabla Empresas
  * @param {type} callback
@@ -365,7 +408,7 @@ ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (o
             .from("aprobacion_despacho_planillas_d as a")
             .innerJoin("aprobacion_despacho_planillas as b", "b.id_aprobacion_planillas", "a.id_aprobacion_planillas")
             .where("a.prefijo", obj.prefijo)
-            .andWhere(G.knex.raw("a.numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo ='" +obj.prefijo+ "')"))
+            .andWhere(G.knex.raw("a.numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo ='" + obj.prefijo + "')"))
             .andWhere(G.knex.raw("a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%'"))
             .orderBy('a.numero', 'desc');
 

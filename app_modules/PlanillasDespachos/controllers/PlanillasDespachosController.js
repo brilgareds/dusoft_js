@@ -213,9 +213,11 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
 
     var args = req.body.data;
 
-    if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
-        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
-        return;
+    if (args.planillas_despachos === undefined) {
+//    if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
+        res.send(G.utils.r(req.url, 'algunos datos no estan definidos', 404, {}));
+//        return;
     }
 
     if (args.planillas_despachos.transportador_id === undefined || args.planillas_despachos.nombre_conductor === undefined || args.planillas_despachos.observacion === undefined) {
@@ -233,10 +235,10 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
         return;
     }
 
-    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
-        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
-        return;
-    }
+//    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
+//        return;
+//    }
 
     if (args.planillas_despachos.transportador_id === '' || args.planillas_despachos.nombre_conductor === '' || args.planillas_despachos.observacion === '') {
         res.send(G.utils.r(req.url, 'transportador_id, nombre_conductor u observacion esta vacia', 404, {}));
@@ -245,9 +247,9 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
 
 
     var parametros = {
-        pais_id: args.planillas_despachos.pais_id,
-        departamento_id: args.planillas_despachos.departamento_id,
-        ciudad_id: args.planillas_despachos.ciudad_id,
+//        pais_id: args.planillas_despachos.pais_id,
+//        departamento_id: args.planillas_despachos.departamento_id,
+//        ciudad_id: args.planillas_despachos.ciudad_id,
         transportador_id: args.planillas_despachos.transportador_id,
         nombre_conductor: args.planillas_despachos.nombre_conductor,
         observacion: args.planillas_despachos.observacion,
@@ -271,6 +273,77 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
             return;
         }
     });
+
+};
+
+PlanillasDespachos.prototype.modificarPlanilla = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined) {
+//    if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
+        res.send(G.utils.r(req.url, 'algunos datos no estan definidos', 404, {}));
+//        return;
+    }
+
+    if (args.planillas_despachos.transportador_id === undefined || args.planillas_despachos.nombre_conductor === undefined || args.planillas_despachos.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'Transportador, Conductor u Observacion no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numero_guia_externo === undefined) {
+        res.send(G.utils.r(req.url, 'Numero Guia Externo no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numero_placa_externo === undefined) {
+        res.send(G.utils.r(req.url, 'Numero Placa no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numeroPlanilla === undefined || args.planillas_despachos.numeroPlanilla === 0) {
+        res.send(G.utils.r(req.url, 'numero Guia no esta definido', 404, {}));
+        return;
+    }
+
+//    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
+//        return;
+//    }
+
+    if (args.planillas_despachos.transportador_id === '' || args.planillas_despachos.nombre_conductor === '' || args.planillas_despachos.observacion === '') {
+        res.send(G.utils.r(req.url, 'Transportador, Conductor u Observacion esta vacia', 404, {}));
+        return;
+    }
+
+
+    var parametros = {
+//        pais_id: args.planillas_despachos.pais_id,
+//        departamento_id: args.planillas_despachos.departamento_id,
+//        ciudad_id: args.planillas_despachos.ciudad_id,
+        transportador_id: args.planillas_despachos.transportador_id,
+        nombre_conductor: args.planillas_despachos.nombre_conductor,
+        observacion: args.planillas_despachos.observacion,
+        numero_guia_externo: args.planillas_despachos.numero_guia_externo,
+        numero_placa_externo: args.planillas_despachos.numero_placa_externo,
+        tipo_planilla: args.planillas_despachos.tipo_planilla,
+        numeroPlanilla: args.planillas_despachos.numeroPlanilla,
+        usuario_id: req.session.user.usuario_id
+    };
+
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'modificar_planilla_despacho', parametros).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Planilla despacho modificada correctamente', 200, {}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
 
 };
 
@@ -598,6 +671,7 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
     var that = this;
 
     var args = req.body.data;
+    var tipo_planilla = '';
 
     if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined) {
         res.send(G.utils.r(req.url, 'planilla_id no esta definidas', 404, {}));
@@ -674,7 +748,17 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
 //                        documentos.push({tercero: z, detalle: datos[z]});
                         documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
                     }
-
+                    
+                     if (planilla_despacho.tipo_planilla === 'M') {
+                    tipo_planilla = "MEDICAMENTOS";
+                } else if (planilla_despacho.tipo_planilla === 'I') {
+                    tipo_planilla = "INSUMOS";
+                } else if (planilla_despacho.tipo_planilla === 'N') {
+                    tipo_planilla = "NUTRICION";
+                }
+                
+                planilla_despacho.tipo_planilla =tipo_planilla;
+                   
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (err, nombre_reporte) {
 
                         if (enviar_email) {
@@ -788,10 +872,10 @@ PlanillasDespachos.prototype.reportePlanillaDespachoPedido = function (req, res)
         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
     }).catch(function (err) {
         console.log("error impresion ", err);
-        if (!err.status){
-            err= {status: 500, msj: err};
-         }
-         res.send(G.utils.r(req.url, err.msj, err.status, {}));  
+        if (!err.status) {
+            err = {status: 500, msj: err};
+        }
+        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 };
 

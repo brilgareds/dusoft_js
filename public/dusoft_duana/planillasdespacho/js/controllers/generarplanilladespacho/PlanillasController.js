@@ -49,7 +49,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Listar
 
                 $scope.datos_view.planilla_seleccionada = planilla;
                 $scope.datos_view.email_subject = 'Planilla Despacho Guia No.' + $scope.datos_view.planilla_seleccionada.get_numero_guia();
-                $scope.datos_view.email_message = 'Planilla Despacho Guia No.' + $scope.datos_view.planilla_seleccionada.get_numero_guia() + '.\nCon destino a la ciudad de ' + $scope.datos_view.planilla_seleccionada.get_ciudad().get_nombre_ciudad();
+                $scope.datos_view.email_message = 'Planilla Despacho Guia No.' + $scope.datos_view.planilla_seleccionada.get_numero_guia();// + '.\nCon destino a la ciudad de ' + $scope.datos_view.planilla_seleccionada.get_ciudad().get_nombre_ciudad();
                 $scope.datos_view.email_attachment_name = "PlanillaGuiaNo-" + $scope.datos_view.planilla_seleccionada.get_numero_guia() + '.pdf';
 
                 $scope.opts = {

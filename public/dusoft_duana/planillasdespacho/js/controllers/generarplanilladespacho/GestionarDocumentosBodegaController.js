@@ -98,9 +98,12 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     data: {
                         clientes: {
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+                            pais_id: 'CO',
+                            departamento_id: '76',
+                            ciudad_id: '001',
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             estado: 1,
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
@@ -136,9 +139,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -229,8 +232,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -545,7 +548,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 columnDefs: [
                     {field: 'lios', displayName: "", width: "40", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
                     {field: 'get_id()', displayName: 'Grupo', width: "8%"},
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "20%"},
+                    {field: 'get_descripcion()', displayName: 'Doc Bodega', width: "20%"},
                     {field: 'get_tercero()', displayName: 'Cliente', width: "23%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                      <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >{{row.entity.tercero.nombre}}<span class="caret"></span></button>\
@@ -555,9 +558,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                      </li>\
                      </ul>\
                      </div>'},
-                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -576,7 +579,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 columnDefs: [
                     {field: 'lios', displayName: "", width: "40", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
                     {field: 'get_id()', displayName: 'Grupo', width: "10%"},
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
+                    {field: 'get_descripcion()', displayName: 'Doc Bodega', width: "20%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
@@ -734,9 +737,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         planillas_despachos: {
-                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             transportador_id: $scope.planilla.get_transportadora().get_id(),
                             nombre_conductor: $scope.planilla.get_nombre_conductor(),
                             observacion: $scope.planilla.get_observacion(),

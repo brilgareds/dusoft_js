@@ -49437,7 +49437,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                      * @fecha 2019-04-04
                      */
                     $scope.listarTransportadoras = function (termino_busqueda) {
-                        if (termino_busqueda.length < 3) {
+                        if (termino_busqueda.length < 2) {
                             return;
                         }
                         $scope.root.termino_busqueda_transportadoras = termino_busqueda;

@@ -64,7 +64,6 @@ define(["angular", "js/controllers"
             };
 
             $scope.servicio_actualizado = function (servicio) {
-                console.log('Servicio es: ', servicio);
                 if (servicio === 9) {
                     $scope.servicioProveedor = true;
                     $scope.servicioPrefijo = false;

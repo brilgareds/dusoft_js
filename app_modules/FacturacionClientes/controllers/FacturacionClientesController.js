@@ -768,6 +768,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
         logger.error("-----------------------------------");
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
     });
+
 };
 
 /*

@@ -159,11 +159,11 @@ Reportes.prototype.listarPlanes = function (req, res) {
     G.Q.ninvoke(that.m_drArias, 'listarPlanes').then(function (listarPlanes) {
         res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
     }).
-    fail(function (err) {
-        console.log("Error controller listarPlanes ", err);
-        res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
-    }).
-    done();
+            fail(function (err) {
+                console.log("Error controller listarPlanes ", err);
+                res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
+            }).
+            done();
 };
 
 
@@ -177,7 +177,7 @@ Reportes.prototype.rotacionZonas = function (req, res) {
 
     }).then(function (respuesta) {
 
-        res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
+    res.send(G.utils.r(req.url, 'Listado rotacion Zonas', 200, {rotacionZonas: respuesta}));
 
     }).fail(function (err) {
         console.log("error controller rotacion Zonas ", err);
@@ -425,7 +425,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     var controlRotacionId;
     var listarPlanes;
     var farmacias;
-    console.log("bodega:::  ",bodega);
+console.log("bodega:::  ",bodega);
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
 
         bodega.controlRotacionId = respuesta[0];
@@ -582,7 +582,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
         return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);
 
-        farmacias=respuesta;
+         farmacias=respuesta;
         if(bodega.bodega!=='03'){
             name = "Bodega: " + listarPlanes[0].nom_bode;
             archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
@@ -780,11 +780,11 @@ function __organizaRotacion(index, data, resultado, callback) {
     var mayor5 = resultColumna.totalStock > 5;
 
 
-    var promedio_dia= (((resultColumna.promedioMes/30)*60)-resultColumna.totalStock);
+var promedio_dia= (((resultColumna.promedioMes/30)*60)-resultColumna.totalStock);
 //console.log("promedio_dia ",promedio_dia);
-    var mxm = resultColumna.totalStock/resultColumna.promedioMes;
+var mxm = resultColumna.totalStock/resultColumna.promedioMes;
 //console.log("mxm ",mxm);
-    var mayor5 = resultColumna.totalStock>5;
+var mayor5 = resultColumna.totalStock>5;
 //console.log("mayor5 ",mayor5);
 
 
@@ -827,7 +827,7 @@ function __organizaRotacionFarmacia(index, data, resultado, callback) {
         var control = ((resultColumna.totalStockFarmacias+resultColumna.stockBodega)/Math.ceil(_resultado.cantidad/2));
 
         var mayor5 = (resultColumna.totalStockFarmacias+resultColumna.stockBodega)>5;
-        //    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
+    //    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
 
 //        resultColumna.color = (color <= 0 && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
 //        resultColumna.color = ( color <= 0 && mayor5 === true && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
@@ -884,9 +884,9 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 
     var style = {font: font, border: border};
 
-    var agregar;
+   var agregar;
     //worksheet.addRow(["element.codigo_poducto"]);
-    agregar= [
+   agregar= [
         {header: 'CODIGO', key: '1', style: style},
         {header: 'PRODUCTO', key: '2', width: 50, style: style},
         {header: 'MOLECULA', key: '3', width: 25, style: style},
@@ -894,7 +894,7 @@ function __creaExcelFarmacias(data,farmacias, callback) {
         {header: 'TIPO PRODUCTO', key: '5', style: style}
     ];
 
-    var agregar1= [
+   var agregar1= [
         '',
         '',
         '',
@@ -905,17 +905,17 @@ function __creaExcelFarmacias(data,farmacias, callback) {
     var j=6;
 
     farmacias.forEach(function (element) {
-        var columna= {header: element.nombre_bodega, key: "'"+j+"'", width: 9, style: style};
-        agregar.push(columna);
-        agregar1.push('Salida');
+       var columna= {header: element.nombre_bodega, key: "'"+j+"'", width: 9, style: style};
+       agregar.push(columna);
+       agregar1.push('Salida');
         j++;
         ;
-        var columna1=  {header: '', key: "'"+j+"'", width: 9, style: style};
+       var columna1=  {header: '', key: "'"+j+"'", width: 9, style: style};
         agregar1.push('Stock');
         j++;
         agregar.push(columna1);
     });
-    j++;
+     j++;
     var cabecera=[];
     cabecera=agregar;
 
@@ -934,17 +934,17 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 
     setTimeout(function(){
 
-        worksheet.views = [
-            {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
-        ];
+    worksheet.views = [
+        {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
+    ];
 
-        agregar.pop();
-        agregar.pop();
-        agregar.pop();
-        agregar.pop();
-        agregar.pop();
-        agregar.pop();
-        agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
+     agregar.pop();
 
         var i = 1;
         data.forEach(function (element) {
@@ -962,9 +962,9 @@ function __creaExcelFarmacias(data,farmacias, callback) {
                         entra=false;
                     } else {
                         if(entra){
-                            columnas.push('');
-                        }
-                        entra=true;
+                        columnas.push('');
+                       }
+                       entra=true;
                     }
                 }
                 t++;
@@ -978,9 +978,9 @@ function __creaExcelFarmacias(data,farmacias, callback) {
             columnas.push(element.stockBodega);//
 
             if (element.color === 'ROJO') {
-                worksheet.addRow(columnas).font = {color: {argb: 'C42807'}, name: 'Calibri', size: 9};
+             worksheet.addRow(columnas).font = {color: {argb: 'C42807'}, name: 'Calibri', size: 9};
             }else{
-                worksheet.addRow(columnas);
+             worksheet.addRow(columnas);
             }
             i++;
         });
@@ -990,29 +990,29 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 //        worksheet.getColumn('E').hidden = true;
 //        worksheet.getColumn('F').hidden = true;
 
-        var font = {
-            name: 'SansSerif',
-            size: 9,
-            bold: true
-        };
+    var font = {
+        name: 'SansSerif',
+        size: 9,
+        bold: true
+    };
 
-        var alignment = {vertical: 'center', horizontal: 'distributed'};
+    var alignment = {vertical: 'center', horizontal: 'distributed'};
 
-        var border = {
-            top: {style: 'double'},
-            left: {style: 'double'},
-            bottom: {style: 'double'},
-            right: {style: 'double'}
-        };
+    var border = {
+        top: {style: 'double'},
+        left: {style: 'double'},
+        bottom: {style: 'double'},
+        right: {style: 'double'}
+    };
 
-        var style = {font: font, border: border, alignment: alignment};
+    var style = {font: font, border: border, alignment: alignment};
 
-        workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
+    workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
 
-            callback(false, data.nameArchivo);
-            return;
-        });
-    }, 100);
+        callback(false, data.nameArchivo);
+        return;
+    });
+   }, 100);
 };
 
 
@@ -1020,7 +1020,7 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 function sortJSON(data, key, orden) {
     return data.sort(function (a, b) {
         var x = a[key],
-            y = b[key];
+                y = b[key];
 
         if (orden === 'asc') {
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -1216,10 +1216,10 @@ function __editarEstadoReporte(that, datos, callback) {
 function __editarConsolidadoReporte(that, datos) {
     G.Q.ninvoke(that.m_drArias, 'editarConsolidadoReporte', datos).then(function (resultado) {
     }).
-    fail(function (err) {
-        console.log("error controller __editarConsolidadoReporte ", err);
-    }).
-    done();
+            fail(function (err) {
+                console.log("error controller __editarConsolidadoReporte ", err);
+            }).
+            done();
 }
 
 Reportes.$inject = [

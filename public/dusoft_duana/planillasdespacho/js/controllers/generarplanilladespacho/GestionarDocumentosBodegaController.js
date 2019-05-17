@@ -204,8 +204,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             $scope.buscar_documentos_bodega = function (tercero) {
 
-                //that.removerDocumentos();
-
+                if (tercero) {
+                    that.removerTerceros(tercero);
+                }
                 if (tercero) {
                     $scope.datos_view.tercero_seleccionado = tercero;
                 }
@@ -533,7 +534,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     {field: 'getNombre()', displayName: 'Nombre', width: "85%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="buscar_documentos_bodega(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <input-check   ng-model="row.entity.seleccionado" ng-change="buscar_documentos_bodega(row.entity)"/>\
                                         </div>'
                     }
                 ]
@@ -677,6 +678,21 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 }
 
                 $scope.datos_view.documentosSeleccionados = [];
+            };
+
+            /*
+             * @Author: German Galvis
+             * +Descripcion: Remueve los terceros seleccionados
+             */
+            that.removerTerceros = function (tercero) {
+                var terceros = $scope.datos_clientes_farmacias;
+                for (var i in terceros) {
+                    if(terceros[i].nombre !== tercero.nombre || terceros[i].id !== tercero.id || terceros[i].tipo_id_tercero !== tercero.tipo_id_tercero){
+                    var _tercero = terceros[i];
+                    _tercero.seleccionado = false;
+                }
+                }
+
             };
 
             /*

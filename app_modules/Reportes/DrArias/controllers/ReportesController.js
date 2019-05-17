@@ -360,11 +360,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-<<<<<<< HEAD
-    console.log("Bodegas:::::::: ",args.data.bodegas);
-=======
 
->>>>>>> master
     var idsRemitentes = usuarioId + ',';
     remitentes.forEach(function(item, index){
         idsRemitentes += item.id_usuario + ',';

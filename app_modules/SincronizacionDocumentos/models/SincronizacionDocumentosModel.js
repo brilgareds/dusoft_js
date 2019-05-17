@@ -527,17 +527,10 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
 };
 
 SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, callback) {
-<<<<<<< HEAD
     console.log('In model "listarDetalleRCWSFI"');
     let credito = parseFloat('0');
     let debito = parseFloat('0');
     let response = {};
-=======
-    
-    var credito = parseFloat('0');
-    var debito = parseFloat('0');
-    var response = {};
->>>>>>> master
 
     let query = G.knex.distinct(
         G.knex.raw("'0' AS codcentrocostoasiento"),

@@ -483,14 +483,9 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 where \
                 (stock_farmacia > 0 or cantidad_total_despachada >0 or t.stock_bodega>0 or q.cantidad >0) \
                 order by 1,3 ;";
-<<<<<<< HEAD
-
-    var query = G.knex.raw(sql);
-=======
     
      var query = G.knex.raw(sql);
 
->>>>>>> master
     query.then(function(resultado) {
         G.logError(G.sqlformatter.format(query.toString()));
         callback(false, resultado.rows);

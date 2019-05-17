@@ -34681,11 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-<<<<<<< HEAD
 'use strict';
-=======
-
->>>>>>> master
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -45294,20 +45290,13 @@ define('loader',["angular","js/directive"], function(angular, directive){
 define('url',["angular"], function(angular) {
     var Url = angular.module('Url', []);
 
-<<<<<<< HEAD
     const BASE_URL = "/api";
 
     let data = {
-=======
-    var BASE_URL = "/api";
-
-    var data = {
->>>>>>> master
         'API': {
             'BASE_URL': BASE_URL,
             'NOTAS_PROVEEDORES': {
                 'TIPOS_DOC': BASE_URL + '/notasProveedores/tiposDoc',
-<<<<<<< HEAD
                 'LISTAR_NOTAS': BASE_URL + '/notasProveedores/listarNotasProveedores',
                 'AGREGAR_DETALLE_TEMPORAL': BASE_URL + '/notasProveedores/agregarDetalleTemporal',
                 'CONCEPTOS_ESPECIFICOS' : BASE_URL + '/notasProveedores/conceptosEspecificos',
@@ -45323,15 +45312,6 @@ define('url',["angular"], function(angular) {
     };
 
     angular.forEach(data, (key, value) => {
-=======
-                'LISTAR_NOTAS': BASE_URL + '/notasProveedores/listarNotasProveedores'
-            }
-        }
-
-    };
-
-    angular.forEach(data, function(key, value) {
->>>>>>> master
         Url.constant(value, key);
     });
 
@@ -52565,7 +52545,6 @@ define(
                         tiposDoc: [],
                         prefijosNotas: []
                     };
-<<<<<<< HEAD
                     $scope.NotaTemporal = {};
                     $scope.listarTiposDoc();
                     $scope.ListarPrefijos();
@@ -52603,19 +52582,10 @@ define(
 
                 $scope.listarTiposDoc = function(){
                     let obj = {
-=======
-                    $scope.listarTiposDoc();
-                    $scope.ListarPrefijos();
-                };
-
-                $scope.listarTiposDoc = function(){
-                    var obj = {
->>>>>>> master
                         session: $scope.session,
                         data: {}
                     };
 
-<<<<<<< HEAD
                     $scope.post(API.NOTAS_PROVEEDORES.TIPOS_DOC, obj, data => {
                         if (data.status === 200) {
                             $scope.root.tiposDoc = data.obj.tiposDoc;
@@ -52637,19 +52607,10 @@ define(
                             $scope.root.listarNotas.retencionAnual = data.obj;
                         } else {
                             alert('Hubo un error!!');
-=======
-                    NotasProveedoresService.TiposDoc(obj, function(data) {
-                        if(data.status === 200){
-                            $scope.root.tiposDoc = data.obj.tiposDoc;
-                            $scope.tipoDoc = 'Tipo Doc';
-                        }else{
-                            console.log('Error: ', data.obj.err);
->>>>>>> master
                         }
                     });
                 };
 
-<<<<<<< HEAD
                 $scope.updateConceptoGeneral = function(nota, codigo, concepto) {
                     nota.conceptoGeneralTitulo = concepto;
                     nota.conceptoGeneralNombre = concepto;
@@ -52730,49 +52691,6 @@ define(
 
                 $scope.ListarPrefijos = function(){
                     $scope.root.tiposNotas = ['NDD', 'NCD'];
-=======
-                $scope.listarNotasProveedores = function(){
-                    if($scope.tipoDoc !== 'Tipo Doc'){
-                        var tipoDoc = $scope.tipoDoc;
-                    }
-                    if($scope.tipoNota !== 'Tipo Nota'){
-                        var tipoNota = $scope.tipoNota;
-                    }
-
-                    var obj = {
-                        session: $scope.session,
-                        data: {
-                            tipo_documento: tipoDoc,
-                            numero_documento: $scope.numero_documento,
-                            nombre: $scope.nombre_tercero,
-                            factura: $scope.numero_factura,
-                            tipo_nota: tipoNota,
-                            numero_nota: $scope.numero_nota
-                        }
-                    };
-
-                    NotasProveedoresService.listarNotasProveedores(obj, function(data) {
-                        if(data.status === 200){
-                            console.log('Data is: \n', data);
-                            $scope.root.listarNotas = data.obj.notasProveedor;
-
-                            for(var nota of $scope.root.listarNotas){
-                                nota.facturaValor = $scope.number_money(nota.facturaValor);
-                                console.log('\nValor: ', nota.facturaValor);
-
-                            }
-
-                            // $scope.root.listarNotas.facturaValor = $scope.number_money(data.obj.notasProveedor.facturaValor);
-
-                        }else{
-                            console.log('Error: ', data.obj.err);
-                        }
-                    });
-                };
-
-                $scope.ListarPrefijos = function(){
-                    $scope.root.tiposNotas = ['Nota Debito', 'Nota Credito'];
->>>>>>> master
                     $scope.tipoNota = 'Tipo Nota';
                 };
 
@@ -52789,23 +52707,15 @@ define(
                 };
 
                 $scope.number_money = function(price){
-<<<<<<< HEAD
                     // console.log('Precio es: '+ price + '\n');
                     var number = String(price.replace(/(\D)/g, "."));
                     // console.log('Precio sin comas ni puntos fue de: ', number, '\n');
                     var cant_numb = number.length;
                     var number_format = '';
-=======
-                    console.log('Precio es: '+ price + '\n');
-                    var number = String(price).replace(/(\D)/g, "");
-                    console.log('Precio despues fue de: ', number, '\n');
-                    var cant_numb = number.length;
->>>>>>> master
 
                     if(cant_numb > 1){
                         number_format_1 = number.substring(0, (cant_numb-2));
                         number_format_2 = number.substring((cant_numb-2));
-<<<<<<< HEAD
                         number_format = '$' + new Intl.NumberFormat().format(number_format_1) + ',' + number_format_2;
                     }else{
                         alert("Error: valor debe tener almenos 2 digitos!");
@@ -53067,14 +52977,6 @@ define(
                     };
                     request.open('HEAD', url);
                     request.send();
-=======
-                        number_format = new Intl.NumberFormat().format(number_format_1) + '.' + number_format_2;
-                    }else{
-                        //alert("Error: valor debe tener almenos 2 digitos!");
-                        number_format = "";
-                    }
-                    return price;
->>>>>>> master
                 };
 
                 $scope.listarNotas = {
@@ -53083,7 +52985,6 @@ define(
                     enableHighlighting: true,
                     showFilter: true,
                     enableRowSelection: false,
-<<<<<<< HEAD
                     enableColumnResize: true,
                     columnDefs: [
                         {field: 'facturaNumero', displayName: "Factura", width: "10%"},
@@ -53095,19 +52996,6 @@ define(
                         {field: 'facturaSaldoString', displayName: 'Saldo', width: "11%"},
                         {displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity)" class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;"></i></div>'},
                         {displayName: 'Ver', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity, true, false)" class="fa fa-file fa-2x" aria-hidden="true" style="color: #1c99d1;"></i></div>'}
-=======
-                    columnDefs: [
-                        {field: 'facturaNumero', displayName: "Factura", width: "12%"},
-                        {field: 'documentoTipo', displayName: 'Tipo Doc.', width: "7%"},
-                        {field: 'documentoId', displayName: 'Documento', width: "9%"},
-                        {field: 'proveedorNombre', displayName: 'Nombre', width: "12%"},
-                        {field: 'facturaObservacion', displayName: 'Observaciones', width: "17%"},
-                        {field: 'fecha', displayName: 'Fecha', width: "12%"},
-                        {field: 'facturaValor', displayName: 'Valor Factura', width: "11%"},
-                        {field: 'facturaSaldo', displayName: 'Saldo', width: "11%"},
-                        {displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;;"></i></div>'},
-                        {displayName: 'Ver', width: "5%", cellTemplate: '<div style="text-align: center;"><i class="fa fa-file fa-2x" aria-hidden="true" style="color: #da8f07;"></i></div>'}
->>>>>>> master
                     ]
                 };
                 that.init();
@@ -53121,28 +53009,12 @@ define('services/NotasProveedoresService',["angular", "js/services"], function (
     services.factory('NotasProveedoresService',
         ['Request', 'API',
             function (Request, API) {
-<<<<<<< HEAD
                 const that = this;
 
                 that.post = (url, obj, callback) => {
                     Request.realizarRequest(url, "POST", obj, data => callback(data) );
                 };
 
-=======
-                var self = this;
-
-                self.TiposDoc = function (obj, callback) {
-                    Request.realizarRequest(API.NOTAS_PROVEEDORES.TIPOS_DOC, "POST", obj, function (data) {
-                        callback(data);
-                    });
-                };
-
-                self.listarNotasProveedores = function (obj, callback) {
-                    Request.realizarRequest(API.NOTAS_PROVEEDORES.LISTAR_NOTAS, "POST", obj, function (data) {
-                        callback(data);
-                    });
-                };
->>>>>>> master
                 return this;
             }
         ]

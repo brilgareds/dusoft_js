@@ -106,7 +106,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 if (data.obj.planillas_despachos.length > 0) {
-                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0}, function (empaque) {
+                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0, bolsa:0}, function (empaque) {
                                         $scope.root.empaqueNumero = empaque;
                                     });
                                     $scope.root.isGuia = false;
@@ -163,6 +163,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                         empaque.caja += dato.cantidad_cajas;
                         empaque.nevera += dato.cantidad_neveras;
+                        empaque.bolsa += dato.cantidad_bolsas;
                         index++;
                         that.numeroEmpaque(datos, index, empaque, callback);
                     };

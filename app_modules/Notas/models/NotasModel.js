@@ -1430,7 +1430,7 @@ NotasModel.prototype.detalleNotasFacturaProveedor = function (obj, callback) {
         }).then(resultado => {
             callback(false, resultado)
         }).catch(err => {
-            console.log("err [DeltalleNotasFacturaProveedor]:", err);
+            console.log("err [detalleNotasFacturaProveedor]:", err);
             callback(err);
         });
 };

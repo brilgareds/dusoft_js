@@ -565,7 +565,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                     inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
                     inner join (\n\
-                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo ,f.cantidad_bolsas \
+                        SELECT  distinct on(g.cantidad_cajas,g.cantidad_neveras,g.cantidad_bolsas, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo ,g.cantidad_bolsas \
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as f ON (f.numero = a.numero and f.prefijo = a.prefijo)\
@@ -615,7 +615,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
                     left join terceros f on c.tipo_id_sede = f.tipo_id_tercero and c.sede_id = f.tercero_id\
                     inner join (\n\
-                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo,f.cantidad_bolsas\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras,g.cantidad_bolsas, g.numero, g.prefijo) g.cantidad_cajas, g.cantidad_neveras, g.numero, g.prefijo,g.cantidad_bolsas\
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as e ON (e.numero = a.numero and e.prefijo = a.prefijo)\
@@ -650,7 +650,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
                     inner join (\
-                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo,f.cantidad_bolsas\
+                        SELECT distinct on(g.cantidad_cajas,g.cantidad_neveras,g.cantidad_bolsas, g.numero, g.prefijo) f.cantidad_cajas, f.cantidad_neveras, g.numero, g.prefijo,g.cantidad_bolsas\
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\

@@ -2,7 +2,7 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('Documento', [function() {
 
-            function Documento(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo) {
+            function Documento(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, cantidad_bolsas, temperatura_neveras, observacion, tipo) {
                 this.id = id || 0;
                 this.tercero = '';
                 this.empresa_id = empresa_id;
@@ -11,8 +11,10 @@ define(["angular", "js/models"], function(angular, models) {
                 this.numero_pedido = numero_pedido;
                 this.cantidad_cajas = cantidad_cajas || '';
                 this.cantidad_neveras = cantidad_neveras || '';
+                this.cantidad_bolsas = cantidad_bolsas || '';
                 this.cantidad_cajas_auditadas = 0;
                 this.cantidad_neveras_auditadas = 0;
+                this.cantidad_bolsas_auditadas = 0;
                 this.temperatura_neveras = temperatura_neveras || '';
                 this.observacion = observacion || '';                
                 this.tipo = tipo;   
@@ -20,8 +22,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.seleccionado = false;
             }
 
-            this.get = function(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo) {
-                return new Documento(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo);
+            this.get = function(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, cantidad_bolsas, temperatura_neveras, observacion, tipo) {
+                return new Documento(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, cantidad_bolsas, temperatura_neveras, observacion, tipo);
             };
 
             Documento.prototype.set_empresa_id = function(empresa_id) {
@@ -42,6 +44,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             Documento.prototype.set_cantidad_neveras_auditadas = function(cantidad) {
                 this.cantidad_neveras_auditadas = cantidad;
+            };
+            
+            Documento.prototype.set_cantidad_bolsas_auditadas = function(cantidad) {
+                this.cantidad_bolsas_auditadas = cantidad;
             };
             
             Documento.prototype.set_observacion = function(observacion) {
@@ -100,6 +106,15 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.cantidad_neveras;
             };
 
+            Documento.prototype.get_cantidad_bolsas = function() {
+              
+                 if( isNaN(parseInt(this.cantidad_bolsas)) ){
+              
+                    this.cantidad_bolsas = 0;
+                }
+                return this.cantidad_bolsas;
+            };
+
             Documento.prototype.get_temperatura_neveras = function() {
                 return this.temperatura_neveras;
             };
@@ -118,6 +133,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             Documento.prototype.get_cantidad_neveras_auditadas = function() {
                 return this.cantidad_neveras_auditadas;
+            };
+            
+            Documento.prototype.get_cantidad_bolsas_auditadas = function() {
+                return this.cantidad_bolsas_auditadas;
             };
             
             Documento.prototype.set_fecha_registro = function(fecha_registro) {

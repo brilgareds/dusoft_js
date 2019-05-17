@@ -83,7 +83,7 @@
                                     <div class="col-md-7">
                                         <div class="input-group">
                                             <input type="text" 
-                                                   ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"
+                                                   ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0 || !datos_view.seleccionarOtros"
                                                    class="form-control"  
                                                    ng-model="documentoDespachoAprobado.numero" 
                                                    placeholder="Numero" 
@@ -111,7 +111,7 @@
                 </div>                             
                 <div class="col-md-12" style="margin-top: 50px;">
                     <div class="row">                                                                      
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <fieldset>
                                 <legend>Cantidad Cajas</legend>      
                                 <div class="row">
@@ -124,7 +124,7 @@
                                 </div>
                             </fieldset>
                         </div>                        
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <fieldset>
                                 <legend>Cantidad Neveras</legend> 
                                 <div class="row">
@@ -137,8 +137,21 @@
                                 </div>
                             </fieldset>
                         </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <legend>Cantidad Bolsas</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <input type="text" ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
+                                               class="form-control"  
+                                               ng-model="documentoDespachoAprobado.cantidadBolsas" 
+                                               placeholder="Cantidad Bolsas" name="" id="" validacion-numero-entero />
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <fieldset>
                                 <legend>Observación</legend>                                 
                                 <div class="row">  

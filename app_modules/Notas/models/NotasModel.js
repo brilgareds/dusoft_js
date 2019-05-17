@@ -1494,7 +1494,6 @@ NotasModel.prototype.consultarNotasFacturaProveedor = function (obj, callback) {
             .andWhere('b.prefijo', obj.prefijo)
             .andWhere('b.numero', obj.numero);
     });
-    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado)

@@ -17,6 +17,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cantidadCajas: 0,
                     cantidadLios: 0,
                     cantidadNeveras: 0,
+                    cantidadBolsas: 0,
                     observacion: ""
                 };
 
@@ -33,16 +34,15 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 var cantidadCajas = parseInt($scope.root.cantidadCajas);
                 var cantidadLios = parseInt($scope.root.cantidadLios);
                 var cantidadNeveras = parseInt($scope.root.cantidadNeveras);
+                var cantidadBolsas = parseInt($scope.root.cantidadBolsas);
 
-                //console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios, " neveras " , cantidadNeveras);
-
-                if (isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
-                        || (cantidadCajas === 0 && cantidadNeveras === 0)) {
+                if (isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || isNaN(cantidadBolsas) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
+                        || cantidadBolsas < 0 || (cantidadCajas === 0 && cantidadNeveras === 0 && cantidadBolsas === 0)) {
                     return false;
                 } else if (!isNaN(cantidadCajas) && !isNaN(cantidadLios) &&
-                        ((cantidadCajas > 0 && cantidadLios > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras))) {
+                        ((cantidadCajas > 0 && cantidadLios > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras) || (cantidadBolsas > 0 && cantidadLios > cantidadBolsas))) {
                     return false;
-                }
+                } 
 
 
                 return true;
@@ -50,8 +50,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             };
 
             $modalInstance.opened.then(function () {
-                console.log("documentos ", documentos);
-
+//                console.log("documentos ", documentos);
 
             });
 
@@ -82,20 +81,41 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             $scope.onIngresarLios = function () {
 
                 if (!self.validarLios()) {
-                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas, neveras o lios no son correctos");
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas, neveras, bolsas o lios no son correctos");
 
                     return;
                 }
+
+                if (tipo === 4) {
+                    self.modificarLio();
+                } else {
+                    self.crearLio();
+                }
+
+            };
+
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que creara
+             *              los lios
+             * @author German Galvis
+             * @fecha 26/04/2019 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            self.crearLio = function () {
+
                 var totalCajas = 0;
                 var totalNeveras = 0;
+                var totalBolsas = 0;
 
                 documentos.forEach(function (data) {
                     totalCajas += data.cantidad_cajas_auditadas;
                     totalNeveras += data.cantidad_neveras_auditadas;
+                    totalBolsas += data.cantidad_bolsas_auditadas;
                 });
 
-                if (parseInt(totalCajas) !== parseInt($scope.root.cantidadCajas) || parseInt(totalNeveras) !== parseInt($scope.root.cantidadNeveras)) {
-                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "El número de cajas o neveras es diferente al auditado.\n Nro cajas auditadas: " + totalCajas + ", Nro Neveras auditadas: " + totalNeveras);
+                if (parseInt(totalCajas) !== parseInt($scope.root.cantidadCajas) || parseInt(totalNeveras) !== parseInt($scope.root.cantidadNeveras) || parseInt(totalBolsas) !== parseInt($scope.root.cantidadBolsas)) {
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "El número de cajas, neveras o bolsas es diferente al auditado.\n Nro cajas auditadas: " + totalCajas + "\
+                                                      , Nro Neveras auditadas: " + totalNeveras + ", Nro Bolsas auditadas: " + totalBolsas);
 
                     return;
                 }
@@ -108,7 +128,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
                             cantidadNeveras: $scope.root.cantidadNeveras,
-                            tipo: tipo,
+                            cantidadBolsas: $scope.root.cantidadBolsas,
                             numeroGuia: numeroGuia,
                             observacion: $scope.root.observacion
                         }
@@ -116,21 +136,60 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
 
 
-                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){
+                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
                         $scope.cerrar();
-                    } else if(data.status === 403) {
-                        
+                    } else if (data.status === 403) {
+
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
                     } else {
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
                     }
-                   
+
                 });
             };
 
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que modificara
+             *              los lios
+             * @author German Galvis
+             * @fecha 26/04/2019 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            self.modificarLio = function () {
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        planillas_despachos: {
+                            documentos: documentos,
+                            totalCaja: $scope.root.cantidadCajas,
+                            cantidadLios: $scope.root.cantidadLios,
+                            cantidadNeveras: $scope.root.cantidadNeveras,
+                            cantidadBolsas: $scope.root.cantidadBolsas,
+                            numeroGuia: numeroGuia,
+                            observacion: $scope.root.observacion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.MODIFICAR_LIOS, "POST", obj, function (data) {
+
+                    if (data.status === 200) {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha modificado el registro correctamente");
+                        $scope.gestionar_consultas();
+                        $scope.cerrar();
+                    } else if (data.status === 403) {
+
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
+                    }
+
+                });
+            };
 
             self.init();
 

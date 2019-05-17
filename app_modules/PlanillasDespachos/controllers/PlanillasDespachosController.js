@@ -1,4 +1,6 @@
 
+/* global G */
+
 var PlanillasDespachos = function (planillas_despachos, e008, pedidos_farmacias, eventos_pedidos_farmacias, pedidos_clientes, eventos_pedidos_clientes, emails) {
 
     this.m_planillas_despachos = planillas_despachos;
@@ -171,15 +173,51 @@ PlanillasDespachos.prototype.consultarDocumentosPlanillaDespacho = function (req
     });
 };
 
+PlanillasDespachos.prototype.consultarDocumentosPlanillaDespachoDetalle = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, 'No se definieron parametros de consulta', 404, {}));
+        return;
+    }
+
+    var planilla_id = args.planillas_despachos.planilla_id;
+    var termino_busqueda = args.planillas_despachos.termino_busqueda;
+    var obj = args.planillas_despachos.tercero;
+    obj.registro_salida_bodega_id = args.planillas_despachos.registro_salida_bodega_id;
+
+    var obj = {};
+    if (args.planillas_despachos.tercero !== undefined) {
+        obj = args.planillas_despachos.tercero;
+    }
+    if (args.planillas_despachos.modificar !== undefined) {
+        obj.modificar = args.planillas_despachos.modificar;
+    }
+
+    that.m_planillas_despachos.consultar_documentos_planilla_despacho_detalle(planilla_id, termino_busqueda, obj, function (err, planilla_despacho) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultado los documentos de la  planilla', 500, {planillas_despachos: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Documentos planilla despacho', 200, {planillas_despachos: planilla_despacho}));
+        }
+    });
+};
+
 PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
-    if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
-        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
-        return;
+    if (args.planillas_despachos === undefined) {
+//    if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
+        res.send(G.utils.r(req.url, 'algunos datos no estan definidos', 404, {}));
+//        return;
     }
 
     if (args.planillas_despachos.transportador_id === undefined || args.planillas_despachos.nombre_conductor === undefined || args.planillas_despachos.observacion === undefined) {
@@ -197,10 +235,10 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
         return;
     }
 
-    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
-        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
-        return;
-    }
+//    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
+//        return;
+//    }
 
     if (args.planillas_despachos.transportador_id === '' || args.planillas_despachos.nombre_conductor === '' || args.planillas_despachos.observacion === '') {
         res.send(G.utils.r(req.url, 'transportador_id, nombre_conductor u observacion esta vacia', 404, {}));
@@ -209,9 +247,9 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
 
 
     var parametros = {
-        pais_id: args.planillas_despachos.pais_id,
-        departamento_id: args.planillas_despachos.departamento_id,
-        ciudad_id: args.planillas_despachos.ciudad_id,
+//        pais_id: args.planillas_despachos.pais_id,
+//        departamento_id: args.planillas_despachos.departamento_id,
+//        ciudad_id: args.planillas_despachos.ciudad_id,
         transportador_id: args.planillas_despachos.transportador_id,
         nombre_conductor: args.planillas_despachos.nombre_conductor,
         observacion: args.planillas_despachos.observacion,
@@ -238,6 +276,77 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function (req, res) {
 
 };
 
+PlanillasDespachos.prototype.modificarPlanilla = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined) {
+//    if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
+        res.send(G.utils.r(req.url, 'algunos datos no estan definidos', 404, {}));
+//        return;
+    }
+
+    if (args.planillas_despachos.transportador_id === undefined || args.planillas_despachos.nombre_conductor === undefined || args.planillas_despachos.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'Transportador, Conductor u Observacion no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numero_guia_externo === undefined) {
+        res.send(G.utils.r(req.url, 'Numero Guia Externo no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numero_placa_externo === undefined) {
+        res.send(G.utils.r(req.url, 'Numero Placa no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numeroPlanilla === undefined || args.planillas_despachos.numeroPlanilla === 0) {
+        res.send(G.utils.r(req.url, 'numero Guia no esta definido', 404, {}));
+        return;
+    }
+
+//    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
+//        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
+//        return;
+//    }
+
+    if (args.planillas_despachos.transportador_id === '' || args.planillas_despachos.nombre_conductor === '' || args.planillas_despachos.observacion === '') {
+        res.send(G.utils.r(req.url, 'Transportador, Conductor u Observacion esta vacia', 404, {}));
+        return;
+    }
+
+
+    var parametros = {
+//        pais_id: args.planillas_despachos.pais_id,
+//        departamento_id: args.planillas_despachos.departamento_id,
+//        ciudad_id: args.planillas_despachos.ciudad_id,
+        transportador_id: args.planillas_despachos.transportador_id,
+        nombre_conductor: args.planillas_despachos.nombre_conductor,
+        observacion: args.planillas_despachos.observacion,
+        numero_guia_externo: args.planillas_despachos.numero_guia_externo,
+        numero_placa_externo: args.planillas_despachos.numero_placa_externo,
+        tipo_planilla: args.planillas_despachos.tipo_planilla,
+        numeroPlanilla: args.planillas_despachos.numeroPlanilla,
+        usuario_id: req.session.user.usuario_id
+    };
+
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'modificar_planilla_despacho', parametros).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Planilla despacho modificada correctamente', 200, {}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+
+    }).done();
+
+};
+
 
 PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req, res) {
 
@@ -250,8 +359,8 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req,
         return;
     }
 
-    if (args.planillas_despachos.cantidad_cajas === undefined || args.planillas_despachos.cantidad_neveras === undefined || args.planillas_despachos.temperatura_neveras === undefined || args.planillas_despachos.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'cantidad_cajas, cantidad_neveras, temperatura_neveras u observacion no esta definido', 404, {}));
+    if (args.planillas_despachos.cantidad_cajas === undefined || args.planillas_despachos.cantidad_neveras === undefined || args.planillas_despachos.cantidad_bolsas === undefined || args.planillas_despachos.temperatura_neveras === undefined || args.planillas_despachos.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad_cajas, cantidad_neveras, cantidad_bolsas, temperatura_neveras u observacion no esta definido', 404, {}));
         return;
     }
 
@@ -299,6 +408,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function (req,
         numero: args.planillas_despachos.numero,
         cantidad_cajas: args.planillas_despachos.cantidad_cajas,
         cantidad_neveras: (args.planillas_despachos.cantidad_neveras === '') ? 0 : args.planillas_despachos.cantidad_neveras,
+        cantidad_bolsas: (args.planillas_despachos.cantidad_bolsas === '') ? 0 : args.planillas_despachos.cantidad_bolsas,
         temperatura_neveras: (args.planillas_despachos.temperatura_neveras === '') ? null : args.planillas_despachos.temperatura_neveras,
         observacion: args.planillas_despachos.observacion,
         tipo: tipo,
@@ -561,6 +671,7 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
     var that = this;
 
     var args = req.body.data;
+    var tipo_planilla = '';
 
     if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined) {
         res.send(G.utils.r(req.url, 'planilla_id no esta definidas', 404, {}));
@@ -637,8 +748,18 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
 //                        documentos.push({tercero: z, detalle: datos[z]});
                         documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
                     }
-
-                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (nombre_reporte) {
+                    
+                     if (planilla_despacho.tipo_planilla === 'M') {
+                    tipo_planilla = "MEDICAMENTOS";
+                } else if (planilla_despacho.tipo_planilla === 'I') {
+                    tipo_planilla = "INSUMOS";
+                } else if (planilla_despacho.tipo_planilla === 'N') {
+                    tipo_planilla = "NUTRICION";
+                }
+                
+                planilla_despacho.tipo_planilla =tipo_planilla;
+                   
+                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (err, nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -664,6 +785,393 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
             });
         }
     });
+};
+
+// Generar Reporte Planilla Despacho Farmacia
+PlanillasDespachos.prototype.reportePlanillaDespachoPedido = function (req, res) {
+
+    var that = this;
+    var planilla_id;
+    var planilla_despacho;
+
+    var args = req.body.data;
+
+    if (args === undefined) {
+        res.send(G.utils.r(req.url, 'datos no definidos', 404, {}));
+        return;
+    }
+
+    if (args.prefijo === undefined || args.prefijo === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {}));
+        return;
+    }
+
+    if (args.numero === undefined || args.numero === '' || args.numero === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {}));
+        return;
+    }
+
+    if (args.empresa === undefined || args.empresa === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'ConsultarIdPlanilla', args).then(function (result) {
+
+        if (result.length === 0) {
+            throw {msj: 'No cuenta con planilla de despacho', status: 404};
+            return;
+        }
+
+        planilla_id = result[0].inv_planillas_despacho_id;
+
+        return G.Q.nfcall(that.m_planillas_despachos.consultar_planilla_despacho, planilla_id);
+
+    }).then(function (result) {
+        planilla_despacho = result[0];
+        return G.Q.nfcall(that.m_planillas_despachos.consultar_documentos_planilla_despacho, planilla_id, '');
+
+    }).then(function (lista_documentos) {
+
+        var datos = [];
+        lista_documentos.forEach(function (documento) {
+
+            var clienteSede = documento.descripcion_destino;
+            if (documento.descripcion_sede !== null && documento.descripcion_sede !== '') {
+                clienteSede = documento.descripcion_sede;
+            }
+
+
+            if (datos[clienteSede]) {
+                datos[clienteSede].push(documento);
+            } else {
+                datos[clienteSede] = [documento];
+            }
+        });
+
+        var documentos = [];
+        for (var z in datos) {
+            var direccion = datos[z][0].direccion_destino;
+            if (datos[z][0].direccion_sede !== '') {
+                direccion = datos[z][0].direccion_sede;
+            }
+
+            documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
+        }
+
+        var informacion = {
+            planilla_despacho: planilla_despacho,
+            documentos_planilla: documentos,
+            usuario_imprime: req.session.user.nombre_usuario,
+            serverUrl: req.protocol + '://' + req.get('host') + "/"
+        };
+
+        return G.Q.nfcall(_generar_reporte_planilla_despacho, informacion);
+
+    }).then(function (nombre_reporte) {
+        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
+    }).catch(function (err) {
+        console.log("error impresion ", err);
+        if (!err.status) {
+            err = {status: 500, msj: err};
+        }
+        res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done();
+};
+
+PlanillasDespachos.prototype.consultarCantidadCajaNevera = function (req, res) {
+
+
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined ||
+            args.planillas_despachos.empresa_id === undefined ||
+            args.planillas_despachos.prefijo === undefined ||
+            args.planillas_despachos.numero === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa esta vacio', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.prefijo === '') {
+        res.send(G.utils.r(req.url, 'el numero de prefijo esta vacio', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numero === '') {
+        res.send(G.utils.r(req.url, 'el numero esta vacio', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.planillas_despachos.empresa_id;
+    var prefijo = args.planillas_despachos.prefijo;
+    var numero = args.planillas_despachos.numero;
+    var esPlanillas = args.planillas_despachos.esPlanillas || false;
+
+    var obj = {
+        empresa_id: empresa_id,
+        prefijo: prefijo,
+        numero: numero,
+        tipo: 0,
+        esPlanillas: esPlanillas
+    };
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'consultarCantidadCajaNevera', obj).then(function (resultado) {
+
+        obj.totalCajas = (resultado.length > 0) ? resultado[0].total_cajas : 0;
+        obj.totalNeveras = (resultado.length > 0) ? resultado[0].total_neveras : 0;
+        obj.totalBolsas = (resultado.length > 0) ? resultado[0].total_bolsas : 0;
+
+        res.send(G.utils.r(req.url, 'Cantidades de cajas,bolsas y neveras', 200, {planillas_despachos: obj}));
+    }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+            }).done();
+
+
+
+};
+
+/**
+ *@author Cristian Ardila
+ *@fecha  06/02/2016
+ *+Descripcion Controlador encargado de consultar el total de cajas de un conjunto
+ *             de documentos 
+ **/
+PlanillasDespachos.prototype.gestionarLios = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.documentos === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadNeveras === undefined || args.planillas_despachos.cantidadNeveras === '' || args.planillas_despachos.cantidadNeveras === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de neveras debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadBolsas === undefined || args.planillas_despachos.cantidadBolsas === '' || args.planillas_despachos.cantidadBolsas === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de bolsas debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    args.planillas_despachos.usuario_id = req.session.user.usuario_id;
+    var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
+
+    args.planillas_despachos.temperatura = temperatura;
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'consecutivoLio').then(function (resultado) {
+
+        args.planillas_despachos.consecutivoLio = resultado[0].nextval;
+
+        return G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos);
+
+    }).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Se insertan satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * @fecha 29/04/2019
+ *+Descripcion Controlador encargado de actualizar la cantidad de cajas,bolsas o neveras de un lio
+ **/
+PlanillasDespachos.prototype.modificarLios = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.documentos === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadNeveras === undefined || args.planillas_despachos.cantidadNeveras === '' || args.planillas_despachos.cantidadNeveras === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de neveras debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.cantidadBolsas === undefined || args.planillas_despachos.cantidadBolsas === '' || args.planillas_despachos.cantidadBolsas === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de bolsas debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+
+    args.planillas_despachos.usuario_id = req.session.user.usuario_id;
+    var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
+
+    args.planillas_despachos.temperatura = temperatura;
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'modificarLioDocumento', args.planillas_despachos).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Se modifica satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/11/2015
+ * +Descripcion: Controlador encargado de actualizar el estado de la cotizacion
+ *               para solicitar aprobacion por cartera
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+PlanillasDespachos.prototype.actualizarLioDocumento = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, ' no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.documentos === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+
+
+    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
+
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+
+    tabla = tabla[tipo];
+
+    if (tabla === undefined) {
+        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
+        return;
+    }
+
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'actualizarLioDocumento', args.planillas_despachos.documentos)
+
+            .then(function (resultado) {
+
+
+                return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
+
+            }).fail(function (err) {
+
+
+        res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+
+};
+
+/**
+ * @author German Galvis
+ * @fecha 29/04/2019
+ * +Descripcion: Controlador encargado de actualizar la cantidad de cajas, bolsas o neveras de un documento
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+PlanillasDespachos.prototype.modificarDocumentoPlanilla = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+
+    if (args === undefined) {
+        res.send(G.utils.r(req.url, ' no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.documento === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documento no esta definido', 404, {}));
+        return;
+    }
+
+
+    var tipo = args.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
+
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+
+    tabla = tabla[tipo];
+
+    if (tabla === undefined) {
+        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        documento: args.documento,
+        tabla: tabla
+    };
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'modificarDocumento', parametros, false).then(function (resultado) {
+
+        return res.send(G.utils.r(req.url, 'Documento Modificado Correctamente', 200, {planillas_despachos: resultado}));
+
+    }).fail(function (err) {
+
+
+        res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+
 };
 
 function __despachar_documentos_planilla(contexto, i, documentos_planilla, resultado, callback) {
@@ -703,10 +1211,10 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
                 if (estado_actual_pedido === '3') {
                     // si es Zona de despacho  => pasa a Despachado
-                    estado_pedido = '4';
+                    estado_pedido = '3';
                 } else if (estado_actual_pedido === '9') {
                     // si es Zona con pdtes => pasa a Despachado con pdtes                    
-                    estado_pedido = '5';
+                    estado_pedido = '9';
                 } else {
                     estado_pedido = estado_actual_pedido;
                 }
@@ -795,7 +1303,7 @@ function _generar_reporte_planilla_despacho(rows, callback) {
                 if (err) {
                     console.log('=== Se ha generado un error generando el reporte ====');
                 } else {
-                    callback(nombre_reporte);
+                    callback(false, nombre_reporte);
                 }
             });
 
@@ -836,193 +1344,6 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 }
 ;
-
-
-
-PlanillasDespachos.prototype.consultarCantidadCajaNevera = function (req, res) {
-
-
-
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.planillas_despachos === undefined ||
-            args.planillas_despachos.empresa_id === undefined ||
-            args.planillas_despachos.prefijo === undefined ||
-            args.planillas_despachos.numero === undefined) {
-        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.empresa_id === '') {
-        res.send(G.utils.r(req.url, 'El id de la empresa esta vacio', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.prefijo === '') {
-        res.send(G.utils.r(req.url, 'el numero de prefijo esta vacio', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.numero === '') {
-        res.send(G.utils.r(req.url, 'el numero esta vacio', 404, {}));
-        return;
-    }
-
-    var empresa_id = args.planillas_despachos.empresa_id;
-    var prefijo = args.planillas_despachos.prefijo;
-    var numero = args.planillas_despachos.numero;
-    var esPlanillas = args.planillas_despachos.esPlanillas || false;
-
-    var obj = {
-        empresa_id: empresa_id,
-        prefijo: prefijo,
-        numero: numero,
-        tipo: 0,
-        esPlanillas: esPlanillas
-    };
-
-    G.Q.ninvoke(that.m_planillas_despachos, 'consultarCantidadCajaNevera', obj).then(function (resultado) {
-
-        obj.totalCajas = (resultado.length > 0) ? resultado[0].total_cajas : 0;
-        obj.totalNeveras = (resultado.length > 0) ? resultado[0].total_neveras : 0;
-
-        res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: obj}));
-    }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
-            }).done();
-
-
-
-};
-
-
-
-/**
- *@author Cristian Ardila
- *@fecha  06/02/2016
- *+Descripcion Controlador encargado de consultar el total de cajas de un conjunto
- *             de documentos 
- **/
-PlanillasDespachos.prototype.gestionarLios = function (req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-
-    if (args.planillas_despachos === undefined) {
-        res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.documentos === undefined) {
-        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'el tipo no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
-        res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
-        res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.cantidadNeveras === undefined || args.planillas_despachos.cantidadNeveras === '' || args.planillas_despachos.cantidadNeveras === '0') {
-        res.send(G.utils.r(req.url, 'la cantidad de neveras debe estar definido y no puede estar en cero', 404, {}));
-        return;
-    }
-
-    args.planillas_despachos.usuario_id = req.session.user.usuario_id;
-    var temperatura = parseInt(args.planillas_despachos.cantidadNeveras) > 0 ? '3.2' : '0';
-
-    args.planillas_despachos.temperatura = temperatura;
-
-    G.Q.ninvoke(that.m_planillas_despachos, 'consecutivoLio').then(function (resultado) {
-
-        args.planillas_despachos.consecutivoLio = resultado[0].nextval;
-
-        return G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos);
-
-    }).then(function (resultado) {
-
-        res.send(G.utils.r(req.url, 'Se insertan satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
-
-    }).fail(function (err) {
-
-        res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
-
-    }).done();
-
-};
-
-
-
-/**
- * @author Cristian Ardila
- * @fecha 09/11/2015
- * +Descripcion: Controlador encargado de actualizar el estado de la cotizacion
- *               para solicitar aprobacion por cartera
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- */
-PlanillasDespachos.prototype.actualizarLioDocumento = function (req, res) {
-
-    var that = this;
-    var args = req.body.data;
-
-
-    if (args.planillas_despachos === undefined) {
-        res.send(G.utils.r(req.url, ' no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.documentos === undefined) {
-        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
-        return;
-    }
-
-
-    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
-
-    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
-
-    tabla = tabla[tipo];
-
-    if (tabla === undefined) {
-        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
-        return;
-    }
-
-
-    G.Q.ninvoke(that.m_planillas_despachos, 'actualizarLioDocumento', args.planillas_despachos.documentos)
-
-            .then(function (resultado) {
-
-
-                return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
-
-            }).fail(function (err) {
-
-
-        res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
-
-    }).done();
-
-
-};
-
 
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];

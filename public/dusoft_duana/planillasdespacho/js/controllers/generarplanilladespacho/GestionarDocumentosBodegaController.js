@@ -98,9 +98,12 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     data: {
                         clientes: {
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+                            pais_id: 'CO',
+                            departamento_id: '76',
+                            ciudad_id: '001',
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             estado: 1,
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
@@ -136,9 +139,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -229,8 +232,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -265,7 +268,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         validacionDespachos: {
-                            prefijo: $scope.datos_view.tercero_seleccionado.getNombre()
+                            prefijo: $scope.datos_view.tercero_seleccionado.getNombre(),
+                            termino_busqueda: $scope.datos_view.termino_busqueda_documentos
                         }
                     }
                 };
@@ -332,6 +336,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     var documento = Documento.get(data.id_aprobacion_planillas, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
                     documento.set_cantidad_cajas_auditadas(data.cantidad_cajas);
                     documento.set_cantidad_neveras_auditadas(data.cantidad_neveras);
+                    documento.set_cantidad_bolsas_auditadas(data.cantidad_bolsas);
                     documento.tipo = data.tipo;
 
                     if ($scope.datos_view.despachoPorLios) {
@@ -375,6 +380,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 //                    }
                 }
 
+                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
+                    disabled = false;
+                }
+
                 return disabled;
             };
 
@@ -398,13 +407,15 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     if (data.status === 200) {
 
                         if (parseInt(documento.get_cantidad_cajas()) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras) {
+                                parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras &&
+                                parseInt(documento.get_cantidad_bolsas()) === data.obj.planillas_despachos.totalBolsas) {
 
                             $scope.datos_view.documento_seleccionado = documento;
 
                             that.gestionar_planilla_despacho();
                         } else {
-                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ", Nro neveras Auditadas: " + data.obj.planillas_despachos.totalNeveras);
+                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas,bolsas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ",\
+                                                         Nro neveras Auditadas: " + data.obj.planillas_despachos.totalNeveras + ", Nro bolsas Auditadas: " + data.obj.planillas_despachos.totalBolsas);
                         }
 
                     }
@@ -536,9 +547,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'lios', displayName: "", width: "40", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
-                    {field: 'get_id()', displayName: 'Grupo', width: "10%"},
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "25%"},
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "25%", cellClass: "txt-center dropdown-button",
+                    {field: 'get_id()', displayName: 'Grupo', width: "8%"},
+                    {field: 'get_descripcion()', displayName: 'Doc Bodega', width: "20%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "23%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                      <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >{{row.entity.tercero.nombre}}<span class="caret"></span></button>\
                      <ul class="dropdown-menu dropdown-options">\
@@ -547,8 +558,9 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                      </li>\
                      </ul>\
                      </div>'},
-                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -567,9 +579,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 columnDefs: [
                     {field: 'lios', displayName: "", width: "40", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
                     {field: 'get_id()', displayName: 'Grupo', width: "10%"},
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
+                    {field: 'get_descripcion()', displayName: 'Doc Bodega', width: "20%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -588,8 +601,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                     for (var i in documentos) {
                         var _documento = documentos[i];
-                        if(_documento.tipo === '2'){
-                        _documento.tercero = farmacia;
+                        if (_documento.tipo === '2') {
+                            _documento.tercero = farmacia;
                         }
                     }
                 } else {
@@ -724,15 +737,15 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         planillas_despachos: {
-                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             transportador_id: $scope.planilla.get_transportadora().get_id(),
                             nombre_conductor: $scope.planilla.get_nombre_conductor(),
                             observacion: $scope.planilla.get_observacion(),
                             numero_guia_externo: $scope.planilla.get_numero_guia_externo(),
                             numero_placa_externo: $scope.planilla.get_numero_placa_externo(),
-                            tipo_planilla:$scope.planilla.tipo_planilla.prefijo
+                            tipo_planilla: $scope.planilla.tipo_planilla.prefijo
                         }
                     }
                 };
@@ -762,6 +775,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             numero: $scope.planilla.get_documento().get_numero(),
                             cantidad_cajas: $scope.planilla.get_documento().get_cantidad_cajas(),
                             cantidad_neveras: $scope.planilla.get_documento().get_cantidad_neveras(),
+                            cantidad_bolsas: $scope.planilla.get_documento().get_cantidad_bolsas(),
                             temperatura_neveras: $scope.planilla.get_documento().get_cantidad_neveras() > 0 ? '3.2' : '', //$scope.planilla.get_documento().get_temperatura_neveras(),
                             observacion: $scope.planilla.get_documento().get_observacion(),
                             tipo: $scope.datos_view.opcion_predeterminada

@@ -361,7 +361,7 @@ function __asignarResponsablesPedido(req,that, callback) {
 
         G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function (cabecera_pedido) {
             if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ||
-                    cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
+                    cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' || cabecera_pedido[0].estado_actual_pedido === '1') {
                 return  G.Q.ninvoke(that.m_pedidos_clientes, "asignar_responsables_pedidos", numero_pedido, estado_pedido, responsable, usuario);
 
             } else {
@@ -1559,23 +1559,13 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
 
     }).then(function (resultado) {
-//        console.log("parametros.bodegaActual",parametros.bodegaActual);
-//        console.log("cabecera.bodega",cabecera.bodega);
         if (parametros.bodegaActual !== cabecera.bodega) {//validar
-//            console.log("111111111");
             idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
             idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
         } else {
-//            console.log("22222222");
             idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
             idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
         }
-        // var obj = {cotizacion: cabecera.numero_cotizacion, numero_pedido : resultado.numero_pedido};
-
-        //   return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"actualizarPedidoMultipleCliente",obj);
-
-        //  }).then(function (resultado) {
-
         __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
 
     }).fail(function (err) {
@@ -1583,12 +1573,6 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         callback(err);
 
     }).done();
-
-//    }else{ 
-//        
-//     __insertarCabeceraClientesCotizacion(datos,parametros,index,callback);
-//    
-//    }
 }
 
 
@@ -2120,6 +2104,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
      *              proseguira a crearse en los siguientes metodos
      */
+    console.log("cotizacion.numero_cotizacion ",cotizacion.numero_cotizacion);
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         /**
@@ -2238,8 +2223,12 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
         }
 
     }).then(function (rows, result) {
-
-        cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;
+   
+        if(rows[0][0] !== undefined){
+            cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;
+        }else{
+            cotizacion.numero_cotizacion = rows[0]; 
+        }
         productosPreparadosCotizacion = [];
         productosPreparadosCotizacionInvalidos = [];
 

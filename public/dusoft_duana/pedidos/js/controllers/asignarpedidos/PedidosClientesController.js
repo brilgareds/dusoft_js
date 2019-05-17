@@ -211,6 +211,10 @@ define(["angular",
                 if (pedido.estado_actual_pedido === '8') {
                     disabled = false;
                 }
+
+                if (pedido.estado_actual_pedido === '9') {
+                    disabled = false;
+                }
                 
                 if (pedido.estado_actual_pedido === '10') {
                     disabled = true;

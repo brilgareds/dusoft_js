@@ -507,8 +507,8 @@ function __reporteFactura(parametros, callback) {
 function __generarReporteFactura(rows, callback) {
     G.jsreport.render({
         template: {
-            content: G.fs.readFileSync('app_modules/NotasProveedores/reports/factura.html', 'utf8'),
-            helpers: G.fs.readFileSync('app_modules/NotasProveedores/reports/javascripts/helpers.js', 'utf8'),
+            content: G.fs.readFileSync('app_modules/FacturacionProveedores/reports/factura.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/FacturacionProveedores/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender'
         },

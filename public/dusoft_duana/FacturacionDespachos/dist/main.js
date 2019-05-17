@@ -64485,7 +64485,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         };
 
                         notasService.imprimirReporteFacturaDian(obj, function (data) {
-                            console.log("imprimirReporteFacturaDian:: ", data);
+                            
                             if (data.status === 200) {
                                 var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;
                                 $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");
@@ -65245,8 +65245,6 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                     empresaId: $scope.root.empresaSeleccionada.getCodigo()
                                 };
                                 that.listarNotas(parametros);
-                            } else {
-
                             }
                         }
                     };
@@ -67482,8 +67480,13 @@ define('app',[
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
+<<<<<<< HEAD
                     url: "/FacturasProveedores",
                     text: "Facturacion Proveedores",
+=======
+                    url: "/FacturacionProveedores",
+                    text: "Facturacion Proveedores", 
+>>>>>>> master
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
                     controller: "FacturacionProveedorController"

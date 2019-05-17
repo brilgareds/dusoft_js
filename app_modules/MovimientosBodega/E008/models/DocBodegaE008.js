@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedidos_farmacias) {
 
     this.m_movimientos_bodegas = movientos_bodegas;
@@ -1248,7 +1250,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 '' as farmacia_id,\
                 j.observacion as descripcion_pedido, \
                 (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_tercero AND terc.tercero_id = j.tercero_id) as direccion,\
-                (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_sede AND terc.tercero_id = j.sede_id) as direccion_sede\
+                (SELECT terc.direccion FROM terceros as terc WHERE terc.tipo_id_tercero = j.tipo_id_sede AND terc.tercero_id = j.sede_id) as direccion_sede,\
+                (SELECT k.departamento FROM terceros as a  left join tipo_dptos as k on k.tipo_pais_id=a.tipo_pais_id and k.tipo_dpto_id =a.tipo_dpto_id WHERE  a.tipo_id_tercero = j.tipo_id_sede AND a.tercero_id = j.sede_id ) as departamento\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -1262,7 +1265,7 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 where a.empresa_id = :3\
                 and a.prefijo = :2\
                 and a.numero = :1\
-                union\
+            union\
                 select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
                 a.numero,\
@@ -1282,7 +1285,8 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 j.farmacia_id,\
                 j.observacion as descripcion_pedido,\
                 '' as direccion,\
-                null as direccion_sede\
+                null as direccion_sede,\
+                null as departamento\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -1297,8 +1301,9 @@ DocumentoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 and a.prefijo = :2\
                 and a.numero = :1";
     
-    
+ 
     var query=G.knex.raw(sql, {1:numero, 2:prefijo, 3:empresa, 4:usuario_id});
+//       console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -1569,6 +1574,7 @@ var sql1 =" a.*,\
                 a.numero,\
                 b.razon_social,\
                 a.empresa_id,\
+                a.bodega,\
                 to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
                 a.empresa_destino,\
                (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \

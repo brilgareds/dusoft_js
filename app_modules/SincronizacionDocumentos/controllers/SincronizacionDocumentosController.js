@@ -266,6 +266,7 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
             break;
     }
 
+<<<<<<< HEAD
     G.Q.nfcall(funcion_ws, obj, that)
         .then(result => {
             param = result;
@@ -277,6 +278,25 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
                     funcion: funcionServicio,
                     parametros: param
                 };
+=======
+    G.Q.nfcall(funcion_ws, obj, that).then(function (result) {
+
+        param = result;
+        
+        //console.log('Sincronizar es: ', sincronizar);
+
+        if (sincronizar === 1) {
+            var objSincronizar = {
+                url: url,
+                funcion: funcionServicio,
+                parametros: param
+            };
+            return G.Q.ninvoke(that.m_SincronizacionDoc, 'sincronizarFinaciero', objSincronizar);
+        } else {
+            return param;
+        }
+    }).then(function (result) {
+>>>>>>> master
 
                 return G.Q.ninvoke(that.m_SincronizacionDoc, 'sincronizarFinaciero', objSincronizar);
             } else {

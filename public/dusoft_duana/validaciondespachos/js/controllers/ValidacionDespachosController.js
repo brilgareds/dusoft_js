@@ -149,6 +149,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             documento.setCantidadCajas(_documento.cantidad_cajas);
                             documento.setCantidadNeveras(_documento.cantidad_neveras);
+                            documento.setCantidadBolsas(_documento.cantidad_bolsas);
                             documento.setObservacion(_documento.observacion);
                             documento.setRazonSocial(_documento.razon_social);
                             documento.setEmpresaId(_documento.empresa_id);
@@ -274,6 +275,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {field: 'getObservacion()', displayName: 'Observacion', width: "60%"},
                             {field: 'getCantidadCajas()', displayName: 'Cant Cajas', width: "5%"},
                             {field: 'getCantidadNeveras()', displayName: 'Cant Neveras', width: "5%"},
+                            {field: 'getCantidadBolsas()', displayName: 'Cant Bolsas', width: "5%"},
                             {field: 'fecha_registro', displayName: 'Fecha Registro'},
                             {field: 'detalle', width: "10%",
                                 displayName: "Opciones",

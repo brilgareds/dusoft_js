@@ -320,7 +320,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
     } else {
 
     if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
-        cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
+        cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' || cabecera_pedido[0].estado_actual_pedido === '10') {
 
     that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
 
@@ -457,7 +457,7 @@ function __asignarResponsablesPedido(req,that, callback) {
         
          G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
             if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
-                cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
+                cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' || cabecera_pedido[0].estado_actual_pedido === '1') {
                 return  G.Q.ninvoke(that.m_pedidos_farmacias,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
                 
             } else {
@@ -1485,7 +1485,7 @@ PedidosFarmacias.prototype.anularPendienteProducto = function(req, res) {
     G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numeroPedido).
             then(function(cabeceraPedido) {
 
-        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8') {
+        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8' || cabeceraPedido[0].estado_actual_pedido === '9') {
             return G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_detalle_pedido', numeroPedido);
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", codigo: 403};
@@ -2258,7 +2258,8 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
 
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
-            cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
+            cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' ||
+            cabecera_pedido[0].estado_actual_pedido === '10') {
 
 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,

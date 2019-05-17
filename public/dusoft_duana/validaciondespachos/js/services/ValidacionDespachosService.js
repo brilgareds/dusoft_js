@@ -59,6 +59,50 @@ define(["angular", "js/services"], function (angular, services) {
                 callback(data);
             });
         };
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 26/12/2016
+         * +Descripcion: Consulta las imagenes de una aprobacion
+         */
+        self.documentosPlanillas = function (obj, callback) {
+            var param = {
+                session: obj.session,
+                data: {
+                    planillas_despachos: {
+                            planilla_id: obj.planilla_id,
+                            termino_busqueda: obj.termino_busqueda
+                        }
+                }
+            };
+            Request.realizarRequest(API.PLANILLAS.DOCUMENTOS_PLANILLA, "POST", param, function (data) {
+        
+                callback(data);
+            });
+        };
+        
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 26/12/2016
+         * +Descripcion: Consulta las imagenes de una aprobacion
+         */
+        self.documentosPlanillasDetalle = function (obj, callback) {
+            var param = {
+                session: obj.session,
+                data: {
+                    planillas_despachos: {
+                            planilla_id: obj.planilla_id,
+                            termino_busqueda: obj.termino_busqueda,
+                            tercero : obj.tercero,
+                            modificar : obj.modificar,
+                            registro_salida_bodega_id : obj.registro_salida_bodega_id
+                        }
+                }
+            };
+            Request.realizarRequest(API.PLANILLAS.DOCUMENTOS_PLANILLA_DETALLE, "POST", param, function (data) {
+        
+                callback(data);
+            });
+        };
         
         /*
          * @Author: Eduar Garcia

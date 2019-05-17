@@ -1,10 +1,12 @@
 
-/* global G */
-
-var ValidacionDespachos = function (induccion, imprimir_productos) {
+var ValidacionDespachos = function (induccion, m_pedidos_farmacias, m_pedidos_clientes, e_pedidos_farmacias, e_pedidos_clientes, m_terceros) {
 
     this.m_ValidacionDespachos = induccion;
-    this.m_imprimir_productos = imprimir_productos;
+    this.m_pedidos_farmacias = m_pedidos_farmacias;
+    this.m_pedidos_clientes = m_pedidos_clientes;
+    this.e_pedidos_farmacias = e_pedidos_farmacias;
+    this.e_pedidos_clientes = e_pedidos_clientes;
+    this.m_terceros = m_terceros;
 
 };
 
@@ -276,6 +278,7 @@ ValidacionDespachos.prototype.registrarAprobacion = function (req, res) {
     var args = req.body.data;
     var totalCajas = 0;
     var totalNeveras = 0;
+    var totalBolsas = 0;
 
     if (args.validacionDespachos === undefined) {
         res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
@@ -291,10 +294,12 @@ ValidacionDespachos.prototype.registrarAprobacion = function (req, res) {
     args.validacionDespachos.detalle.forEach(function (row) {
         totalCajas += parseInt(row.cantidadCajas);
         totalNeveras += parseInt(row.cantidadNeveras);
+        totalBolsas += parseInt(row.cantidadBolsas);
     });
 
     args.validacionDespachos.cantidadTotalCajas = totalCajas;
     args.validacionDespachos.cantidadTotalNeveras = totalNeveras;
+    args.validacionDespachos.cantidadTotalBolsas = totalBolsas;
 
     G.Q.ninvoke(that.m_ValidacionDespachos, 'transaccionRegistrarAprobacion', args.validacionDespachos).then(function (resultado) {
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {validacionDespachos: resultado}));
@@ -343,9 +348,9 @@ ValidacionDespachos.prototype.listarNumeroPrefijoOtrasSalidas = function (req, r
 
 
     var prefijo = args.validacionDespachos.prefijo.toUpperCase();
+    var termino_busqueda = args.validacionDespachos.termino_busqueda;
 
-
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo: prefijo}).then(function (resultado) {
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo: prefijo, termino_busqueda: termino_busqueda}).then(function (resultado) {
 
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {planillas_despachos: resultado}));
 
@@ -522,6 +527,10 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
     var that = this;
 
     var args = req.body.data.obj;
+    var registro_salida_bodega_id = "";
+    if (args.numeroGuia === "") {
+        args.numeroGuia = '100';
+    }
     var obj = {
         "prefijo": args.prefijo,
         "numero": args.numero,
@@ -541,26 +550,180 @@ ValidacionDespachos.prototype.registroSalidaBodega = function (req, res) {
         "usuarioId": req.session.user.usuario_id,
         "observacion": args.observacion,
         "operarioId": args.operarioId,
+        "listaAgrupados": args.documentos,
         that: that
     };
 
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'registroSalida', obj).then(function (resultado) {
+    G.knex.transaction(function (transaccion) {
+
+        obj.transaccion = transaccion;
+
+        G.Q.ninvoke(that.m_ValidacionDespachos, 'listarOneSalidaDetalle', obj).then(function (resultado) {
+
+            if (resultado.length === 0 || obj.numeroGuia.trim() === "") {
+
+                return G.Q.ninvoke(that.m_ValidacionDespachos, 'registroSalida', obj);
+
+            } else {
+
+                throw {msj: 'La Guia ya se encuentra registrada'};
+
+            }
+
+        }).then(function (respuesta) {
+            registro_salida_bodega_id = respuesta;
+            return G.Q.ninvoke(that.m_terceros, 'seleccionar_operario_por_usuario_id', req.session.user.usuario_id);
+
+        }).then(function (respuesta) {
+
+            if (args.documentos.length > 0) {
+                obj.operario = respuesta[0].operario_id;
+                obj.registro_salida_bodega_id = registro_salida_bodega_id;
+                return G.Q.nfcall(__registroSalidaDetalle, obj, 0);
+
+            } else {
+
+                return true;
+
+            }
+
+        }).then(function (respuesta) {
+
+            transaccion.commit();
+
+        }).fail(function (err) {
+
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function (resultado) {
 
         res.send(G.utils.r(req.url, "ingreso Correcto", 200, {validacionDespachos: resultado}));
 
-    }).fail(function (err) {
+    }).catch(function (err) {
+        console.log("Error  ", err);
+        var mensaje = '';
+        if(err.code === '23505'){
+         mensaje = 'El Registro ya se encuentra Almacenado';
+        }else{
+         mensaje = 'Error en el registro';
+        }
+        if (err.msj !== undefined) {
+            mensaje = err.msj;
+        }
 
-        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
+        res.send(G.utils.r(req.url, mensaje, 404, {validacionDespachos: {err: err}}));
 
     }).done();
 };
 
+function __registroSalidaDetalle(obj, index, callback) {
+
+    var detalle = obj.listaAgrupados[index];
+
+    if (!detalle) {
+        callback(false);
+        return;
+    }
+
+    detalle.transaccion = obj.transaccion;
+
+    detalle.registro_salida_bodega_id = obj.registro_salida_bodega_id;
+
+    G.Q.ninvoke(obj.that.m_ValidacionDespachos, 'registroSalidaDetalle', detalle).then(function (resultado) {
+
+        if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
+
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'consultarEstadoActualPedidoFarmacia', detalle);
+        } else if (detalle.tipo === '1') {
+
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'consultarEstadoActualPedidoCliente', detalle);
+        } else {
+
+            return true;
+        }
+
+    }).then(function (resultado) {
+        if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
+
+            if (resultado[0].estado === '3' || resultado[0].estado === '2') {
+
+                detalle.sw_estado = 4;
+                detalle.estado_pedido = 4;
+            } else if (resultado[0].estado === '9' || resultado[0].estado === '8') {
+
+                detalle.sw_estado = 5;
+                detalle.estado_pedido = 5;
+            } else {
+                if(resultado[0].estado === '4' || resultado[0].estado === '5'){
+                    detalle.sw_estado = resultado[0].estado;
+                    detalle.estado_pedido = resultado[0].estado;
+                    return true;
+                }else{
+                    throw {status: 403, msj: "El Documento " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado farmacia: " + resultado[0].estado};
+                }
+            }
+            detalle.sw_despacho = 1;
+
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'actualizarEstadoActualPedidoFarmacia', detalle);
+
+        } else if (detalle.tipo === '1') {
+            if (resultado[0].estado_pedido === '3' || resultado[0].estado_pedido === '2') {
+                detalle.sw_estado = 4;
+                detalle.estado_pedido = 4;
+            } else if (resultado[0].estado_pedido === '9' || resultado[0].estado_pedido === '8') {
+                detalle.sw_estado = 5;
+                detalle.estado_pedido = 5;
+            } else {
+                if(resultado[0].estado_pedido === '4' || resultado[0].estado_pedido === '5'){
+                    detalle.sw_estado = resultado[0].estado_pedido;
+                    detalle.estado_pedido = resultado[0].estado_pedido;
+                    return true;
+                }else{
+                   throw {status: 403, msj: "El Document**o " + detalle.prefijo + "-" + detalle.numero + " se encuentra en estado : " + resultado[0].estado_pedido};                
+                }
+            }
+            detalle.estadoEntrega = 3;
+//            console.log("entro cliente");
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'actualizarEstadoActualPedidoCliente', detalle);
+        } else {
+            return true;
+        }
+    }).then(function (resultado) {//registro en la tablas de estados
+
+        detalle.usuario = obj.usuarioId;
+
+        if (detalle.tipo === '0') {//0-farmacia 1-cliente 2-empresa
+      
+            obj.that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
+            return G.Q.ninvoke(obj.that.m_pedidos_farmacias, 'insertarResponsablesPedidos', {numero_pedido: detalle.numero_pedido, estado: detalle.sw_estado, usuario: detalle.usuario, responsable: obj.operario, transaccion: detalle.transaccion, sw_terminado: '1'});
+
+        } else if (detalle.tipo === '1') {
+        
+            obj.that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: detalle.numero_pedido});
+            return G.Q.ninvoke(obj.that.m_pedidos_clientes, 'insertarResponsablesPedidos', {numero_pedido: detalle.numero_pedido, estado_pedido: detalle.estado_pedido, responsable: obj.operario, usuario: detalle.usuario, transaccion: detalle.transaccion, sw_terminado: '1'});
+
+        } else {
+            return true;
+        }
+
+    }).then(function (resultado) {
+
+        index++;
+        __registroSalidaDetalle(obj, index, callback);
+
+    }).fail(function (err) {
+
+        callback(err);
+
+    }).done();
+
+}
+
 ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function (req, res) {
-
     var that = this;
-
     var args = req.body.data.obj;
-
     var obj = {
         "prefijo": args.prefijo,
         "numero": args.numero,
@@ -581,20 +744,43 @@ ValidacionDespachos.prototype.modificarRegistroSalidaBodega = function (req, res
         "observacion": args.observacion,
         "operarioId": args.operarioId,
         "registro_salida_bodega_id": args.registro_salida_bodega_id,
+        "listaAgrupados": args.documentos,
         that: that
     };
 
-    G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroSalidaBodega', obj).then(function (resultado) {
+    G.knex.transaction(function (transaccion) {
+
+        obj.transaccion = transaccion;
+
+        G.Q.ninvoke(that.m_ValidacionDespachos, 'modificarRegistroSalidaBodega', obj).then(function (resultado) {
+
+            return G.Q.ninvoke(that.m_ValidacionDespachos, 'deleteSalidaDetalle', obj);
+
+        }).then(function (resultado) {
+
+            return G.Q.nfcall(__registroSalidaDetalle, obj, 0);
+
+        }).then(function (respuesta) {
+
+            transaccion.commit();
+
+        }).fail(function (err) {
+
+            transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function (resultado) {
 
         res.send(G.utils.r(req.url, "modificacion Correcta", 200, {validacionDespachos: resultado}));
 
-    }).fail(function (err) {
+    }).catch(function (err) {
 
         res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err: err}}));
 
     }).done();
 };
 
-ValidacionDespachos.$inject = ["m_ValidacionDespachos"];
+ValidacionDespachos.$inject = ["m_ValidacionDespachos", "m_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_farmacias", "e_pedidos_clientes", "m_terceros"];
 
 module.exports = ValidacionDespachos;

@@ -4,7 +4,7 @@ var ReporteDrAriasJobs = function (m_drArias) {
     var ip = require('ip');
 
     that.m_drArias = m_drArias;
-    console.log("IP",ip.address())
+   
     if (ip.address() === '10.0.2.158') {
 
        // if (G.program.prod) {
@@ -34,7 +34,7 @@ ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrAria
     
     var job = new G.cronJob('00 00 06 * * *', function () {
         __InsertarMedipol(that,2,function(result){
-                console.log("Termino: ",result); 
+              
         });
     });
 
@@ -94,7 +94,7 @@ function __InsertarMedipol(that,dias,callback){
        callback(false,true);
        return true; 
     }
-    console.log("Dia :",dias);
+   
     var formFecha = G.moment().subtract(dias, 'days');
     var control = formFecha.format('DD/MM/YYYY');
     var fecha = formFecha.format('YYYY-MM-DD');
@@ -104,7 +104,7 @@ function __InsertarMedipol(that,dias,callback){
        fecha : fecha, 
        control : control
     };
-    console.log("Fechas::: ",data);
+   
     G.Q.nfcall(__wsMedipol,data).then(function(result){ 
      lengthDataWS = result.resultado.length;
      
@@ -134,7 +134,7 @@ function __InsertarProctosMedipol(that,data,productos,index,callback){
     var producto = productos[index];
 
     if(!producto){
-        console.log("sale");
+     
         callback(false,index-1);
         return;
     }

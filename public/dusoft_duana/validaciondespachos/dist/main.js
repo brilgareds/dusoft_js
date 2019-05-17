@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-'use strict';
+
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -42382,7 +42382,7 @@ define('url',["angular"], function (angular) {
                 'LISTAR_REGISTRO_SALIDA': BASE_URL + '/ValidacionDespachos/listarRegistroSalida',
             },
             'CENTROS_UTILIDAD': {
-                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad',
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadbodega',
             },
             'CLIENTES':{
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
@@ -42399,8 +42399,11 @@ define('url',["angular"], function (angular) {
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES_PAIS': BASE_URL + '/Ciudades/listarCiudadesPais'
-            }
-            
+            },
+            'PLANILLAS':{
+                'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',   
+                'DOCUMENTOS_PLANILLA_DETALLE': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespachoDetalle',   
+            }            
         }
 
     };
@@ -47811,6 +47814,7 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
                 this.fecha_registro = fecha_registro;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
+                this.cantidadBolsas = 0;
                 this.estado =0;
                 this.observacion;
                 this.razon_social;
@@ -47881,8 +47885,7 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
             
             AprobacionDespacho.prototype.getCantidadCajas = function () {
                 return this.cantidadCajas;
-            };
-            
+            };            
             
             AprobacionDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
@@ -47890,6 +47893,14 @@ define('models/AprobacionDespacho',["angular", "js/models", "includes/classes/Do
             
             AprobacionDespacho.prototype.getCantidadNeveras = function () {
                 return this.cantidadNeveras;
+            };
+            
+            AprobacionDespacho.prototype.getCantidadBolsas = function () {
+                return this.cantidadBolsas;
+            };
+            
+            AprobacionDespacho.prototype.setCantidadBolsas = function (cantidadBolsas) {
+                this.cantidadBolsas = cantidadBolsas;
             };
 
             AprobacionDespacho.prototype.setEstado = function (estado) {
@@ -47938,6 +47949,7 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
                 this.seleccionado = false;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
+                this.cantidadBolsas = 0;
                 this.empresaId = empresaId;
                 this.estado = 0;
                 this.estadoDocumento;
@@ -48007,6 +48019,14 @@ define('models/DocumentoDespacho',["angular", "js/models", "includes/classes/Doc
 
             DocumentoDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
+            };
+
+            DocumentoDespacho.prototype.getCantidadBolsas = function () {
+                return this.cantidadBolsas;
+            };
+
+            DocumentoDespacho.prototype.setCantidadBolsas = function (cantidadBolsas) {
+                this.cantidadBolsas = cantidadBolsas;
             };
 
             DocumentoDespacho.prototype.getNumeroPedido = function () {
@@ -48849,6 +48869,7 @@ define('controllers/ValidacionDespachosController',["angular", "js/controllers"]
 
                             documento.setCantidadCajas(_documento.cantidad_cajas);
                             documento.setCantidadNeveras(_documento.cantidad_neveras);
+                            documento.setCantidadBolsas(_documento.cantidad_bolsas);
                             documento.setObservacion(_documento.observacion);
                             documento.setRazonSocial(_documento.razon_social);
                             documento.setEmpresaId(_documento.empresa_id);
@@ -48974,6 +48995,7 @@ define('controllers/ValidacionDespachosController',["angular", "js/controllers"]
                             {field: 'getObservacion()', displayName: 'Observacion', width: "60%"},
                             {field: 'getCantidadCajas()', displayName: 'Cant Cajas', width: "5%"},
                             {field: 'getCantidadNeveras()', displayName: 'Cant Neveras', width: "5%"},
+                            {field: 'getCantidadBolsas()', displayName: 'Cant Bolsas', width: "5%"},
                             {field: 'fecha_registro', displayName: 'Fecha Registro'},
                             {field: 'detalle', width: "10%",
                                 displayName: "Opciones",
@@ -49415,7 +49437,7 @@ define('controllers/EntradaSalidaController',["angular", "js/controllers"], func
                      * @fecha 2019-04-04
                      */
                     $scope.listarTransportadoras = function (termino_busqueda) {
-                        if (termino_busqueda.length < 3) {
+                        if (termino_busqueda.length < 2) {
                             return;
                         }
                         $scope.root.termino_busqueda_transportadoras = termino_busqueda;
@@ -49485,12 +49507,16 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
 
     controllers.controller('SalidaController',
             ['$scope', 'Request', 'API', 'AlertService', 'Usuario',
-                 "$filter",  "ValidacionDespachosService","localStorageService",
-                function ($scope,  Request, API, AlertService, Usuario,
-                         $filter, ValidacionDespachosService,localStorageService) {
+                "$filter", "ValidacionDespachosService", "localStorageService",
+                function ($scope, Request, API, AlertService, Usuario,
+                        $filter, ValidacionDespachosService, localStorageService) {
 
                     var that = this;
+                    $scope.listaAgrupados = [];
+                    var i = 0;
                     var fecha_actual = new Date();
+                    $scope.selected = [];
+                    var controlModifica = false;
                     $scope.date = $filter('date')(fecha_actual, "yyyy-MM-dd");
                     $scope.paginaactual = 1;
                     $scope.format = 'yyyy/MM/dd';
@@ -49500,46 +49526,49 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
-                 
+
                     that.init = function () {
 
                         $scope.root = {
+                            isGuia: true,
                             guardarButton: true,
                             modificarButton: false,
                             prefijo: "Prefijo",
+                            disabledGuia: false,
                             registrosLength: 0,
                             termino_busqueda_clientes: "",
                             hora_envio: "",
-                            fechaEnvio : $scope.date,
+                            documentosPlanillas: [],
+                            fechaEnvio: $scope.date,
+                            empaqueNumero: {caja: 0, nevera: 0},
                             pref: {},
                             operario: {},
                             cliente: {},
                             filtro: "",
                             empaques: [{id: 0, nombre: 'Caja'}, {id: 1, nombre: 'Nevera'}, {id: 2, nombre: 'Bolsa'}]
                         };
-                        
+
                         var datosFormulario = localStorageService.get("datosFormulario");
-                        if(datosFormulario){
-                          $scope.root.operarios = datosFormulario.operarios;
-                          $scope.root.prefijos = datosFormulario.prefijos;
-                        }else{
-                          that.listarPrefijos();
-                          that.listarOperarios();
+                        if (datosFormulario) {
+                            $scope.root.operarios = datosFormulario.operarios;
+                            $scope.root.prefijos = datosFormulario.prefijos;
+                        } else {
+                            that.listarPrefijos();
+                            that.listarOperarios();
                         }
-                        
+
                         that.limpiar();
-                        
+
                         var datosCiudades = localStorageService.get("datosCiudades");
-                        console.log("datosCiudades",datosCiudades);
-                         if(datosCiudades){
-                          $scope.root.ciudades = datosCiudades.ciudades;
-                         }else{
-                         that.listarCiudadesPais();                         
-                         }
-                         
-                      //  $scope.filtro();
+
+                        if (datosCiudades) {
+                            $scope.root.ciudades = datosCiudades.ciudades;
+                        } else {
+                            that.listarCiudadesPais();
+                        }
+
                     };
-                    
+
                     var localStrorage = function () {
                         localStorageService.add("datosCiudades", {
                             ciudades: $scope.root.ciudades
@@ -49549,6 +49578,136 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     $scope.horaDespacho = {
                         value: new Date(fecha_actual.getFullYear(), fecha_actual.getMonth(), fecha_actual.getDate(), fecha_actual.getHours(), fecha_actual.getMinutes())
                     };
+
+                    $scope.cargar_guia = function ($event) {
+                        if ($event.which === 13) {
+                            if (isNaN($scope.root.guia)) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El campo es Numerico");
+                            } else {
+                                console.log("$scope.root.guia",$scope.root.guia);
+                                if ($scope.root.guia != 0) {
+                                    
+                                    var obj = { numero_guia: $scope.root.guia, modificar : 0};                            
+                                    that.documentosPlanillasDetalle(obj);
+                                } else {
+                                    console.log('no hay guia');
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Guia no registrada");
+                                }
+                            }
+                        }
+                    };
+
+                    that.documentosPlanillasDetalle = function (obj) {
+                        var obj = {
+                            session: $scope.session,
+                            planilla_id: obj.numero_guia,
+                            termino_busqueda: "",
+                            tercero : {tercero_id: obj.tercero_id , tipo_id_tercero : obj.tipo_id_tercero},
+                            modificar : obj.modificar ,
+                            registro_salida_bodega_id : $scope.root.registro_salida_bodega_id
+                        };
+
+                        ValidacionDespachosService.documentosPlanillasDetalle(obj, function (data) {
+
+                            if (data.status === 200) {
+                                if (data.obj.planillas_despachos.length > 0) {
+                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0, bolsa:0}, function (empaque) {
+                                        $scope.root.empaqueNumero = empaque;
+                                    });
+                                    $scope.root.isGuia = false;
+                                    $scope.root.documentosPlanillas = data.obj.planillas_despachos;
+                                    $scope.tamano = 35 + (30 * data.obj.planillas_despachos.length) + 'px';
+                                } else {
+                                    $scope.root.isGuia = true;
+                                }
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
+                    };
+
+//                    that.documentosPlanillas = function (guia) {
+//                        var obj = {
+//                            session: $scope.session,
+//                            planilla_id: guia,
+//                            termino_busqueda: ""
+//                        };
+//
+//                        ValidacionDespachosService.documentosPlanillas(obj, function (data) {
+//
+//                            if (data.status === 200) {
+//                                if (data.obj.planillas_despachos.length > 0) {
+//                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0}, function (empaque) {
+//                                        $scope.root.empaqueNumero = empaque;
+//                                    });
+//                                    $scope.root.isGuia = false;
+//                                    $scope.root.cliente = "";
+//                                   // $scope.root.empaqueNumero = "";
+//                                    $scope.root.empaque = "";
+//                                    
+//                                    $scope.root.documentosPlanillas = data.obj.planillas_despachos;
+//                                    $scope.tamano = 30 + (30 * data.obj.planillas_despachos.length) + 'px';
+//                                } else {
+//                                    $scope.root.isGuia = true;
+//                                }
+//
+//                            } else {
+//                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+//                            }
+//                        });
+//                    };
+
+                    that.numeroEmpaque = function (datos, index, empaque, callback) {
+                        var dato = datos[index];
+                        if (!dato) {
+                            callback(empaque);
+                            return;
+                        }
+                        if (dato.chequeado === true) {
+                            $scope.listaAgrupados.push(dato);
+                        }
+                        empaque.caja += dato.cantidad_cajas;
+                        empaque.nevera += dato.cantidad_neveras;
+                        empaque.bolsa += dato.cantidad_bolsas;
+                        index++;
+                        that.numeroEmpaque(datos, index, empaque, callback);
+                    };
+                    
+                    $scope.mostar = function(){
+                        if($scope.root.cliente.tercero_id !== undefined && $scope.root.cliente.tipo_id_tercero !== undefined){
+                            var obj = { numero_guia: "", tercero_id: $scope.root.cliente.tercero_id , tipo_id_tercero : $scope.root.cliente.tipo_id_tercero , modificar : 0};
+                            that.documentosPlanillasDetalle(obj);
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar un Cliente");   
+                        }
+                    };
+
+
+                    $scope.listaPlanillas = {
+                        data: 'root.documentosPlanillas',
+                        enableColumnResize: true,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        enableSorting: true,
+                        enableFiltering: true,
+                        showSelectionCheckbox: true,
+                        enableRowSelection: true,
+                        showFilter:true,
+                        
+                        selectedItems: $scope.listaAgrupados,
+                        columnDefs: [
+                            {field: 'descripcion_destino', displayName: 'Cliente', width: "38%"},
+                            {field: 'factura', displayName: 'Factura', width: "10%"},
+                            {field: 'prefijo', displayName: 'Prefijo', width: "10%"},
+                            {field: 'numero', displayName: 'Documento', width: "10%"},
+                            {field: 'cantidad_cajas', displayName: 'Caja', width: "5%"},
+                            {field: 'cantidad_neveras', displayName: 'Nevera', width: "6%"},
+                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "6%"},
+                            {field: 'temperatura_neveras', displayName: '°C', width: "5%"},
+                            {field: 'ciudad', displayName: 'Ciudad', width: "10%"}
+                        ]
+                    };
+
 
                     /**
                      * @author Cristian Ardila
@@ -49593,7 +49752,6 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         };
 
                         ValidacionDespachosService.listarRegistroSalida(obj, function (data) {
-                            console.log("data",data);
                             if (data.status === 200) {
                                 $scope.root.registrosLength = data.obj.listarRegistroSalida.length;
                                 $scope.root.listarRegistros = data.obj.listarRegistroSalida;
@@ -49609,10 +49767,11 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
 
                     $scope.listaRegistros = {
                         data: 'root.listarRegistros',
-                        enableColumnResize: true,
                         enableRowSelection: false,
+                        enablePinning: true,
+                        enablePaging: true,
+                        enableColumnResize: true,
                         enableCellSelection: true,
-                        enableHighlighting: true,
                         columnDefs: [
                             {field: 'prefijo_id', displayName: 'Prefijo', width: "5%"},
                             {field: 'numero', displayName: 'Numero', width: "5%"},
@@ -49631,7 +49790,7 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             {field: 'detalle', width: "5%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="activar(row.entity)">Modificar</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="activar(row.entity)">Ver</span></button></div>'
 
                             }
                         ]
@@ -49640,8 +49799,9 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     $scope.activar = function (obj) {
                         var d = new Date(obj.fecha_envio);
                         that.limpiar();
+                        $scope.root.disabledGuia = true;
                         $scope.root.guardarButton = false;
-                        $scope.root.modificarButton = true;
+                        $scope.root.modificarButton = false;//se comenta boton de modificar ya que no se debe realizar esta accion despues de guardar la aprobacion de la guia (despacho)
                         $scope.root.pref = {prefijo: obj.prefijo_id};
                         $scope.root.factura = obj.numero;
                         $scope.root.registro_salida_bodega_id = obj.registro_salida_bodega_id;
@@ -49659,9 +49819,27 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         $scope.root.empaque = {cantidadCaja: obj.cantidad_caja, cantidadNevera: obj.cantidad_nevera, cantidadBolsa: obj.cantidad_bolsa};
                         $scope.root.cliente = {tercero_id: obj.tercero_id, tipo_id_tercero: obj.tipo_id_tercero, nombre_tercero: obj.nombre_tercero};
                         $scope.root.observacion = obj.observacion;
+                        if (parseInt(obj.guia_multiple) > 0) {
+                            $scope.root.isGuia = false;
+                            obj.modificar = 1;
+                            that.documentosPlanillasDetalle(obj);
+                        }
                     };
 
                     $scope.modificar = function (obj) {
+                        if (($scope.root.empaque === "" || $scope.root.empaque === undefined || ($scope.root.empaque.cantidadCaja === null && $scope.root.empaque.cantidadNevera === null && $scope.root.empaque.cantidadBolsa === null))) {
+                            if ($scope.root.documentosPlanillas.length === 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Cantidad de empaque");
+                                return;
+                            } else {
+
+                                if ($scope.listaAgrupados.length === 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+                                    return;
+                                }
+                            }
+                        }
+
                         var d = new Date($scope.root.fechaEnvio);
                         var obj = {
                             session: $scope.session,
@@ -49678,7 +49856,8 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                             registro_salida_bodega_id: $scope.root.registro_salida_bodega_id,
                             placa: $scope.root.placa,
                             fechaEnvio: d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
-                            ciudad: $scope.root.ciudad
+                            ciudad: $scope.root.ciudad,
+                            documentos: $scope.listaAgrupados.length === 0 ? [] : $scope.listaAgrupados
                         };
                         ValidacionDespachosService.modificaRegistroSalidaBodega(obj, function (data) {
 
@@ -49703,10 +49882,10 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
 
                             if (data.status === 200) {
                                 that.limpiar();
-                                if(obj.numero !==""){
-                                $scope.root.filtro = obj.numero;
-                                }else{
-                                $scope.root.filtro = obj.numeroGuia; 
+                                if (obj.numero !== "") {
+                                    $scope.root.filtro = obj.numero;
+                                } else {
+                                    $scope.root.filtro = obj.numeroGuia;
                                 }
                                 $scope.filtro();
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Almacenado Correctamente");
@@ -49718,6 +49897,8 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     };
 
                     that.limpiar = function () {
+                        $scope.listaAgrupados.length = 0;
+                        $scope.root.disabledGuia = false;
                         $scope.root.pref = "";
                         $scope.root.factura = "";
                         $scope.root.guia = "";
@@ -49730,7 +49911,9 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                         $scope.root.observacion = "";
                         $scope.root.registro_entrada_bodega_id = "";
                         $scope.root.operario = "";
-//                        that.listarRegistroSalidaBodega();
+                        $scope.root.documentosPlanillas = [];
+                        $scope.root.empaqueNumero = "";
+                        $scope.root.isGuia = true;
                     };
 
                     $scope.cancelar = function () {
@@ -49795,50 +49978,24 @@ define('controllers/SalidaController',["angular", "js/controllers"], function (a
                     $scope.seleccionarTransportadora = function () {
 
                     };
-                    $scope.seleccionarPrefijo = function () {                        
-                        if($scope.root.pref.sw_ingreso_automatico_datos === '1'){
-//                           $scope.root.operario = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
-                           $scope.root.conductor = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
-                           $scope.root.ayudante = {nombre_operario: "RECLAMA EN BODEGA",operario_id: 90};
-                           $scope.root.ciudad = {departamento_id: "76",id: "001",nombre_ciudad: "CALI",nombre_departamento: "VALLE DEL CAUCA",nombre_pais: "COLOMBIA",pais_id: "CO"};
-                           $scope.root.placa = '000';
-                           console.log("prefijo::: ",$scope.root.pref); 
+                    $scope.seleccionarPrefijo = function () {
+                        if ($scope.root.pref.sw_ingreso_automatico_datos === '1') {
+                            $scope.root.conductor = {nombre_operario: "RECLAMA EN BODEGA", operario_id: 90};
+                            $scope.root.ayudante = {nombre_operario: "RECLAMA EN BODEGA", operario_id: 90};
+                            $scope.root.ciudad = {departamento_id: "76", id: "001", nombre_ciudad: "CALI", nombre_departamento: "VALLE DEL CAUCA", nombre_pais: "COLOMBIA", pais_id: "CO"};
+                            $scope.root.placa = '000';
+
                         }
                     };
                     $scope.seleccionar_operario = function () {
-console.log("despacha::: ",$scope.root.operario);
+
                     };
                     $scope.seleccionar_ciudad = function () {
-console.log("ciudad::: ",$scope.root.ciudad);
+
                     };
 
                     $scope.guardar = function () {
-                        if ($scope.root.factura === "" && $scope.root.guia === "") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar numero de Factura o numero de Guia");
-                            return;
-                        }
 
-                        if ($scope.root.empaque === "" || $scope.root.empaque === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Cantidad de empaque");
-                            return;
-                        }
-
-                        if ($scope.root.placa === "" || $scope.root.placa === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la placa");
-                            return;
-                        }
-                        if ($scope.root.operario === "" || $scope.root.operario === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el despachador");
-                            return;
-                        }
-                        if ($scope.root.conductor === "" || $scope.root.conductor === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el conductor");
-                            return;
-                        }
-                        if ($scope.root.ayudante === "" || $scope.root.ayudante === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el ayudante");
-                            return;
-                        }
                         if ($scope.root.fechaEnvio === "" || $scope.root.fechaEnvio === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la fecha");
                             return;
@@ -49847,6 +50004,7 @@ console.log("ciudad::: ",$scope.root.ciudad);
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la hora");
                             return;
                         }
+
                         if ($scope.horaDespacho.value.getHours() === "" || $scope.horaDespacho.value.getHours() === undefined) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la hora");
                             return;
@@ -49859,13 +50017,72 @@ console.log("ciudad::: ",$scope.root.ciudad);
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar los segundos");
                             return;
                         }
-                        if ($scope.root.cliente === "" || $scope.root.cliente === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el cliente");
+                        
+                        if (($scope.root.ciudad === "" || $scope.root.ciudad === undefined)) {
+                            if ($scope.root.documentosPlanillas.length === 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la ciudad");
+                                return;
+                            } 
+//                            else {
+//                                if ($scope.listaAgrupados.length === 0) {
+//                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+//                                    return;
+//                                }
+//                            }
+                        }
+
+                        if ($scope.root.operario === "" || $scope.root.operario === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el despachador");
                             return;
                         }
-                        if ($scope.root.ciudad === "" || $scope.root.ciudad === undefined) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la ciudad");
+
+                        if ($scope.root.factura === "" && $scope.root.guia === "") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar numero de Factura o numero de Guia");
                             return;
+                        }
+
+                        if ($scope.root.cliente === "" || $scope.root.cliente === undefined) {
+                            if ($scope.root.documentosPlanillas.length === 0) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar el cliente");
+                                return;
+                            } else {
+                                if ($scope.listaAgrupados.length === 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+                                    return;
+                                }
+                            }
+                        }
+
+                        if ($scope.root.placa === "" || $scope.root.placa === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la placa");
+                            return;
+                        }
+
+                        if ($scope.root.conductor === "" || $scope.root.conductor === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el conductor");
+                            return;
+                        }
+
+                        if ($scope.root.ayudante === "" || $scope.root.ayudante === undefined) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el ayudante");
+                            return;
+                        }
+
+                        if (($scope.root.empaque === "" || $scope.root.empaque === undefined)) {
+                            if ($scope.root.documentosPlanillas.length === 0 ) {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe digitar la Cantidad de empaque");
+                                return;
+                            } else {
+                                if ($scope.listaAgrupados.length === 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe chequear los Items");
+                                    return;
+                                }
+                            }
+                        }else{
+                            if(!($scope.root.empaque.cantidadBolsa > 0 || $scope.root.empaque.cantidadCaja > 0  || $scope.root.empaque.cantidadNevera > 0)){
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cantidad debe ser mayor a Cero");
+                                return;
+                            }
                         }
 
                         var obj = {
@@ -49880,8 +50097,9 @@ console.log("ciudad::: ",$scope.root.ciudad);
                             conductor: $scope.root.conductor.operario_id,
                             ayudante: $scope.root.ayudante.operario_id,
                             placa: $scope.root.placa,
-                            fechaEnvio: $scope.root.fechaEnvio,//.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
-                            ciudad: $scope.root.ciudad
+                            fechaEnvio: $scope.root.fechaEnvio, //.getFullYear() + "/" + ($scope.root.fechaEnvio.getMonth() + 1) + "/" + $scope.root.fechaEnvio.getDate() + ' ' + $scope.horaDespacho.value.getHours() + ":" + $scope.horaDespacho.value.getMinutes() + ":" + $scope.horaDespacho.value.getSeconds(),
+                            ciudad: $scope.root.ciudad,
+                            documentos: $scope.listaAgrupados.length === 0 ? [] : $scope.listaAgrupados
                         };
                         that.registroSalidaBodega(obj);
                     };
@@ -49934,8 +50152,8 @@ console.log("ciudad::: ",$scope.root.ciudad);
                      */
                     that.buscar_clientes = function (callback) {
                         var busquedaDocumento = [];
-                        if(!isNaN($scope.root.termino_busqueda_clientes)){
-                           busquedaDocumento = [{entra:0},{entra:0}];
+                        if (!isNaN($scope.root.termino_busqueda_clientes)) {
+                            busquedaDocumento = [{entra: 0}, {entra: 0}];
                         }
                         var obj = {
                             session: $scope.session,
@@ -50412,7 +50630,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         validacionDespachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
-                            numero: numeroDocumentos//$scope.documentoDespachoAprobado.numero
+                            numero: numeroDocumentos
                         }
                     }
                 };
@@ -50488,10 +50706,11 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                     if (data.status === 200) {
 
                         if (parseInt($scope.documentoDespachoAprobado.cantidadCajas) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras)) {
+                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras) &&
+                                parseInt($scope.documentoDespachoAprobado.cantidadBolsas) === parseInt(data.obj.planillas_despachos.totalBolsas)) {
                             that.registrarAprobacion(0);
                         } else {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas,neveras y/o bolsas NO coinciden con las cantidades auditadas");
                         }
                     }
 
@@ -50526,6 +50745,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var cantidadCajas = 0;
                 var totalDecimalNeveras = 0;
                 var cantidadNeveras = 0;
+                var totalDecimalBolsas = 0;
+                var cantidadBolsas = 0;
                 var pos = "";
                 /**
                  * +Descripcion Contar las veces que aparece el caracter [COMA] en la cadena String
@@ -50562,8 +50783,10 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 res = 0;
                 totalDecimal = 0;
                 totalDecimalNeveras = 0;
+                totalDecimalBolsas = 0;
                 cantidadCajas = 0;
                 cantidadNeveras = 0;
+                cantidadBolsas = 0;
                 numeroArray.forEach(function (rowNumero) {
 
                     index++;
@@ -50581,6 +50804,13 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         totalDecimalNeveras += parseFloat("0." + res);
                     }
 
+                    cantidadBolsas = parseInt($scope.documentoDespachoAprobado.cantidadBolsas) / numeroArray.length;
+                    pos = cantidadBolsas.toString().indexOf(".");
+                    if (pos > 0) {
+                        res = String(cantidadBolsas).substring((pos + 1), cantidadBolsas.length);
+                        totalDecimalBolsas += parseFloat("0." + res);
+                    }
+
                     if (index === numeroArray.length - 1) {
 
                         multiplesDocumentosOtros.push({
@@ -50588,6 +50818,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             numero: rowNumero,
                             cantidadCajas: parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)),
                             cantidadNeveras: parseInt(cantidadNeveras) + parseInt(Math.ceil(totalDecimalNeveras)),
+                            cantidadBolsas: parseInt(cantidadBolsas) + parseInt(Math.ceil(totalDecimalBolsas)),
                             estado: estado
                         });
                         return multiplesDocumentosOtros;
@@ -50597,6 +50828,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         numero: rowNumero,
                         cantidadCajas: parseInt(cantidadCajas),
                         cantidadNeveras: parseInt(cantidadNeveras),
+                        cantidadBolsas: parseInt(cantidadBolsas),
                         estado: estado
                     });
 
@@ -50623,6 +50855,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
                 var cantidadCajas = $scope.documentoDespachoAprobado.cantidadCajas;
                 var cantidadNeveras = parseInt($scope.documentoDespachoAprobado.cantidadNeveras);
+                var cantidadBolsas = parseInt($scope.documentoDespachoAprobado.cantidadBolsas);
 
                 if (that.documentosSeleccionados) {
 
@@ -50641,21 +50874,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             }
                         }
 
-//                    that.observacionValidacion = "";
                         that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
-//                    that.documentosSeleccionados.documentos.forEach(function(row){
-//                       
-//                        var observacion="";
-//                        if(row.cantidadCajas>0){
-//                            var s=row.cantidadCajas>1?"S":"";
-//                            observacion=" | CAJA"+s+": " + row.cantidadCajas;
-//                        }
-//                        if(row.cantidadNeveras>0){
-//                            var s=row.cantidadNeveras>1?"S":"";
-//                            observacion+=" | NEVERA"+s+": " + row.cantidadNeveras; 
-//                        }
-//                        that.observacionValidacion += "("+row.prefijo +"-"+ row.numero +" "+observacion+") ";
-//                    });
+
                         obj = {
                             session: $scope.session,
                             data: {
@@ -50678,8 +50898,10 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             numeroDocumento = that.documentosSeleccionados.documentos[0].numero;
                             $scope.documentoDespachoAprobado.cantidadCajas = that.documentosSeleccionados.totalCajas;
                             $scope.documentoDespachoAprobado.cantidadNeveras = that.documentosSeleccionados.totalNeveras;
+                            $scope.documentoDespachoAprobado.cantidadBolsas = that.documentosSeleccionados.totalBolsas;
                             cantidadCajas = that.documentosSeleccionados.totalCajas;
                             cantidadNeveras = parseInt(that.documentosSeleccionados.totalNeveras);
+                            cantidadBolsas = parseInt(that.documentosSeleccionados.totalBolsas);
                         }
 
                         /**
@@ -50687,8 +50909,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                          *              se validara que obligatoriamente tenga unidad de caja o de nevera
                          *              diligenciada
                          */
-                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras");
+                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0" && cantidadBolsas.toString() === "0") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras/Bolsas");
                             return;
                         }
 
@@ -50699,7 +50921,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
 
                 } else {
 
-                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0)) {
+                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0 || cantidadBolsas > 0)) {
                         that.llenarObservacion(1);
                         obj = {
                             session: $scope.session,
@@ -50732,6 +50954,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 var prefijo = that.validarPrefijoEmpresasOtras();
                 var totalCajas = 0;
                 var totalNeveras = 0;
+                var totalBolsas = 0;
                 var documentos = $scope.datos_view.documentosMedipol;
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
@@ -50754,11 +50977,16 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                             var s = data.cantidadNeveras > 1 ? "S" : "";
                             observacion += " | NEVERA" + s + ": " + data.cantidadNeveras;
                         }
+                        if (data.cantidadBolsas > 0) {
+                            var s = data.cantidadBolsas > 1 ? "S" : "";
+                            observacion += " | BOLSA" + s + ": " + data.cantidadBolsas;
+                        }
                         that.observacionValidacion += "(" + data.prefijo + "-" + data.numero + " " + observacion + ") ";
 
 
                         totalCajas = totalCajas + data.cantidadCajas;
                         totalNeveras = totalNeveras + data.cantidadNeveras;
+                        totalBolsas = totalBolsas + data.cantidadBolsas;
 
 
                     });
@@ -50796,6 +51024,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.cantidadCajas = totalCajas;
                         $scope.documentoDespachoAprobado.cantidadNeveras = totalNeveras;
+                        $scope.documentoDespachoAprobado.cantidadBolsas = totalBolsas;
                         $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
                     }
 
@@ -50860,6 +51089,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                                 $scope.documentoDespachoAprobado = AprobacionDespacho.get(1, resultado.prefijo, resultado.numero, resultado.fecha_registro)
                                 $scope.documentoDespachoAprobado.setCantidadCajas(resultado.cantidad_cajas);
                                 $scope.documentoDespachoAprobado.setCantidadNeveras(resultado.cantidad_neveras);
+                                $scope.documentoDespachoAprobado.setCantidadBolsas(resultado.cantidad_bolsas);
                                 $scope.documentoDespachoAprobado.setObservacion(resultado.observacion);
                                 that.listarImagenes(function () {
 
@@ -51107,6 +51337,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 }
                 var cantidadCajas = 0;
                 var cantidadNeveras = 0;
+                var cantidadBolsas = 0;
                 that.documentosSeleccionados.forEach(function (row) {
                     var observacion = "";
 
@@ -51121,11 +51352,17 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         var s = parseInt(row.cantidadNeveras) > 1 ? "S" : "";
                         observacion += " | NEVERA" + s + ": " + row.cantidadNeveras + " ";
                     }
+                    if (parseInt(row.cantidadBolsas) > 0) {
+                        cantidadBolsas += row.cantidadBolsas;
+                        var s = parseInt(row.cantidadBolsas) > 1 ? "S" : "";
+                        observacion += " | BOLSA" + s + ": " + row.cantidadBolsas + " ";
+                    }
                     that.observacionValidacion += "(" + row.prefijo + "-" + row.numero + " " + observacion + ") "
 
                 });
                 $scope.documentoDespachoAprobado.cantidadCajas = cantidadCajas;
                 $scope.documentoDespachoAprobado.cantidadNeveras = cantidadNeveras;
+                $scope.documentoDespachoAprobado.cantidadBolsas = cantidadBolsas;
                 $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;//+ " - Total Cajas: "+ that.documentosSeleccionados.totalCajas
 
             };
@@ -51188,6 +51425,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                     {field: 'get_numero()', displayName: 'Nro Documento', width: "20%"},
                     {field: 'cantidadCajas', displayName: 'Cajas', width: "15%"},
                     {field: 'cantidadNeveras', displayName: 'Nevera', width: "15%"},
+                    {field: 'cantidadBolsas', displayName: 'Bolsa', width: "15%"},
                     {field: 'temperatura_neveras', displayName: 'Temperatura', width: "15%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -51218,10 +51456,8 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                         documento.setSeleccionado(true);
                         documento.setCantidadCajas(0);
                         documento.setCantidadNeveras(0);
+                        documento.setCantidadBolsas(0);
                         documento.temperatura_neveras = '';
-//                        documento.setCantidadCajas(data.cantidadCajas);
-//                        documento.setCantidadNeveras(data.cantidadNeveras);
-//                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
                         documento.setEstado(1);
 
                         $scope.datos_view.documentosMedipol.push(documento);
@@ -51229,9 +51465,11 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                     });
                     var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
                     var cantidadNeveras = (parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+                    var cantidadBolsas = (parseInt($scope.documentoDespachoAprobado.cantidadBolsas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadBolsas()));
 
                     $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
                     $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
+                    $scope.datos_view.documentosMedipol[0].setCantidadBolsas(cantidadBolsas);
                     $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
                     that.limpiarVariables();
                 } else {
@@ -51286,6 +51524,7 @@ define('controllers/ValidacionDespachoDetalleController',["angular", "js/control
                 $scope.documentoDespachoAprobado.numero = '';
                 $scope.documentoDespachoAprobado.cantidadCajas = 0;
                 $scope.documentoDespachoAprobado.cantidadNeveras = 0;
+                $scope.documentoDespachoAprobado.cantidadBolsas = 0;
             };
 
             that.init();
@@ -51417,6 +51656,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
 
             $scope.numeroCaja = false;
             $scope.numeroNevera = false;
+            $scope.numeroBolsa = false;
 
             $scope.pulsar = function (check, tipo) {
 
@@ -51424,13 +51664,20 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     if (tipo === 'nevera') {
                         $scope.numeroCaja = false;
                         $scope.numeroNevera = true;
-                    } else {
+                        $scope.numeroBolsa = false;
+                    } else if (tipo === 'caja') {
                         $scope.numeroCaja = true;
                         $scope.numeroNevera = false;
+                        $scope.numeroBolsa = false;
+                    } else if (tipo === 'bolsa') {
+                        $scope.numeroCaja = false;
+                        $scope.numeroNevera = false;
+                        $scope.numeroBolsa = true;
                     }
                 } else {
                     $scope.numeroCaja = false;
                     $scope.numeroNevera = false;
+                    $scope.numeroBolsa = false;
                 }
             };
 
@@ -51456,6 +51703,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         _documento = DocumentoDespacho.get(0, _documento.prefijo, _documento.numero, _documento.empresaId);
                         _documento.setCantidadCajas(parseInt(documento.cantidadCajas));
                         _documento.setCantidadNeveras(parseInt(documento.cantidadNeveras));
+                        _documento.setCantidadBolsas(parseInt(documento.cantidadBolsas));
                     }
                     if (_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()) {
                         return false;
@@ -51505,6 +51753,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
             var totalDecimal = 0;
             var cantidadCajas = 0;
             var cantidadNeveras = 0;
+            var cantidadBolsas = 0;
             var pos = "";
             that.documentosStorageActual = [];
             that.distribuirCajas = function (index, documentoSeleccionadoPreparado, callback) {
@@ -51542,12 +51791,19 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     _documento.setCantidadNeveras(Math.floor(cantidadCajas));
                 }
 
+                if ($scope.numeroBolsa) {
+                    _documento.setCantidadBolsas(Math.floor(cantidadCajas));
+                }
+
                 if (index === documentoSeleccionadoPreparado.length - 1) {
                     if ($scope.numeroCaja) {
                         _documento.setCantidadCajas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
                     }
                     if ($scope.numeroNevera) {
                         _documento.setCantidadNeveras(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
+                    }
+                    if ($scope.numeroBolsa) {
+                        _documento.setCantidadBolsas(parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)));
                     }
                 }
 
@@ -51566,8 +51822,8 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
              */
             $scope.distribuirCajas = function () {
                 that.documentosStorageActual = [];
-                if ($scope.numeroCaja === $scope.numeroNevera) {
-                    AlertService.mostrarMensaje("warning", "Debe chequear Caja o Nevera");
+                if ($scope.numeroCaja === $scope.numeroNevera && $scope.numeroCaja === $scope.numeroBolsa) {
+                    AlertService.mostrarMensaje("warning", "Debe chequear Caja, Nevera o Bolsa");
                     return;
                 }
                 if (!$scope.centroUtilidad && !$scope.clienteEgresos) {
@@ -51575,8 +51831,6 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     return;
                 }
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
-                /*---------parte nueva----------*/
-//                that.distribuirCajas(0, documentoSeleccionadoPreparado, function (estado) {
 
                 if (documentoSeleccionadoPreparado.length <= 0) {
                     AlertService.mostrarMensaje("warning", "Debe seleccionar documentos");
@@ -51593,10 +51847,14 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     documentoSeleccionadoPreparado[0].setCantidadNeveras(Math.floor(cantidadNeveras));
                 }
 
-                that.documentosStorageActual = documentoSeleccionadoPreparado;
-                /*---------fin parte nueva----------*/
+                if ($scope.numeroBolsa) {
+                    cantidadBolsas = parseInt($scope.datosView.cantidadCajas);
+                    documentoSeleccionadoPreparado[0].setCantidadBolsas(Math.floor(cantidadBolsas));
+                }
 
-                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras});
+                that.documentosStorageActual = documentoSeleccionadoPreparado;
+
+                localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: cantidadCajas, totalNeveras: cantidadNeveras, totalBolsas: cantidadBolsas});
 
                 if ($scope.datosView.seleccionarClienteFarmacia && $scope.centroUtilidad) {
                     var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
@@ -51617,13 +51875,12 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                 $state.go('ValidacionEgresosDetalle');
                 $modalInstance.close();
 
-//                });
-
             };
 
 
             that.guardarCantidadCajas = 0;
             that.guardarCantidadNeveras = 0;
+            that.guardarCantidadBolsas = 0;
             var documentoDespachoStorage;
             /**
              * +Descripcion Metodo que recorrera los documentos seleccionados
@@ -51646,15 +51903,18 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                     documentoDespachoStorage.setSeleccionado(true);
                     documentoDespachoStorage.setCantidadCajas(parseInt(_documento.cantidadCajas));
                     documentoDespachoStorage.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    documentoDespachoStorage.setCantidadBolsas(parseInt(_documento.cantidadBolsas));
                     that.documentosStorageActual.push(_documento);
                 } else {
                     _documento.setCantidadCajas(parseInt(_documento.cantidadCajas));
                     _documento.setCantidadNeveras(parseInt(_documento.cantidadNeveras));
+                    _documento.setCantidadBolsas(parseInt(_documento.cantidadBolsas));
                     that.documentosStorageActual.push(_documento);
                 }
 
                 that.guardarCantidadCajas += parseInt(_documento.cantidadCajas);
                 that.guardarCantidadNeveras += parseInt(_documento.cantidadNeveras);
+                that.guardarCantidadBolsas += parseInt(_documento.cantidadBolsas);
 
                 setTimeout(function () {
                     that.guardarDocumentosSeleccionados(index, documentoSeleccionadoPreparado, callback);
@@ -51678,7 +51938,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                 var documentoSeleccionadoPreparado = (that.documentosStorage) ? that.documentosStorage.documentos : $scope.datosView.documentosSeleccionados;
                 that.guardarDocumentosSeleccionados(0, documentoSeleccionadoPreparado, function (estado) {
 
-                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras});
+                    localStorageService.add("documentosSeleccionados", {estado: 3, documentos: that.documentosStorageActual, totalCajas: that.guardarCantidadCajas, totalNeveras: that.guardarCantidadNeveras, totalBolsas: that.guardarCantidadBolsas});
 
                     if ($scope.centroUtilidad) {
                         var centroUtilidad = CentroUtilidadInduccion.get($scope.centroUtilidad.nombre, $scope.centroUtilidad.codigo);
@@ -51861,6 +52121,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                                 documento.setSeleccionado(true);
                                 documento.setCantidadCajas(row.cantidadCajas);
                                 documento.setCantidadNeveras(row.cantidadNeveras);
+                                documento.setCantidadBolsas(row.cantidadBolsas);
 
                                 $scope.datosView.documentosSeleccionados.push(documento);
 
@@ -51875,6 +52136,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                                 documento.setSeleccionado(true);
                                 documento.setCantidadCajas(row.cantidadCajas);
                                 documento.setCantidadNeveras(row.cantidadNeveras);
+                                documento.setCantidadBolsas(row.cantidadBolsas);
 
                             }
                         });
@@ -51903,7 +52165,7 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         cellTemplate: "<div><input-check \
                         ng-model='row.entity.seleccionado' \
                         ng-change='onAgregarDocumentoALio(row.entity)' \
-                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
+                        ng-disabled='row.entity.cantidadNeveras == 0 && row.entity.cantidadCajas == 0 && row.entity.cantidadBolsas == 0 && datosView.cantidadCajas ==0 || row.entity.estadoDocumento == \"1\" '  /></div>"},
                     {
                         displayName: 'Documento Bodega',
                         cellTemplate: '<div class="ngCellText">\
@@ -51921,6 +52183,13 @@ define('controllers/VentanaValidarEgresosController',["angular", "js/controllers
                         cellTemplate: '<div class="col-xs-12"> \n\
                         <input type="text"\
                         ng-model="row.entity.cantidadNeveras"\
+                        validacion-numero-entero\
+                        class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
+                        name="" id="" /> </div>'},
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                        <input type="text"\
+                        ng-model="row.entity.cantidadBolsas"\
                         validacion-numero-entero\
                         class="form-control grid-inline-input" ng-focus="desCheckearDocumento(row.entity)"\
                         name="" id="" /> </div>'},
@@ -52057,6 +52326,50 @@ define('services/ValidacionDespachosService',["angular", "js/services"], functio
             };
             Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_IMAGENES, "POST", obj, function (data) {
 
+                callback(data);
+            });
+        };
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 26/12/2016
+         * +Descripcion: Consulta las imagenes de una aprobacion
+         */
+        self.documentosPlanillas = function (obj, callback) {
+            var param = {
+                session: obj.session,
+                data: {
+                    planillas_despachos: {
+                            planilla_id: obj.planilla_id,
+                            termino_busqueda: obj.termino_busqueda
+                        }
+                }
+            };
+            Request.realizarRequest(API.PLANILLAS.DOCUMENTOS_PLANILLA, "POST", param, function (data) {
+        
+                callback(data);
+            });
+        };
+        
+        /*
+         * @Author: Andres Mauricio Gonzalez
+         * @fecha 26/12/2016
+         * +Descripcion: Consulta las imagenes de una aprobacion
+         */
+        self.documentosPlanillasDetalle = function (obj, callback) {
+            var param = {
+                session: obj.session,
+                data: {
+                    planillas_despachos: {
+                            planilla_id: obj.planilla_id,
+                            termino_busqueda: obj.termino_busqueda,
+                            tercero : obj.tercero,
+                            modificar : obj.modificar,
+                            registro_salida_bodega_id : obj.registro_salida_bodega_id
+                        }
+                }
+            };
+            Request.realizarRequest(API.PLANILLAS.DOCUMENTOS_PLANILLA_DETALLE, "POST", param, function (data) {
+        
                 callback(data);
             });
         };

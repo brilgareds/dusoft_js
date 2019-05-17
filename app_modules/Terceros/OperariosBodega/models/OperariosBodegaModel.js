@@ -158,8 +158,8 @@ OperariosBodegaModel.prototype.seleccionar_operario_por_usuario_id = function(us
 
    var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where usuario_id = ?";
     
-   G.knex.raw(sql, [usuario_id]).
-   then(function(resultado){
+   var query = G.knex.raw(sql, [usuario_id]);
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        callback(err);

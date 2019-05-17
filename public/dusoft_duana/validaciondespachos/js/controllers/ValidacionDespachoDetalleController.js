@@ -298,7 +298,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         validacionDespachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
-                            numero: numeroDocumentos//$scope.documentoDespachoAprobado.numero
+                            numero: numeroDocumentos
                         }
                     }
                 };
@@ -374,10 +374,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
 
                         if (parseInt($scope.documentoDespachoAprobado.cantidadCajas) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras)) {
+                                parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === parseInt(data.obj.planillas_despachos.totalNeveras) &&
+                                parseInt($scope.documentoDespachoAprobado.cantidadBolsas) === parseInt(data.obj.planillas_despachos.totalBolsas)) {
                             that.registrarAprobacion(0);
                         } else {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas,neveras y/o bolsas NO coinciden con las cantidades auditadas");
                         }
                     }
 
@@ -412,6 +413,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var cantidadCajas = 0;
                 var totalDecimalNeveras = 0;
                 var cantidadNeveras = 0;
+                var totalDecimalBolsas = 0;
+                var cantidadBolsas = 0;
                 var pos = "";
                 /**
                  * +Descripcion Contar las veces que aparece el caracter [COMA] en la cadena String
@@ -448,8 +451,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 res = 0;
                 totalDecimal = 0;
                 totalDecimalNeveras = 0;
+                totalDecimalBolsas = 0;
                 cantidadCajas = 0;
                 cantidadNeveras = 0;
+                cantidadBolsas = 0;
                 numeroArray.forEach(function (rowNumero) {
 
                     index++;
@@ -467,6 +472,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         totalDecimalNeveras += parseFloat("0." + res);
                     }
 
+                    cantidadBolsas = parseInt($scope.documentoDespachoAprobado.cantidadBolsas) / numeroArray.length;
+                    pos = cantidadBolsas.toString().indexOf(".");
+                    if (pos > 0) {
+                        res = String(cantidadBolsas).substring((pos + 1), cantidadBolsas.length);
+                        totalDecimalBolsas += parseFloat("0." + res);
+                    }
+
                     if (index === numeroArray.length - 1) {
 
                         multiplesDocumentosOtros.push({
@@ -474,6 +486,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             numero: rowNumero,
                             cantidadCajas: parseInt(cantidadCajas) + parseInt(Math.ceil(totalDecimal)),
                             cantidadNeveras: parseInt(cantidadNeveras) + parseInt(Math.ceil(totalDecimalNeveras)),
+                            cantidadBolsas: parseInt(cantidadBolsas) + parseInt(Math.ceil(totalDecimalBolsas)),
                             estado: estado
                         });
                         return multiplesDocumentosOtros;
@@ -483,6 +496,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         numero: rowNumero,
                         cantidadCajas: parseInt(cantidadCajas),
                         cantidadNeveras: parseInt(cantidadNeveras),
+                        cantidadBolsas: parseInt(cantidadBolsas),
                         estado: estado
                     });
 
@@ -509,6 +523,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
                 var cantidadCajas = $scope.documentoDespachoAprobado.cantidadCajas;
                 var cantidadNeveras = parseInt($scope.documentoDespachoAprobado.cantidadNeveras);
+                var cantidadBolsas = parseInt($scope.documentoDespachoAprobado.cantidadBolsas);
 
                 if (that.documentosSeleccionados) {
 
@@ -527,21 +542,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
 
-//                    that.observacionValidacion = "";
                         that.observacionValidacion = $scope.documentoDespachoAprobado.observacion !== undefined ? $scope.documentoDespachoAprobado.observacion + " " : "";
-//                    that.documentosSeleccionados.documentos.forEach(function(row){
-//                       
-//                        var observacion="";
-//                        if(row.cantidadCajas>0){
-//                            var s=row.cantidadCajas>1?"S":"";
-//                            observacion=" | CAJA"+s+": " + row.cantidadCajas;
-//                        }
-//                        if(row.cantidadNeveras>0){
-//                            var s=row.cantidadNeveras>1?"S":"";
-//                            observacion+=" | NEVERA"+s+": " + row.cantidadNeveras; 
-//                        }
-//                        that.observacionValidacion += "("+row.prefijo +"-"+ row.numero +" "+observacion+") ";
-//                    });
+
                         obj = {
                             session: $scope.session,
                             data: {
@@ -564,8 +566,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             numeroDocumento = that.documentosSeleccionados.documentos[0].numero;
                             $scope.documentoDespachoAprobado.cantidadCajas = that.documentosSeleccionados.totalCajas;
                             $scope.documentoDespachoAprobado.cantidadNeveras = that.documentosSeleccionados.totalNeveras;
+                            $scope.documentoDespachoAprobado.cantidadBolsas = that.documentosSeleccionados.totalBolsas;
                             cantidadCajas = that.documentosSeleccionados.totalCajas;
                             cantidadNeveras = parseInt(that.documentosSeleccionados.totalNeveras);
+                            cantidadBolsas = parseInt(that.documentosSeleccionados.totalBolsas);
                         }
 
                         /**
@@ -573,8 +577,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                          *              se validara que obligatoriamente tenga unidad de caja o de nevera
                          *              diligenciada
                          */
-                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0") {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras");
+                        if (numeroDocumento.toString().length > 0 && cantidadCajas.toString() === "0" && cantidadNeveras.toString() === "0" && cantidadBolsas.toString() === "0") {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe agregar la cantidad correspondiente de Cajas/Neveras/Bolsas");
                             return;
                         }
 
@@ -585,7 +589,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 } else {
 
-                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0)) {
+                    if (multiplesDocumentosOtros[0].prefijo.length > 0 && multiplesDocumentosOtros[0].numero > 0 && (cantidadCajas > 0 || cantidadNeveras > 0 || cantidadBolsas > 0)) {
                         that.llenarObservacion(1);
                         obj = {
                             session: $scope.session,
@@ -618,6 +622,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var prefijo = that.validarPrefijoEmpresasOtras();
                 var totalCajas = 0;
                 var totalNeveras = 0;
+                var totalBolsas = 0;
                 var documentos = $scope.datos_view.documentosMedipol;
                 $scope.documentoDespachoAprobado.setPrefijo(prefijo);
                 var numeroDocumento = $scope.documentoDespachoAprobado.numero;
@@ -640,11 +645,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             var s = data.cantidadNeveras > 1 ? "S" : "";
                             observacion += " | NEVERA" + s + ": " + data.cantidadNeveras;
                         }
+                        if (data.cantidadBolsas > 0) {
+                            var s = data.cantidadBolsas > 1 ? "S" : "";
+                            observacion += " | BOLSA" + s + ": " + data.cantidadBolsas;
+                        }
                         that.observacionValidacion += "(" + data.prefijo + "-" + data.numero + " " + observacion + ") ";
 
 
                         totalCajas = totalCajas + data.cantidadCajas;
                         totalNeveras = totalNeveras + data.cantidadNeveras;
+                        totalBolsas = totalBolsas + data.cantidadBolsas;
 
 
                     });
@@ -682,6 +692,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         numeroDocumento = $scope.datos_view.documentosMedipol[0].numero;
                         $scope.documentoDespachoAprobado.cantidadCajas = totalCajas;
                         $scope.documentoDespachoAprobado.cantidadNeveras = totalNeveras;
+                        $scope.documentoDespachoAprobado.cantidadBolsas = totalBolsas;
                         $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;
                     }
 
@@ -746,6 +757,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 $scope.documentoDespachoAprobado = AprobacionDespacho.get(1, resultado.prefijo, resultado.numero, resultado.fecha_registro)
                                 $scope.documentoDespachoAprobado.setCantidadCajas(resultado.cantidad_cajas);
                                 $scope.documentoDespachoAprobado.setCantidadNeveras(resultado.cantidad_neveras);
+                                $scope.documentoDespachoAprobado.setCantidadBolsas(resultado.cantidad_bolsas);
                                 $scope.documentoDespachoAprobado.setObservacion(resultado.observacion);
                                 that.listarImagenes(function () {
 
@@ -993,6 +1005,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
                 var cantidadCajas = 0;
                 var cantidadNeveras = 0;
+                var cantidadBolsas = 0;
                 that.documentosSeleccionados.forEach(function (row) {
                     var observacion = "";
 
@@ -1007,11 +1020,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         var s = parseInt(row.cantidadNeveras) > 1 ? "S" : "";
                         observacion += " | NEVERA" + s + ": " + row.cantidadNeveras + " ";
                     }
+                    if (parseInt(row.cantidadBolsas) > 0) {
+                        cantidadBolsas += row.cantidadBolsas;
+                        var s = parseInt(row.cantidadBolsas) > 1 ? "S" : "";
+                        observacion += " | BOLSA" + s + ": " + row.cantidadBolsas + " ";
+                    }
                     that.observacionValidacion += "(" + row.prefijo + "-" + row.numero + " " + observacion + ") "
 
                 });
                 $scope.documentoDespachoAprobado.cantidadCajas = cantidadCajas;
                 $scope.documentoDespachoAprobado.cantidadNeveras = cantidadNeveras;
+                $scope.documentoDespachoAprobado.cantidadBolsas = cantidadBolsas;
                 $scope.documentoDespachoAprobado.observacion = that.observacionValidacion;//+ " - Total Cajas: "+ that.documentosSeleccionados.totalCajas
 
             };
@@ -1074,6 +1093,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_numero()', displayName: 'Nro Documento', width: "20%"},
                     {field: 'cantidadCajas', displayName: 'Cajas', width: "15%"},
                     {field: 'cantidadNeveras', displayName: 'Nevera', width: "15%"},
+                    {field: 'cantidadBolsas', displayName: 'Bolsa', width: "15%"},
                     {field: 'temperatura_neveras', displayName: 'Temperatura', width: "15%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -1104,10 +1124,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         documento.setSeleccionado(true);
                         documento.setCantidadCajas(0);
                         documento.setCantidadNeveras(0);
+                        documento.setCantidadBolsas(0);
                         documento.temperatura_neveras = '';
-//                        documento.setCantidadCajas(data.cantidadCajas);
-//                        documento.setCantidadNeveras(data.cantidadNeveras);
-//                        documento.temperatura_neveras = data.cantidadNeveras > 0 ? '3,2' : '';
                         documento.setEstado(1);
 
                         $scope.datos_view.documentosMedipol.push(documento);
@@ -1115,9 +1133,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     });
                     var cantidadCajas = (parseInt($scope.documentoDespachoAprobado.cantidadCajas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadCajas()));
                     var cantidadNeveras = (parseInt($scope.documentoDespachoAprobado.cantidadNeveras) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadNeveras()));
+                    var cantidadBolsas = (parseInt($scope.documentoDespachoAprobado.cantidadBolsas) + parseInt($scope.datos_view.documentosMedipol[0].getCantidadBolsas()));
 
                     $scope.datos_view.documentosMedipol[0].setCantidadCajas(cantidadCajas);
                     $scope.datos_view.documentosMedipol[0].setCantidadNeveras(cantidadNeveras);
+                    $scope.datos_view.documentosMedipol[0].setCantidadBolsas(cantidadBolsas);
                     $scope.datos_view.documentosMedipol[0].temperatura_neveras = cantidadNeveras > 0 ? '3,2' : '';
                     that.limpiarVariables();
                 } else {
@@ -1172,6 +1192,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.documentoDespachoAprobado.numero = '';
                 $scope.documentoDespachoAprobado.cantidadCajas = 0;
                 $scope.documentoDespachoAprobado.cantidadNeveras = 0;
+                $scope.documentoDespachoAprobado.cantidadBolsas = 0;
             };
 
             that.init();

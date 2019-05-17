@@ -687,8 +687,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             that.removerTerceros = function (tercero) {
                 var terceros = $scope.datos_clientes_farmacias;
                 for (var i in terceros) {
+                    if(terceros[i].id !== tercero.id || terceros[i].tipo_id_tercero !== tercero.tipo_id_tercero){
                     var _tercero = terceros[i];
                     _tercero.seleccionado = false;
+                }
                 }
 
             };

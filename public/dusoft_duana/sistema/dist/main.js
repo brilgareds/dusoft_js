@@ -33497,8 +33497,9 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
         "Empresa",
         function ($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
 
-            var that = this;
-            var serverBtnSize = 'col-xs-2 col-sm-2 col-md-2 col-lg-2 ';
+            let that = this;
+            const serverBtnSize = 'col-xs-3 col-sm-3 col-md-3 col-lg-2 ';
+            const serverSize = 'col-xs-6 col-sm-6 col-md-6 col-lg-6 ';
             $scope.promedio1Min = 0;
             $scope.promedio5Min = 0;
             $scope.promedio15Min = 0;
@@ -33525,7 +33526,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             // Creando Modulos
             $scope.monitorModulos.PC = {
                 title: 'PC',
-                width: 'col-xs-6 col-sm-6 col-md-6 col-lg-6',
+                width: serverSize,
                 tableClass: 'tablePc',
                 actions: [
                     {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'}
@@ -33534,7 +33535,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
             $scope.monitorModulos.JASPER = {
                 title: 'JasperServer',
-                width: 'col-xs-6 col-sm-6 col-md-6 col-lg-6',
+                width: serverSize,
                 tableClass: 'tablePc',
                 actions: [
                     {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
@@ -33545,7 +33546,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
             $scope.monitorModulos.PM2 = {
                 title: 'PM2',
-                width: 'col-xs-6 col-sm-6 col-md-6 col-lg-6',
+                width: serverSize,
                 tableClass: 'tablePc tableBorder cells-auto',
                 actions: [
                     {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},

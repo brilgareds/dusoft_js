@@ -3,19 +3,12 @@ define(["angular", "js/services"], function (angular, services) {
     services.factory('NotasProveedoresService',
         ['Request', 'API',
             function (Request, API) {
-                var self = this;
+                const that = this;
 
-                self.TiposDoc = function (obj, callback) {
-                    Request.realizarRequest(API.NOTAS_PROVEEDORES.TIPOS_DOC, "POST", obj, function (data) {
-                        callback(data);
-                    });
+                that.post = (url, obj, callback) => {
+                    Request.realizarRequest(url, "POST", obj, data => callback(data) );
                 };
 
-                self.listarNotasProveedores = function (obj, callback) {
-                    Request.realizarRequest(API.NOTAS_PROVEEDORES.LISTAR_NOTAS, "POST", obj, function (data) {
-                        callback(data);
-                    });
-                };
                 return this;
             }
         ]

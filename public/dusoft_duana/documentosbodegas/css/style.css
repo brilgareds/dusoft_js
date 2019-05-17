@@ -57,3 +57,8 @@
     border-style :solid;
     border-width: thin
 }
+.ngHeaderContainer {
+    background: #337ab7;
+    color: #FFF;
+    border: #337ab7 !important;
+}

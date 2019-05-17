@@ -1,0 +1,1502 @@
+/*HOJA DE ESTILOS APLICACION SIIS 22-10-2003  --- 11/03/2004*/
+
+/*---------------------------------------------------------------------------------------
+* ESTILOS DEL KERNEL
+---------------------------------------------------------------------------------------*/
+
+/*table_kernel = Tabla del kernel que enmarca los modulos*/
+.table_kernel 
+{ 
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  color: #000000;
+  font-size: 10px;
+  background-color: #C4D1E2;
+  border-color: #330066;
+  padding: 2pt 
+}
+/*----------------
+* BODY
+----------------*/
+/*ESTE ES EL BODY PARA NO-FRAMES*/
+body    
+{ 
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+  color:#000000;
+  background: #FFFFFF;
+  margin-left: 0px;
+  margin-top: 0px  
+}
+/*bodys para estilo FRAME de historia clinica*/
+.hc_body    
+{ 
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+  color:#000000;
+  margin-left: 0px;
+  margin-top: 0px  
+}
+/*bodys para estilo FRAME del menu*/
+.cabecera_body    
+{ 
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px 
+}
+/*bodys para estilo FRAME del menu*/
+.menu_body    
+{ font-family: sans_serif, Verdana, helvetica, Arial;
+              font-size: 10px }
+
+/*bodys para estilo FRAME de modulos*/
+.modulo_body    
+{ font-family: sans_serif, Verdana, helvetica, Arial;
+                font-size: 10px;
+                color:#000000;
+                margin-left: 0px;
+                margin-top: 0px  }
+
+.tabla
+{
+                         font-family: sans_serif, Verdana, helvetica, Arial;
+                  color: #FFFFFF;
+            font-size: 10px;
+                    border-color: #52955C;
+                        background-color: #F4F4F4
+}
+
+.tabla_menu
+{
+                         font-family: sans_serif, Verdana, helvetica, Arial;
+                  color: #000000;
+            font-size: 10px;
+                    border-color: #52955C;
+                        background-color:#E2F7ED
+
+}
+
+.tabla_submenu
+{
+                         font-family: sans_serif, Verdana, helvetica, Arial;
+                  color: #000000;
+            font-size: 10px;
+                    border-color: #52955C;
+                        background-color: #E2F7ED
+}
+
+.titulo_tabla
+{
+                        font-family: sans_serif, Verdana, helvetica, Arial;
+                     color: #FFFFFF;
+                        text-align: center;
+              font-size: 10pt;
+                        padding: 5pt;
+                        font-weight: bold
+}
+
+.titulo_tabla_l
+{
+                        font-family: sans_serif, Verdana, helvetica, Arial;
+                     color: #FFFFFF;
+                        text-align: left;
+              font-size: 10pt;
+                        padding: 5pt;
+                        font-weight: bold
+}
+
+.titulo_tabla_r
+{
+                        font-family: sans_serif, Verdana, helvetica, Arial;
+                     color: #FFFFFF;
+                        text-align: right;
+              font-size: 10pt;
+                        padding: 5pt;
+                        font-weight: bold
+}
+
+.titulo_tabla_menu
+{
+                        font-family: sans_serif, Verdana, helvetica, Arial;
+                     color: #FFFFFF;
+                        text-align: center;
+              font-size: 9pt;
+                        padding: 5pt;
+                        font-weight: bold
+}
+
+.titulo_tabla_menu_l
+{
+                        font-family: sans_serif, Verdana, helvetica, Arial;
+                     color: #FFFFFF;
+                        text-align: left;
+              font-size: 9pt;
+                        padding: 5pt;
+                        font-weight: bold
+}
+
+.titulo_tabla_menu_r
+{
+                        font-family: sans_serif, Verdana, helvetica, Arial;
+                     color: #FFFFFF;
+                        text-align: right;
+              font-size: 9pt;
+                        padding: 5pt;
+                        font-weight: bold
+}
+
+.titulo_tabla_submenu
+{
+  font-family: sans_serif, Verdana, helvetica, Arial;
+  color: #000FFF;
+  text-align: left;
+  font-size: 10px;
+  padding: 5pt;
+  font-weight: bold
+}
+/*---------------------------------------------------------------------------------------
+* TABLAS HISTORIA CLINICA
+---------------------------------------------------------------------------------------*/
+/*hc_table para historia clinica*/
+.hc_table 
+{ 
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  color: #000000;
+  font-size: 10px;
+  background-color: #C4D1E2;
+  border-color: #330066;
+}
+/*hc_table_title = Es el estilo para el td Titulo de la Tabla del submodulo*/
+.hc_table_title 
+{ background-color: #52955C;
+                  font-family: sans_serif, Verdana, helvetica, Arial;
+                  text-align: left;
+                  font-size: 13px;
+                  font-weight: bold;
+                  color: #ffffff;
+                  text-indent: 11pt }
+
+/*hc_table_submodulo = Tabla del modulo o submodulo que enmarca los datos*/
+.hc_table_submodulo 
+{ font-family: sans_serif, Verdana, helvetica, Arial;
+                                     color: #000000;
+                       font-size: 10px;
+                                       background-color: #E2F7ED;
+                                       border-color: #330066;
+                       padding: 2pt }
+
+/*hc_table_submodulo_title = Es el estilo para el td Titulo de la Tabla del submodulo*/
+.hc_table_submodulo_title 
+{ background-color: #1D7E2F;
+                            font-family: sans_serif, Verdana, helvetica, Arial;
+                            text-align: left;
+                            font-size: 13px;
+                            font-weight: bold;
+                            color: #ffffff;
+                            text-indent: 11pt }
+
+/*list= Estilo de la tabla de los listados*/
+.hc_table_list 
+{  font-family: sans_serif, Verdana, helvetica, Arial;
+                          color: #000545;
+                  font-size: 10px;
+                          border-color: #00007B;
+                  border: 1pt solid;
+                  border-width: thin }
+
+/*list_title= Estilo del tr TITULO de los listados*/
+.hc_table_list_title 
+{  font-family: sans_serif, Verdana, helvetica, Arial;
+                                      font-size: 10px;
+                                      font-weight: bold;
+                                      text-align: center;
+                                      color: #FFFFFF;
+                                                background-color: #84B998
+}
+
+/*list_claro = para las filas claras de los listados*/
+.hc_list_claro 
+{ font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                               font-size: 10px;
+                               color:#000000;
+                               background-color: #DDDDDD }
+
+/*list_oscuro = para las filas oscuras de los listados*/
+.hc_list_oscuro 
+{ font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                font-size: 10px;
+                                color:#000000;
+                                background-color: #CCCCCC }
+
+/*list= Estilo de la tabla de los listados*/
+.hc_table_submodulo_list 
+{  font-family: sans_serif, Verdana, helvetica, Arial;
+                                                        color: #000000;
+                                                        font-size: 10px;
+                                                        border-color: #666666;
+                                                        border-collapse :collapse;
+                                                        border: 1pt solid }
+
+/*list_title= Estilo del tr TITULO de los listados*/
+.hc_table_submodulo_list_title 
+{  font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                                                    font-size: 10px;
+                                                                    font-weight: bold;
+                                                                    text-align: center;
+                                                                    color: #000000;
+                                                                    background-color: #DDDDDD;
+                                                                    border-collapse :collapse}
+
+.hc_table_submodulo_list_justify 
+{  background-color: #DDDDDD;
+                                                font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                                text-align: justify;
+                                                font-size: 10px;
+                                                font-weight: bold;
+                                                color: #000000;
+                                                height: 15px;
+                                                border-collapse :collapse;
+                                                border: 1pt solid }
+
+/*list_claro = para las filas claras de los listados*/
+.hc_submodulo_list_claro 
+{  font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                          font-size: 10px;
+                                          color:#000000;
+                                          background-color: #DDDDDD }
+
+/*list_oscuro = para las filas oscuras de los listados*/
+.hc_submodulo_list_oscuro 
+{ font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                          font-size: 10px;
+                                          color:#000000;
+                                          background-color: #CCCCCC }
+
+/*---------------------------------------------------------------------------------------
+* TABLAS MODULOS
+*--------------------------------------------------------------------------------------*/
+
+/*hc_table para historia clinica*/
+.modulo_table 
+{ font-family: sans_serif, Verdana, helvetica, Arial;
+                      color: #000545;/*#000980;*/
+                font-size: 10px;
+                        background-color: #E2F7ED;/*azul */
+                                padding: 2pt
+                            }
+
+
+/*hc_table_title = Es el estilo para el td Titulo de la Tabla del submodulo*/
+.modulo_table_title 
+{ background-color: #1D7E2F;/*#0044B9;/*#0055E5*/
+                      font-family: sans_serif, Verdana, helvetica, Arial;
+                      text-align: left;
+                      font-size: 10px;
+                      font-weight: bold;
+                      color: #ffffff;
+                      text-indent: 11pt }
+
+/*list= Estilo de la tabla de los listados*/
+.modulo_table_list 
+{ 
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  color: #000545;
+  font-size: 10px;
+  border-color: #00007B;
+  border-style :solid;
+  border-width: thin
+}
+/*list_title= Estilo del tr TITULO de los listados*/
+.modulo_table_list_title 
+{  
+	background-color:  #52955C;/*#0044B9;  oscuro*/
+  font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #FFFFFF
+}
+/*franja que acomoda el boton al lado derecho de un listado(esta clase es especial)*/
+.modulo_table_button 
+{ 
+	background-color:  #52955C;/*#0044B9;  oscuro*/
+  font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+  text-align: right;
+  font-size: 10px;
+  font-weight: bold;
+  color: #FFFFFF
+}
+/*list_claro = para las filas claras de los listados*/
+.modulo_list_claro {  font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                    font-size: 10px;
+                                    color:#000545;
+                                    background-color: #DDDDDD }
+
+/*list_oscuro = para las filas oscuras de los listados*/
+.modulo_list_oscuro { font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                                    font-size: 10px;
+                                    color:#000545;
+                                    background-color: #CCCCCC }
+
+/*---------------------------------------------------------------------------------------
+* OTROS ESTILOS
+*--------------------------------------------------------------------------------------*/
+.agendasab { font-family: sans_serif, Verdana, helvetica, Arial;
+                      color: #000000;
+                font-size: 10px;
+                        background-color: #CCCCCC;
+                        border-color: #330066;
+                padding: 2pt }
+
+.agendadomfes { font-family: sans_serif, Verdana, helvetica, Arial;
+                      color: #000000;
+                font-size: 10px;
+                        background-color: #FFF8F9;
+                        border-color: #330066;
+                padding: 2pt }
+
+.modulo_table_calen { background-color: #1D7E2F;
+                      font-family: sans_serif, Verdana, helvetica, Arial;
+                      text-align: center;
+                      font-size: 10px;
+                      font-weight: bold;
+                      color: #ffffff}
+
+.DiaHoy { font-family: sans_serif, Verdana, helvetica, Arial;
+                    color: #000000;
+                    font-size: 10px;
+                    background-color: #528A5C;
+                    border-color: #cccccc;
+                    border: 1pt solid;
+                    border-width: thin
+                    }
+
+.DiaHoyUn {font-family: sans_serif, Verdana, helvetica, Arial;
+                    color: #000000;
+                    font-size: 10px;
+                    background-color: #9DBA9F;
+                    border-color: #cccccc;
+                    border: 1pt solid;
+                    border-width: thin
+                    }
+/*bckground = Estilo de la programacion de agenda de controles*/
+.bckground    { background-color: #455E84;
+                    font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                    text-align: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #ffffff;
+                    border-collapse :collapse
+                }
+/*resalte = Estilo de la programacion de agenda de controles*/
+.resalte    { background-color: #7588A4;
+                    font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+                    text-align: center;
+                    font-size: 10px;
+                    font-weight: bold;
+                    color: #000000;
+                    border-collapse :collapse
+                }
+/*estilo para el resumen de la escla glassGow Bajo = Rojo*/
+.GlasgowBajo {
+                    font-family: sans_serif, Verdana,helvetica, Arial;
+                    font-size: 12px;
+                    color: #EF0010; /* color anterior del cambio #9A000A*/
+                    font-weight: bold }
+/*estilo para el resumen de la escla glassGow Intermedio = Naranja*/
+.GlasgowIntermedio {
+                    font-family: sans_serif, Verdana,helvetica, Arial;
+                    font-size: 12px;
+                    color: #A46B00;   /*color anterior del cambio #E09200*/
+                    font-weight: bold }
+/*estilo para el resumen de la escla glassGow Alto = amarillo*/
+.GlasgowAlto {
+                    font-family: sans_serif, Verdana,helvetica, Arial;
+                    font-size: 12px;
+                    color: #FFF700; /* color anterior del cambio #F6F39D*/
+                    font-weight: bold }
+/*---------------------------------------------------------------------------------------
+* FUENTES
+*--------------------------------------------------------------------------------------*/
+/*normal_10 = Es el estilo para las fuentes de tamaño 10*/
+.usuario{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 10px;
+                        color: #FFFFFF;
+                        font-weight: bold }
+
+/*normal_10 = Es el estilo para las fuentes de tamaño 10 y color negra*/
+.normal_10{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 10px;
+                        color: #000000 }
+/*normal_10N = Es el estilo para las fuentes de tamaño 10 negra y negrita*/
+.normal_10N{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 10px;
+                        color: #000000;
+                        font-weight: bold }
+/*normal_10A = Es el estilo para las fuentes de tamaño 10 y color azul*/
+.normal_10A{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 10px;
+                        color: #000980 }
+/*normal_10AN = Es el estilo para las fuentes de tamaño 10 azul y negrita*/
+.normal_10AN
+{  
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+  color: #000980;
+  font-weight: bold 
+}
+/*normal_10_menu = Es el estilo para las fuentes de tamaño 10*/
+.normal_10_menu
+{  
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+  color: #536CB0 
+}
+/*normal_10N_menu = Es el estilo para las fuentes de tamaño 10*/
+.normal_10N_menu
+{
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+  color: #536CB0;
+  font-weight: bold 
+}
+/*normal_09 = Es el estilo para las fuentes de tamaño 10*/
+.normal_09
+{  
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 9px;
+  color: #000980 
+}
+/*normal_09N = Es el estilo para las fuentes de tamaño 10*/
+.normal_09N
+{
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 9px;
+  color: #000980;
+  font-weight: bold 
+}
+/*normal_09_menu = Es el estilo para las fuentes de tamaño 10*/
+.normal_09_menu
+{  
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 9px;
+  color: #536CB0 
+}
+/*normal_09N_menu = Es el estilo para las fuentes de tamaño 10*/
+.normal_09N_menu{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 9px;
+                        color: #536CB0;
+                        font-weight: bold }
+
+/*normal_11 = Es el estilo para las fuentes de tamaño 10*/
+.normal_11{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 11px;
+                        color: #000980 }
+
+/*normal_11N = Es el estilo para las fuentes de tamaño 10*/
+.normal_11N{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 11px;
+                        color: #000980;
+                        font-weight: bold }
+
+/*normal_11_menu = Es el estilo para las fuentes de tamaño 10*/
+.normal_11_menu{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 11px;
+                        color: #536CB0 }
+
+/*normal_11N_menu = Es el estilo para las fuentes de tamaño 10*/
+.normal_11N_menu{  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 11px;
+                        color: #536CB0;
+                        font-weight: bold }
+
+
+/*Cliente = Es el estilo del tiltulo del la cabecera con el nombre del cliente*/
+.Cliente {  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 15px;
+                        color: #FFFFFF;
+                        font-weight: bold }
+
+/*label = Es el estilo para los label's de los campos de los modulos o submodulos*/
+.label { font-family: sans_serif, Verdana, helvetica, Arial;
+                 font-size: 10px;
+                 color: #000000;
+                 font-weight: bold }
+
+/*label_error = Es el estilo para cambiar el color del label, indicando el error*/
+.label_error { font-family: sans_serif, Verdana,helvetica, Arial;
+                             font-size: 10px;
+                             color: #FF0000;
+                             font-weight: bold }
+
+	/*titulo_error = Es el estilo del tiltulo de los errores en color rojo*/
+.label2_error {  font-family:sans_serif, Verdana, helvetica, Arial;
+						font-size: 14px;
+						color: #FF0000;
+						font-weight: bold }
+
+/*label_mark = Es el estilo para cambiar el color del label, generandolo como marca*/
+.label_mark { font-family: sans_serif, Verdana,helvetica, Arial;
+                             font-size: 10px;
+                             color: #4D6EAB;
+                             font-weight: bold }
+
+/*titulo_error = Es el estilo del tiltulo de los errores*/
+.titulo1 {  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 16px;
+                        color: #000000;
+                        font-weight: bold }
+
+/*titulo_error = Es el estilo del tiltulo de los errores*/
+.titulo2 {  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 14px;
+                        color: #000000;
+                        font-weight: bold }
+
+/*titulo_error = Es el estilo del tiltulo de los errores*/
+.titulo3 {  font-family:sans_serif, Verdana, helvetica, Arial;
+                        font-size: 14px;
+                        color: #000BA6;
+                        font-weight: bold }
+
+/*titulo_error = Es el estilo del tiltulo de los errores*/
+.titulo1_error {  font-family: sans_serif, Verdana, helvetica, Arial;
+                                  font-size: 16px;
+                                  color: maroon;
+                                  font-weight: bold }
+/*titulo_error = Es el estilo del tiltulo de los errores*/
+.titulo2_error {  font-family: sans_serif, Verdana, helvetica, Arial;
+                                  font-size: 16px;
+                                  color: maroon;
+                                  font-weight: bold }
+/*titulo_error = Es el estilo del tiltulo de los errores*/                                  
+.titulo3_error {  font-family: sans_serif, Verdana, helvetica, Arial;
+                                  font-size: 14px;
+                                  color: #FF0000;
+                                  font-weight: bold }        
+                                                            
+/*Estilo para las alertas en enfermeria => color rojo*/
+.alerta { font-family: sans_serif, Verdana,helvetica, Arial;
+                    font-size: 10px;
+                    color: #FF0000;
+                    font-weight: bold }
+
+/*field = Estilo de los fieldset*/
+.field    { font-family: Verdana,helvetica, Arial;
+                    font-size: 11px;
+                    color: #000000;
+                    font-weight: bold;
+                    text-indent: 11px }
+
+
+/*---------------------------------------------------------------------------------------
+* ENLACES
+---------------------------------------------------------------------------------------*/
+
+/*hc pestañas
+*/
+
+.hcLink { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-size: 10px; text-decoration: none }
+a.hcLink:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-size: 10px; text-decoration: none }
+a.hcLink:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #AAC4E4; font-size: 10px; text-decoration: none }
+a.hcLink:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-size: 10px; text-decoration: none }
+a.hcLink:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #AAC4E4; font-size: 10px; text-decoration: none }
+
+.hcPaciente { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none }
+a.hcPaciente:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none }
+a.hcPacienteLink:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none }
+a.hcPaciente:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-weight: bold; font-size: 14px; text-decoration: none }
+a.hcPaciente:hover { font-family: sans_serif, Verdana, helvetica, Arial; font-weight: bold; color: #ffffff; font-size: 14px; text-decoration: none }
+
+.hcLinkClaro { font-family: sans_serif, Verdana, helvetica, Arial; color: #d53c29; font-size: 10px; text-decoration: none }
+a.hcLinkClaro:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #d53c29; font-size: 10px; text-decoration: none }
+a.hcLinkClaro:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #d53c29; font-size: 10px; text-decoration: none }
+a.hcLinkClaro:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #d53c29; font-size: 10px; text-decoration: none }
+a.hcLinkClaro:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #d53c29; font-size: 10px; text-decoration: none }
+
+
+
+.Menu { font-family: sans_serif, Verdana, helvetica, Arial; color: #000066; font-size: 10px; text-decoration: none }
+a.Menu:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #000066; font-size: 10px; text-decoration: none }
+a.Menu:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #000066; font-size: 10px; text-decoration: none }
+a.Menu:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #000066; font-size: 10px; text-decoration: none }
+a.Menu:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-size: 10px; text-decoration: none }
+.MenuNoLink  { font-family: sans_serif, Verdana, helvetica, Arial; color: #dddddd; font-size: 10px; text-decoration: none }
+
+
+.Resalte { font-family: sans_serif, Verdana, helvetica, Arial; color: #000066; font-size: 10px; text-decoration: none }
+a.Resalte:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #4D6EAB; font-size: 10px; text-decoration: none }
+a.Resalte:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #4D6EAB; font-size: 10px; text-decoration: none }
+a.Resalte:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #4D6EAB; font-size: 10px; text-decoration: none }
+a.Resalte:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #ffffff; font-size: 10px; text-decoration: none }
+.ResalteNoLink  { font-family: sans_serif, Verdana, helvetica, Arial; color: #dddddd; font-size: 10px; text-decoration: none }
+
+.hc_normal_10
+{  
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size: 11px;
+  color: #ffffff; 
+}
+
+/*Estilo para los enlaces*/
+a:link               { color: #9C0003; text-decoration: none }/*; font-family: sans_serif, Arial; font-size: 10px  */
+a:active             { color: #9C0003; text-decoration: none }
+a:visited            { color: #9C0003; text-decoration: none }
+a:hover              { color: #F88112; text-decoration: underline }
+
+/*Estilo para los enlaces de turnos*/
+.TurnoActivo { font-family: sans_serif, Verdana, helvetica, Arial; color: #237F04; font-size: 10px; text-decoration: none }
+a.TurnoActivo:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #237F04; font-size: 10px; text-decoration: none }
+a.TurnoActivo:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #237F04; font-size: 10px; text-decoration: none }
+a.TurnoActivo:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #195A03; font-size: 10px; text-decoration: none }
+a.TurnoActivo:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #FF9100; font-size: 10px; text-decoration: none }
+.TurnoActivoNoLink  { font-family: sans_serif, Verdana, helvetica, Arial; color: #dddddd; font-size: 10px; text-decoration: none }
+
+.TurnoInactivo { font-family: sans_serif, Verdana, helvetica, Arial; color: #DD1000; font-size: 10px; text-decoration: none }
+a.TurnoInactivo:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #DD1000; font-size: 10px; text-decoration: none }
+a.TurnoInactivo:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #DD1000; font-size: 10px; text-decoration: none }
+a.TurnoInactivo:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #B80F00; font-size: 10px; text-decoration: none }
+a.TurnoInactivo:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #FF9100; font-size: 10px; text-decoration: none }
+.TurnoInactivoNoLink  { font-family: sans_serif, Verdana, helvetica, Arial; color: #dddddd; font-size: 10px; text-decoration: none }
+
+.MesAno { font-family: sans_serif, Verdana, helvetica, Arial; color: #D57107; font-size: 10px; text-decoration: none }
+a.MesAno:link { font-family: sans_serif, Verdana, helvetica, Arial; color: #D57107; font-size: 10px; text-decoration: none }
+a.MesAno:active { font-family: sans_serif, Verdana, helvetica, Arial; color: #D57107; font-size: 10px; text-decoration: none }
+a.MesAno:visited { font-family: sans_serif, Verdana, helvetica, Arial; color: #D57107; font-size: 10px; text-decoration: none }
+a.MesAno:hover { font-family: sans_serif, Verdana, helvetica, Arial; color: #A95205; font-size: 10px; text-decoration: none }
+
+
+/*---------------------------------------------------------------------------------------
+* FORMS
+---------------------------------------------------------------------------------------*/
+/*Estilo para los botones y listas de seleccion*/
+.input-bottom { color: #000000; font-weight: bold; font-size: 9px;}
+.input-submit { color: #000000; font-weight: bold; font-size: 9px;}
+.input-text   { color: #000000; font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px; border:1pt outset Black}
+.select        { color: #000000; font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px; border:1pt outset Black}
+.textarea      { color: #000000; font-family: sans_serif, Verdana, helvetica, Arial; font-size:10px; border:1pt outset Black}
+
+
+/*---triage--*/
+/*tr_tdlabel = Es el estilo para los label's de los campos*/
+/*azul*/
+.nivel1_oscuro  { 			 background-color: #1D7E2F;
+                         font-family: Verdana,helvetica, Arial;
+													font-size: 11px;
+													color: #ffffff;
+
+                                            }
+
+.nivel1_claro  {  background-color: #DDECFF;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #000000;
+
+                                            }
+/*rojo*/
+.nivel2_oscuro  {  background-color: #B50000;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #ffffff;
+
+                                            }
+
+.nivel2_claro  {  background-color: #FFD5D5;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #000000;
+
+                                            }
+/*verde*/
+.nivel3_oscuro  
+{ 
+	background-color: #004800;
+  font-family: Verdana,helvetica, Arial;
+  font-size: 11px;
+	color: #ffffff;
+}
+
+.nivel3_claro  
+{ 
+	background-color: #91DBD0;
+  font-family: Verdana,helvetica, Arial;
+  font-size: 11px;
+  color: #000000;
+}
+/*amarillo*/
+.nivel4_oscuro  
+{
+	background-color: #E2C505;
+  font-family: Verdana,helvetica, Arial;
+  font-size: 11px;
+  color: #ffffff;
+}
+
+.nivel4_claro  
+{ 
+	background-color: #F6F39D;
+  font-family: Verdana,helvetica, Arial;
+  font-size: 11px;
+  color: #000000;                                     
+}
+/*--------------------*/
+/*
+.tr_tdlabelazuloscuro  { background-color: #304E8E;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #ffffff;
+                                       font-weight: bold
+                                            }
+
+.tr_tdlabelazulclaro  {  background-color: #DDECFF;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #000000;
+                                       font-weight: bold
+                                            }
+
+.tr_tdlabelrojoscuro  {  background-color: #B50000;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #ffffff;
+                                       font-weight: bold
+                                            }
+
+.tr_tdlabelrojoclaro  {  background-color: #FFD5D5;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #000000;
+                                       font-weight: bold
+                                            }
+
+.tr_tdlabelverdeoscuro  {  background-color: #004800;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #ffffff;
+                                       font-weight: bold
+                                                }
+
+.tr_tdlabelverdeclaro  {  background-color: #91DBD0;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #000000;
+                                       font-weight: bold
+                                                }
+
+.tr_tdlabelamarilloscuro  {  background-color: #E2C505;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #ffffff;
+                                       font-weight: bold
+                                                 }
+
+.tr_tdlabelamarilloclaro  {  background-color: #F6F39D;
+                         font-family: Verdana,helvetica, Arial;
+                                       font-size: 11px;
+                                       color: #000000;
+                                       font-weight: bold
+                                                  }
+																									*/
+.checkazul  { background-color: #DDECFF}
+
+.TablaHc
+{
+    background-color:#034A0C; 
+}
+
+.TablaMenu
+{
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  color: #003300; 
+  font-size: 10px;
+  border-color: #0044B9;
+	width:70%;
+	text-transform: uppercase;
+  background-color: #F4F4F4
+}
+
+.ListaHc
+{
+	margin:.5em 0em 0em 1.5em; padding:0;
+}
+
+.TituloHc 
+{
+	padding:0px;
+	font-size:16px;
+	font-weight:bold;
+	color:#FFFFFF;
+}
+
+.cabecera_hc
+{ 
+	top: 0px; 
+	left: 0px; 
+	z-index: 2;
+}
+
+.CapaHc 
+{
+	position:relative; /* Position is declared "relative" to gain control of stacking order (z-index). */
+	margin-bottom:0px;
+	margin-left:0px;
+	margin-right:0px;
+	margin-top:40px;
+	border:0px;
+	z-index:1; /* This allows the content to overlap the right menu in narrow windows in good browsers. */
+}
+
+.CapaHc1 
+{
+	position:relative; /* Position is declared "relative" to gain control of stacking order (z-index). */
+	margin-bottom:0px;
+	margin-left:210px;
+	margin-right:0px;
+	margin-top:40px;
+	border:0px;
+	z-index:1; /* This allows the content to overlap the right menu in narrow windows in good browsers. */
+}
+
+.MenuIzqhc 
+{
+	width:205px;
+	top:40px;
+	left:0px;
+	border: 1px solid #003300; 
+	background-color: #034A0C; 
+	z-index:2;
+  overflow: auto;
+}
+
+.MenuHC
+{
+  background-color: #034A0C; 
+	margin:0 0 0 0px;
+	padding: 0px; 
+  width:205px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+  color: #FFFFFF; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6pt;
+	cursor: pointer;
+}
+.MenuHC a
+{
+  background-color: #034A0C; 
+	margin:0 0 0 0px;
+	padding: 0px; 
+  width:205px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+  color: #FFFFFF; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6pt;
+	cursor: pointer;
+}
+
+.MenuHC a:link   
+{
+	background-color: #034A0C; 
+	margin:0 0 0 0px;
+	padding: 0px; 
+  width:205px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+	color: #FFFFFF;
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6pt;
+	cursor: pointer;
+}
+
+.MenuHC a:active  
+{ 
+	background-color: #034A0C; 
+	margin:0 0 0 0px;
+	padding: 0px; 
+  width:205px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+	color: #FFFFFF; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6pt;
+	cursor: pointer;
+}
+
+.MenuHC a:visited  
+{ 
+  background-color: #034A0C; 
+	margin:0 0 0 0px;
+	padding: 0px; 
+  width:205px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+  color: #FFFFFF; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6pt;
+	cursor: pointer;
+}
+
+.MenuHC a:hover 
+{	
+	background-color: #FFFFFF; 
+	margin:0 0 0 0px;
+	padding: 0px; 
+  width:205px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+	color: #003300; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6pt;
+	cursor: pointer;
+}
+
+.SubMenuHC
+{ 
+		text-indent: 0pt;
+    font-family: sans_serif, Verdana, helvetica, Arial; 
+    color: #FFFFFF; 
+    font-size: 10px; 
+    font-weight : bold;
+    text-decoration: none
+}
+
+.SubMenuHC a:link
+{ 
+    color: #D4D4D4; 
+    text-decoration: none;
+}
+
+.SubMenuHC a:active
+{ 
+    color: #D4D4D4;
+    text-decoration: none
+}
+
+.SubMenuHC a:visited
+{
+		color: #D4D4D4;
+		text-decoration: none;
+} 
+
+.SubMenuHC a:hover
+{
+		color: #FFFFFF;
+		text-decoration: none;
+}
+
+.SubMenuHC1
+{ 
+		text-indent: 0pt;
+    font-family: sans_serif, Verdana, helvetica, Arial; 
+    color: #FFFFFF; 
+    font-size: 10px; 
+    font-weight : bold;
+    text-decoration: none
+}
+
+.SubMenuHC1 a:link
+{ 
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.SubMenuHC1 a:active
+{ 
+    color:#FFFFFF;
+    text-decoration: none
+}
+
+.SubMenuHC1 a:visited
+{
+		color: #FFFFFF;
+		text-decoration: none;
+} 
+
+.SubMenuHC1 a:hover
+{
+		color: #FFFFFF;
+		text-decoration: none;
+}
+
+.MenuMedicamentos
+{
+  background-color:#1D7E2F;
+	border: 1pt solid #1A7C2D;
+	padding:0px; 
+  width:280px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	cursor: pointer;
+}
+
+.Lista1
+{
+	margin:0.5em 0em 0em 2.6em; 
+	padding:0;
+}
+
+.GrupoMedicamentos
+{
+  background-color:#1D7E2F;
+	padding:0px; 
+  width:280px;
+  font-family: Lucida, Tahoma,Verdana, helvetica, Arial; 
+  color: #FFFFFF;
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6px;
+	cursor: pointer;
+}
+
+.GrupoMedicamentos a
+{
+  color: #FFFFFF;
+  text-decoration: none;
+	cursor: pointer;
+}
+
+.GrupoMedicamentos a:link   
+{
+	color: #FFFFFF;
+  text-decoration: none;
+	cursor: pointer;
+} 
+
+.GrupoMedicamentos a:active  
+{ 
+	color: #FFFFFF;
+  text-decoration: none;
+	cursor: pointer;
+}
+
+.GrupoMedicamentos a:visited  
+{ 
+  color: #FFFFFF;
+  text-decoration: none;
+	cursor: pointer;
+}
+.GrupoMedicamentos a:hover 
+{	
+	background-color :#FFFFFF;
+	width:100%;
+	color:#003300;
+  text-decoration: none;
+	cursor: pointer;
+}
+
+.Medicamentos
+{ 
+	text-indent: 0pt;
+  font-family: Verdana, helvetica, Arial; 
+  color:  #FFFFFF; 
+  font-size: 11px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-transform: capitalize;
+}
+
+.Medicamentos a:link
+{ 
+    color:  #FFFFFF;
+    text-decoration: none;
+}
+
+.Medicamentos a:active
+{ 
+    color: #FFFFFF;
+    text-decoration: none
+}
+
+.Medicamentos a:visited
+{
+		color: #FFFFFF;
+		text-decoration: none;
+} 
+
+.Medicamentos a:hover
+{
+		color: #003300;
+		text-decoration: none;
+		font-weight : bold;
+}
+
+.GrupoMezclas
+{
+  background-color:  #16632A;/*#0044B9; */
+	padding:0px; 
+  width:280px;
+  font-family: sans_serif, Verdana, helvetica, Arial; 
+  color: #FFFFFF; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-indent: 6px;
+	cursor: pointer;
+	position:absolute; 
+	visibility:hidden;
+	border: 1px solid #003300;
+}
+
+.SubMenuM
+{ 
+		text-indent: 0pt;
+    font-family: Tahoma, Verdana, helvetica, Arial; 
+    color: #DFDFDF;
+    font-size: 11px; 
+    font-weight : bold;
+    text-decoration: none
+}
+
+.SubMenuM a:link
+{ 
+    color: #C0C0C0; 
+    text-decoration: none;
+}
+
+.SubMenuM a:active
+{ 
+    color:#C0C0C0;
+    text-decoration: none
+}
+
+.SubMenuM a:visited
+{
+		color: #C0C0C0;
+		text-decoration: none;
+} 
+
+.SubMenuM a:hover
+{
+		color: #CDCDCD; 
+		text-decoration: none;
+}
+
+.Mezclas
+{ 
+	text-indent: 0pt;
+  font-family: Verdana, helvetica, Arial; 
+  color:  #FFFFFF; 
+  font-size: 10px; 
+  font-weight : bold;
+  text-decoration: none;
+	text-transform: capitalize;
+}
+
+.formulacion_table_list 
+{ 
+	background-color:  #04510C;/*#0044B9;  oscuro*/
+	font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+	text-align: center;
+	font-size: 10px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+.formulacion_table_list_suspendido 
+{ 
+	background-color:  #797A80;/*#0044B9;  oscuro*/
+	font-family: sans_serif, sans_serif, Verdana, helvetica, Arial;
+	text-align: center;
+	font-size: 10px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+.formulacion_table_list_oscuro
+{  
+  border: 1px  #04510C solid;
+	padding: 0px;
+}
+
+.formulacion_table_list_claro
+{  
+  border: 1px #797A80 solid;
+	padding: 0px;
+}
+
+.label2
+{ font-family: sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+  color: #808080;
+  font-weight: bold 
+}
+
+.CapaHc1IE
+{
+	position:relative; /* Position is declared "relative" to gain control of stacking order (z-index). */
+	margin-bottom:0px;
+	margin-left:210px;
+	margin-right:0px;
+	margin-top:40px;
+	border:0px;
+	width:100%;
+	z-index:1; /* This allows the content to overlap the right menu in narrow windows in good browsers. */
+}
+
+.draggable 
+{
+  font-family: sans_serif, Verdana, helvetica, Arial;
+	position:absolute; 
+	margin:0; 
+	padding:0; 
+	font-size:10px;
+  width:100px; 
+	color:#FFFFFF; 
+	background: #04510C;
+	overflow:hidden;
+	font-weight: bold ;
+	text-indent: 3pt;
+	cursor: default;
+}
+
+.d2Container 
+{
+  position:absolute;
+	margin: 0; 
+	padding:0; 
+	font-size:10px;
+  width:300px; 
+	height:auto; 
+	color:#000; 
+	background:#FFFFFF; 
+	border: 2pt solid #04510C;
+	overflow:hidden;
+}
+
+.d2Content 
+{
+	overflow:auto;
+}
+
+.dynamic-tab-pane-control.tab-pane 
+{
+	position:	relative;
+	margin:	0px;
+	width:	100%;
+	margin-right:	-2px;
+}
+
+.dynamic-tab-pane-control .tab-row .tab 
+{
+	height:	18px;
+	position:relative;
+	top:0;
+	display:inline;
+	float:left;
+	overflow:hidden;
+	cursor:pointer;
+	color:#000099;
+	margin:1px -1px 0px 2px;
+	padding:2px 10px 0px 10px;
+	border:0;
+	left:-2px;
+	z-index:1;
+	font:11px Tahoma;
+	white-space:nowrap;
+	text-align:center;
+	border-bottom-width:0px;
+	border-left-width:2px;
+	border-right-width:2px;
+	border-top-width:2px;
+	border-style: solid;
+	border-color:	#B6BFDF;
+	background-image:	url( ../images/submenu/franja_clara.png);
+}
+
+.dynamic-tab-pane-control .tab-row .tab.selected 
+{
+	border-bottom-width:0;
+	z-index:3;
+	padding:2px 10px 0px 10px;
+	margin:1px -1px -4px 2px;
+	top:0px;
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size:10px;
+	/*color:#9D0606;*/
+	color:#000099;
+	border-left-width:2px;
+	border-right-width:2px;
+	border-top-width:2px;
+	border-style: solid;
+	border-color:	#2F8A2F;
+	background-image:	url( ../images/submenu/franja.png );
+}
+
+.dynamic-tab-pane-control .tab-row .tab a 
+{
+	font-family:sans_serif, Verdana, helvetica, Arial;
+  font-size:10px;
+	font-weight:bold;
+	text-decoration:none;
+	cursor:pointer;
+}
+
+.tab a:hover
+{
+	color:#000099;
+	text-decoration:none;	
+}
+
+.dynamic-tab-pane-control .tab-row .tab.hover 
+{
+	color:#000099;
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;
+	width: auto;
+	height: 18px;
+	border-color:	#2F8A2F;
+	background-image:	url( ../images/submenu/franja.png );
+}
+
+.dynamic-tab-pane-control .tab-page 
+{
+	clear: both;
+	height: auto;
+	border:	2px solid #2F8A2F;
+	z-index: 2;
+	position: relative;
+	top: -2px;
+	font-family: sans_serif, Verdana, helvetica, Arial;
+  font-size: 10px;	
+	padding: 10px;
+}
+
+.dynamic-tab-pane-control .tab a 
+{
+	display:inline;
+	width:auto;
+}
+
+.dynamic-tab-pane-control .tab-row 
+{
+	z-index:1;
+}
+.fill 
+{
+	font-family: sans_serif, Verdana, helvetica, Arial;
+	font-size: 10px;
+	display: none;
+	width: 150px;
+	position:absolute;
+	background-color: #CDEAE4;
+	border: 1px solid #0D7B0F;
+	overflow: auto;
+	height: 150px;
+	top: -1px;
+	z-index: 0;
+}
+
+.fieldset
+{
+	font-family: sans_serif, Verdana, helvetica, Arial;
+	font-size: 10px;
+	font-weight: bold;
+	color:  #04510C;
+	border-color:  #52955C;
+	border-style :solid;
+	border-width: 1px;
+	background : #EFEFEF;
+	padding: 2pt;
+}
+
+.fieldset_error
+{
+	font-family: sans_serif, Verdana, helvetica, Arial;
+	font-size: 10px;
+	font-weight: bold;
+	color: #900606;
+  border-color: #900606;
+  border-style :solid;
+  border-width: 1px;
+	background : #EFEFEF;
+	padding: 2pt;
+}
+
+.calendario_px 
+{
+  visibility:hidden;
+  padding:0px;
+  width:300px;
+  height:auto;
+  background:#EFEFEF;
+  position:absolute;
+}
+
+.hcTexto 
+{ 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	color: #ffffff; 
+	font-weight: bold; 
+	font-size: 10px; 
+	text-decoration: none; 
+	border: 3px outset #04510C;
+	width : 60;
+	background:	#04510C;
+}
+
+.hcTexto a:link 
+{ 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	color: #ffffff; 
+	font-weight: bold; 
+	font-size: 11px; 
+	text-decoration: none; 
+}
+
+.hcTexto a:active 
+{ 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	color: #ffffff; 
+	font-weight: bold; 
+	font-size: 11px; 
+	text-decoration: none; 
+}
+
+.hcTexto a:visited 
+{ 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	color: #ffffff; 
+	font-weight: bold; 
+	font-size: 11px; 
+	text-decoration: none; 
+}
+
+.hcTexto a:hover 
+{ 
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	color: #ffffff; 
+	font-weight: bold; 
+	font-size: 11px; 
+	text-decoration: none; 
+}
+
+.tr_btn_add_product td{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.tr_btn_add_product td input{
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+.btn_reset_values {
+    background: #7b1c1c;
+    color: #FFF;
+    cursor: pointer;
+}
+
+.btn_add_produc{
+
+}
+
+.title_accion{
+    text-align: center;
+    margin-top: 10px;
+}

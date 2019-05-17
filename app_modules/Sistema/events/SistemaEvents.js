@@ -10,7 +10,7 @@ SistemaEvents.prototype.onObtenerEstadisticasSistema = function(socket_id){
 
 SistemaEvents.prototype.enviarInformacion = function(datos){
     var that = this;
-    var response = G.utils.r(datos.funcion, datos.msj, datos.status, datos.result);   
+    var response = G.utils.r(datos.funcion, datos.msj, datos.status, datos.result);
     __enviarNotificacion(that,datos.usuario,response,datos.funcion);
 };
 

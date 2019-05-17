@@ -11,7 +11,7 @@
 </style>
 
 <div class="row" ng-controller="SistemaController">
-    <div class="col-md-8">
+    <div class="col-md-8 contenedor-estadisticas">
         <h3>Memoria</h3>
         <span>Uso actual : {{memoria}}</span>
         <nvd3-line-chart
@@ -60,27 +60,33 @@
     </div>
 </div>
 <hr>
-<div class="panel panel-default" ng-repeat="server in monitoreo.servers track by $index">
+<div class="panel panel-primary" ng-repeat="server in monitoreo.servers track by $index">
     <div class="panel-heading"><b style="font-size: 18px;">Server {{server}}</b></div>
     <div class="panel-body">
         <div class="row">
             <div class="col-sm-12">
-                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" ng-repeat="modulo in monitoreo[server].modulos track by $index">
+                <div class="{{monitoreo[server][modulo].width}}" ng-repeat="modulo in monitoreo[server].modulos track by $index">
                     <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b style="font-size: 18px;">
+                                <h5 style="margin: 0px; padding: 0px; text-align: center;">
+                                    <b>{{monitoreo[server][modulo].title}}</b>
+                                </h5>
+                            </b>
+                        </div>
                         <div class="panel-body">
-                            <h5><b>{{monitoreo[server][modulo].title}}</b></h5>
                             <div class="contenedor-modulos-btns">
-                                <button type="button" ng-disabled={{action.disable}} ng-repeat="action in monitoreo[server][modulo].actions track by $index" class={{action.class}} ng-click="sshConnection(modulo, action.name, server)">{{action.title}}</button>
+                                <button type="button" ng-disabled={{action.disable}} ng-repeat="action in monitoreo[server][modulo].actions track by $index" class={{action.class}} ng-click="sshConnection(modulo, action.name, server)"><i class="{{action.icono}}"></i> {{action.title}}</button>
                             </div>
                             <br>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="col-sm-12 console-format">
-                                        <table class="tablePc" ng-repeat="obj in monitoreo[server][modulo].obj track by $index">  <!-- ng-repeat="(key, title) in modulo.obj track by $index" -->
+                                        <table class="{{monitoreo[server][modulo].tableClass}}" ng-repeat="obj in monitoreo[server][modulo].obj track by $index">  <!-- ng-repeat="(key, title) in modulo.obj track by $index" -->
                                             <tr style="height: 20px;">
-                                                <td colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px; ">
+                                                <th colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px; ">
                                                     {{obj.title}}
-                                                </td>
+                                                </th>
                                             </tr>
                                             <tr>
                                                 <th class="header" ng-repeat="head in obj.header">
@@ -103,3 +109,4 @@
         </div>
     </div>
 </div>
+<br><br>

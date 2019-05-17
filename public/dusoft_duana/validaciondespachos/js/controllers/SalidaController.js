@@ -106,7 +106,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             if (data.status === 200) {
                                 if (data.obj.planillas_despachos.length > 0) {
-                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0}, function (empaque) {
+                                    that.numeroEmpaque(data.obj.planillas_despachos, 0, {caja: 0, nevera: 0, bolsa:0}, function (empaque) {
                                         $scope.root.empaqueNumero = empaque;
                                     });
                                     $scope.root.isGuia = false;
@@ -163,6 +163,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         }
                         empaque.caja += dato.cantidad_cajas;
                         empaque.nevera += dato.cantidad_neveras;
+                        empaque.bolsa += dato.cantidad_bolsas;
                         index++;
                         that.numeroEmpaque(datos, index, empaque, callback);
                     };
@@ -186,16 +187,18 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableFiltering: true,
                         showSelectionCheckbox: true,
                         enableRowSelection: true,
+                        showFilter:true,
+                        
                         selectedItems: $scope.listaAgrupados,
                         columnDefs: [
-                            {field: 'descripcion_destino', displayName: 'Cliente', width: "40%"},
+                            {field: 'descripcion_destino', displayName: 'Cliente', width: "38%"},
                             {field: 'factura', displayName: 'Factura', width: "10%"},
                             {field: 'prefijo', displayName: 'Prefijo', width: "10%"},
                             {field: 'numero', displayName: 'Documento', width: "10%"},
-                            {field: 'cantidad_cajas', displayName: 'Caja', width: "6%"},
-                            {field: 'cantidad_neveras', displayName: 'Nevera', width: "8%"},
-                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "8%"},
-                            {field: 'temperatura_neveras', displayName: '°C', width: "6%"},
+                            {field: 'cantidad_cajas', displayName: 'Caja', width: "5%"},
+                            {field: 'cantidad_neveras', displayName: 'Nevera', width: "6%"},
+                            {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "6%"},
+                            {field: 'temperatura_neveras', displayName: '°C', width: "5%"},
                             {field: 'ciudad', displayName: 'Ciudad', width: "10%"}
                         ]
                     };

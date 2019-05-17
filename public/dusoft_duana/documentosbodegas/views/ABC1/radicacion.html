@@ -105,7 +105,7 @@
                             <!--input type="text" ng-datepickerange /-->
                             <span class="input-group-btn">
 
-                    <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    <button style="color:#093d69;" class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
                         </p>
                     </div>
@@ -114,7 +114,7 @@
                             <input type="text" class="form-control readonlyinput" value="{{producto_fecha2 | date:'dd-MM-yyyy'}}" name="fechain" datepicker-popup="{{format}}" ng-model="producto_fecha2" ng-change="buscarProductos()" ng-keyup="buscarProductos()" is-open="abrirfechafinal" min="fechainicial" readonly close-text="Cerrar"
                                    clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
                             <span class="input-group-btn">
-                            <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                            <button style="color:#093d69;" class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
                         </p>
                     </div>
@@ -130,7 +130,7 @@
                             </div><!-- /btn-group -->
                             <input type="text" class="form-control" ng-model="producto" ng-change="buscarProductos()" placeholder="Buscar" name="srch-term" id="srch-term" />
                             <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
+                            <button style="color:#093d69;" class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
                         </span>
                         </div><!-- /input-group -->
                     </div>

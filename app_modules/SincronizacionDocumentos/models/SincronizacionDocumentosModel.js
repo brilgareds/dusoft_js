@@ -528,11 +528,11 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
 
 SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, callback) {
     console.log('In model "listarDetalleRCWSFI"');
-    var credito = parseFloat('0');
-    var debito = parseFloat('0');
-    var response = {};
+    let credito = parseFloat('0');
+    let debito = parseFloat('0');
+    let response = {};
 
-    var query = G.knex.distinct(
+    let query = G.knex.distinct(
         G.knex.raw("'0' AS codcentrocostoasiento"),
         G.knex.raw("'0' AS codcentroutilidadasiento"),
         G.knex.raw("CASE WHEN \"RCT\".\"cuenta\" IS NULL THEN '0' ELSE \"RCT\".\"cuenta\" END AS codcuentaasiento"),
@@ -819,23 +819,22 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, call
     });
 };
 
-SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function (obj, callback) {
+SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = (obj, callback) => {
     console.log('In Model "obtenerPrefijoFi"');
 
-    var query = G.knex.select(G.knex.raw("COALESCE(b.prefijo ,'') as prefijo_fi"))
+    let query = G.knex.select(G.knex.raw("COALESCE(b.prefijo ,'') as prefijo_fi"))
         .from('documentos as a')
         .innerJoin('prefijos_financiero as b', 'a.prefijos_financiero_id', 'b.id')
-        .where(function () {
-        }).andWhere('a.prefijo', obj.prefijo)
+        .where('a.prefijo', obj.prefijo)
         .andWhere('a.empresa_id', obj.empresaId);
 
-
-    query.then(function (resultado) {
-        callback(false, resultado);
-    }).catch(function (err) {
-        console.log("error sql", err);
-        callback(err);
-    });
+    query
+        .then(resultado => {
+            callback(false, resultado);
+        }).catch(err => {
+            console.log("error sql", err);
+            callback(err);
+        });
 };
 
 SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function (obj, callback) {

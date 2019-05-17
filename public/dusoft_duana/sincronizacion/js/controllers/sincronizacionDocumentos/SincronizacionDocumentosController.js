@@ -64,6 +64,7 @@ define(["angular", "js/controllers"
             };
 
             $scope.servicio_actualizado = function (servicio) {
+                console.log('Servicio es: ', servicio);
                 if (servicio === 9) {
                     $scope.servicioProveedor = true;
                     $scope.servicioPrefijo = false;
@@ -122,13 +123,11 @@ define(["angular", "js/controllers"
                 ServerServiceDoc.sincronizacionDocumentos(obj, function (data) {
                     if (data.status === 200) {
                         $scope.root.estado = true;
-                        $scope.root.asientosContables = data.obj.result;
-                        $scope.encabezado = data.obj.result.encabezadofactura;
+                        $scope.root.asientosContables = data.obj.asientosContables;
+                        console.log('Respuesta es: ', data.obj);
 
                         if ($scope.root.asientosContables.estado === true) {
-                            $scope.root.asientosContables = data.obj.parametro;
-                            $scope.encabezado = data.obj.parametro.encabezadofactura;
-                            $scope.root.asientosContables.descripcion = data.obj.result.descripcion;
+                            // $scope.encabezado = data.obj.parametro.encabezado;
                             $scope.color_boton = "btn-danger";
                             $scope.iconos = "glyphicon glyphicon-asterisk";
                         } else {
@@ -148,7 +147,7 @@ define(["angular", "js/controllers"
             };
 
             $scope.lista_reportesGenerados = {
-                data: 'root.asientosContables.asientoscontables',
+                data: 'root.asientosContables.detalle',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableHighlighting: true,
@@ -164,69 +163,69 @@ define(["angular", "js/controllers"
                         displayName: "C. Utilidad",
                         cellClass: "txt-center dropdown-button",
                         width: "6%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.codcentroutilidadasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.codcentroutilidadasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'L. Costos',
                         displayName: "Linea Costos",
                         cellClass: "txt-center dropdown-button",
                         width: "7%",
-                        cellTemplate: ' <div class="row">\
+                        cellTemplate: '<div class="row">\
                                                {{row.entity.codlineacostoasiento}} \
                                             </div>'
                     },
                     {
                         field: 'Cuenta', displayName: "Cuenta", cellClass: "txt-center dropdown-button", width: "8%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.codcuentaasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.codcuentaasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'Identificacion',
                         displayName: "Identificacion",
                         cellClass: "txt-center dropdown-button",
                         width: "8%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.identerceroasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.identerceroasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'Valor Base',
                         displayName: "Valor Base",
                         cellClass: "txt-center dropdown-button",
                         width: "10%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.valorbaseasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.valorbaseasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'Valor Credito',
                         displayName: "Valor Credito",
                         cellClass: "txt-center dropdown-button",
                         width: "10%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.valorcreditoasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.valorcreditoasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'Valor Debito',
                         displayName: "Valor Debito",
                         cellClass: "txt-center dropdown-button",
                         width: "10%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.valordebitoasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.valordebitoasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'V. Tasa',
                         displayName: "Valor Tasa",
                         cellClass: "txt-center dropdown-button",
                         width: "6%",
-                        cellTemplate: ' <div class="row">\
-                                               {{row.entity.valortasaasiento}} \
-                                            </div>'
+                        cellTemplate: '<div class="row">\
+                                           {{row.entity.valortasaasiento}} \
+                                       </div>'
                     },
                     {
                         field: 'observacionasiento',
@@ -243,7 +242,6 @@ define(["angular", "js/controllers"
                 termino_busqueda_proveedores: '',
                 lista_productos: []
             };
-
 
             $scope.listar_proveedores = function (termino_busqueda) {
 

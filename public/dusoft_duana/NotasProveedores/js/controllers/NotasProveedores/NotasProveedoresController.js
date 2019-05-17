@@ -329,17 +329,69 @@ define(
                     return $scope.details[key];
                 };
 
+                that.sincronizacionDocumentos = parametros => {
+                    $scope.root.estado = false;
+                    $scope.color_boton = "";
+                    $scope.iconos = "";
+                    $scope.encabezado = {};
+                    $scope.root.asientosContables = {};
+                    const obj = {
+                        session: $scope.session,
+                        data: {
+                            prefijo: parametros.prefijo,
+                            facturaFiscal: parametros.facturaFiscal,
+                            sincronizar: parametros.sincronizar,
+                            servicio: parametros.servicio,
+                            codigoProveedor: $scope.cod_proveedor
+                        }
+                    };
+                    console.log('Objeto antes de Ajax: ', obj);
+
+                    $scope.post(API.NOTAS_PROVEEDORES.SINCRONIZACION_DOCUMENTOS, obj,data => {
+                        if (data.status === 200) {
+                            $scope.root.estado = true;
+                            $scope.root.asientosContables = data.obj.asientosContables;
+                            console.log('Respuesta es: ', data.obj);
+
+                            if ($scope.root.asientosContables.estado === true) {
+                                // $scope.encabezado = data.obj.parametro.encabezado;
+                                $scope.color_boton = "btn-danger";
+                                $scope.iconos = "glyphicon glyphicon-asterisk";
+                            } else {
+                                if (parametros.sincronizar === 1) {
+                                    $scope.root.asientosContables.descripcion = "";
+                                    $scope.color_boton = "btn-success";
+                                    $scope.iconos = "";
+                                }
+                            }
+                            console.log("$scope.root.asientosContables:: ", $scope.root.asientosContables);
+                        } else {
+                            console.log(" data.mensaje", data.msj);
+                            console.log(" data.mensaje", data);
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", data.msj);
+                        }
+                    });
+                };
+
                 $scope.sincronizarNota = (Nota) => {
                     alert('Sincronizando Nota!!');
-                    /*
-                        const obj = {
-                            prefijo: Nota.prefijo,
-                            facturaFiscal: Nota.numero,
-                            sincronizar: Nota.sw,
-                            servicio: Nota.servicio
-                        };
-                        // that.sincronizacionDocumentos(obj);
-                    */
+
+                    $scope.servicioProveedor = false;
+                    $scope.servicioPrefijo = true;
+                    $scope.servicio = 5;
+
+                    let prefijo = $scope.root.prefijo2;
+                    let servicio = $scope.root.servicio;
+
+                    let numero = $scope.root.numero;
+                    const obj = {
+                        prefijo: prefijo.prefijo,
+                        facturaFiscal: numero,
+                        sincronizar: 1,
+                        servicio: $scope.servicio
+                    };
+
+                    that.sincronizacionDocumentos(obj);
                 };
 
                 $scope.verNotasFactura = function(factura){

@@ -16,7 +16,8 @@ define(["angular"], function(angular) {
                 'CREAR_NOTA_TEMPORAL': BASE_URL + '/notasProveedores/crearNotaTemporal',
                 'VER_NOTAS_FACTURA': BASE_URL + '/notasProveedores/verNotasFactura',
                 'IMPRIMIR_NOTA': BASE_URL + '/notasProveedores/imprimirNota',
-                'LISTAR_RETENCIONES_ANUALES': BASE_URL + '/notasProveedores/listarRetencionesAnuales'
+                'LISTAR_RETENCIONES_ANUALES': BASE_URL + '/notasProveedores/listarRetencionesAnuales',
+                'SINCRONIZACION_DOCUMENTOS': BASE_URL + '/SincronizacionDocumentos/sincronizarDocumentos'
             }
         }
     };

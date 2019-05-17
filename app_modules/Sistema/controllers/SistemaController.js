@@ -85,7 +85,7 @@ const limpiarRespuesta = (lineas) => {
     return responseLineas;
 };
 
-
+const promesa = new Promise((resolve, reject) => { resolve(true); });
 
 Sistema.prototype.sshConnection = (req, res) => {
     console.log('In controller "sshConnection"');
@@ -111,7 +111,7 @@ Sistema.prototype.sshConnection = (req, res) => {
             password: "301206."
         };
     } else if (server === 191) {
-        credentialRoot = 'echo 301206. | sudo -S ';
+        credentialRoot = 'echo gear777 | sudo -S ';
         parametros = {
             host: '10.0.2.191',
             user: 'gabriel',
@@ -192,19 +192,21 @@ Sistema.prototype.sshConnection = (req, res) => {
                 for (let k = 0; k < cantidadPalabras; k++) {
                     palabra += palabras[k] + ' '; // El espacio agregado es para luego poder concatenar
                     if (modulo === 'PC') {
-                        if (!(server === 191 && j === 3 && k === 5)
-                            && !(server === 216 && j === 2 && k === 0)
-                            && !(server === 216 && j === 4 && k === 5)
-                            && !(server === 229 && j === 2 && k === 0)
-                            && !(server === 229 && j === 4 && k === 5))
+                        if (!(server === 117 && (j === 3 && k === 5))
+                            && !(server === 191 && (j === 3 && k === 5))
+                            && !(server === 216 && ((j === 2 && k === 0) || (j === 4 && k === 5)))
+                            && !(server === 229 && ((j === 2 && k === 0) || (j === 4 && k === 5))))
                         {   // En caso de "false" concatenará la palabra
                             palabra = palabra.trim();
-                            if ((server === 191 && j > 3 && k === 0)
-                                || (server === 216 && j > 4 && k === 0)
-                                || (server === 229 && j > 4 && k === 0)) { // Agrega dos puntos a la primera palabra de la linea 4
+                            if (((server === 117 && j > 3)
+                                || (server === 191 && j > 3)
+                                || (server === 216 && j > 4 && j !== 6 && j !== 10)
+                                || (server === 229 && j > 4))
+                                && k === 0)
+                            { // Agrega dos puntos a la primera palabra de la linea 4
                                 palabra = palabra + ':';
                             }
-                            if(j === 0 && palabrasFiltradas.length === 0){
+                            if (j === 0 && palabrasFiltradas.length === 0) {
                                 palabrasFiltradas.push('');
                             }
                             palabrasFiltradas.push(palabra);
@@ -216,7 +218,6 @@ Sistema.prototype.sshConnection = (req, res) => {
                             if (k === 0) { // Agrega dos puntos a la primera palabra de cada linea
                                 palabra = palabra + ':';
                             }
-                            // console.log('Palabra ESSSSSS: ', palabra);
                             palabrasFiltradas.push(palabra);
                             palabra = '';
                         }
@@ -244,18 +245,21 @@ Sistema.prototype.sshConnection = (req, res) => {
                             if (j === 0) {
                                 resultadoArray[0].title = 'Memoria Ram & Swap';
                                 resultadoArray[0].header = palabrasFiltradas;
-                            } else if ((server === 191 && j < 3)
+                            } else if ((server === 117 && j < 3)
+                                || (server === 191 && j < 3)
                                 || (server === 216 && j < 4)
                                 || (server === 229 && j < 4))
                             {
                                 resultadoArray[0].rows.push(palabrasFiltradas);
-                            } else if ((server === 191 && j === 3)
+                            } else if ((server === 117 && j === 3)
+                                || (server === 191 && j === 3)
                                 || (server === 216 && j === 4)
                                 || (server === 229 && j === 4))
                             {
                                 resultadoArray[1].title = 'Disco Duro';
                                 resultadoArray[1].header = palabrasFiltradas;
-                            } else if ((server === 191 && j > 3)
+                            } else if ((server === 117 && j > 3)
+                                || (server === 191 && j > 3)
                                 || (server === 216 && j > 4)
                                 || (server === 229 && j > 4)) {
                                 resultadoArray[1].rows.push(palabrasFiltradas);
@@ -269,16 +273,18 @@ Sistema.prototype.sshConnection = (req, res) => {
                         resultadoArray[0].rows.push(palabrasFiltradas);
                         palabrasFiltradas = [];
                     } else if (modulo === 'PM2') {
-                        if((j !== cantidadLineas-2) && (j !== cantidadLineas-1)) {
+                        if ((j !== cantidadLineas-2) && (j !== cantidadLineas-1)) {
                             if (accion === 'status') {
                                 if ((server === 117 && j === 1)
                                     || (server === 191 && j === 1)
                                     || (server === 216 && j === 1)
-                                    || server === 229 && j === 1) {
+                                    || (server === 229 && j === 1))
+                                {
                                     resultadoArray[0].header = palabrasFiltradas;
-                                } else if ((server === 191 && j === 2)
-                                    || (server === 191 && j > 2)
-                                    || (server === 191 && j !== 7 && j !== 8))
+                                } else if ((server === 117 && (j > 2 && j !== 7 && j !== 8))
+                                    || (server === 191 && (j > 2))
+                                    || (server === 216 && (j > 2 && j !== 7 && j !== 8))
+                                    || (server === 229 && (j > 2 && j !== 7 && j !== 8)))
                                 {
                                     resultadoArray[0].rows.push(palabrasFiltradas);
                                 }
@@ -304,20 +310,23 @@ Sistema.prototype.sshConnection = (req, res) => {
         }).then(result => {
             that.e_sistema.enviarInformacion(retorno);
         }).catch(err => {
-            console.log("error generado ", err);
-        }).done();
+            console.log("Error generado ", err);
+        });
 };
 
 const __asistenteSSH = (parametros, callback) => {
-    const host = parametros.user + '@' + parametros.host;
-    const opts = { username: parametros.user, password: parametros.password };
-    const seq = G.sequest.connect(host, opts);
-    seq(parametros.sentencia, (err, stdout) => {
-        // console.log('parametros.sentencia: ', parametros.sentencia);
-        // console.log("respuesta: \n", stdout, '\n'); // Respuesta del servidor
-        if (err !== undefined || stdout === undefined) { callback(stdout); }
-        else { callback(false, stdout); }
-        seq.end() // will keep process open if you don't end it
+    let host = parametros.user + '@' + parametros.host;
+    let opts = { username: parametros.user, password: parametros.password };
+    let seq = G.sequest.connect(host, opts);
+
+    seq(parametros.sentencia, (err, response) => {
+        if (err === undefined) {
+            console.log("Respuesta: ", response); // Respuesta del servidor
+            callback(false, response);
+        } else {
+            callback(err);
+        }
+        seq.end(); // will keep process open if you don't end it
     });
 };
 

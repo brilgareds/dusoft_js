@@ -45305,7 +45305,8 @@ define('url',["angular"], function(angular) {
                 'CREAR_NOTA_TEMPORAL': BASE_URL + '/notasProveedores/crearNotaTemporal',
                 'VER_NOTAS_FACTURA': BASE_URL + '/notasProveedores/verNotasFactura',
                 'IMPRIMIR_NOTA': BASE_URL + '/notasProveedores/imprimirNota',
-                'LISTAR_RETENCIONES_ANUALES': BASE_URL + '/notasProveedores/listarRetencionesAnuales'
+                'LISTAR_RETENCIONES_ANUALES': BASE_URL + '/notasProveedores/listarRetencionesAnuales',
+                'SINCRONIZACION_DOCUMENTOS': BASE_URL + '/SincronizacionDocumentos/sincronizarDocumentos'
             }
         }
     };
@@ -52670,9 +52671,9 @@ define(
 
                         $scope.post(API.NOTAS_PROVEEDORES.LISTAR_NOTAS, obj, data => {
 
-                            if(data.status === 200){
+                            if(data.status === 200) {
                                 $scope.root.listarNotas = data.obj.notasProveedor;
-                                if($scope.root.listarNotas.length === 0){
+                                if($scope.root.listarNotas.length === 0) {
                                     alert('No se encontro ninguna factura!');
                                 }else{
                                     for(var nota of $scope.root.listarNotas) {
@@ -52850,17 +52851,69 @@ define(
                     return $scope.details[key];
                 };
 
+                that.sincronizacionDocumentos = parametros => {
+                    $scope.root.estado = false;
+                    $scope.color_boton = "";
+                    $scope.iconos = "";
+                    $scope.encabezado = {};
+                    $scope.root.asientosContables = {};
+                    const obj = {
+                        session: $scope.session,
+                        data: {
+                            prefijo: parametros.prefijo,
+                            facturaFiscal: parametros.facturaFiscal,
+                            sincronizar: parametros.sincronizar,
+                            servicio: parametros.servicio,
+                            codigoProveedor: $scope.cod_proveedor
+                        }
+                    };
+                    console.log('Objeto antes de Ajax: ', obj);
+
+                    $scope.post(API.NOTAS_PROVEEDORES.SINCRONIZACION_DOCUMENTOS, obj,data => {
+                        if (data.status === 200) {
+                            $scope.root.estado = true;
+                            $scope.root.asientosContables = data.obj.asientosContables;
+                            console.log('Respuesta es: ', data.obj);
+
+                            if ($scope.root.asientosContables.estado === true) {
+                                // $scope.encabezado = data.obj.parametro.encabezado;
+                                $scope.color_boton = "btn-danger";
+                                $scope.iconos = "glyphicon glyphicon-asterisk";
+                            } else {
+                                if (parametros.sincronizar === 1) {
+                                    $scope.root.asientosContables.descripcion = "";
+                                    $scope.color_boton = "btn-success";
+                                    $scope.iconos = "";
+                                }
+                            }
+                            console.log("$scope.root.asientosContables:: ", $scope.root.asientosContables);
+                        } else {
+                            console.log(" data.mensaje", data.msj);
+                            console.log(" data.mensaje", data);
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", data.msj);
+                        }
+                    });
+                };
+
                 $scope.sincronizarNota = (Nota) => {
                     alert('Sincronizando Nota!!');
-                    /*
-                        const obj = {
-                            prefijo: Nota.prefijo,
-                            facturaFiscal: Nota.numero,
-                            sincronizar: Nota.sw,
-                            servicio: Nota.servicio
-                        };
-                        // that.sincronizacionDocumentos(obj);
-                    */
+
+                    $scope.servicioProveedor = false;
+                    $scope.servicioPrefijo = true;
+                    $scope.servicio = 5;
+
+                    let prefijo = $scope.root.prefijo2;
+                    let servicio = $scope.root.servicio;
+
+                    let numero = $scope.root.numero;
+                    const obj = {
+                        prefijo: prefijo.prefijo,
+                        facturaFiscal: numero,
+                        sincronizar: 1,
+                        servicio: $scope.servicio
+                    };
+
+                    that.sincronizacionDocumentos(obj);
                 };
 
                 $scope.verNotasFactura = function(factura){
@@ -52885,7 +52938,6 @@ define(
 
                 $scope.imprimir_pdf = (nota, tipo) => {
                     nota.tipoNota = tipo;
-                    console.log('nota: ', nota);
                     let url = '';
                     nota.retencionAnual = $scope.NotaTemporal.retencionAnual;
                     if($scope.session.bodega === '06') {
@@ -52905,22 +52957,26 @@ define(
                         }
                     };
                     let request = new XMLHttpRequest();
-                    request.open('HEAD', url, false);
-                    request.send();
-                    if(request.status === 200) {
-                        window.open(url, '_blank');
-                    } else {
-                        $scope.post(API.NOTAS_PROVEEDORES.IMPRIMIR_NOTA, obj, data => {
-                            if (data.status === 200) {
-                                modalInstance.close();
-                                $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, true, false);
-                                window.open(data.obj, '_blank');
-                                // console.log('la url final es: ', data.obj);
-                            }else{
-                                console.log('Error en Ajax, status: ', data);
+                    request.onreadystatechange = function() {
+                        if (this.readyState === this.DONE) {
+                            if(this.status === 200) {
+                                window.open(url, '_blank');
+                            } else {
+                                $scope.post(API.NOTAS_PROVEEDORES.IMPRIMIR_NOTA, obj, data => {
+                                    if (data.status === 200) {
+                                        modalInstance.close();
+                                        $scope.crearNotaTemporal($scope.ultimaFacturaAbierta, true, false);
+                                        window.open(data.obj, '_blank');
+                                        // console.log('la url final es: ', data.obj);
+                                    } else {
+                                        console.log('Error en Ajax, status: ', data);
+                                    }
+                                });
                             }
-                        });
-                    }
+                        }
+                    };
+                    request.open('HEAD', url);
+                    request.send();
                 };
 
                 $scope.listarNotas = {
@@ -52931,12 +52987,11 @@ define(
                     enableRowSelection: false,
                     enableColumnResize: true,
                     columnDefs: [
-                        {field: 'facturaNumero', displayName: "Factura", width: "12%"},
-                        {field: 'documentoTipo', displayName: 'Tipo Doc.', width: "7%"},
-                        {field: 'documentoId', displayName: 'Documento', width: "9%"},
-                        {field: 'proveedorNombre', displayName: 'Nombre', width: "12%"},
-                        {field: 'facturaObservacion', displayName: 'Observaciones', width: "17%"},
-                        {field: 'fecha', displayName: 'Fecha', width: "12%"},
+                        {field: 'facturaNumero', displayName: "Factura", width: "10%"},
+                        {field: 'proveedorNombre', displayName: 'Proveedor', width: "12%"},
+                        {field: 'documento', displayName: 'Documento', width: "12%"},
+                        {field: 'facturaObservacion', displayName: 'Observaciones', width: "21%"},
+                        {field: 'fecha', displayName: 'Fecha', width: "13%"},
                         {field: 'facturaValorString', displayName: 'Valor Factura', width: "11%"},
                         {field: 'facturaSaldoString', displayName: 'Saldo', width: "11%"},
                         {displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity)" class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;"></i></div>'},

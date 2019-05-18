@@ -75,7 +75,8 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
                     /*e.pais " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
                     d.departamento " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
                     c.municipio " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
-                    */a.nombre_conductor " + G.constants.db().LIKE + "'%" + termino_busqueda + "%')"))
+                    */a.nombre_conductor " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
+                    a.observacion " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' )"))
             .orderBy('a.id', 'desc');
 
     query.then(function (resultado) {

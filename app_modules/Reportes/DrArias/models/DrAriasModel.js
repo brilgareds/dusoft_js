@@ -216,7 +216,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                     })
             .where(function () {
                 this.andWhere(G.knex.raw("a.empresa_id in ('M6','H2')"))
-                    .andWhere(G.knex.raw("c.fecha_registro is not null"))
+                   // .andWhere(G.knex.raw("c.fecha_registro is not null"))
 
                     if(obj.filtro!== undefined && obj.filtro !== "" ){
                      this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
@@ -224,7 +224,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
              }) 
            }).as("b").orderBy(filtro, orden);
            
-
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -439,7 +439,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
 ";//rotacion_diaria_medipol
     
     var query = G.knex.raw(sql);
-    console.log(G.sqlformatter.format(query.toString())); 
+//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
       callback(false, resultado.rows);
     }). catch (function(err) {
@@ -585,7 +585,7 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 order by 1,3 ;";
     
      var query = G.knex.raw(sql);
-     console.log(G.sqlformatter.format(query.toString())); 
+//     console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
         G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
@@ -1377,17 +1377,112 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 
 };
 
+//function sanear_string(str)
+//{
+// 
+//    str = str.trim();
+// 
+//    str = str.replace(
+//        array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
+//        array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A')
+//    );
+// 
+//     str = str.replace(
+//        array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
+//        array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E')
+//    );
+// 
+//    str = str.replace(
+//        array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
+//        array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I')
+//    );
+// 
+//     str = str.replace(
+//        array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
+//        array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O')
+//    );
+// 
+//     str = str.replace(
+//        array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
+//        array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U')
+//    );
+// 
+//    string = str_replace(
+//        array('ñ', 'Ñ', 'ç', 'Ç'),
+//        array('n', 'N', 'c', 'C',),
+//        string
+//    );
+// 
+//    //Esta parte se encarga de eliminar cualquier caracter extraño
+//     str = str.replace(
+//        array("\", "¨", "º", "-", "~",
+//             "#", "@", "|", "!", """,
+//             "·", "", "%", "&", "/",
+//             "(", ")", "?", "'", "¡",
+//             "¿", "[", "^", "<code>", "]",
+//             "+", "}", "{", "¨", "´",
+//             ">", "< ", ";", ",", ":",
+//             ".", " "),
+//        ''
+//    );
+// 
+// 
+//    return str;
+//}
+
+function getCleanedString(cadena){
+   // Definimos los caracteres que queremos eliminar
+   var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.ÃƒÆ’Ã¢â¬Å“�€œ";
+
+   // Los eliminamos todos
+   for (var i = 0; i < specialChars.length; i++) {
+       cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
+   }   
+
+   // Lo queremos devolver limpio en minusculas
+   cadena = cadena.toLowerCase();
+
+   // Quitamos espacios y los sustituimos por _ porque nos gusta mas asi
+//   cadena = cadena.replace(/ /g," ");
+
+   // Quitamos acentos y "ñ". Fijate en que va sin comillas el primer parametro
+   cadena = cadena.replace(/á/gi,"a");
+   cadena = cadena.replace(/é/gi,"e");
+   cadena = cadena.replace(/í/gi,"i");
+   cadena = cadena.replace(/ó/gi,"o");
+   cadena = cadena.replace(/ú/gi,"u");
+   cadena = cadena.replace(/ñ/gi,"n");
+   return cadena;
+}
+
 DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
     
   
    if (datos.producto.search("�") !== -1){
+       console.log("****datos.producto",datos.producto);
        datos.producto = datos.producto.replace(/�/g, "A");
        console.log("entrpo pro",datos.producto);
    }
+   if (datos.producto.search("ÃƒÆ’Ã¢â") !== -1){
+       console.log("****datos.producto",datos.producto);
+       datos.producto = datos.producto.replace(/ÃƒÆ’Ã¢â/g, "A");
+       console.log("entrpo pro",datos.producto);
+   }
+   if (datos.producto.search("‚¬Å“") !== -1){
+       console.log("****datos.producto",datos.producto);
+       datos.producto = datos.producto.replace(/‚¬Å“/g, "A");
+       console.log("entrpo pro",datos.producto);
+   }
    if (datos.molecula.search("�") !== -1){
-        datos.molecula = datos.molecula.replace(/�/g, "A");
+       datos.molecula = datos.molecula.replace(/�/g, "A");
        console.log("entrpo mole",datos.molecula);
    }
+   if (datos.laboratorio.search("�") !== -1){
+       datos.laboratorio = datos.laboratorio.replace(/�/g, "A");
+       console.log("entrpo mole",datos.laboratorio);
+   }   
+   
+   datos.producto=getCleanedString(datos.producto);
 
     var query = G.knex("rotacion_diaria_medipol").insert({
                     empresa_id : datos.empresa_id,
@@ -1411,7 +1506,7 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
      callback(false, resultado);
 
     }). catch (function(err) {
-        
+       console.log(G.sqlformatter.format(query.toString()));  
       callback(err);
     }).done();
 };

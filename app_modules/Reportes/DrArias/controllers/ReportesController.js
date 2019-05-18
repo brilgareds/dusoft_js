@@ -416,7 +416,33 @@ console.log("Bodegas:::::::: ",args.data.bodegas);
 };
 
 function __rotacionesBodegas(that, bodega, callback) {
+    
+    if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
+        console.log("bodega:::****  ",bodega);
+        G.Q.nfcall(__InsertarMedipol,that,2,bodega).then(function (respuesta) {
+           console.log("Respuesta ****",respuesta);
+            return  G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega);
+        
+        }).then(function (result) {
+            callback(result);
+        }).fail(function (err) {
+           callback(err);
+        }).done(function(){
 
+        });
+    }else{
+        
+        G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega).then(function (respuesta) {
+            callback(respuesta);
+        }).fail(function (err) {
+           callback(err);
+        }).done(function(){
+
+        });        
+    }
+}
+    
+function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {    
     var name;
     var archivoName;
     var today = new Date();
@@ -425,7 +451,8 @@ function __rotacionesBodegas(that, bodega, callback) {
     var controlRotacionId;
     var listarPlanes;
     var farmacias;
-console.log("bodega:::  ",bodega);
+    var infoResult;
+    
     G.Q.ninvoke(that.m_drArias, 'guardarControlRotacion', bodega).then(function (respuesta) {
 
         bodega.controlRotacionId = respuesta[0]; 
@@ -525,7 +552,17 @@ console.log("bodega:::  ",bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
 
     }).then(function (resultados) {
-        callback(false, resultados);
+        
+        infoResult=resultados;
+        
+//        if(bodega.empresa!=='03' && bodega.empresa!=='FD'){ 
+//           
+//        }
+        
+        return true;
+        
+    }).then(function (resultados) {
+        callback(false, infoResult);
 
     }).fail(function (err) {
         bodega.swEstadoCorreo = 4;
@@ -555,7 +592,8 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
        
         //that.io.sockets.emit('onNotificarRotacion', notificacion);  
         //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
-
+console.log("bodega************* ",bodega);
+throw {msj:"Error"};return;
         return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);
 
     }).then(function (respuesta) {
@@ -657,6 +695,162 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
 
     });
 }
+
+
+/*
+ * @Author: Andres M. Gonzalez
+ * +Descripcion: funcion para realizar el insert el dia n medipol
+ * @param {type} callback
+ * @returns {void} 
+ */
+function __InsertarMedipol(that,dias,bodega,callback){
+    
+    if(dias === 1){
+       callback(false,true);
+       return true; 
+    }
+//    console.log("Dia :",dias);
+//    var formFecha = G.moment().subtract(dias, 'days');//G.moment().format();
+    var control = G.moment().format('DD/MM/YYYY');
+//    var fecha = formFecha.format('YYYY-MM-DD');
+    var lengthDataWS = -1;
+    
+    var data ={
+       codigo_farmacia : bodega.bodega, 
+       empresa : bodega.empresa, 
+       centroUtilidad : bodega.centroUtilidad, 
+       control : control
+    };
+    console.log("Fechas::: ",data);
+    G.Q.nfcall(__wsMedipol,data).then(function(result){ 
+       console.log("result.resultado.length",result.resultado.length); 
+     lengthDataWS = result.resultado.length;
+     
+     return G.Q.nfcall(__InsertarProductosMedipol,that,data,result.resultado ,0);
+    
+    }).then(function(datos){
+       if(datos !== lengthDataWS){
+           console.log("Diferencia en el ws y lo que se inserto en db",datos,lengthDataWS);
+           console.log("Diferencia en el ws y lo que se inserto en db");
+       }
+     dias--;
+     __InsertarMedipol(that,dias,bodega,callback);
+     return;
+    
+    }).fail(function(err){
+        console.log("Error __InsertarMedipol", err);
+        callback(false);
+    });
+}
+
+/*
+ * @Author: Andres M. Gonzalez
+ * +Descripcion: funcion para realizar el insert el dia n medipol
+ * @param {type} callback
+ * @returns {void} 
+ */
+function __InsertarProductosMedipol(that,data,productos,index,callback){
+    var producto = productos[index];
+
+    if(!producto){
+        console.log("sale");
+        callback(false,index);//-1
+        return;
+    }
+    
+    producto = producto.split("@");
+
+        
+        
+    var parametros = { 
+            empresa_id : data.empresa,
+            bodega : data.codigo_farmacia,
+            nom_bodega : producto[0],
+            codigo_producto : producto[1],
+            producto : producto[2],
+            laboratorio : producto[6],
+            molecula : producto[4],
+            cantidad_total_despachada : producto[11],
+            existencia_farmacia : producto[14],
+            existencia_bd : producto[13],
+            mes : '2',
+            fecha : data.control,
+            centro_utilidad : data.centroUtilidad,
+            nivel : '0',
+            tipo_producto : 'Normales'
+    };
+//    var parametros = { 
+//        empresa_id : producto[0],
+//        bodega : producto[1],
+//        codigo_producto : producto[2],
+//        producto : producto[3],
+//        laboratorio : producto[4],
+//        molecula : producto[5],
+//        cantidad_total_despachada : producto[6],
+//        existencia_farmacia : producto[7],
+//        existencia_bd : producto[8],
+//        mes : '2',
+//        fecha : data.control,
+//        centro_utilidad : producto[1],
+//        nivel : '0',
+//        tipo_producto : 'Normales'
+//    };
+    
+    G.Q.ninvoke(that.m_drArias,"insertRotacionMedipol",parametros).then(function(result){ 
+        
+        index++;
+        __InsertarProductosMedipol(that,data,productos,index,callback);
+         
+    }).fail(function(err){
+            console.log("Error __InsertarProctosMedipol", producto);
+            console.log("Error __InsertarProctosMedipol", err);
+            return true;
+    });
+}
+
+/*
+ * @Author: Andres M. Gonzalez
+ * +Descripcion: funcion para actualizar tabla rotacion_diaria_medipol
+ * @param {type} callback
+ * @returns {void} 
+ */
+function __wsMedipol(data,callback){
+    
+    var url = G.constants.WS().MEDIPOL.ROTACION;
+    var obj  = {};
+    
+    var parametros  = {
+        codigo_farmacia: data.codigo_farmacia,
+        control: data.control
+    };
+
+    obj.error = false;
+
+    G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+         
+        return G.Q.ninvoke(client, "devolver_plano_rotacion_bimensual_farmacia", parametros);
+
+    }).spread(function(result, raw, soapHeader) {
+
+        if (!result.return["$value"]) {
+            throw {msj: "Se ha generado un error", status: 403, obj: {}};
+        } else {
+            obj.resultado = result.return["$value"].split("\n");
+        }
+
+    }).then(function() {
+        
+        callback(false, obj);
+
+    }).fail(function(err) {
+        console.log("Error __wsMedipol ", err);
+        obj.error = true;
+        obj.tipo = '0';
+        callback(err);
+
+    }).done();
+};
+
 
 function __creaExcel(data, callback) {
     

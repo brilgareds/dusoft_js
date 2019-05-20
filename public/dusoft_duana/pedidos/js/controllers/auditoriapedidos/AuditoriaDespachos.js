@@ -296,6 +296,7 @@ define(["angular", "js/controllers",
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascripts:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
                                                 <li><a href="javascripts:void(0);" ng-click="imprimirDespacho(row.entity)" >Reporte</a></li>\
+                                                <li><a href="javascripts:void(0);" ng-click="imprimirPlanilla(row.entity)" >Planilla Despacho</a></li>\
                                                 <li><a href="javascripts:void(0);" ng-click="detalleDespachoAprobado(row.entity)" >Detalle</a></li>\
                                                 <li><a href="javascripts:void(0);" ng-click="sincronizarDocumento(row.entity)" >Sincronizar</a></li>\
                                             </ul>\
@@ -367,6 +368,35 @@ define(["angular", "js/controllers",
 
             };
 
+            /*
+             * @Author: German Galvis
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: handler para imprimir la planilla despacho de un efc
+             */
+            $scope.imprimirPlanilla = function (pedido) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        empresa: pedido.empresaId,
+                        numero: pedido.numero,
+                        prefijo: pedido.prefijo
+                    }
+                };
+                
+                Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_PLANILLA_DESPACHO, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.planillas_despachos.nombre_reporte;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+
+                });
+
+            };
+            
             /*
              * @author Cristian Ardila
              * @fecha 04/02/2016

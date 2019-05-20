@@ -456,7 +456,7 @@ function __asignarResponsablesPedido(req,that, callback) {
     pedidos.forEach(function(numero_pedido) {
         
          G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
-            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
+            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '5' ||
                 cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' || cabecera_pedido[0].estado_actual_pedido === '1') {
                 return  G.Q.ninvoke(that.m_pedidos_farmacias,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
                 

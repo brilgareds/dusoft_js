@@ -1379,59 +1379,6 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 
 };
 
-//function sanear_string(str)
-//{
-// 
-//    str = str.trim();
-// 
-//    str = str.replace(
-//        array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
-//        array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A')
-//    );
-// 
-//     str = str.replace(
-//        array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
-//        array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E')
-//    );
-// 
-//    str = str.replace(
-//        array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
-//        array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I')
-//    );
-// 
-//     str = str.replace(
-//        array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
-//        array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O')
-//    );
-// 
-//     str = str.replace(
-//        array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
-//        array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U')
-//    );
-// 
-//    string = str_replace(
-//        array('ñ', 'Ñ', 'ç', 'Ç'),
-//        array('n', 'N', 'c', 'C',),
-//        string
-//    );
-// 
-//    //Esta parte se encarga de eliminar cualquier caracter extraño
-//     str = str.replace(
-//        array("\", "¨", "º", "-", "~",
-//             "#", "@", "|", "!", """,
-//             "·", "", "%", "&", "/",
-//             "(", ")", "?", "'", "¡",
-//             "¿", "[", "^", "<code>", "]",
-//             "+", "}", "{", "¨", "´",
-//             ">", "< ", ";", ",", ":",
-//             ".", " "),
-//        ''
-//    );
-// 
-// 
-//    return str;
-//}
-
 function getCleanedString(cadena){
    // Definimos los caracteres que queremos eliminar
    var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.ÃƒÆ’Ã¢â¬Å“�€œ";

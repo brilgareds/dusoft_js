@@ -7,9 +7,9 @@ var EmpresasModel = function(centros_utilidad, bodegas) {
 //TEMPORALMENT SE AGREGA FD HARDCODED
 EmpresasModel.prototype.listar_empresas = function(callback) {
 
-    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE (sw_tipo_empresa= :1 or empresa_id = :2 or empresa_id = :4 ) AND sw_activa= :3 ";
+    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE (sw_tipo_empresa= :1 or empresa_id = :2 or empresa_id = :4 or empresa_id = :5 ) AND sw_activa= :3 ";
     
-    G.knex.raw(sql, {1:'0', 2:'FD', 3:'1', 4:'HV'}).
+    G.knex.raw(sql, {1:'0', 2:'FD', 3:'1', 4:'HV', 5:'05'}).
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){

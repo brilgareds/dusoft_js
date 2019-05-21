@@ -75,7 +75,8 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
                     /*e.pais " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
                     d.departamento " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
                     c.municipio " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
-                    */a.nombre_conductor " + G.constants.db().LIKE + "'%" + termino_busqueda + "%')"))
+                    */a.nombre_conductor " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' or\
+                    a.observacion " + G.constants.db().LIKE + "'%" + termino_busqueda + "%' )"))
             .orderBy('a.id', 'desc');
 
     query.then(function (resultado) {
@@ -164,10 +165,10 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('b.farmacia_id', obj.farmacia_id);
         this.andWhere('b.centro_utilidad', obj.centro_utilidad_id);
-        this.whereIn('b.estado', [2, 3, 8, 9]);
         this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_farmacias b )"));
         if (obj.estadoListarValidacionDespachos === 1) {
             this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from aprobacion_despacho_planillas_d b )"));
+            this.whereIn('b.estado', [2, 3, 8, 9]);
         }
         this.andWhere(G.knex.raw("( a.prefijo || ' ' || a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \
                     a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \

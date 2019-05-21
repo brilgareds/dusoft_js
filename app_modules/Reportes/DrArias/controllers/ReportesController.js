@@ -330,6 +330,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
         item.usuarioId = usuarioId;
         item.swEstadoCorreo = '0';
         item.logError = '';
+        item.fechaToday = fechaToday;
 
         __rotacionesBodegas(that, item, function (data) {
 
@@ -360,7 +361,6 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-console.log("Bodegas:::::::: ",args.data.bodegas);
     var idsRemitentes = usuarioId + ',';
     remitentes.forEach(function(item, index){
         idsRemitentes += item.id_usuario + ',';
@@ -417,10 +417,8 @@ console.log("Bodegas:::::::: ",args.data.bodegas);
 
 function __rotacionesBodegas(that, bodega, callback) {
     
-    if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
-        console.log("bodega:::****  ",bodega);
+    if(bodega.empresa!=='03' && bodega.empresa!=='FD'){   
         G.Q.nfcall(__InsertarMedipol,that,2,bodega).then(function (respuesta) {
-           console.log("Respuesta ****",respuesta);
             return  G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega);
         
         }).then(function (result) {
@@ -493,8 +491,12 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         farmacias=respuesta;
    
         if(bodega.bodega!=='03'){
-            name = "Bodega: " + listarPlanes[0].nom_bode;
-            archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
+            var complemento = "MAGISTERIO";
+            if(bodega.empresa!=='03' && bodega.empresa!=='FD'){        
+             complemento="";
+            }
+            name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
+            archivoName = complemento+"_"+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
             return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
@@ -509,6 +511,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         resultados.name = name;
         
         if(bodega.bodega!=='03'){
+            
             return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
         }else{
             return G.Q.nfcall(__creaExcelFarmacias, resultados,farmacias);
@@ -555,9 +558,9 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         
         infoResult=resultados;
         
-//        if(bodega.empresa!=='03' && bodega.empresa!=='FD'){ 
-//           
-//        }
+        if(bodega.empresa!=='03' && bodega.empresa!=='FD'){ 
+           return G.Q.ninvoke(that.m_drArias, 'eliminarRotacionMedipol', bodega); 
+        }
         
         return true;
         
@@ -572,7 +575,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
             callback(err);
         });
 
-        console.log("error controller __rotacionesBodegas ", err);
+        console.log("error controller __rotacionesBodegasGeneracionExcel ", err);
     }).done();
 }
 
@@ -622,8 +625,12 @@ throw {msj:"Error"};return;
         
          farmacias=respuesta;
         if(bodega.bodega!=='03'){
-            name = "Bodega: " + listarPlanes[0].nom_bode;
-            archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
+            var complemento = "MAGISTERIO - ";
+            if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
+             complemento="";
+            }
+            name = "Bodega: "+complemento+ listarPlanes[0].nom_bode;
+            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
             return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
@@ -719,7 +726,8 @@ function __InsertarMedipol(that,dias,bodega,callback){
        codigo_farmacia : bodega.bodega, 
        empresa : bodega.empresa, 
        centroUtilidad : bodega.centroUtilidad, 
-       control : control
+       control : control,
+       fechaToday: bodega.fechaToday
     };
     console.log("Fechas::: ",data);
     G.Q.nfcall(__wsMedipol,data).then(function(result){ 
@@ -760,52 +768,40 @@ function __InsertarProductosMedipol(that,data,productos,index,callback){
     
     producto = producto.split("@");
 
-        
-        
-    var parametros = { 
-            empresa_id : data.empresa,
-            bodega : data.codigo_farmacia,
-            nom_bodega : producto[0],
-            codigo_producto : producto[1],
-            producto : producto[2],
-            laboratorio : producto[6],
-            molecula : producto[4],
-            cantidad_total_despachada : producto[11],
-            existencia_farmacia : producto[14],
-            existencia_bd : producto[13],
-            mes : '2',
-            fecha : data.control,
-            centro_utilidad : data.centroUtilidad,
-            nivel : '0',
-            tipo_producto : 'Normales'
-    };
-//    var parametros = { 
-//        empresa_id : producto[0],
-//        bodega : producto[1],
-//        codigo_producto : producto[2],
-//        producto : producto[3],
-//        laboratorio : producto[4],
-//        molecula : producto[5],
-//        cantidad_total_despachada : producto[6],
-//        existencia_farmacia : producto[7],
-//        existencia_bd : producto[8],
-//        mes : '2',
-//        fecha : data.control,
-//        centro_utilidad : producto[1],
-//        nivel : '0',
-//        tipo_producto : 'Normales'
-//    };
-    
-    G.Q.ninvoke(that.m_drArias,"insertRotacionMedipol",parametros).then(function(result){ 
-        
+    if(!(producto[11] === 0  && producto[14] === 0  && producto[13] === 0)){    
+
+        var parametros = { 
+                empresa_id : data.empresa,
+                bodega : data.codigo_farmacia,
+                nom_bodega : data.nombreBodega,
+                codigo_producto : producto[1],
+                producto : producto[2],
+                laboratorio : producto[6],
+                molecula : producto[4],
+                cantidad_total_despachada : producto[11],
+                existencia_farmacia : producto[14],
+                existencia_bd : producto[13],
+                mes : '2',
+                fecha : data.fechaToday,
+                centro_utilidad : data.centroUtilidad,
+                nivel : '0',
+                tipo_producto : 'Normales'
+        };
+
+        G.Q.ninvoke(that.m_drArias,"insertRotacionMedipol",parametros).then(function(result){ 
+
+            index++;
+            __InsertarProductosMedipol(that,data,productos,index,callback);
+
+        }).fail(function(err){
+                console.log("Error __InsertarProctosMedipol", producto);
+                console.log("Error __InsertarProctosMedipol", err);
+                return true;
+        });
+    }else{
         index++;
         __InsertarProductosMedipol(that,data,productos,index,callback);
-         
-    }).fail(function(err){
-            console.log("Error __InsertarProctosMedipol", producto);
-            console.log("Error __InsertarProctosMedipol", err);
-            return true;
-    });
+    }
 }
 
 /*
@@ -971,18 +967,10 @@ function __organizaRotacion(index, data, resultado, callback) {
 
     var mxm = resultColumna.totalStock / resultColumna.promedioMes;
 
-    var mayor5 = resultColumna.totalStock > 5;
-
-
-var promedio_dia= (((resultColumna.promedioMes/30)*60)-resultColumna.totalStock);
-//console.log("promedio_dia ",promedio_dia);
-var mxm = resultColumna.totalStock/resultColumna.promedioMes;
-//console.log("mxm ",mxm);
-var mayor5 = resultColumna.totalStock>5;
-//console.log("mayor5 ",mayor5);
-
+    var mayor5 = resultColumna.totalStock >= 5;
 
     resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
+    resultColumna.color = (resultColumna.color === "ROJO" && resultColumna.promedioMes === 0 && resultColumna.totalStock < 10) ? "N/A" : resultColumna.color;
 
     resultado.push(resultColumna);
 
@@ -1022,7 +1010,7 @@ function __organizaRotacionFarmacia(index, data, resultado, callback) {
         
         var mayor5 = (resultColumna.totalStockFarmacias+resultColumna.stockBodega)>5;
     //    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
- 
+
 //        resultColumna.color = (color <= 0 && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
 //        resultColumna.color = ( color <= 0 && mayor5 === true && (control >= 5 || control === Infinity))? "ROJO" : "N/A";
         resultColumna.color = ( (control >= 5 || control === Infinity))? "ROJO" : "N/A";

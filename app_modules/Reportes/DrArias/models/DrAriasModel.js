@@ -135,7 +135,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
     }
     var columna2 = [ 
         "b.descripcion as zona",
-        "a.descripcion as nombre_bodega",
+        G.knex.raw("'MAGISTERIO - ' || a.descripcion as nombre_bodega"), 
         "a.empresa_id",
         "a.centro_utilidad",
         "a.bodega",
@@ -381,6 +381,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) \
             order by 1,5 \
             )union(\
+                select * from (\
                       select\
                             periodo,\
                             farmacia,\
@@ -434,6 +435,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                       and a.bodega =  '"+obj.bodega+"'\
                       group by 1,2,3,4,5,6,7,9\
                     ) as a\
+                    ) as a where stock_farmacia > 0 or stock_bodega > 0 or cantidad_total_despachada > 0\
                 )\
             ) as a   \
 ";//rotacion_diaria_medipol
@@ -454,7 +456,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
  * @fecha 2016-06-17
  */
 DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
-    console.log("rotacionFarmaciasDuana");
+  
     var sql=" \
                     select \
                 r.codigo_producto, \
@@ -1459,27 +1461,19 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
     
   
    if (datos.producto.search("�") !== -1){
-       console.log("****datos.producto",datos.producto);
        datos.producto = datos.producto.replace(/�/g, "A");
-       console.log("entrpo pro",datos.producto);
    }
    if (datos.producto.search("ÃƒÆ’Ã¢â") !== -1){
-       console.log("****datos.producto",datos.producto);
        datos.producto = datos.producto.replace(/ÃƒÆ’Ã¢â/g, "A");
-       console.log("entrpo pro",datos.producto);
    }
    if (datos.producto.search("‚¬Å“") !== -1){
-       console.log("****datos.producto",datos.producto);
        datos.producto = datos.producto.replace(/‚¬Å“/g, "A");
-       console.log("entrpo pro",datos.producto);
    }
    if (datos.molecula.search("�") !== -1){
        datos.molecula = datos.molecula.replace(/�/g, "A");
-       console.log("entrpo mole",datos.molecula);
    }
    if (datos.laboratorio.search("�") !== -1){
        datos.laboratorio = datos.laboratorio.replace(/�/g, "A");
-       console.log("entrpo mole",datos.laboratorio);
    }   
    
    datos.producto=getCleanedString(datos.producto);
@@ -1509,6 +1503,30 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
        console.log(G.sqlformatter.format(query.toString()));  
       callback(err);
     }).done();
+};
+
+/*
+ * Autor : Andres Mauricio Gonzalez
+ * Descripcion : SQL encargado de eliminar Rotacio nMedipol
+ * @fecha: 20/05/2019 8:35 am
+ */
+DrAriasModel.prototype.eliminarRotacionMedipol= function (obj, callback) {
+
+    var query = G.knex('rotacion_diaria_medipol')
+            .where('empresa_id', obj.empresa)
+            .andWhere('centro_utilidad', obj.centroUtilidad)
+            .andWhere('bodega', obj.bodega)
+            .andWhere('fecha', obj.fechaToday)
+            .del();
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err (/catch) [eliminarRotacionMedipol]: ", err);
+        callback({err: err, msj: "Error al eliminar Rotacion Medipol"});
+    });
 };
 
 

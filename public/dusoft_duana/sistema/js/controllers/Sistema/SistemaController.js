@@ -10,68 +10,65 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "Empresa",
         function ($scope, $rootScope, Request, $filter, $state, $modal, API, AlertService, localStorageService, Usuario, socket, $timeout, Empresa) {
 
-            var that = this;
-            var serverBtnSize = 'col-xs-2 col-sm-2 col-md-2 col-lg-2 ';
+            let that = this;
+            const serverBtnSize = 'col-xs-3 col-sm-3 col-md-3 col-lg-2 ';
+            const serverSize = 'col-xs-6 col-sm-6 col-md-6 col-lg-6 ';
             $scope.promedio1Min = 0;
             $scope.promedio5Min = 0;
             $scope.promedio15Min = 0;
             $scope.promedioActual = 0;
             $scope.promedioTotal = 0;
             $scope.monitorModulos = {};
-            $scope.serverModulos216 = {};
-            $scope.serverModulos216.modulos = [];
-            $scope.serverModulos229 = {};
-            $scope.serverModulos229.modulos = [];
             $scope.monitoreo = { servers: [] };
 
-            $scope.crearServer = function(server){
-                $scope.monitoreo[server] = {};
-                $scope.monitoreo.servers.push(server);
+            // Variables Globales
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+            $scope.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-            $scope.agregarModulo = function(server, modulo){
-                if($scope.monitorModulos[modulo] !== undefined && $scope.monitoreo[server] !== undefined){
-                    if($scope.monitoreo[server].modulos === undefined){
-                        $scope.monitoreo[server].modulos = [];
-                    }
-                    $scope.monitoreo[server].modulos.push(modulo);
-                    $scope.monitoreo[server][modulo] = JSON.parse(JSON.stringify($scope.monitorModulos[modulo]));
-                }else{
-                    console.log('Error!!');
-                    if($scope.monitoreo[server] !== undefined){
-                        console.log('Servidor: '+ server +', no existe!!');
-                    }
-                    if($scope.monitorModulos[modulo] !== undefined){
-                        console.log('Modulo: '+ modulo +', no existe!!');
-                    }
-                }
+            // Funcion para realizar peticiones GET y POST
+            $scope.get = (url, obj, callback) => {
+                Request.realizarRequest(url, "GET", obj, data => callback(data) );
+            };
+            $scope.post = (url, obj, callback) => {
+                Request.realizarRequest(url, "POST", obj, data => callback(data) );
             };
 
+            // Creando Modulos
             $scope.monitorModulos.PC = {
                 title: 'PC',
+                width: serverSize,
+                tableClass: 'tablePc',
                 actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-info', disable: false}
+                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'}
                 ],
                 obj: []
             };
             $scope.monitorModulos.JASPER = {
                 title: 'JasperServer',
+                width: serverSize,
+                tableClass: 'tablePc',
                 actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-info', disable: false},
-                    {title: 'Start', name: 'start', class: serverBtnSize + 'btn btn-primary', disable: false},
-                    {title: 'Stop', name: 'stop', class: serverBtnSize + 'btn btn-danger', disable: false}
+                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
+                    {title: 'Start', name: 'start', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-play'},
+                    {title: 'Stop', name: 'stop', class: serverBtnSize + 'btn btn-danger', disable: false, icono: 'glyphicon glyphicon-stop'}
                 ],
                 obj: []
             };
             $scope.monitorModulos.PM2 = {
                 title: 'PM2',
+                width: serverSize,
+                tableClass: 'tablePc tableBorder cells-auto',
                 actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-info', disable: false},
-                    {title: 'Reload', name: 'reload', class: serverBtnSize + 'btn btn-primary', disable: false},
-                    {title: 'Resurrect', name: 'resurrect', class: serverBtnSize + 'btn btn-danger', disable: false}
+                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
+                    {title: 'Reload', name: 'reload', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-refresh'},
+                    {title: 'Resurrect', name: 'resurrect', class: serverBtnSize + 'btn btn-danger', disable: false, icono: 'glyphicon glyphicon-eject'}
                 ],
                 obj: []
             };
+<<<<<<< HEAD
             // Creando servidores
             $scope.crearServer(216); // Creando servidor 216
             $scope.crearServer(229); // Creando servidor 229
@@ -88,13 +85,75 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.agregarModulo(117, 'PC');
             $scope.agregarModulo(117, 'PM2');
+=======
 
-            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
-            $scope.session = {
-                usuario_id: Usuario.getUsuarioActual().getId(),
-                auth_token: Usuario.getUsuarioActual().getToken()
+            // Funcion para crear Servidor con Modulos y Sockets
+            $scope.crearServer = (server, Modulos) => {
+                $scope.monitoreo[server] = {};
+                $scope.monitoreo.servers.push(server);
+
+                // Agregando Modulos al servidor
+                if(Array.isArray(Modulos) && Modulos.length > 0) {
+                    for (let Modulo of Modulos) {
+                        if($scope.monitorModulos[Modulo] !== undefined
+                            && Array.isArray(Modulos)
+                            && $scope.monitoreo[server] !== undefined)
+                        {
+                            if($scope.monitoreo[server].modulos === undefined) {
+                                $scope.monitoreo[server].modulos = [];
+                            }
+                            $scope.monitoreo[server].modulos.push(Modulo);
+                            $scope.monitoreo[server][Modulo]=JSON.parse(JSON.stringify($scope.monitorModulos[Modulo]));
+
+                            // Crear Socket
+                            const modulo = Modulo.toLowerCase();
+                            const nombreSocket = modulo+server;
+                            socket.on(nombreSocket, datos => {
+                                if (datos.status === 200) $scope.monitoreo[server][Modulo].obj = datos.obj;
+                            });
+                        } else {
+                            console.log('Error!!');
+                            if ($scope.monitoreo[server] !== undefined) {
+                                console.log('Servidor: '+ server +', no existe!!');
+                            }
+                            if ($scope.monitorModulos[Modulo] !== undefined) {
+                                console.log('Modulo: '+ Modulo +', no existe!!');
+                            }
+                        }
+                    }
+                } else {
+                    console.log('Error: formato incorrecto en array "Modulos"!!');
+                }
+            };
+>>>>>>> master
+
+            // Creando servidores, Agregando Modulos y agregando Sockets
+            $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
+            // $scope.crearServer(191, ['PC', 'PM2']); // Creando servidor 191
+            $scope.crearServer(216, ['PC', 'PM2', 'JASPER']); // Creando servidor 216
+            $scope.crearServer(229, ['PC', 'PM2']); // Creando servidor 229
+
+            // Funcion para la conexion por SSH con los servidores
+            $scope.sshConnection = (modulo, accion, server) => {
+                const obj = {
+                    session: $scope.session,
+                    data: {
+                        accion: accion,
+                        modulo: modulo,
+                        server: server
+                    }
+                };
+                $scope.post(API.LOGS.SSH, obj, data => {
+                    if (data.status === 200) {
+                        console.log('Repuesta 200');
+                        if (modulo === 'PM2' && accion === 'reload') {
+                            $scope.sshConnection(modulo, 'status', server);
+                        }
+                    }
+                });
             };
 
+            // Variables y funciones para Estadistica de Memoria
             $scope.datosGrafico = [{
                 "key": "Uso de Memoria",
                 "values": []
@@ -160,6 +219,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     return d3.time.format('%x-%H:%M')(new Date(d * 1000));
                 };
             };
+<<<<<<< HEAD
 
             // Socket del SERVER 216
             socket.on("pc216", function (datos) {
@@ -210,5 +270,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
+=======
+>>>>>>> master
         }]);
 });

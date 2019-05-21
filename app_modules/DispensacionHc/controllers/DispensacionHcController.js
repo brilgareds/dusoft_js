@@ -191,7 +191,6 @@ DispensacionHc.prototype.sincronizacionFormulasDispensadas = function(){
     
     G.Q.nfcall(__sincronizacionFormulasDispensadas,that).then(function(resultado){
         
-        console.log("Termina ------------",resultado);
     
     }).fail(function(err){      
         console.log(" err ", err);  

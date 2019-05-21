@@ -46,7 +46,7 @@ function __documentoTemporalClientes(req, that, callback) {
 
     var args = req.body.data;
     var send = {};
-console.log("documentoTemporalClientes:::",args);
+    console.log("documentoTemporalClientes:::", args);
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.tipo_tercero_id === undefined || args.documento_temporal.tercero_id === undefined || args.documento_temporal.observacion === undefined) {
 //        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         send.msj = 'Algunos Datos Obligatorios Estan Vacíos';
@@ -423,7 +423,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req, that, cal
 //    var that = this;
     var send = {};
     var args = req.body.data;
-console.log("detalleDocumentoTemporalConValidacionCantidadIngresada",args);
+    console.log("detalleDocumentoTemporalConValidacionCantidadIngresada", args);
 
     var validacion = __validarParametrosDetalleTemporal(args);
     if (!validacion.valido) {
@@ -493,7 +493,7 @@ console.log("detalleDocumentoTemporalConValidacionCantidadIngresada",args);
         callback(false, send);
         return;
     }).fail(function (err) {
-        console.log("err __detalleDocumentoTemporalConValidacionCantidadIngresada::",err);
+        console.log("err __detalleDocumentoTemporalConValidacionCantidadIngresada::", err);
         if (err.status) {
 //            res.send(G.utils.r(req.url, err.msj, 500, {documento_temporal: {item_id: 0}}));
             send.msj = err.msj;
@@ -1770,6 +1770,7 @@ E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
 
         var obj = {
             detalle: detalleDepurado,
+//            detalle: rows,
             serverUrl: req.protocol + '://' + req.get('host') + "/"
         };
 
@@ -1847,6 +1848,7 @@ E008Controller.prototype.imprimirRotuloFarmacias = function (req, res) {
 
         var obj = {
             detalle: detalleDepurado,
+//            detalle: rows,
             serverUrl: req.protocol + '://' + req.get('host') + "/"
         };
 
@@ -2309,20 +2311,20 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
             (identificacion_cliente === '10366' && tipo_id_cliente === "CE") || //CL�?NICA SAN RAFAEL DUMIAN GIRARDOT+
             (identificacion_cliente === '10119' && tipo_id_cliente === "CE") || //UCI MARIO CORREA- LOS CHORROS+
             (identificacion_cliente === '10368' && tipo_id_cliente === "CC") || //LABORATORIO CLINICA SAN RAFAEL DUMIAN GIRARDOT+
-            (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT")|| //UNION TEMPORAL DUCOT 
-            (identificacion_cliente === '890303461' && tipo_id_cliente === "NIT")|| //HOSPITAL UNIVERSITARIO DEL VALLE EVARISTO GARCIA E.S.E
-            (identificacion_cliente === '900617997' && tipo_id_cliente === "NIT")|| //VIVESSALUD EJE CAFETERO 
-                    (identificacion_cliente === '900112820' && tipo_id_cliente === "NIT") || //CMS LTDA MANIZALEZ+
-                    (identificacion_cliente === '900112820' && tipo_id_cliente === "PA") || //CMS - CLINICA AMAN+
-                    (identificacion_cliente === '900112820' && tipo_id_cliente === "CC") || //LABORATORIO PINARES CMS+
-                    (identificacion_cliente === '9001128201' && tipo_id_cliente === "CE") || //CMS PINARES PEREIRA+
-                    (identificacion_cliente === '9001128201' && tipo_id_cliente === "TI") || //LABORATORIO CMS MANIZALEZ+
-                    (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT") || //HOSPITAL UNIVERSITARIO DEL VALLE+
-                    (identificacion_cliente === '900112820' && tipo_id_cliente === "AS") || //LABORATORIO CLINICA AMAN CMS +
-                    (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT") || //LABORATORIO CLINICA AMAN CMS +
-                    (identificacion_cliente === '900470642' && tipo_id_cliente === "NIT") || //MEDICAL DUARTE Z.F SAS +
-                    (identificacion_cliente === '900228989' && tipo_id_cliente === "NIT") || //CLINICA SANTA SOFIA +
-                    (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")) { //HOSPITAL SAN ANDRES DE TUMACO+
+            (identificacion_cliente === '900775143' && tipo_id_cliente === "NIT") || //UNION TEMPORAL DUCOT 
+            (identificacion_cliente === '890303461' && tipo_id_cliente === "NIT") || //HOSPITAL UNIVERSITARIO DEL VALLE EVARISTO GARCIA E.S.E
+            (identificacion_cliente === '900617997' && tipo_id_cliente === "NIT") || //VIVESSALUD EJE CAFETERO 
+            (identificacion_cliente === '900112820' && tipo_id_cliente === "NIT") || //CMS LTDA MANIZALEZ+
+            (identificacion_cliente === '900112820' && tipo_id_cliente === "PA") || //CMS - CLINICA AMAN+
+            (identificacion_cliente === '900112820' && tipo_id_cliente === "CC") || //LABORATORIO PINARES CMS+
+            (identificacion_cliente === '9001128201' && tipo_id_cliente === "CE") || //CMS PINARES PEREIRA+
+            (identificacion_cliente === '9001128201' && tipo_id_cliente === "TI") || //LABORATORIO CMS MANIZALEZ+
+            (identificacion_cliente === '890304155' && tipo_id_cliente === "NIT") || //HOSPITAL UNIVERSITARIO DEL VALLE+
+            (identificacion_cliente === '900112820' && tipo_id_cliente === "AS") || //LABORATORIO CLINICA AMAN CMS +
+            (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT") || //LABORATORIO CLINICA AMAN CMS +
+            (identificacion_cliente === '900470642' && tipo_id_cliente === "NIT") || //MEDICAL DUARTE Z.F SAS +
+            (identificacion_cliente === '900228989' && tipo_id_cliente === "NIT") || //CLINICA SANTA SOFIA +
+            (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")) { //HOSPITAL SAN ANDRES DE TUMACO+
 
         return true;
     } else {
@@ -2499,11 +2501,11 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
             } else if (pedido.identificacion_cliente === '900228989') {
 
                 $tercero = '900228989';
-            
+
             } else if (pedido.identificacion_cliente === '900617997') {
 
                 $tercero = '900617997';
-                
+
             } else if (pedido.identificacion_cliente === '890303461') {
 
                 $tercero = '890303461';
@@ -2598,11 +2600,9 @@ function __sincronizarDocumentoDespacho(obj, callback) {
         return G.Q.nfcall(__sincronizarEncabezadoDocumento, obj);
 
     }).then(function (resultado) {
-console.log("ENCABEZADO",resultado);
         return G.Q.nfcall(__sincronizarDetalleDocumento, obj);
 
     }).then(function (resul) {
-        console.log("ENCABEZADO",resul);
         callback(false);
 
     }).fail(function (err) {
@@ -2893,7 +2893,7 @@ function __validarCajaProducto(req, that, callback) {
 
     var send = {};
     var args = req.body.data;
-console.log("validarCajaProductoAutomatico:: ",args);
+    console.log("validarCajaProductoAutomatico:: ", args);
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
             args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido) {
 //        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
@@ -3002,24 +3002,40 @@ console.log("validarCajaProductoAutomatico:: ",args);
                     return;
                 } else {
                     // Crear
-                    that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente,
-                            cantidad, ruta, contenido, numero_caja, usuario_id, tipo, tipoPedido, function (err, rotulo_caja) {
-                                if (err) {
+
+                    var parametros = {
+                        documento_temporal_id: documento_temporal_id,
+                        numero_pedido: numero_pedido,
+                        nombre_cliente: nombre_cliente,
+                        direccion_cliente: direccion_cliente,
+                        cantidad: cantidad,
+                        ruta: ruta,
+                        contenido: contenido,
+                        numero_caja: numero_caja,
+                        usuario_id: usuario_id,
+                        tipo: tipo,
+                        tipoPedido: tipoPedido,
+                        sede: args.documento_temporal.nombre_sede ? args.documento_temporal.nombre_sede : ''
+                    };
+
+
+                    that.m_e008.generar_rotulo_caja(parametros, function (err, rotulo_caja) {
+                        if (err) {
 //                                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                    send.msj = 'Se ha generado un error interno';
-                                    send.status = 500;
-                                    send.respuesta = {movimientos_bodegas: {}};
-                                    callback(false, send);
-                                    return;
-                                } else {
+                            send.msj = 'Se ha generado un error interno';
+                            send.status = 500;
+                            send.respuesta = {movimientos_bodegas: {}};
+                            callback(false, send);
+                            return;
+                        } else {
 //                                    res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
-                                    send.msj = 'Rotulo generado correctamente ';
-                                    send.status = 200;
-                                    send.respuesta = {movimientos_bodegas: {caja_valida: true}};
-                                    callback(false, send);
-                                    return;
-                                }
-                            });
+                            send.msj = 'Rotulo generado correctamente ';
+                            send.status = 200;
+                            send.respuesta = {movimientos_bodegas: {caja_valida: true}};
+                            callback(false, send);
+                            return;
+                        }
+                    });
                 }
             }
         });
@@ -3080,7 +3096,7 @@ E008Controller.prototype.actualizarCajaDeTemporales = function (req, res) {
     var that = this;
 
     var args = req.body.data;
-console.log("actualizarCajaDeTemporales",args);
+    console.log("actualizarCajaDeTemporales", args);
     if (args.documento_temporal === undefined || args.documento_temporal.temporales === undefined
             || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
         res.send(G.utils.r(req.url, 'documento_temporal, temporales, numero_caja o tipo no estan definidos', 404, {}));
@@ -3149,6 +3165,12 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
         datos_documento.encabezado.subTotal = 0;
         datos_documento.encabezado.totalIva = 0;
 
+
+
+        if (datos_documento.encabezado.direccion_sede != null) {
+            datos_documento.encabezado.direccion = datos_documento.encabezado.direccion_sede;
+        }
+
         that.m_movimientos_bodegas.consultar_detalle_documento_despacho(numero, prefijo, empresa, function (err, rows) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
@@ -3163,6 +3185,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 }
 
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
+
                 datos_documento.serverUrl = req.protocol + '://' + req.get('host') + "/";
 
                 //Calculo de totales
@@ -3175,8 +3198,12 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
                 datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
                 datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
-
-
+               
+                if(datos_documento.encabezado.departamento  !== "" && datos_documento.encabezado.departamento !== null){
+                 datos_documento.encabezado.departamentos = { valor: datos_documento.encabezado.departamento};
+                }else{
+                 datos_documento.encabezado.departamentos = datos_documento.adicionales.departamento;
+                }
                 //Se ordena por caja
                 datos_documento.detalle.sort(function (a, b) {
                     if (a.numero_caja > b.numero_caja) {
@@ -3839,8 +3866,11 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
     });
 }
 
-function __generarPdfDespacho(datos, callback) {
+const promesa = new Promise((resolve, reject) => { resolve(true); });
 
+function __generarPdfDespacho(datos, callback) {
+//    console.log("datos ",datos.adicionales);
+promesa.then(function (respuesta){
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
@@ -3868,6 +3898,9 @@ function __generarPdfDespacho(datos, callback) {
 
         });
     });
+  }).catch(function(error){
+    console.log("Erorr ",error);  
+  });
 }
 
 

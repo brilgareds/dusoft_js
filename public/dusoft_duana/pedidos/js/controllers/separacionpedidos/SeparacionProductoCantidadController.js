@@ -155,8 +155,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             documento_temporal_id: pedido.getTemporalId(),
                             numero_caja: $scope.rootVentanaCantidad.numero_caja,
                             numero_pedido: pedido.get_numero_pedido(),
-                           /* direccion_cliente: cliente.getDireccion() || cliente.get_nombre_farmacia(),
-                            nombre_cliente: cliente.getNombre() || cliente.get_nombre_farmacia(),*/
                             direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
                             nombre_cliente: cliente.nombre_tercero || cliente.nombre_farmacia,
                             tipo: $scope.rootVentanaCantidad.tipoCaja.id,
@@ -165,6 +163,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     }
                 };
                 
+                /*** ESTOY VALIDANDO LO DEL NOMBRE DE LA SEDE EN EL ROTULO EN inv_rotulo_caja    ***/
+                if(pedido.nombreSede){
+                    obj.data.documento_temporal.nombre_sede = pedido.nombreSede;
+                }
                 
                  Request.realizarRequest(url, "POST", obj, function(data) {
 

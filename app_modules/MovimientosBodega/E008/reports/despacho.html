@@ -109,19 +109,20 @@
     
     <body>
         <h2 style="text-align:right;">{{:encabezado.prefijo}} - {{:encabezado.numero}}</h2>
-       <table class="table" width='100%'>
+       <table class="table" width='100%' border ='0'>
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
                 <td class='title' >Usuario</td><td>{{:encabezado.nombre_usuario}}</td>
                 <td class='title' >Imprime</td><td>{{:encabezado.usuario_imprime}}</td>
+                <td colspan="3"><h3>{{:encabezado.departamentos.valor}}</h3></td>
             </tr>
             <tr>
-                 <td class='title'>Bodega</td><td>{{:encabezado.nombre_bodega_destino}}</td>
+                <td class='title'>Bodega</td><td>{{:encabezado.nombre_bodega_destino}}</td>
                 <td class='title'>Documento</td><td>{{:encabezado.prefijo}} - {{:encabezado.numero}}</td>
                 <td class='title'></td><td>{{:encabezado.fecha_impresion}}</td>
             </tr>
             <tr>
-               <td class='title'>Pedido</td><td>{{:encabezado.numero_pedido}}<span class='fecha_pedido'>{{:encabezado.fecha_pedido}}</span></td>
+                <td class='title'>Pedido</td><td>{{:encabezado.numero_pedido}}<span class='fecha_pedido'>{{:encabezado.fecha_pedido}}</span></td>
                 <td class='title'>Fecha Despacho</td><td>{{:encabezado.fecha_registro}}</td>
                 <td class='title'>Direccion </td><td>{{:encabezado.direccion}}</td>
             </tr>

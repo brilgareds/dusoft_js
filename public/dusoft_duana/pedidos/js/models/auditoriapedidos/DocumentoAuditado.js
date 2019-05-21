@@ -21,6 +21,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.observacion;
                 this.razon_social;
                 this.empresaId;
+                this.bodega;
                 this.usuario;
                 this.razon_social;
                 this.productos = [];
@@ -81,6 +82,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoAuditado.prototype.getEmpresaId = function () {
                 return this.empresaId;
+            };
+            
+            DocumentoAuditado.prototype.setBodega = function (bodega) {
+               this.bodega = bodega;
+            };
+            
+            DocumentoAuditado.prototype.getBodega = function () {
+                return this.bodega;
             };
 
             DocumentoAuditado.prototype.setEmpresaDestino = function (empresaDestino) {

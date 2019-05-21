@@ -833,7 +833,6 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
             
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit);
-    console.log("ppp",G.sqlformatter.format(query.toString())); 
     query.then(function(resultado){          
         callback(false, resultado);
     }).catch(function(err){    
@@ -983,8 +982,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                   "hc.evolucion_id").as("b")
                    
     
-    var query = G.knex.select(colSubQuery).from(subQueryB);
-   console.log(G.sqlformatter.format(query.toString()));            
+    var query = G.knex.select(colSubQuery).from(subQueryB);          
         query.then(function(resultado){       
 
             callback(false, resultado);

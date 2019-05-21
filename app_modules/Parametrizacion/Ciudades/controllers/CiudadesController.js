@@ -5,6 +5,30 @@ var Ciudades = function(ciudades) {
 };
 
 
+Ciudades.prototype.listarCiudadesPais = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+
+    if (args.pais === undefined) {
+        res.send(G.utils.r(req.url, 'pais no esta definido', 404, {}));
+        return;
+    }
+    
+    var pais = args.pais;
+
+    that.m_ciudades.listar_ciudades_pais(pais, function(err, lista_ciudades) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las ciudades pais', 500, {ciudades: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de ciudades', 200, {ciudades: lista_ciudades}));
+        }
+    });
+};
+
 Ciudades.prototype.listarCiudades = function(req, res) {
 
     var that = this;

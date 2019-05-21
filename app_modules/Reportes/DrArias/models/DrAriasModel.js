@@ -587,7 +587,9 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 order by 1,3 ;";
     
      var query = G.knex.raw(sql);
+
 //     console.log(G.sqlformatter.format(query.toString())); 
+
     query.then(function(resultado) {
         G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
@@ -1115,7 +1117,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
     }
 
     var sqlTablaNueva = " (select \
-                        to_char(fecha,'YYYY/MM/DD HH:MM:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
+                        to_char(fecha,'YYYY/MM/DD HH:MI:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
                         descripcion_tipo_formula,paciente_id,paciente,tercero_id,medico,especialidad,\
                         codigo_producto,codigo_cum,producto,replace(cantidad,'.',',') as cantidad,replace(precio,'.',',') as precio,replace(total,'.',',') as total,eps_punto_atencion_nombre\
                         from \
@@ -1133,7 +1135,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                         ";
 
     var sqlConsulta = "\
-                    (select to_char(fecha,'YYYY/MM/DD HH:MM:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
+                    (select to_char(fecha,'YYYY/MM/DD HH:MI:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
                          descripcion_tipo_formula,paciente_id,paciente,tercero_id,medico,especialidad,\
                          codigo_producto,codigo_cum,producto,replace(cantidad,'.',',') as cantidad,replace(precio,'.',',') as precio,replace(total,'.',',') as total,eps_punto_atencion_nombre\
                         from((  select  \

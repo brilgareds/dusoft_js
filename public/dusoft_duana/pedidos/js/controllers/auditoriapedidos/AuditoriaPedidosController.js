@@ -604,7 +604,8 @@ define(["angular", "js/controllers",
                             auditor_id: documento.auditor.operario_id,
                             usuario_id: documento.separador.usuario_id,
                             bodega_documento_id : documento.getBodegasDocId(),
-                            bodega: documento.bodega_id
+                            bodega: documento.bodega_id,
+                            bodega_seleccionada:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                         }
                     }
                 };
@@ -680,7 +681,9 @@ define(["angular", "js/controllers",
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                                    
+                                  if(empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() !=='03'){
                                    that.sincronizarDocumento(documento, $scope.documento_generado);
+                               }
                             }
 
                         });

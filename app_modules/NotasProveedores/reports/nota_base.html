@@ -1,0 +1,103 @@
+<!-- saved from url=(0064)http://10.0.2.237/APP/PRUEBAS_GABRIEL_ANGARITA/cache/wpPfHt.html -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>&nbsp;</title>
+    <style>
+        * {
+            font-size: 12px;
+        }
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+        .img-logo {
+            display:none;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+        }
+        .tabla {
+            width:  100%;
+
+        }
+    </style>
+</head>
+<body>
+    <img class="img-logo" src="{#asset /logocliente.png @encoding=dataURI}"/>
+    <img class="img-logo" src="{#asset /cosmitet.png @encoding=dataURI}"/>
+    <table class="tabla" border="1" align="center" rules="all">
+        <tbody>
+        <tr class="modulo_list_claro">
+            <td class="label" width="15%">DOCUMENTO</td>
+            <td class="label" width="15%"> {{:documento}}</td>
+            <td class="label" width="15%">FECHA</td>
+            <td class="label" width="15%"> {{:fechaRegistro}}</td>
+            <td class="label" width="15%">USUARIO</td>
+            <td class="label" width="15%"> {{:usuario}}</td>
+        </tr>
+        <tr>
+            <td class="label" width="15%">PROVEEDOR</td>
+            <td class="label" width="15%" style="text-indent:10pt;text-align:left" colspan="5">{{:tercero}}</td>
+        </tr>
+        <tr height="21">
+            <td class="label" width="12%">VALOR NOTA</td>
+            <td class="label" colspan="2" style="text-indent:10pt;text-align:left">{{:valorNotaString}}</td>
+            <td class="label" width="12%">#-FACTURA</td>
+            <td class="label" colspan="2" style="text-indent:10pt;text-align:left">{{:numero_factura}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <table border="1" width="100%" align="center" rules="all" style="text-indent:10pt;text-align:left">
+        <tbody>
+        <tr>
+            <td class="modulo_table_list_title" colspan="7" align="center">
+                <b>ITEMS DE LA NOTA</b>
+            </td>
+        </tr>
+        {{:itemsHtml}}
+        </tbody>
+    </table>
+    <br>
+    <table width="100%" border="0" align="center" class="modulo_table_list" rules="all">
+        <tbody>
+        <tr align="center" class="label">
+            <td colspan="5"><b><u>TOTAL</u></b></td>
+        </tr>
+        <tr align="center" class="label">
+            <td width="18%"><u>VALOR BRUTO</u></td>
+            <td width="18%"><u>TOTAL-IVA</u></td>
+            <td width="18%"><u>RET-FTE</u></td>
+            <td width="18%"><u>RETE-ICA</u></td>
+            <td width="18%"><u>RETE-IVA</u></td>
+            <td width="18%"><b><u>TOTAL NOTA</u></b></td>
+        </tr>
+        <tr align="center">
+            <td>{{:valorNotaString}}</td>
+            <td>{{:totalIvaString}}</td>
+            <td>{{:totalReteFuenteString}}</td>
+            <td>{{:totalReteIcaString}}</td>
+            <td>{{:totalReteIvaString}}</td>
+            <td>{{:totalNotaConRetencionesString}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <br><br> <br>
+    <table border="0" width="100%">
+        <tbody>
+        <tr>
+            <td align="justify" width="50%">
+                <font size="1" face="arial">
+                    Imprimi&#243;: {{:usuario}}
+                </font>
+            </td>
+            <td align="right" width="50%">
+                <font size="1" face="arial">
+                    <!--			Fecha Impresión :&nbsp;&nbsp; -->
+                </font>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>

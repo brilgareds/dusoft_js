@@ -147,7 +147,7 @@ RadicacionModel.prototype.factura = function (obj, callback) {
 };
 
 RadicacionModel.prototype.modificarFactura = function (obj, callback) {
-    console.log("modificarFactura....", obj)
+    
     var update = {};
     
     if(obj.ruta){

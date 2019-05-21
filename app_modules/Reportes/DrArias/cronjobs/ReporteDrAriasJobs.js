@@ -4,7 +4,7 @@ var ReporteDrAriasJobs = function (m_drArias) {
     var ip = require('ip');
 
     that.m_drArias = m_drArias;
-    console.log("IP",ip.address())
+   
     if (ip.address() === '10.0.2.158') {
 
        // if (G.program.prod) {

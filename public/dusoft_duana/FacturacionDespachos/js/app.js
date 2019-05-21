@@ -113,8 +113,8 @@ define([
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
-                    url: "/NotasProveedores",
-                    text: "Facturacion Proveedores", 
+                    url: "/FacturacionProveedores",
+                    text: "Facturacion Proveedores",
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
                     controller: "FacturacionProveedorController"

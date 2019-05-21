@@ -3,7 +3,7 @@ var SincronizacionDocumentosModel = function () {
 };
 
 SincronizacionDocumentosModel.prototype.listarPrefijos = function (obj, callback) {
-    console.log('entro en el modelo!', obj);
+    
     var data = {prefijos: '', prefijosFiltrados: ''};
 
     var query = G.knex
@@ -34,6 +34,30 @@ SincronizacionDocumentosModel.prototype.listarPrefijos = function (obj, callback
     });
 };
 
+SincronizacionDocumentosModel.prototype.listarPrefijosEspecial = function (obj, callback) {
+  
+    var data = {prefijos: ''};
+
+    var query = G.knex
+        .distinct('a.prefijo', 'a.tipo_doc_general_id', 'a.texto1','a.sw_ingreso_automatico_datos')
+        .select()
+        .from('documentos as a')
+        .where(G.knex.raw("a.empresa_id in ('03','FD')"))
+        //.orderBy('a.prefijo')
+        .union(function(){
+              this.select('a.prefijo',G.knex.raw("'' as tipo_doc_general_id"),'a.texto1','a.sw_ingreso_automatico_datos')
+             .from("prefijos_especiales as a");
+        });
+       
+    query.then(function (resultado){
+       data.prefijos = resultado;
+       callback(false, data);
+    }).catch(function (err) {
+        console.log("error listarPrefijosEspecial sql", err);
+        callback(err);
+    });
+};
+
 SincronizacionDocumentosModel.prototype.listarFacturas = function (obj, callback) {
     console.log('In model of "buscarServicio"');
 
@@ -48,10 +72,8 @@ SincronizacionDocumentosModel.prototype.listarFacturas = function (obj, callback
         .andWhere('dc.bodega_id', obj.bodegaId)
         .andWhere('dc.prefijo', obj.prefijoId);
 
-    console.log('SQL en buscarServicio ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
-        console.log('Sql fine in Model buscarServicio!');
         //data.serviciosFiltrados = resultado;
         callback(false, resultado[0]);
     }).catch(function (err) {
@@ -70,8 +92,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function (ob
         .where('RC.recibo_caja', obj.facturaFiscal)
         .andWhere('RC.prefijo', obj.prefijo);
 
-    console.log('Query is: ', G.sqlformatter.format(query.toString()));
-
     query.then(function (resultado) {
         console.log('encabezado fine!!');
 
@@ -84,8 +104,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function (ob
                     parametrizacion_ws_fi_id: obj.wsFi
                 });
             query.then(function (result) {
-                console.log('Consulta encabezado parametrizado fine: ', result);
-
                 let encabezadoParametrizado = result[0];
 
                 let response = [{
@@ -102,8 +120,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoReciboRCC = function (ob
                     empresa_recibo: encabezado.empresa_recibo,
                     cuenta_contable: encabezado.cuenta_contable
                 }];
-
-                console.log('Encabezado finish is: ', response);
 
                 callback(false, response);
             });
@@ -138,7 +154,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function (obj, cal
         .where('rc.recibo_caja', obj.factura_fiscal)
         .andWhere('rc.prefijo', obj.prefijo);
 
-    console.log('SQL en listarEncabezadoRCD: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         if (resultado[0] !== undefined) {
@@ -151,7 +166,6 @@ SincronizacionDocumentosModel.prototype.listarEncabezadoRCD = function (obj, cal
                 });
 
             query.then(function (result) {
-                console.log('Consulta encabezado parametrizado fine: ', result);
 
                 if (result.length > 0) {
                     let encabezadoParametrizado = result[0];
@@ -261,7 +275,6 @@ SincronizacionDocumentosModel.prototype.listarFacturasDFIN1121 = function (obj, 
         var total_credito = data[0].total_credito;
         response.credito = total_credito;
 
-        console.log('All fine total is: ', total_credito);
         callback(false, response);
     }).catch(function (err) {
         console.log('Hubo un error: ', err);
@@ -276,7 +289,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
     if(obj.tipoLogsWs !== undefined){
         if(obj.tipoLogsWs === 'Clientes'){
 
-            console.log('Function Logs of "Clients"');
+           
             query = G.knex('logs_facturacion_clientes_ws_fi')
                 .insert({
                     prefijo: obj.prefijo,
@@ -289,7 +302,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                 });
         }else if(obj.tipoLogsWs === 'Proveedores'){
 
-            console.log('En funcion Proveedores');
+          
             query = G.knex('logs_facturacion_proveedores_ws_fi')
                 .insert({
                     codigo_proveedor_id: obj.proveedor_id,
@@ -301,7 +314,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                 });
         }else if(obj.tipoLogsWs === 'Bonificaciones'){
 
-            console.log('En funcion Bonificaciones');
+         
             query = G.knex('logs_bonificaciones_ws_fi')
                 .insert({
                     prefijo: obj.prefijo,
@@ -312,7 +325,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                 });
         }else if(obj.tipoLogsWs === 'Recibos'){
 
-            console.log('En funcion Recibos');
+          
             query = G.knex('logs_recibos_ws_fi')
                 .insert({
                     prefijo: obj.prefijo,
@@ -322,7 +335,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
                     estado: obj.estado
                 });
         }else{
-            console.log('El tipo de Logs "'+obj.tipoLogsWs+'" no existe!!');
+           
             callback('El tipo de Logs "'+obj.tipoLogsWs+'" no existe!!');
         }
     }else{
@@ -339,7 +352,7 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
 };
 
 SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function (obj, callback) {
-    console.log('In Model "obtenerEncabezadoBonificacion": ', obj);
+    
     var response = {};
 
     var query = G.knex.column(
@@ -376,7 +389,6 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
             .andWhere('a.empresa_id', obj.empresa_id);
         //.andWhere('a.empresa_id', obj.empresa_id);
 
-//        console.log('sql in "obtenerPrefijoFI": ', G.sqlformatter.format(query2.toString()));
 
         return query2;
     }).then(function (resultado2) {
@@ -452,7 +464,6 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
         .andWhere('a.numero', obj.factura_fiscal)
         .orderBy('a.codigo_producto');
 
-//    console.log('Sql in "obtenerDetalleBonificacion" is: ', G.sqlformatter.format(query.toString()));
 
     query.then(function (facturas) {
         if (facturas && facturas.length > 0) {
@@ -517,11 +528,11 @@ SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (o
 
 SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, callback) {
     console.log('In model "listarDetalleRCWSFI"');
-    var credito = parseFloat('0');
-    var debito = parseFloat('0');
-    var response = {};
+    let credito = parseFloat('0');
+    let debito = parseFloat('0');
+    let response = {};
 
-    var query = G.knex.distinct(
+    let query = G.knex.distinct(
         G.knex.raw("'0' AS codcentrocostoasiento"),
         G.knex.raw("'0' AS codcentroutilidadasiento"),
         G.knex.raw("CASE WHEN \"RCT\".\"cuenta\" IS NULL THEN '0' ELSE \"RCT\".\"cuenta\" END AS codcuentaasiento"),
@@ -758,7 +769,7 @@ SincronizacionDocumentosModel.prototype.guardarCuentas = function (obj, callback
 };
 
 SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function (obj, callback) {
-    console.log('entro en el modelo de "listarTiposCuentasCategorias"!');
+
 
     var query = G.knex.select(['categoria_id as id', 'categoria_descripcion as descripcion'])
         .from('tipos_cuentas_categorias');
@@ -798,7 +809,6 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, call
         .andWhere('doc_cu.parametrizacion_ws_fi', obj.servicio)
         .orderBy('tipos_cate.categoria_descripcion');
 
-    //console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         //console.log('Cuentas desde modelo: ', resultado);
@@ -809,24 +819,22 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, call
     });
 };
 
-SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = function (obj, callback) {
+SincronizacionDocumentosModel.prototype.obtenerPrefijoFi = (obj, callback) => {
     console.log('In Model "obtenerPrefijoFi"');
 
-    var query = G.knex.select(G.knex.raw("COALESCE(b.prefijo ,'') as prefijo_fi"))
+    let query = G.knex.select(G.knex.raw("COALESCE(b.prefijo ,'') as prefijo_fi"))
         .from('documentos as a')
         .innerJoin('prefijos_financiero as b', 'a.prefijos_financiero_id', 'b.id')
-        .where(function () {
-        }).andWhere('a.prefijo', obj.prefijo)
+        .where('a.prefijo', obj.prefijo)
         .andWhere('a.empresa_id', obj.empresaId);
 
-//    console.log(G.sqlformatter.format(query.toString()));
-
-    query.then(function (resultado) {
-        callback(false, resultado);
-    }).catch(function (err) {
-        console.log("error sql", err);
-        callback(err);
-    });
+    query
+        .then(resultado => {
+            callback(false, resultado);
+        }).catch(err => {
+            console.log("error sql", err);
+            callback(err);
+        });
 };
 
 SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function (obj, callback) {
@@ -846,7 +854,6 @@ SincronizacionDocumentosModel.prototype.parametrizacionCabeceraFi = function (ob
         ]
     ).from('parametrizacion_ws_fi as a')
         .andWhere('a.parametrizacion_ws_fi_id', obj.parametrizacion);
-//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -887,8 +894,6 @@ SincronizacionDocumentosModel.prototype.listarCuentasDetalle = function (obj, ca
                 .andWhere('parametrizacion_ws_fi', obj.wsFi);
         }).orderBy("cuenta_categoria", "asc");
 
-//    console.log("listarCuentasDetalle", G.sqlformatter.format(query.toString()));
-//console.log(G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -1040,7 +1045,6 @@ SincronizacionDocumentosModel.prototype.sincronizarFinaciero = function (obj, ca
 //      }
 
     }).then(function () {
-        console.log('Sincronizacion finalizada!');
         callback(false, obj.obj);
 
     }).fail(function (err) {

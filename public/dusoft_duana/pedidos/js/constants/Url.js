@@ -1,4 +1,4 @@
-define(["angular"], function(angular) {
+define(["angular"], function (angular) {
     var Url = angular.module('Url', []);
 
     var BASE_URL = "/api";
@@ -12,8 +12,8 @@ define(["angular"], function(angular) {
                 "LISTAR_EMPRESAS": BASE_URL + "/ValidacionDespachos/listarempresas",
                 'LISTAR_DESPACHOS_AUDITADOS': BASE_URL + '/movBodegas/E008/listarDespachosAuditados',
                 'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado',
-                'DETALLE_PEDIDO_CLIENTE_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoClienteDocumento',
-                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'                
+                'DETALLE_PEDIDO_CLIENTE_DOCUMENTO': BASE_URL + '/movBodegas/E008/detallePedidoClienteDocumento',
+                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO': BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'
             },
             'DOCUMENTOS_TEMPORALES': {
                 'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL + '/movBodegas/E008/consultarDocumentosTemporalesClientes',
@@ -39,7 +39,7 @@ define(["angular"], function(angular) {
                 'ACTUALIZAR_CAJA_TEMPORALES': BASE_URL + '/movBodegas/E008/actualizarCajaDeTemporales',
                 'IMPRIMIR_ROTULO_CLIENTES': BASE_URL + '/movBodegas/E008/imprimirRotuloClientes',
                 'IMPRIMIR_ROTULO_FARMACIAS': BASE_URL + '/movBodegas/E008/imprimirRotuloFarmacias',
-                'NUMERO_MAYOR_ROTULO' : BASE_URL + '/movBodegas/E008/consultarNumeroMayorRotulo'
+                'NUMERO_MAYOR_ROTULO': BASE_URL + '/movBodegas/E008/consultarNumeroMayorRotulo'
             },
             'PEDIDOS': {
                 CLIENTES: {
@@ -61,34 +61,33 @@ define(["angular"], function(angular) {
                     'CONSULTAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/consultarDetallePedido',
                     'ELIMINAR_PRODUCTO_PEDIDO': BASE_URL + '/PedidosClientes/eliminarProductoPedido',
                     'OBSERVACION_CARTERA_PEDIDO': BASE_URL + '/PedidosClientes/observacionCarteraPedido',
-                    'INSERTAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/insertarDetallePedido',                   
+                    'INSERTAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/insertarDetallePedido',
                     'MODIFICAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/modificarDetallePedido',
                     'REPORTE_PEDIDO': BASE_URL + '/PedidosClientes/reportePedido',
-                    'ACTUALIZAR_ESTADO_COTIZACION': BASE_URL +'/PedidosClientes/modificarEstadoCotizacion',
+                    'ACTUALIZAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/modificarEstadoCotizacion',
                     'CONSULTAR_ESTADO_PEDIDO': BASE_URL + '/PedidosClientes/consultarEstadoPedido',
                     'CONSULTAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/consultarEstadoCotizacion',
                     'SOLICITAR_AUTORIZACION': BASE_URL + '/PedidosClientes/solicitarAutorizacion',
                     'ACTUALIZAR_CABECERA_COTIZACION': BASE_URL + '/PedidosClientes/actualizarCabeceraCotizacion',
-                    'ELIMINAR_COTIZACION' : BASE_URL + '/PedidosClientes/eliminarCotizacion',
-                    'VALIDAR_ESTADO_TOTAL_PEDIDO' : BASE_URL + '/PedidosClientes/validarEstadoTotalValorPedido',
-                    'INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO' : BASE_URL + '/PedidosClientes/insertarCantidadProductoDetallePedido',
-                    'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes',
-                    'CONSULTAR_AUTORIZACION_CARTERA' : BASE_URL + '/PedidosClientes/consultarAutorizacionCartera',
+                    'ELIMINAR_COTIZACION': BASE_URL + '/PedidosClientes/eliminarCotizacion',
+                    'VALIDAR_ESTADO_TOTAL_PEDIDO': BASE_URL + '/PedidosClientes/validarEstadoTotalValorPedido',
+                    'INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO': BASE_URL + '/PedidosClientes/insertarCantidadProductoDetallePedido',
+                    'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES': BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes',
+                    'CONSULTAR_AUTORIZACION_CARTERA': BASE_URL + '/PedidosClientes/consultarAutorizacionCartera',
                     'PRODUCTOS_COTIZACION': BASE_URL + '/PedidosClientes/ProductosCotizacion',
                     'VALIDAR_DISPONIBILIDAD': BASE_URL + '/PedidosClientes/validarDisponibilidad',
-                    'LISTAR_FORMULA_PEDIDO': BASE_URL +'/PedidosClientes/listarFacturasPedido',
-                    'GENERAR_PEDIDO_BODEGA_FARMACIA': BASE_URL +'/PedidosClientes/generarPedidoBodegaFarmacia',
- 
-                    'ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET': BASE_URL +'/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet',
-                    'CONSULTAR_ESTADO_AUTORIZACION': BASE_URL +'/PedidosClientes/consultarEstadoAutorizacion',
-                    'ACTUALIZAR_ESTADO_PEDIDO': BASE_URL +'/PedidosClientes/actualizarEstadoPedido',
-                    'CONSULTAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL +'/PedidosClientes/consultarPedidoMultipleCliente',
-                    'ACTUALIZAR_BODEGA_COTIZACION_CLIENTES_MULTIPLE': BASE_URL +'/PedidosClientes/actualizarBodegaCotizacionClientesMultiples',
-                    'PEDIDO_CLIENTE_A_PEDIDO_FARMACIA': BASE_URL +'/PedidosClientes/pedidoClienteAPedidoFarmacia',
-                    'DUPLICAR_PEDIDO': BASE_URL +'/PedidosClientes/duplicarPedido',
-                    'ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL +'/PedidosClientes/actualizarPedidoMultipleCliente'
+                    'LISTAR_FORMULA_PEDIDO': BASE_URL + '/PedidosClientes/listarFacturasPedido',
+                    'GENERAR_PEDIDO_BODEGA_FARMACIA': BASE_URL + '/PedidosClientes/generarPedidoBodegaFarmacia',
+                    'ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET': BASE_URL + '/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet',
+                    'CONSULTAR_ESTADO_AUTORIZACION': BASE_URL + '/PedidosClientes/consultarEstadoAutorizacion',
+                    'ACTUALIZAR_ESTADO_PEDIDO': BASE_URL + '/PedidosClientes/actualizarEstadoPedido',
+                    'CONSULTAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL + '/PedidosClientes/consultarPedidoMultipleCliente',
+                    'ACTUALIZAR_BODEGA_COTIZACION_CLIENTES_MULTIPLE': BASE_URL + '/PedidosClientes/actualizarBodegaCotizacionClientesMultiples',
+                    'PEDIDO_CLIENTE_A_PEDIDO_FARMACIA': BASE_URL + '/PedidosClientes/pedidoClienteAPedidoFarmacia',
+                    'DUPLICAR_PEDIDO': BASE_URL + '/PedidosClientes/duplicarPedido',
+                    'ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL + '/PedidosClientes/actualizarPedidoMultipleCliente'
                 },
-                FARMACIAS :{
+                FARMACIAS: {
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',
                     'GUARDAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/guardarPedidoTemporal',
                     'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo',
@@ -108,15 +107,15 @@ define(["angular"], function(angular) {
                     'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',
                     'ACTUALIZAR_PEDIDO': BASE_URL + '/PedidosFarmacias/actualizarPedido',
                     'GENERAR_PDF_PEDIDO': BASE_URL + '/PedidosFarmacias/generarPdfPedido',
-                    'ENVIAR_EMAIL':BASE_URL + '/PedidosFarmacias/enviarEmailPedido',
-                    'ANULAR_PENDIENTE_PRODUCTO': BASE_URL +'/PedidosFarmacias/anularPendienteProducto',
-                    'GENERAR_PEDIDO_MODULO_CLIENTE': BASE_URL +'/PedidosFarmacias/generarPedidoModuloCliente',
-                    'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL +'/PedidosFarmacias/actualizarEstadoPedidoFarmacia',
-                    'ACTUALIZAR_CANTIDAD_PENDIENTE_PEDIDO_FARMACIA': BASE_URL +'/PedidosFarmacias/actualizarCantidadPendientePedidoFarmacia'
+                    'ENVIAR_EMAIL': BASE_URL + '/PedidosFarmacias/enviarEmailPedido',
+                    'ANULAR_PENDIENTE_PRODUCTO': BASE_URL + '/PedidosFarmacias/anularPendienteProducto',
+                    'GENERAR_PEDIDO_MODULO_CLIENTE': BASE_URL + '/PedidosFarmacias/generarPedidoModuloCliente',
+                    'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoPedidoFarmacia',
+                    'ACTUALIZAR_CANTIDAD_PENDIENTE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadPendientePedidoFarmacia'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
-                'LISTAR_PEDIDOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidos',//depreciado  se debe confirmar hay redundancia?????
+                'LISTAR_PEDIDOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidos', //depreciado  se debe confirmar hay redundancia?????
                 'ASIGNAR_RESPONSABLE_CLIENTE': BASE_URL + '/PedidosClientes/asignarResponsable',
                 'ELIMINAR_RESPONSABLE_CLIENTE': BASE_URL + '/PedidosClientes/eliminarResponsablesPedido',
                 'ASIGNAR_RESPONSABLE_FARMACIA': BASE_URL + '/PedidosFarmacias/asignarResponsable',
@@ -130,10 +129,10 @@ define(["angular"], function(angular) {
                 // URLS PEDIDOS CLIENTES.
                 'CENTROS_UTILIDAD_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarCentrosUtilidad',
                 'BODEGAS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarBodegas',
-                'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos', 
+                'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos',
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroDetalleTemporal',
                 'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroEncabezadoTemporal',
-              //  'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoActualPedido',
+                //  'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoActualPedido',
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidosTemporalesFarmacias',
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
                 'CONSULTA_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/estadoCotizacion',
@@ -151,27 +150,27 @@ define(["angular"], function(angular) {
                 'CONSULTAR_PRODUCTO_EN_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarProductoEnFarmacia',
                 'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido'
             },
-            'SEPARACION_PEDIDOS':{
-                'CONSULTAR_DISPONIBILIDAD': BASE_URL+"/Pedidos/consultarDisponibilidad",
-                'E008_DETALLE' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
-                'E008_DETALLE_VALIDACION_CANTIDAD_INGRESADA' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresada",
-                'JUSTIFICACION_PENDIENTES' : BASE_URL + "/movBodegas/E008/justificacionPendientes",
-                'ELIMINAR_ITEM_TEMPORAL' : BASE_URL + "/movBodegas/E008/eliminarProductoDocumentoTemporal",
-                'OBTENER_JUSTIFICACIONES' : BASE_URL + "/movBodegas/E008/obtenerJustificaciones",
-                'CLIENTES':{
+            'SEPARACION_PEDIDOS': {
+                'CONSULTAR_DISPONIBILIDAD': BASE_URL + "/Pedidos/consultarDisponibilidad",
+                'E008_DETALLE': BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
+                'E008_DETALLE_VALIDACION_CANTIDAD_INGRESADA': BASE_URL + "/movBodegas/E008/detalleDocumentoTemporalConValidacionCantidadIngresada",
+                'JUSTIFICACION_PENDIENTES': BASE_URL + "/movBodegas/E008/justificacionPendientes",
+                'ELIMINAR_ITEM_TEMPORAL': BASE_URL + "/movBodegas/E008/eliminarProductoDocumentoTemporal",
+                'OBTENER_JUSTIFICACIONES': BASE_URL + "/movBodegas/E008/obtenerJustificaciones",
+                'CLIENTES': {
                     'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega",
-                    'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes",
-                    'E008_DOCUMENTO_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/documentoTemporalClientes",
-                    'FINALIZAR_DOCUMENTO_CLIENTES' : BASE_URL + "/movBodegas/E008/finalizarDocumentoTemporalClientes",
-                    'ELIMINAR_DOCUMENTO_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/eliminarDocumentoTemporalClientes"
-                    
+                    'CONSULTAR_TEMPORAL_CLIENTES': BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes",
+                    'E008_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL + "/movBodegas/E008/documentoTemporalClientes",
+                    'FINALIZAR_DOCUMENTO_CLIENTES': BASE_URL + "/movBodegas/E008/finalizarDocumentoTemporalClientes",
+                    'ELIMINAR_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL + "/movBodegas/E008/eliminarDocumentoTemporalClientes"
+
                 },
-                'FARMACIAS':{
+                'FARMACIAS': {
                     'LISTAR_PEDIDOS_OPERARIO_FARMACIA': BASE_URL + "/PedidosFarmacias/listaPedidosOperarioBodega",
-                    'CONSULTAR_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalFarmacias",
-                    'E008_DOCUMENTO_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/documentoTemporalFarmacias",
-                    'FINALIZAR_DOCUMENTO_FARMACIAS' : BASE_URL + "/movBodegas/E008/finalizarDocumentoTemporalFarmacias",
-                    'ELIMINAR_DOCUMENTO_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/eliminarDocumentoTemporalFarmacias"
+                    'CONSULTAR_TEMPORAL_FARMACIAS': BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalFarmacias",
+                    'E008_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL + "/movBodegas/E008/documentoTemporalFarmacias",
+                    'FINALIZAR_DOCUMENTO_FARMACIAS': BASE_URL + "/movBodegas/E008/finalizarDocumentoTemporalFarmacias",
+                    'ELIMINAR_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL + "/movBodegas/E008/eliminarDocumentoTemporalFarmacias"
                 }
             },
             'TERCEROS': {
@@ -194,7 +193,8 @@ define(["angular"], function(angular) {
             },
             'DOCUMENTOS_DESPACHO': {
                 'IMPRIMIR_DOCUMENTO_DESPACHO': BASE_URL + "/movBodegas/E008/imprimirDocumentoDespacho",
-                'SINCRONIZAR_DOCUMENTO' : BASE_URL + '/movBodegas/E008/sincronizarDocumentoDespacho'
+                'SINCRONIZAR_DOCUMENTO': BASE_URL + '/movBodegas/E008/sincronizarDocumentoDespacho',
+                'IMPRIMIR_PLANILLA_DESPACHO': BASE_URL + "/PlanillasDespachos/reportePlanillaDespachoPedido"
             },
             'I002': {
                 'CREAR_NEW_DOCUMENTO_TEMPORAL': BASE_URL + '/movBodegas/I002/newDocTemporal',
@@ -208,7 +208,7 @@ define(["angular"], function(angular) {
     };
 
 
-    angular.forEach(data, function(key, value) {
+    angular.forEach(data, function (key, value) {
         Url.constant(value, key);
     });
 

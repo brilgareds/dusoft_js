@@ -146,8 +146,21 @@ ClientesModel.prototype.obtenterClientePorId = function(parametros, callback) {
     
 };
 
-ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
-
+/**
+ * @author Camilo orozco 
+ * +Descripcion Modelo encargado de listar los clientes con una excepcion
+ *              si el parametro estado es = 0 listara los clientes segun (ciudad, departamento, pais)
+ *              si el parametro llega diferente los listara todos
+ */
+ClientesModel.prototype.listar_clientes_ciudad = function(obj, callback) {
+    
+    var where = "";
+    var parametros = {1:obj.empresa_id, 2:"%" + obj.termino_busqueda + "%"};
+    if(obj.estado === '0'){
+        where = "  a.tipo_pais_id = :3  and a.tipo_dpto_id= :4 and a.tipo_mpio_id= :5 and ";
+        parametros =  {1:obj.empresa_id, 2:"%" + obj.termino_busqueda + "%", 3: obj.pais_id, 4: obj.departamento_id, 5: obj.ciudad_id};
+    } 
+    
     var sql = " a.tipo_id_tercero,\
                 a.tercero_id,\
                 a.nombre_tercero,\
@@ -168,19 +181,18 @@ ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, d
                 left join tipo_mpios e on a.tipo_pais_id = e.tipo_pais_id AND a.tipo_dpto_id = e.tipo_dpto_id AND a.tipo_mpio_id = e.tipo_mpio_id\
                 left join tipo_dptos f on e.tipo_pais_id = f.tipo_pais_id AND e.tipo_dpto_id = f.tipo_dpto_id \
                 left join tipo_pais g on f.tipo_pais_id = g.tipo_pais_id\
-                WHERE b.empresa_id = :1 and a.tipo_pais_id = :2  and a.tipo_dpto_id= :3 and a.tipo_mpio_id= :4 and \
+                WHERE b.empresa_id = :1 AND "+where+" \
                 (\
-                    a.tipo_id_tercero :: varchar "+G.constants.db().LIKE+" :5 or\
-                    a.tercero_id :: varchar "+G.constants.db().LIKE+"  :5 or\
-                    a.nombre_tercero :: varchar "+G.constants.db().LIKE+" :5 \
+                    a.tipo_id_tercero :: varchar "+G.constants.db().LIKE+" :2 or\
+                    a.tercero_id :: varchar "+G.constants.db().LIKE+"  :2 or\
+                    a.nombre_tercero :: varchar "+G.constants.db().LIKE+" :2 \
                 )\
                 ORDER BY a.nombre_tercero ";
-
     
-   G.knex.select(G.knex.raw(sql, {1:empresa_id, 2:pais_id, 3:departamento_id, 4:ciudad_id, 5:"%" + termino_busqueda + "%"})).
-   then(function(resultado){
+  G.knex.select(G.knex.raw(sql, parametros)).then(function(resultado){
        callback(false, resultado);
    }).catch(function(err){
+       console.log("err [listar_clientes_ciudad]::: ", err)
        callback(err);
    });
 

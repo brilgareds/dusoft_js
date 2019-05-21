@@ -23,7 +23,7 @@ ProductosModel.prototype.subeCosto_UpdateInventary = function(obj, callback) {
                 costo_ultima_compra: nuevo_precio
             });
         // .orderBy('fecha_entrega', 'asc');
-        //  console.log(G.sqlformatter.format(query.toString()));
+
         queryUpdateCosto.then(function (resultado) {
             callback(false, resultado);
         }).catch(function (err) {
@@ -71,7 +71,7 @@ ProductosModel.prototype.subeCosto_SelectBodDocNum = function(obj, callback) {
         .andWhere('centro_utilidad', '=', centro_id)
         .andWhere('bodega', '=', bodega_id)
         .andWhere('tipo_doc_bodega_id', '=', obj.tipo_doc_general_id);
-    //console.log('Este es el SQL: ',G.sqlformatter.format(querySelecNumeracionDocumento.toString()));
+
     querySelecNumeracionDocumento.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -388,12 +388,24 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
 
     var sql = "select case when ( :1 % coalesce(unidad_medida, 1)) = 0 then '1' else '0' end as valido, unidad_medida from\
                inventarios_productos where codigo_producto = :2 ";
-    
-   G.knex.raw(sql, {1 : parseInt(obj.cantidad), 2 : obj.codigo_producto}).
-   then(function(resultado){
+   
+   var query = G.knex.raw(sql, {1 : parseInt(obj.cantidad), 2 : obj.codigo_producto});
+   query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
-       console.log("validarUnidadMedidaProducto  ",err);
+       callback(err);
+   });
+};
+
+ProductosModel.prototype.validarUnidadMedidaDescipcionProducto = function(obj, callback) {
+
+    var sql = "select case when ( :1 % coalesce(unidad_medida, 1)) = 0 then '1' else '0' end as valido, unidad_medida,tipo_producto_id,fc_descripcion_producto(codigo_producto) as descripcion_producto  from\
+               inventarios_productos where codigo_producto = :2 ";
+   
+   var query = G.knex.raw(sql, {1 : parseInt(obj.cantidad), 2 : obj.codigo_producto});
+   query.then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
        callback(err);
    });
 };

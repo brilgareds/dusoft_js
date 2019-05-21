@@ -1,0 +1,73 @@
+<div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left col-md-11">
+                        <h4 class="text-center"><strong>Modificar Documento</strong></h4>
+                    </div>
+                    <div class="pull-right">
+                        <div> 
+                            <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+                        </div> 
+                    </div>
+                </div>
+                <br>
+
+                <div class="row">
+                    <div class="col-md-3" >
+                        <div class="row">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend>Documento</legend>
+                                    <h4 class=""><strong>{{DocModificar.prefijo}}-{{DocModificar.numero}}</strong></h4>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>Cantidad Cajas</legend>                                 
+                            <div class="row">  
+                                <div class="col-md-12">
+                                    <input type="text" class="form-control" ng-model="DocModificar.cantidad_cajas" name="" id=""/>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>Cantidad Neveras</legend>                                 
+                            <div class="row">  
+                                <div class="col-md-12">
+                                    <input type="text" class="form-control" ng-model="DocModificar.cantidad_neveras" name="" id=""/>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-3">
+
+                        <fieldset>
+                            <legend>Cantidad Bolsas</legend>                                 
+                            <div class="row">  
+                                <div class="col-md-12">
+                                    <input type="text" class="form-control" ng-model="DocModificar.cantidad_bolsas" name="" id=""/>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <br />
+                <div class="row text-center">
+                    <button type="button" class="btn btn-primary btn-medium" 
+                            aria-haspopup="true" aria-expanded="false" ng-click="guardarDoc()" ng-disabled="habilitarGuardar()"> 
+                        guardar <i class="glyphicon glyphicon-floppy-disk"></i>
+                    </button>
+                </div>
+            </div>       
+        </div>
+    </div>  
+</div>  
+

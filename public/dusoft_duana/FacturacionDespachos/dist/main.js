@@ -51704,7 +51704,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
-console.log("key",key);
+//console.log("key",key);
                     if (llavesPermanentes.indexOf(key) === -1) {
                         localStorageService.remove(key);
                     }
@@ -51754,7 +51754,7 @@ console.log("key",key);
             };
             
             self.irAlHome = function(mensaje){
-                console.log("ir al home");
+//                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
                 
@@ -62263,21 +62263,24 @@ define('controllers/facturacionProveedor/DetalleRecepcionParcialController',["an
  ], function(angular, controllers) {
     
         controllers.controller('DetalleRecepcionParcialController', [
-        '$scope', '$rootScope', "Request",
-        "$filter", '$state', '$modal',
-        "API", "AlertService", 'localStorageService',
-        "Usuario", "socket", "$timeout",
-        "Empresa",
-        function($scope, $rootScope, Request,
-                $filter, $state, $modal,
-                API, AlertService, localStorageService,
-                Usuario, socket, $timeout,
-                Empresa) {
-                    
-                    var that = this;
-                    var filtroPedido = localStorageService.get("verificacionDetalle");
-               }]);
+            '$scope', '$rootScope', "Request",
+            "$filter", '$state', '$modal',
+            "API", "AlertService", 'localStorageService',
+            "Usuario", "socket", "$timeout",
+            "Empresa",
+            function($scope, $rootScope, Request,
+                    $filter, $state, $modal,
+                    API, AlertService, localStorageService,
+                    Usuario, socket, $timeout,
+                    Empresa) {
+
+                        var that = this;
+                        var filtroPedido = localStorageService.get("verificacionDetalle");
+            }
+            ]
+        );
 });
+
 define('controllers/cajaGeneral/CajaGeneralController',["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('CajaGeneralController',
@@ -64482,7 +64485,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         };
 
                         notasService.imprimirReporteFacturaDian(obj, function (data) {
-                            console.log("imprimirReporteFacturaDian:: ", data);
+                            
                             if (data.status === 200) {
                                 var nombre = data.obj.consulta_factura_generada_detalle.nombre_pdf;
                                 $scope.visualizarReporte("/reports/doc_dian/" + nombre, nombre, "_blank");
@@ -65242,8 +65245,6 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                     empresaId: $scope.root.empresaSeleccionada.getCodigo()
                                 };
                                 that.listarNotas(parametros);
-                            } else {
-
                             }
                         }
                     };
@@ -67479,7 +67480,7 @@ define('app',[
                     controller: "PedidosClientesController",
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
-                    url: "/NotasProveedores",
+                    url: "/FacturacionProveedores",
                     text: "Facturacion Proveedores", 
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",

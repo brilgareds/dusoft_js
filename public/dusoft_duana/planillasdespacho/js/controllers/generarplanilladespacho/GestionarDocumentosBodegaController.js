@@ -229,6 +229,12 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             that.listarFarmaciasMedipol = function (callback) {
 
+                var url = API.CENTROS_UTILIDAD.LISTAR_FARMACIAS_TERCEROS;
+
+                if ($scope.datos_view.tercero_seleccionado.nombre === 'LO') {
+                    url = API.CENTROS_UTILIDAD.LISTAR_CENTROS_UTILIDAD;
+                }
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -240,7 +246,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     }
                 };
 
-                Request.realizarRequest(API.CENTROS_UTILIDAD.LISTAR_FARMACIAS_TERCEROS, "POST", obj, function (data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         that.render_tercero(data.obj.centros_utilidad, callback);
@@ -365,6 +371,47 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 }
 
                 if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
+                    return true;
+                }
+
+                // Validar que las cantidad de cajas no sean 0 o vacias                                
+                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
+                    disabled = true;
+                }
+
+                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
+                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
+                    disabled = false;
+//                    if (documento.get_temperatura_neveras() === '') {
+//                        disabled = true;
+//                    }
+                }
+
+                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
+                    disabled = false;
+                }
+
+                return disabled;
+            };
+
+            $scope.validar_ingreso_documento_otros = function (documento) {
+
+                var disabled = false;
+
+                if ($scope.datos_view.despachoPorLios) {
+                    return true;
+                }
+
+                // Validar que el prefijo y el numero del documento esten presentes
+                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
+                    return true;
+                }
+
+                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
+                    return true;
+                }
+
+                if (documento.tercero === undefined || documento.tercero === '') {
                     return true;
                 }
 
@@ -564,7 +611,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento_otros(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
                                             <button class="btn btn-default btn-xs" ng-click="onMostrarVentanaDescripcion(row.entity)" ng-show="datos_view.opcion_predeterminada == 2" ng-disabled="datos_view.despachoPorLios" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
                     }
@@ -687,10 +734,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             that.removerTerceros = function (tercero) {
                 var terceros = $scope.datos_clientes_farmacias;
                 for (var i in terceros) {
-                    if(terceros[i].nombre !== tercero.nombre || terceros[i].id !== tercero.id || terceros[i].tipo_id_tercero !== tercero.tipo_id_tercero){
-                    var _tercero = terceros[i];
-                    _tercero.seleccionado = false;
-                }
+                    if (terceros[i].nombre !== tercero.nombre || terceros[i].id !== tercero.id || terceros[i].tipo_id_tercero !== tercero.tipo_id_tercero) {
+                        var _tercero = terceros[i];
+                        _tercero.seleccionado = false;
+                    }
                 }
 
             };

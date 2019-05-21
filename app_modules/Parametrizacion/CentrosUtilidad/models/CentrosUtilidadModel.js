@@ -81,7 +81,7 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_bodega = function (obj, c
                 b.ubicacion,\
                 a.telefono\
                 from centros_utilidad a \
-                INNER JOIN bodegas b ON (a.centro_utilidad = b.centro_utilidad and a.empresa_id = b.empresa_id)" + where;
+                INNER JOIN bodegas b ON (a.centro_utilidad = b.centro_utilidad and a.empresa_id = b.empresa_id)" + where +" order By b.descripcion ASC";
 
     var query = G.knex.raw(sql, parametros);
 

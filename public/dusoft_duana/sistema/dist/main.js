@@ -33508,7 +33508,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             $scope.promedioActual = 0;
             $scope.promedioTotal = 0;
             $scope.monitorModulos = {};
-            $scope.monitoreo = { servers: [] };
+            $scope.monitoreo = { servers: [], serversName: [] };
 
             // Variables Globales
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
@@ -33546,13 +33546,20 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
 
 
-            $scope.querysActiveInDb = (modulo, action, server, process = {}) => {
-                console.log('Funcion "querysActiveInDb"');
+            $scope.querysActiveInDb = (modulo, action, server, header = {}, process = {}) => {
+                if (header && process) {
+                    let rows = process;
+                    process = {};
+
+                    for (let row in rows) {
+                        process[header[row]] = rows[row];
+                    }
+                }
 
                 const obj = {
                     session: $scope.session,
                     data: {
-                        accion: action,
+                        action: action,
                         modulo: modulo,
                         server: server,
                         process: process
@@ -33560,8 +33567,15 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 };
                 $scope.post(API.LOGS.QUERYSACTIVES, obj, data => {
                     if (data.status === 200) {
-                        console.log('Response is fine!!!', '\nObj is:\n', data.obj);
-                        $scope.monitoreo[server][modulo].obj = data.obj;
+                        if (action === 'killProcess') {
+                            $scope.querysActiveInDb(modulo, 'querysActiveInDb', server, process);
+                        }
+                        if (action === 'querysActiveInDb') {
+                            $scope.monitoreo[server][modulo].obj = data.obj;
+                        }
+                    } else {
+                        console.log('Error: ', data.msj);
+                        alert(data.msj);
                     }
                 });
             };
@@ -33581,15 +33595,12 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
             let btn_dbStatusDefault = {
                 title: 'Status',
-                name: 'status',
+                name: 'querysActiveInDb',
                 class: serverBtnSize + 'btn btn-primary',
                 disable: false,
                 icono: 'glyphicon glyphicon-list-alt',
                 btn_function: 'querysActiveInDb'
             };
-
-
-
             let btn_killQuery = {
                 title: 'Kill Query',
                 name: 'killQuery',
@@ -33598,39 +33609,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 icono: 'glyphicon glyphicon-refresh',
                 btn_function: 'querysActiveInDb'
             };
-
             btn_killQuery.htmlPersonalizado = true;
-
-
-
-
-
-
-
-            let btn_dbStatusDefault2 = {
-                title: 'Status',
-                name: 'status',
-                class: serverBtnSize + 'btn btn-primary',
-                disable: false,
-                icono: 'glyphicon glyphicon-list-alt',
-                btn_function: 'sshConnection'
-            };
-            let btn_killQuery2 = {
-                title: 'Kill Query',
-                name: 'killQuery',
-                class: serverBtnSize + 'btn btn-danger',
-                disable: false,
-                icono: 'glyphicon glyphicon-refresh',
-                btn_function: 'sshConnection'
-            };
-
-
-
-
-
-
-
-
 
             let btn_reloadPM2 = {
                 title: 'Reload',
@@ -33662,6 +33641,32 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 class: serverBtnSize + 'btn btn-danger',
                 disable: false,
                 icono: 'glyphicon glyphicon-stop',
+                btn_function: 'sshConnection'
+            };
+
+            let btn_sshStatusDefaultDisabled = {
+                title: 'Status',
+                name: 'status',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: true,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'sshConnection'
+            };
+
+            let btn_reloadPM2Disabled = {
+                title: 'Reload',
+                name: 'reload',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: true,
+                icono: 'glyphicon glyphicon-refresh',
+                btn_function: 'sshConnection'
+            };
+            let btn_resurrectPM2Disabled = {
+                title: 'Resurrect',
+                name: 'resurrect',
+                class: serverBtnSize + 'btn btn-danger',
+                disable: true,
+                icono: 'glyphicon glyphicon-eject',
                 btn_function: 'sshConnection'
             };
 
@@ -33697,45 +33702,41 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 ],
                 obj: []
             };
-            $scope.monitorModulos.DATABASE = {
-                title: 'BASE DE DATOS',
+            $scope.monitorModulos.PM2_DISABLED = {
+                title: 'PM2',
                 width: serverSizeMedium,
-                tableClass: 'tablePc tableBorder cells-auto line-nowrap',
+                tableClass: 'tablePc tableBorder cells-auto line-normal',
                 actions: [
-                    btn_dbStatusDefault,
-                    btn_killQuery
+                    btn_sshStatusDefaultDisabled,
+                    btn_reloadPM2Disabled,
+                    btn_resurrectPM2Disabled
                 ],
                 obj: []
             };
-
-
-
-
-            $scope.monitorModulos.DATABASE2 = {
-                title: 'BASE DE DATOS',
-                width: serverSizeMedium,
+            $scope.monitorModulos.POSTGRES = {
+                title: 'POSTGRES',
+                width: serverSizeMax,
                 tableClass: 'tablePc tableBorder cells-auto line-nowrap',
                 actions: [
-                    btn_dbStatusDefault2,
-                    btn_killQuery2
+                    btn_dbStatusDefault
                 ],
                 obj: []
             };
-
-
-
 
             // Funcion para crear Servidor con Modulos y Sockets
             $scope.crearServer = (server, Modulos) => {
                 $scope.monitoreo[server] = {};
                 $scope.monitoreo.servers.push(server);
+                if (server === 246) {
+                    $scope.monitoreo.serversName[server] = 'Base de Datos';
+                } else {
+                    $scope.monitoreo.serversName[server] = 'Server ' + server;
+                }
 
                 // Agregando Modulos al servidor
                 if(Array.isArray(Modulos) && Modulos.length > 0) {
                     for (let Modulo of Modulos) {
-                        if($scope.monitorModulos[Modulo] !== undefined
-                            && Array.isArray(Modulos)
-                            && $scope.monitoreo[server] !== undefined)
+                        if($scope.monitorModulos[Modulo] !== undefined)
                         {
                             if($scope.monitoreo[server].modulos === undefined) {
                                 $scope.monitoreo[server].modulos = [];
@@ -33751,13 +33752,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                                 if (datos.status === 200) $scope.monitoreo[server][Modulo].obj = datos.obj;
                             });
                         } else {
-                            console.log('Error!!');
-                            if ($scope.monitoreo[server] !== undefined) {
-                                console.log('Servidor: '+ server +', no existe!!');
-                            }
-                            if ($scope.monitorModulos[Modulo] !== undefined) {
-                                console.log('Modulo: '+ Modulo +', no existe!!');
-                            }
+                            console.log('Modulo: '+ Modulo +', no existe!!');
                         }
                     }
                 } else {
@@ -33766,11 +33761,11 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
 
             // Creando servidores, Agregando Modulos y agregando Sockets
+            $scope.crearServer(246, ['POSTGRES']); // Creando servidor 246
             $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
-            $scope.crearServer(191, ['PC', 'PM2', 'DATABASE2']); // Creando servidor 191
+            $scope.crearServer(191, ['PC', 'PM2']); // Creando servidor 191
             $scope.crearServer(216, ['PC', 'PM2', 'JASPER']); // Creando servidor 216
-            $scope.crearServer(229, ['PC', 'PM2']); // Creando servidor 229
-            $scope.crearServer(246, ['DATABASE']); // Creando servidor 246
+            $scope.crearServer(229, ['PC', 'PM2_DISABLED']); // Creando servidor 229
 
             // Variables y funciones para Estadistica de Memoria
             $scope.datosGrafico = [{

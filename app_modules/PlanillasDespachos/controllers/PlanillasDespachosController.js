@@ -1293,6 +1293,11 @@ function _generar_reporte_planilla_despacho(rows, callback) {
             helpers: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '792px',
+                footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`
+            }
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",

@@ -235,6 +235,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ],
                 obj: []
             };
+<<<<<<< HEAD
+            // Creando servidores
+            $scope.crearServer(216); // Creando servidor 216
+            $scope.crearServer(229); // Creando servidor 229
+           
+            $scope.crearServer(117); // Creando servidor 216
+            
+            // Agregando Modulos a los servidores
+            $scope.agregarModulo(216, 'PC');
+            $scope.agregarModulo(216, 'JASPER');
+            $scope.agregarModulo(216, 'PM2');
+
+            $scope.agregarModulo(229, 'PC');
+            $scope.agregarModulo(229, 'PM2');
+            
+            $scope.agregarModulo(117, 'PC');
+            $scope.agregarModulo(117, 'PM2');
+=======
 
             // Funcion para crear Servidor con Modulos y Sockets
             $scope.crearServer = (server, Modulos) => {
@@ -272,6 +290,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     console.log('Error: formato incorrecto en array "Modulos"!!');
                 }
             };
+>>>>>>> master
 
             // Creando servidores, Agregando Modulos y agregando Sockets
             $scope.crearServer(246, ['POSTGRES']); // Creando servidor 246
@@ -346,5 +365,58 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     return d3.time.format('%x-%H:%M')(new Date(d * 1000));
                 };
             };
+<<<<<<< HEAD
+
+            // Socket del SERVER 216
+            socket.on("pc216", function (datos) {
+                console.log('pc216');
+                if (datos.status === 200) { $scope.monitoreo[216].PC.obj = datos.obj; }
+                
+            });
+            socket.on("jasper216", function (datos) {
+                if (datos.status === 200) { $scope.monitoreo[216].JASPER.obj = datos.obj; }
+            });
+            socket.on("pm2216", function (datos) {
+                if (datos.status === 200) { $scope.monitoreo[216].PM2.obj = datos.obj; }
+            });
+
+            // Socket del SERVER 229
+            socket.on("pc229", function (datos) {
+                console.log('pc229');
+                if (datos.status === 200) { $scope.monitoreo[229].PC.obj = datos.obj; }
+            });
+            socket.on("jasper229", function (datos) {
+                if (datos.status === 200) { $scope.monitoreo[229].JASPER.obj = datos.obj; }
+            });
+            socket.on("pm2229", function (datos) {
+                if (datos.status === 200) { $scope.monitoreo[229].PM2.obj = datos.obj; }
+            });
+           
+            socket.on("pc117", function (datos) {
+                if (datos.status === 200) { $scope.monitoreo[117].PC.obj = datos.obj; }
+            });
+            socket.on("pm2117", function (datos) {
+                console.log("Datos ",datos);
+                if (datos.status === 200) { $scope.monitoreo[117].PM2.obj = datos.obj; }
+            });
+
+            $scope.sshConnection = function (modulo, accion, server) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        accion: accion,
+                        modulo: modulo,
+                        server: server
+                    }
+                };
+
+                Request.realizarRequest(API.LOGS.JASPER_REPORT, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        console.log('Repuesta 200');
+                    }
+                });
+            };
+=======
+>>>>>>> master
         }]);
 });

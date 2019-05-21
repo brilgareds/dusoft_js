@@ -44,7 +44,7 @@
     color: #FFF;
     min-height: 50px;
 }
-.contenedor-modulos-btns{
+.contenedor-modulos-btns {
     display: flex;
     justify-content: space-between;
 }
@@ -53,4 +53,28 @@
     border-radius: 30px;
     padding-right: 40px;
     width: 73%;
+}
+.line-nowrap td {
+    white-space: nowrap;
+    padding: 5px;
+}
+tr .nowrap {
+    white-space: nowrap;
+}
+tr .nowrap:nth-child(7) {
+    white-space: normal;
+}
+.line-normal td, .line-nowrap td:last-child:not(.normal), tr > .nowrap:last-child {
+    white-space: normal;
+}
+.line-nowrap .nowrap:last-child {
+    white-space: normal !important;
+}
+.custom-danger {
+    background: #b7403c;
+    padding: 5px;
+    margin: 5px;
+}
+.custom-danger:hover {
+    background-color: #8a1512;
 }

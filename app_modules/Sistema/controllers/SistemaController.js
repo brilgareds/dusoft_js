@@ -85,6 +85,25 @@ const limpiarRespuesta = (lineas) => {
     return responseLineas;
 };
 
+Sistema.prototype.querysActiveInDb = (req, res) => {
+    console.log('In controller "querysActiveInDb"');
+    let parametros = req.body.data;
+    let funcion = parametros.action;
+    let modulo = parametros.modulo;
+    let server = parametros.server;
+    let process = parametros.process;
+    let response = [];
+
+    G.Q.ninvoke(that.m_sistema, funcion, parametros)
+        .then(rows => {
+            response.push(rows);
+            res.send(G.utils.r(req.url, 'Mostrando procesos de la base de datos', 200, response));
+        }).catch(err => {
+            console.log('Error: ', err);
+            res.send(G.utils.r(req.url, err.msg, 500, {}));
+        }).done();
+};
+
 const promesa = new Promise((resolve, reject) => { resolve(true); });
 
 Sistema.prototype.sshConnection = (req, res) => {

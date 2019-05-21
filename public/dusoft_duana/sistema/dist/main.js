@@ -33499,7 +33499,9 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
 
             let that = this;
             const serverBtnSize = 'col-xs-3 col-sm-3 col-md-3 col-lg-2 ';
-            const serverSize = 'col-xs-6 col-sm-6 col-md-6 col-lg-6 ';
+            const serverBtnSizeMedium = 'col-xs-6 col-sm-6 col-md-6 col-lg-5 ';
+            const serverSizeMedium = 'col-xs-6 col-sm-6 col-md-6 col-lg-6 ';
+            const serverSizeMax = 'col-xs-12 col-sm-12 col-md-12 col-lg-12 ';
             $scope.promedio1Min = 0;
             $scope.promedio5Min = 0;
             $scope.promedio15Min = 0;
@@ -33523,38 +33525,205 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 Request.realizarRequest(url, "POST", obj, data => callback(data) );
             };
 
+            // Funcion para la conexion por SSH con los servidores
+            $scope.sshConnection = (modulo, action, server) => {
+                console.log('Funcion "sshConnection"');
+                const obj = {
+                    session: $scope.session,
+                    data: {
+                        accion: action,
+                        modulo: modulo,
+                        server: server
+                    }
+                };
+                $scope.post(API.LOGS.SSH, obj, data => {
+                    if (data.status === 200) {
+                        if (modulo === 'PM2' && btn.accion === 'reload') {
+                            $scope.sshConnection(modulo, 'status', server);
+                        }
+                    }
+                });
+            };
+
+
+            $scope.querysActiveInDb = (modulo, action, server, process = {}) => {
+                console.log('Funcion "querysActiveInDb"');
+
+                const obj = {
+                    session: $scope.session,
+                    data: {
+                        accion: action,
+                        modulo: modulo,
+                        server: server,
+                        process: process
+                    }
+                };
+                $scope.post(API.LOGS.QUERYSACTIVES, obj, data => {
+                    if (data.status === 200) {
+                        console.log('Response is fine!!!', '\nObj is:\n', data.obj);
+                        $scope.monitoreo[server][modulo].obj = data.obj;
+                    }
+                });
+            };
+
+            $scope.btnAccion = (modulo, btn, server) => {
+                $scope[btn.btn_function](modulo, btn.name, server);
+            };
+
+            // Botones para los modulos
+            let btn_sshStatusDefault = {
+                title: 'Status',
+                name: 'status',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'sshConnection'
+            };
+            let btn_dbStatusDefault = {
+                title: 'Status',
+                name: 'status',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'querysActiveInDb'
+            };
+
+
+
+            let btn_killQuery = {
+                title: 'Kill Query',
+                name: 'killQuery',
+                class: serverBtnSizeMedium + '',
+                disable: false,
+                icono: 'glyphicon glyphicon-refresh',
+                btn_function: 'querysActiveInDb'
+            };
+
+            btn_killQuery.htmlPersonalizado = true;
+
+
+
+
+
+
+
+            let btn_dbStatusDefault2 = {
+                title: 'Status',
+                name: 'status',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'sshConnection'
+            };
+            let btn_killQuery2 = {
+                title: 'Kill Query',
+                name: 'killQuery',
+                class: serverBtnSize + 'btn btn-danger',
+                disable: false,
+                icono: 'glyphicon glyphicon-refresh',
+                btn_function: 'sshConnection'
+            };
+
+
+
+
+
+
+
+
+
+            let btn_reloadPM2 = {
+                title: 'Reload',
+                name: 'reload',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-refresh',
+                btn_function: 'sshConnection'
+            };
+            let btn_resurrectPM2 = {
+                title: 'Resurrect',
+                name: 'resurrect',
+                class: serverBtnSize + 'btn btn-danger',
+                disable: false,
+                icono: 'glyphicon glyphicon-eject',
+                btn_function: 'sshConnection'
+            };
+            let btn_startDefault = {
+                title: 'Start',
+                name: 'start',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-play',
+                btn_function: 'sshConnection'
+            };
+            let btn_stopDefault = {
+                title: 'Stop',
+                name: 'stop',
+                class: serverBtnSize + 'btn btn-danger',
+                disable: false,
+                icono: 'glyphicon glyphicon-stop',
+                btn_function: 'sshConnection'
+            };
+
             // Creando Modulos
             $scope.monitorModulos.PC = {
                 title: 'PC',
-                width: serverSize,
-                tableClass: 'tablePc',
+                width: serverSizeMedium,
+                tableClass: 'tablePc line-normal',
                 actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'}
+                    btn_sshStatusDefault
                 ],
                 obj: []
             };
             $scope.monitorModulos.JASPER = {
                 title: 'JasperServer',
-                width: serverSize,
-                tableClass: 'tablePc',
+                width: serverSizeMedium,
+                tableClass: 'tablePc line-normal',
                 actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
-                    {title: 'Start', name: 'start', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-play'},
-                    {title: 'Stop', name: 'stop', class: serverBtnSize + 'btn btn-danger', disable: false, icono: 'glyphicon glyphicon-stop'}
+                    btn_sshStatusDefault,
+                    btn_startDefault,
+                    btn_stopDefault
                 ],
                 obj: []
             };
             $scope.monitorModulos.PM2 = {
                 title: 'PM2',
-                width: serverSize,
-                tableClass: 'tablePc tableBorder cells-auto',
+                width: serverSizeMedium,
+                tableClass: 'tablePc tableBorder cells-auto line-normal',
                 actions: [
-                    {title: 'Status', name: 'status', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-list-alt'},
-                    {title: 'Reload', name: 'reload', class: serverBtnSize + 'btn btn-primary', disable: false, icono: 'glyphicon glyphicon-refresh'},
-                    {title: 'Resurrect', name: 'resurrect', class: serverBtnSize + 'btn btn-danger', disable: false, icono: 'glyphicon glyphicon-eject'}
+                    btn_sshStatusDefault,
+                    btn_reloadPM2,
+                    btn_resurrectPM2
                 ],
                 obj: []
             };
+            $scope.monitorModulos.DATABASE = {
+                title: 'BASE DE DATOS',
+                width: serverSizeMedium,
+                tableClass: 'tablePc tableBorder cells-auto line-nowrap',
+                actions: [
+                    btn_dbStatusDefault,
+                    btn_killQuery
+                ],
+                obj: []
+            };
+
+
+
+
+            $scope.monitorModulos.DATABASE2 = {
+                title: 'BASE DE DATOS',
+                width: serverSizeMedium,
+                tableClass: 'tablePc tableBorder cells-auto line-nowrap',
+                actions: [
+                    btn_dbStatusDefault2,
+                    btn_killQuery2
+                ],
+                obj: []
+            };
+
+
+
 
             // Funcion para crear Servidor con Modulos y Sockets
             $scope.crearServer = (server, Modulos) => {
@@ -33578,6 +33747,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                             const modulo = Modulo.toLowerCase();
                             const nombreSocket = modulo+server;
                             socket.on(nombreSocket, datos => {
+                                console.log('Response is fine!!!', '\nObj is:\n', datos.obj);
                                 if (datos.status === 200) $scope.monitoreo[server][Modulo].obj = datos.obj;
                             });
                         } else {
@@ -33597,29 +33767,10 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
 
             // Creando servidores, Agregando Modulos y agregando Sockets
             $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
-            // $scope.crearServer(191, ['PC', 'PM2']); // Creando servidor 191
+            $scope.crearServer(191, ['PC', 'PM2', 'DATABASE2']); // Creando servidor 191
             $scope.crearServer(216, ['PC', 'PM2', 'JASPER']); // Creando servidor 216
             $scope.crearServer(229, ['PC', 'PM2']); // Creando servidor 229
-
-            // Funcion para la conexion por SSH con los servidores
-            $scope.sshConnection = (modulo, accion, server) => {
-                const obj = {
-                    session: $scope.session,
-                    data: {
-                        accion: accion,
-                        modulo: modulo,
-                        server: server
-                    }
-                };
-                $scope.post(API.LOGS.SSH, obj, data => {
-                    if (data.status === 200) {
-                        console.log('Repuesta 200');
-                        if (modulo === 'PM2' && accion === 'reload') {
-                            $scope.sshConnection(modulo, 'status', server);
-                        }
-                    }
-                });
-            };
+            $scope.crearServer(246, ['DATABASE']); // Creando servidor 246
 
             // Variables y funciones para Estadistica de Memoria
             $scope.datosGrafico = [{
@@ -34054,15 +34205,16 @@ define('includes/menu/menucontroller',["angular", "js/controllers", "treemenu"],
         }]);
 });
 define('url',["angular"], function(angular) {
-    var Url = angular.module('Url', []);
-    var BASE_URL = "/api";
-    var data = {
+    let Url = angular.module('Url', []);
+    let BASE_URL = "/api";
+    let data = {
         'API': {
             'BASE_URL': BASE_URL,
             'LOGS': {
                 "LISTAR_LOGS": BASE_URL + "/Sistema/listarLogs",
                 "LISTAR_LOGS_VERSION": BASE_URL + "/Sistema/listarLogsVersion",
-                "SSH": BASE_URL + "/Sistema/sshConnection",
+                'SSH': BASE_URL + '/Sistema/sshConnection',
+                'QUERYSACTIVES': BASE_URL + '/Sistema/querysActiveInDb'
             },
             'VERSION' : {
                 "VERIFICAR_SINCRONIZACION": BASE_URL + "/Sistema/verificarSincronizacion",

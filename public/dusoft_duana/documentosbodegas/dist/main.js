@@ -54271,6 +54271,7 @@ define('models/E009/ProductoDevolucion',["angular", "js/models", "includes/class
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.item_id = item_id;
+                this.total_costo = 0;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
                 this.subClase = subClase;
@@ -54312,6 +54313,14 @@ define('models/E009/ProductoDevolucion',["angular", "js/models", "includes/class
 
             ProductoDevolucion.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+            
+            ProductoDevolucion.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoDevolucion.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
             
             ProductoDevolucion.prototype.setItemId = function (item_id) {
@@ -54405,6 +54414,7 @@ define('models/E017/ProductoDevolucionE017',["angular", "js/models", "includes/c
                 this.cantidad = cantidad;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
+                this.total_costo = 0;
                 this.lote = lote || "";
                 this.subClase = subClase;
                 this.autorizado = true;
@@ -54437,6 +54447,14 @@ define('models/E017/ProductoDevolucionE017',["angular", "js/models", "includes/c
             
             ProductoDevolucionE017.prototype.setSubClase = function (subClase) {
                 this.subClase = subClase;
+            };
+            
+            ProductoDevolucionE017.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoDevolucionE017.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
             
             ProductoDevolucionE017.prototype.setCantidad = function (cantidad) {
@@ -64528,6 +64546,7 @@ define('controllers/E017/E017Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
+                            producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -64948,6 +64967,7 @@ define('controllers/E017/E017GestionarProductosController',["angular", "js/contr
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
                     producto.setNombreTipo(data.nombreTipo);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -65055,6 +65075,7 @@ define('controllers/E017/E017GestionarProductosController',["angular", "js/contr
                         bodega: Empresa.centroUtilidad.bodega.codigo,
                         codigoProducto: producto.codigo_producto,
                         cantidad: producto.cantidad,
+                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
                         docTmpId: $scope.doc_tmp_id
@@ -72406,6 +72427,7 @@ define('services/E017/E017Service',["angular", "js/services"], function (angular
                                 cantidad: parametro.data.cantidad,
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };

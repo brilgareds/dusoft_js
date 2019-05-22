@@ -95,6 +95,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
                     producto.setNombreTipo(data.nombreTipo);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -202,6 +203,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         bodega: Empresa.centroUtilidad.bodega.codigo,
                         codigoProducto: producto.codigo_producto,
                         cantidad: producto.cantidad,
+                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
                         docTmpId: $scope.doc_tmp_id

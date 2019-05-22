@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.cantidad = cantidad;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
+                this.total_costo = 0;
                 this.lote = lote || "";
                 this.subClase = subClase;
                 this.autorizado = true;
@@ -42,6 +43,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             
             ProductoDevolucionE017.prototype.setSubClase = function (subClase) {
                 this.subClase = subClase;
+            };
+            
+            ProductoDevolucionE017.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoDevolucionE017.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
             
             ProductoDevolucionE017.prototype.setCantidad = function (cantidad) {

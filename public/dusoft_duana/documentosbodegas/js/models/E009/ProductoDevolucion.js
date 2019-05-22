@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.item_id = item_id;
+                this.total_costo = 0;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
                 this.subClase = subClase;
@@ -50,6 +51,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
 
             ProductoDevolucion.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+            
+            ProductoDevolucion.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoDevolucion.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
             
             ProductoDevolucion.prototype.setItemId = function (item_id) {

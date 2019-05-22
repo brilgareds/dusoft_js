@@ -151,8 +151,8 @@ Sistema.prototype.sshConnection = (req, res) => {
             password: "301206."
         };
     }else if(server === 117){
-        var credentialRoot = 'echo 301206. | sudo -S ';
-        var parametros = {
+        credentialRoot = 'echo 301206. | sudo -S ';
+        parametros = {
             host: "10.0.2.117",
             user: "duana",
             password: "301206."

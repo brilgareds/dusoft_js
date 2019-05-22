@@ -118,6 +118,8 @@ Sistema.prototype.sshConnection = (req, res) => {
     let cantidadObjetos = 1;
     let credentialRoot = '';
     let parametros = {};
+    let dusoft_directory = '';
+    let buscar_dusoft = '';
     let urlJasper = '/opt/jasperreports-server-cp-6.2.1/./ctlscript_public.sh';
     // var urlPM2 = '/var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js';
     // console.log('Modulo es: ', modulo, ''); // Nombre del modulo
@@ -130,6 +132,7 @@ Sistema.prototype.sshConnection = (req, res) => {
             password: "301206."
         };
     } else if (server === 191) {
+        dusoft_directory = '/media/datos/Proyectos/Dusoft_Angular/Duana';
         credentialRoot = 'echo gear777 | sudo -S ';
         parametros = {
             host: '10.0.2.191',
@@ -137,6 +140,7 @@ Sistema.prototype.sshConnection = (req, res) => {
             password: 'gear777'
         };
     } else if (server === 216) {
+        dusoft_directory = '/home/dusoft-server';
         credentialRoot = 'echo 301206. | sudo -S ';
         parametros = {
             host: "10.0.2.216",
@@ -144,6 +148,7 @@ Sistema.prototype.sshConnection = (req, res) => {
             password: "301206."
         };
     } else if (server === 229) {
+        dusoft_directory = '/var/www/projects/eDusoft/development_production/dusoft-server';
         credentialRoot = 'echo 301206. | sudo -S ';
         parametros = {
             host: "10.0.2.229",
@@ -151,6 +156,7 @@ Sistema.prototype.sshConnection = (req, res) => {
             password: "301206."
         };
     }
+    buscar_dusoft = 'cd ' + dusoft_directory;
 
     let retorno = {
         usuario: usuario,
@@ -186,8 +192,23 @@ Sistema.prototype.sshConnection = (req, res) => {
             } else {
                 console.log('Error en modulo "PM2", accion: '+ accion +' no existe!!');
             }
+        } else {
+            console.log('Error en formato de "accion"!');
         }
 
+    } else if (modulo === 'GIT') {
+        if (accion !== undefined) {
+            if (accion === 'status') {
+                parametros.sentencia = buscar_dusoft + ' && git status';
+            } else if (accion === 'logs') {
+                parametros.sentencia = buscar_dusoft + " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ad)' --graph -100";
+                if (server !== 216) {
+                    parametros.sentencia += ' --date=format:%d/%m/%Y\\ %H:%M:%S';
+                }
+            }
+        } else {
+            console.log('Error en formato de "accion"!');
+        }
     }
 
     G.Q.nfcall(__asistenteSSH, parametros)
@@ -253,6 +274,15 @@ Sistema.prototype.sshConnection = (req, res) => {
                                 palabra = '';
                             }
                         }
+                    } else if (modulo === 'GIT') {
+                        if (k === cantidadPalabras-1) { // En caso de "false" concatenará la palabra
+                            palabra = palabra.trim();
+                            palabrasFiltradas.push(palabra);
+                            palabra = '';
+                        }
+                    } else {
+                        palabrasFiltradas.push(palabra);
+                        palabra = '';
                     }
                 }
 
@@ -317,6 +347,23 @@ Sistema.prototype.sshConnection = (req, res) => {
                                     resultadoArray[0].rows.push(palabrasFiltradas);
                                 }
                             }
+                        }
+                        palabrasFiltradas = [];
+                    } else if (modulo === 'GIT' && accion === 'logs') {
+                        if (j === 0) {
+                            resultadoArray[0].title = 'Ultimos cambios:';
+                            resultadoArray[0].header = [''];
+                        }
+                        resultadoArray[0].rows.push(palabrasFiltradas);
+                        palabrasFiltradas = [];
+                    } else {
+                        if (j === 0) {
+                            resultadoArray[0].title = palabrasFiltradas[0];
+                        } else if (j === 1) {
+                            resultadoArray[0].header = palabrasFiltradas;
+                        } else {
+                            resultadoArray[0].rows.push([' ']);
+                            resultadoArray[0].rows.push(palabrasFiltradas);
                         }
                         palabrasFiltradas = [];
                     }

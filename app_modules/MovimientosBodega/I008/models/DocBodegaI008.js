@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaI008 = function () {
 };
 /**
@@ -40,7 +42,7 @@ DocumentoBodegaI008.prototype.listarTraslados = function (parametro, callback) {
                 .orderBy('a.numero', 'desc');
 
     }
-
+    
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -59,6 +61,7 @@ DocumentoBodegaI008.prototype.listarProductosTraslados = function (parametros, c
     var columnas = [
         "invD.movimiento_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invenPro.tipo_producto_id",
         G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\") as  cantidad"),
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
@@ -184,7 +187,7 @@ DocumentoBodegaI008.prototype.agregarItem = function (parametros, transaccion, c
             insert({bodega: parametros.bodega, cantidad: parametros.cantidad_enviada, centro_utilidad: parametros.centroUtilidad,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
                 fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
-                item_id_compras: parametros.item_id
+                item_id_compras: parametros.item_id,total_costo:parametros.total_costo
             });
 
     if (transaccion)
@@ -280,6 +283,7 @@ DocumentoBodegaI008.prototype.consultarProductosValidados = function (parametros
     var columnas = [
         "invD.item_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invD.item_id_compras",
         "invenPro.tipo_producto_id",
         G.knex.raw("fc_descripcion_producto(\"invD\".\"codigo_producto\") as descripcion"),
@@ -405,7 +409,7 @@ DocumentoBodegaI008.prototype.agregarMovimientoIngresoDespachoFarmacia = functio
  * @fecha 2019-01-15 YYYY/MM/DD
  */
 DocumentoBodegaI008.prototype.updateEstadoMovimientoDespachoFarmacia = function (parametros, transaccion, callback) {
-    console.log("ingreso", parametros);
+    
     var query = G.knex(parametros.tabla_2)
             .where('empresa_id', parametros.empresa_origen)
             .andWhere('prefijo', parametros.prefijo_despacho)

@@ -120,6 +120,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 item_id: parametro.data.item_id,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };

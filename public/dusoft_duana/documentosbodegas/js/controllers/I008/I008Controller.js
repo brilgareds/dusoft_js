@@ -129,6 +129,7 @@ define([
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                            producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -198,6 +199,7 @@ define([
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
                         item_id: producto.item_id,
+                        total_costo: producto.total_costo,
                         docTmpId: $scope.doc_tmp_id
                     }
                 };
@@ -243,6 +245,7 @@ define([
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, 0);
+                            producto.setTotalCosto(data.total_costo);
                     producto.setItemIdCompra(data.item_id_compras);
 
                     $scope.datos_view.listado_productos_validados.push(producto);
@@ -433,7 +436,7 @@ define([
                     data: {
                         listado: $scope.datos_view.listado_productos_validados,
                         doc_tmp_id: $scope.doc_tmp_id,
-                        empresa_id:usuario.getEmpresa().getCodigo()
+                        empresa_id: usuario.getEmpresa().getCodigo()
                     }
                 };
 

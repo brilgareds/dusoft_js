@@ -77,7 +77,8 @@ DocumentoBodegaI011.prototype.listarDevoluciones = function (parametros, callbac
 
     var subquery = G.knex
             .select('numero_doc_farmacia')
-            .from('inv_documento_verificacion');
+            .from('inv_documento_verificacion')
+            .where('empresa_id', parametros.empresa);
 
     var query = G.knex
             .select()

@@ -135,7 +135,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
     }
     var columna2 = [ 
         "b.descripcion as zona",
-        "a.descripcion as nombre_bodega",
+        G.knex.raw("'MAGISTERIO - ' || a.descripcion as nombre_bodega"), 
         "a.empresa_id",
         "a.centro_utilidad",
         "a.bodega",
@@ -216,7 +216,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                     })
             .where(function () {
                 this.andWhere(G.knex.raw("a.empresa_id in ('M6','H2')"))
-                    .andWhere(G.knex.raw("c.fecha_registro is not null"))
+                   // .andWhere(G.knex.raw("c.fecha_registro is not null"))
 
                     if(obj.filtro!== undefined && obj.filtro !== "" ){
                      this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
@@ -224,7 +224,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
              }) 
            }).as("b").orderBy(filtro, orden);
            
-
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
 
@@ -381,6 +381,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
             and (aa.existencia>0 or COALESCE(bb.cantidad_total_despachada, 0)>0) \
             order by 1,5 \
             )union(\
+                select * from (\
                       select\
                             periodo,\
                             farmacia,\
@@ -434,12 +435,13 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                       and a.bodega =  '"+obj.bodega+"'\
                       group by 1,2,3,4,5,6,7,9\
                     ) as a\
+                    ) as a where stock_farmacia > 0 or stock_bodega > 0 or cantidad_total_despachada > 0\
                 )\
             ) as a   \
 ";//rotacion_diaria_medipol
     
     var query = G.knex.raw(sql);
-    console.log(G.sqlformatter.format(query.toString())); 
+//    console.log(G.sqlformatter.format(query.toString())); 
     query.then(function(resultado) {
       callback(false, resultado.rows);
     }). catch (function(err) {
@@ -454,7 +456,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
  * @fecha 2016-06-17
  */
 DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
-    console.log("rotacionFarmaciasDuana");
+  
     var sql=" \
                     select \
                 r.codigo_producto, \
@@ -585,6 +587,8 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
                 order by 1,3 ;";
     
      var query = G.knex.raw(sql);
+
+//     console.log(G.sqlformatter.format(query.toString())); 
 
     query.then(function(resultado) {
         G.logError(G.sqlformatter.format(query.toString()));
@@ -1377,17 +1381,51 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
 
 };
 
+function getCleanedString(cadena){
+   // Definimos los caracteres que queremos eliminar
+   var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.ÃƒÆ’Ã¢â¬Å“�€œ";
+
+   // Los eliminamos todos
+   for (var i = 0; i < specialChars.length; i++) {
+       cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
+   }   
+
+   // Lo queremos devolver limpio en minusculas
+   cadena = cadena.toLowerCase();
+
+   // Quitamos espacios y los sustituimos por _ porque nos gusta mas asi
+//   cadena = cadena.replace(/ /g," ");
+
+   // Quitamos acentos y "ñ". Fijate en que va sin comillas el primer parametro
+   cadena = cadena.replace(/á/gi,"a");
+   cadena = cadena.replace(/é/gi,"e");
+   cadena = cadena.replace(/í/gi,"i");
+   cadena = cadena.replace(/ó/gi,"o");
+   cadena = cadena.replace(/ú/gi,"u");
+   cadena = cadena.replace(/ñ/gi,"n");
+   return cadena;
+}
+
 DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
     
   
    if (datos.producto.search("�") !== -1){
        datos.producto = datos.producto.replace(/�/g, "A");
-       console.log("entrpo pro",datos.producto);
+   }
+   if (datos.producto.search("ÃƒÆ’Ã¢â") !== -1){
+       datos.producto = datos.producto.replace(/ÃƒÆ’Ã¢â/g, "A");
+   }
+   if (datos.producto.search("‚¬Å“") !== -1){
+       datos.producto = datos.producto.replace(/‚¬Å“/g, "A");
    }
    if (datos.molecula.search("�") !== -1){
-        datos.molecula = datos.molecula.replace(/�/g, "A");
-       console.log("entrpo mole",datos.molecula);
+       datos.molecula = datos.molecula.replace(/�/g, "A");
    }
+   if (datos.laboratorio.search("�") !== -1){
+       datos.laboratorio = datos.laboratorio.replace(/�/g, "A");
+   }   
+   
+   datos.producto=getCleanedString(datos.producto);
 
     var query = G.knex("rotacion_diaria_medipol").insert({
                     empresa_id : datos.empresa_id,
@@ -1411,9 +1449,33 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
      callback(false, resultado);
 
     }). catch (function(err) {
-        
+       console.log(G.sqlformatter.format(query.toString()));  
       callback(err);
     }).done();
+};
+
+/*
+ * Autor : Andres Mauricio Gonzalez
+ * Descripcion : SQL encargado de eliminar Rotacio nMedipol
+ * @fecha: 20/05/2019 8:35 am
+ */
+DrAriasModel.prototype.eliminarRotacionMedipol= function (obj, callback) {
+
+    var query = G.knex('rotacion_diaria_medipol')
+            .where('empresa_id', obj.empresa)
+            .andWhere('centro_utilidad', obj.centroUtilidad)
+            .andWhere('bodega', obj.bodega)
+            .andWhere('fecha', obj.fechaToday)
+            .del();
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+
+    }).catch(function (err) {
+        console.log("err (/catch) [eliminarRotacionMedipol]: ", err);
+        callback({err: err, msj: "Error al eliminar Rotacion Medipol"});
+    });
 };
 
 

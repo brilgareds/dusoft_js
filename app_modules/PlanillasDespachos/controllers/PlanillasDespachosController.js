@@ -748,17 +748,17 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
 //                        documentos.push({tercero: z, detalle: datos[z]});
                         documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
                     }
-                    
-                     if (planilla_despacho.tipo_planilla === 'M') {
-                    tipo_planilla = "MEDICAMENTOS";
-                } else if (planilla_despacho.tipo_planilla === 'I') {
-                    tipo_planilla = "INSUMOS";
-                } else if (planilla_despacho.tipo_planilla === 'N') {
-                    tipo_planilla = "NUTRICION";
-                }
-                
-                planilla_despacho.tipo_planilla =tipo_planilla;
-                   
+
+                    if (planilla_despacho.tipo_planilla === 'M') {
+                        tipo_planilla = "MEDICAMENTOS";
+                    } else if (planilla_despacho.tipo_planilla === 'I') {
+                        tipo_planilla = "INSUMOS";
+                    } else if (planilla_despacho.tipo_planilla === 'N') {
+                        tipo_planilla = "NUTRICION";
+                    }
+
+                    planilla_despacho.tipo_planilla = tipo_planilla;
+
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (err, nombre_reporte) {
 
                         if (enviar_email) {
@@ -793,6 +793,7 @@ PlanillasDespachos.prototype.reportePlanillaDespachoPedido = function (req, res)
     var that = this;
     var planilla_id;
     var planilla_despacho;
+    var tipo_planilla = '';
 
     var args = req.body.data;
 
@@ -858,6 +859,16 @@ PlanillasDespachos.prototype.reportePlanillaDespachoPedido = function (req, res)
 
             documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
         }
+
+        if (planilla_despacho.tipo_planilla === 'M') {
+            tipo_planilla = "MEDICAMENTOS";
+        } else if (planilla_despacho.tipo_planilla === 'I') {
+            tipo_planilla = "INSUMOS";
+        } else if (planilla_despacho.tipo_planilla === 'N') {
+            tipo_planilla = "NUTRICION";
+        }
+
+        planilla_despacho.tipo_planilla = tipo_planilla;
 
         var informacion = {
             planilla_despacho: planilla_despacho,

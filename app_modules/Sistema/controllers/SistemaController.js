@@ -155,6 +155,13 @@ Sistema.prototype.sshConnection = (req, res) => {
             user: "dusoft",
             password: "301206."
         };
+    }else if(server === 117){
+        credentialRoot = 'echo 301206. | sudo -S ';
+        parametros = {
+            host: "10.0.2.117",
+            user: "duana",
+            password: "301206."
+        };
     }
     buscar_dusoft = 'cd ' + dusoft_directory;
 
@@ -181,6 +188,7 @@ Sistema.prototype.sshConnection = (req, res) => {
         } else {
             console.log('Error en modulo "Jasper", accion: '+ accion +' no existe!!');
         }
+
     } else if (modulo === 'PM2') {
         if (accion !== undefined) {
             if (accion === 'status') {

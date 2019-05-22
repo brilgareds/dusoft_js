@@ -30,7 +30,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
 
                             <fieldset>
                                 <legend>Bodega</legend>      
@@ -40,7 +40,7 @@
 
                                         <select ng-model="documento_ingreso.bodega"  pl
                                                 class="form-control selectgeneral pull-left"
-                                                ng-change="onBuscarDevoluciones()" ng-disabled="validarDesdeLink">
+                                                ng-disabled="validarDesdeLink">
                                             <option value="">Seleccionar bodega</option>
                                             <option ng-repeat="x in bodegas"
                                                     value="{{x.bodega}}">{{x.descripcion}}
@@ -50,7 +50,27 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+
+                            <fieldset>
+                                <legend>Empresa Origen</legend>      
+
+                                <div class="row">
+                                    <div class="col-md-7">                                          
+
+                                        <select ng-model="documento_ingreso.empresa"  pl
+                                                class="form-control selectgeneral pull-left"
+                                                ng-change="onBuscarDevoluciones()" ng-disabled="validarDesdeLink">
+                                            <option value="">Seleccionar empresa</option>
+                                            <option ng-repeat="x in Empresas"
+                                                    value="{{x.empresa_id}}">{{x.razon_social}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
                             <fieldset>
                                 <legend>Nro Documento</legend> 
                                 <div class="row">
@@ -65,7 +85,7 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
 
                             <fieldset>
                                 <legend>Observación</legend>                                 

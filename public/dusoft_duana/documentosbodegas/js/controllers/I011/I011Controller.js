@@ -48,6 +48,19 @@ define([
                 });
             };
 
+            that.buscarEmpresas = function (callback) {
+                var obj = {
+                    session: $scope.session
+                };
+                I011Service.buscarEmpresa(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarEmpresas);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
             that.buscarBodegaPorId = function (id, callback) {
                 var obj = {
                     session: $scope.session,
@@ -77,10 +90,11 @@ define([
                 });
             };
 
-            that.buscarDevoluciones = function (parametro) {
+            that.buscarDevoluciones = function (bodega,empresa) {
                 var obj = {
                     session: $scope.session,
-                    bodega: parametro
+                    bodega: bodega,
+                    empresa: empresa
                 };
                 I011Service.buscarDevoluciones(obj, function (data) {
                     if (data.status === 200) {
@@ -95,6 +109,7 @@ define([
                 var obj = {
                     session: $scope.session,
                     data: {
+                        empresa: $scope.documento_ingreso.get_empresa(),
                         numero_doc: $scope.documento_ingreso.getDocumentoDevolucion().numero,
                         prefijo: $scope.documento_ingreso.getDocumentoDevolucion().prefijo
                     }
@@ -123,6 +138,7 @@ define([
                             data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id);
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
+                    producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -281,6 +297,9 @@ define([
                 that.buscarBodega(function (data) {
                     $scope.bodegas = data;
                 });
+                that.buscarEmpresas(function (data) {
+                    $scope.Empresas = data;
+                });
             });
 
             //  Abre slider para gestionar productos
@@ -308,7 +327,8 @@ define([
             };
 
             $scope.onBuscarDevoluciones = function () {
-                that.buscarDevoluciones($scope.documento_ingreso.get_bodega());
+                $scope.documento_ingreso.documentoDevolucion = null;
+                that.buscarDevoluciones($scope.documento_ingreso.get_bodega(),$scope.documento_ingreso.get_empresa());
             };
 
             $scope.onBuscarProductosDevoluciones = function () {
@@ -375,6 +395,7 @@ define([
                     empresa_envia: $scope.documento_ingreso.getDocumentoDevolucion().empresa_id,
                     lote: producto.lote,
                     fechaVencimiento: producto.fecha_vencimiento,
+                    total_costo: producto.total_costo,
                     docTmpId: $scope.doc_tmp_id
                 };
                 that.insertarProductos(parametro);

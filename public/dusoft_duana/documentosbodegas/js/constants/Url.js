@@ -103,6 +103,7 @@ define(["angular"], function (angular) {
             },
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
+                'LISTAR_EMPRESAS': BASE_URL + '/movBodegas/I011/listarEmpresas',
                 'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/I011/listarBodegaId',
                 'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/I011/consultarDetalleDevolucion',
                 'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I011/consultarProductosValidados',

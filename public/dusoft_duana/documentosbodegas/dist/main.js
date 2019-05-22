@@ -45392,6 +45392,7 @@ define('url',["angular"], function (angular) {
             },
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
+                'LISTAR_EMPRESAS': BASE_URL + '/movBodegas/I011/listarEmpresas',
                 'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/I011/listarBodegaId',
                 'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/I011/consultarDetalleDevolucion',
                 'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I011/consultarProductosValidados',
@@ -55527,6 +55528,14 @@ define('models/I011/DocumentoIngresoDevolucion',["angular", "js/models", "includ
                 return this.bodega;
             };
             
+            DocumentoIngresoDevolucion.prototype.set_empresa = function(empresa) {
+                this.empresa = empresa;
+            };
+
+            DocumentoIngresoDevolucion.prototype.get_empresa = function() {
+                return this.empresa;
+            };
+            
             DocumentoIngresoDevolucion.prototype.setDocumentoDevolucion = function(documento) {
                 this.documentoDevolucion = documento;
             };
@@ -55569,6 +55578,7 @@ define('models/I011/ProductoIngresoDevolucion',["angular", "js/models", "include
                 this.cantidad = cantidad;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
                 this.novedad = novedad;
+                this.total_costo = 0;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
@@ -55603,6 +55613,14 @@ define('models/I011/ProductoIngresoDevolucion',["angular", "js/models", "include
 
             ProductoIngresoDevolucion.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+
+            ProductoIngresoDevolucion.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoIngresoDevolucion.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoIngresoDevolucion.prototype.setItemId = function (item_id) {
@@ -68982,6 +69000,19 @@ define('controllers/I011/I011Controller',[
                 });
             };
 
+            that.buscarEmpresas = function (callback) {
+                var obj = {
+                    session: $scope.session
+                };
+                I011Service.buscarEmpresa(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarEmpresas);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
             that.buscarBodegaPorId = function (id, callback) {
                 var obj = {
                     session: $scope.session,
@@ -69011,10 +69042,11 @@ define('controllers/I011/I011Controller',[
                 });
             };
 
-            that.buscarDevoluciones = function (parametro) {
+            that.buscarDevoluciones = function (bodega,empresa) {
                 var obj = {
                     session: $scope.session,
-                    bodega: parametro
+                    bodega: bodega,
+                    empresa: empresa
                 };
                 I011Service.buscarDevoluciones(obj, function (data) {
                     if (data.status === 200) {
@@ -69029,6 +69061,7 @@ define('controllers/I011/I011Controller',[
                 var obj = {
                     session: $scope.session,
                     data: {
+                        empresa: $scope.documento_ingreso.get_empresa(),
                         numero_doc: $scope.documento_ingreso.getDocumentoDevolucion().numero,
                         prefijo: $scope.documento_ingreso.getDocumentoDevolucion().prefijo
                     }
@@ -69057,6 +69090,7 @@ define('controllers/I011/I011Controller',[
                             data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id);
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
+                    producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -69215,6 +69249,9 @@ define('controllers/I011/I011Controller',[
                 that.buscarBodega(function (data) {
                     $scope.bodegas = data;
                 });
+                that.buscarEmpresas(function (data) {
+                    $scope.Empresas = data;
+                });
             });
 
             //  Abre slider para gestionar productos
@@ -69242,7 +69279,8 @@ define('controllers/I011/I011Controller',[
             };
 
             $scope.onBuscarDevoluciones = function () {
-                that.buscarDevoluciones($scope.documento_ingreso.get_bodega());
+                $scope.documento_ingreso.documentoDevolucion = null;
+                that.buscarDevoluciones($scope.documento_ingreso.get_bodega(),$scope.documento_ingreso.get_empresa());
             };
 
             $scope.onBuscarProductosDevoluciones = function () {
@@ -69309,6 +69347,7 @@ define('controllers/I011/I011Controller',[
                     empresa_envia: $scope.documento_ingreso.getDocumentoDevolucion().empresa_id,
                     lote: producto.lote,
                     fechaVencimiento: producto.fecha_vencimiento,
+                    total_costo: producto.total_costo,
                     docTmpId: $scope.doc_tmp_id
                 };
                 that.insertarProductos(parametro);
@@ -72967,6 +73006,28 @@ define('services/I011/I011Service',["angular", "js/services"], function (angular
                         );
 
                     };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 22/05/2019
+                     * +Descripcion: lista las bodegas
+                     */
+                    self.buscarEmpresa = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I011.LISTAR_EMPRESAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
                     
                     /*
                      * @Author: German Galvis.
@@ -73025,7 +73086,8 @@ define('services/I011/I011Service',["angular", "js/services"], function (angular
                                 {
                                     session: obj.session,
                                     data: {
-                                        bodega: obj.bodega
+                                        bodega: obj.bodega,
+                                        empresa: obj.empresa
                                     }
                                 },
                                 function (data) {

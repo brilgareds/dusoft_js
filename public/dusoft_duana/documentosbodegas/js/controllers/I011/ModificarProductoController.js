@@ -57,6 +57,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     return;
                 }
                 item.novedadAnexa = "CAMBIO LOTE MANUAL";
+                item.total_costo = parseFloat(fila.costo) * parseFloat(item.cantidad_ingresada );
                 $scope.btn_adicionar_producto(item);
                 var time = setTimeout(function () {
                     index++;

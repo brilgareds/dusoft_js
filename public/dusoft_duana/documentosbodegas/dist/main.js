@@ -69114,6 +69114,7 @@ define('controllers/I011/I011Controller',[
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
                     producto.setTotalCosto(data.total_costo);
+                    producto.costo = parseFloat(data.total_costo) / parseFloat(data.cantidad);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -69737,6 +69738,7 @@ define('controllers/I011/ModificarProductoController',["angular", "js/controller
                     return;
                 }
                 item.novedadAnexa = "CAMBIO LOTE MANUAL";
+                item.total_costo = parseFloat(fila.costo) * parseFloat(item.cantidad_ingresada );
                 $scope.btn_adicionar_producto(item);
                 var time = setTimeout(function () {
                     index++;

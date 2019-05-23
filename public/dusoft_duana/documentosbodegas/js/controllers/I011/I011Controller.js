@@ -139,6 +139,7 @@ define([
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
                     producto.setTotalCosto(data.total_costo);
+                    producto.costo = parseFloat(data.total_costo) / parseFloat(data.cantidad);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };

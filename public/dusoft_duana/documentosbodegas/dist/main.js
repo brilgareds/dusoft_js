@@ -63864,6 +63864,7 @@ define('controllers/E009/E009Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
+                    producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -64260,6 +64261,7 @@ define('controllers/E009/E009GestionarProductosController',["angular", "js/contr
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
                     producto.setNombreTipo(data.nombreTipo);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -64335,6 +64337,7 @@ define('controllers/E009/E009GestionarProductosController',["angular", "js/contr
                     codigoProducto: producto.codigo_producto,
                     cantidad: producto.cantidad,
                     lote: producto.lote,
+                    total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                     fechaVencimiento: producto.fecha_vencimiento,
                     docTmpId: $scope.doc_tmp_id
                 };

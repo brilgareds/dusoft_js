@@ -54197,6 +54197,7 @@ define('models/E007/ProductoE007',["angular", "js/models", "includes/classes/Pro
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.disponible = disponible;
+                this.total_costo = 0;
                 this.lote = "";
                 this.fecha_vencimiento = "";
                 this.item_id = item_id;
@@ -54230,6 +54231,14 @@ define('models/E007/ProductoE007',["angular", "js/models", "includes/classes/Pro
 
             ProductoE007.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed();
+            };
+                        
+            ProductoE007.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoE007.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoE007.prototype.setItemId = function (item_id) {
@@ -63525,6 +63534,7 @@ define('controllers/E007/E007GestionarProductosController',["angular", "js/contr
                 productos.forEach(function (data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.cantidad_disponible, data.tipo_producto_id);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -63668,6 +63678,7 @@ define('controllers/E007/E007GestionarProductosController',["angular", "js/contr
                                         cantidad: producto.cantidad,
                                         lote: producto.lote,
                                         fechaVencimiento: producto.fecha_vencimiento,
+                                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                                         disponible: producto.disponible,
                                         docTmpId: $scope.doc_tmp_id
                                     }
@@ -72116,6 +72127,7 @@ define('services/E007/E007Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 disponible: parametro.data.disponible,
+                                total_costo: parametro.data.total_costo,
                                 bodega: parametro.data.bodega
                             }
                         };

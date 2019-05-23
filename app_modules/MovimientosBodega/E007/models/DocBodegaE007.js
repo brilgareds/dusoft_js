@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaE007 = function () {
 };
 
@@ -224,6 +226,7 @@ DocumentoBodegaE007.prototype.listarProductos = function (parametros, callback) 
     var columnas = [
         "invenPro.codigo_producto",
         "invenPro.tipo_producto_id",
+        "inven.costo",
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
         "exisBodega.existencia AS existencia",
         G.knex.raw("case when COALESCE(( \"exisBodega\".existencia - COALESCE( h.cantidad_total_pendiente,'0') - COALESCE( i.total_solicitado,'0'))::integer, 0) < 0 then 0\
@@ -309,6 +312,10 @@ DocumentoBodegaE007.prototype.listarProductos = function (parametros, callback) 
 
     var query = G.knex.column(columnas)
             .from("existencias_bodegas as exisBodega")
+            .innerJoin("inventarios AS inven", function () {
+                this.on("exisBodega.codigo_producto", "inven.codigo_producto")
+                        .on("exisBodega.empresa_id", "inven.empresa_id");
+            })
             .innerJoin("inventarios_productos as invenPro", "exisBodega.codigo_producto", "invenPro.codigo_producto")
             .leftJoin(G.knex.raw('(' + pedidos + ') as aa group by 1,2,3 ) as h'), function () {
                 this.on("exisBodega.empresa_id", "h.empresa_id")
@@ -378,7 +385,7 @@ DocumentoBodegaE007.prototype.agregarItem = function (parametros, callback) {
             .insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centro,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresa,
                 usuario_id: parametros.usuarioId, cantidad_sistema: parametros.disponible, fecha_vencimiento: parametros.fechaVencimiento,
-                lote: parametros.lote
+                lote: parametros.lote, total_costo: parametros.total_costo
             });
 
     query.then(function (resultado) {
@@ -398,6 +405,7 @@ DocumentoBodegaE007.prototype.consultarProductosTraslado = function (parametros,
     var columnas = [
         "invD.item_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invenPro.tipo_producto_id",
         G.knex.raw("fc_descripcion_producto(\"invD\".\"codigo_producto\") as descripcion"),
         "invD.cantidad",

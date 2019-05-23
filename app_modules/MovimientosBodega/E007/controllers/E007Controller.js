@@ -290,6 +290,13 @@ E007Controller.prototype.agregarItem = function (req, res) {
     var that = this;
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
+
+    if (args.total_costo === undefined || args.total_costo === 0) {
+        res.send(G.utils.r(req.url, 'El costo total no esta definido', 404, {}));
+        return;
+    }
+
+
     var parametros = {
         usuarioId: usuarioId,
         cantidad: args.cantidad,
@@ -299,6 +306,7 @@ E007Controller.prototype.agregarItem = function (req, res) {
         lote: args.lote,
         fechaVencimiento: args.fechaVencimiento,
         disponible: args.disponible,
+        total_costo: args.total_costo,
         empresa: args.empresa_id,
         docTmpId: args.docTmpId
 
@@ -414,7 +422,7 @@ E007Controller.prototype.crearDocumento = function (req, res) {
         }).then(function () {
             return G.Q.nfcall(that.m_e007.agregardocumento_d, parametros, transaccion);
         }).then(function () {
-        
+
             return G.Q.nfcall(that.m_e007.eliminarMovimientoConceptoEgreso, parametros, transaccion);
         }).then(function (result) {
             if (result >= 1) {

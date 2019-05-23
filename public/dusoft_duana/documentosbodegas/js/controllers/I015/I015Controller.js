@@ -185,6 +185,7 @@ define([
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                        producto.setTotalCosto(data.total_costo);    
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -252,6 +253,7 @@ define([
                         cantidad: producto.cantidad,
                         cantidad_enviada: producto.cantidad_ingresada,
                         lote: producto.lote,
+                        total_costo: producto.total_costo,
                         fechaVencimiento: producto.fecha_vencimiento,
                         item_id: producto.item_id,
                         docTmpId: $scope.doc_tmp_id

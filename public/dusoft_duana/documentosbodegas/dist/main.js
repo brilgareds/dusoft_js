@@ -55969,6 +55969,7 @@ define('models/I015/ProductoI015',["angular", "js/models", "includes/classes/Pro
 
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
+                this.total_costo = 0;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
@@ -55995,6 +55996,14 @@ define('models/I015/ProductoI015',["angular", "js/models", "includes/classes/Pro
 
             ProductoI015.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+                        
+            ProductoI015.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoI015.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoI015.prototype.getCantidadIngresada = function () {
@@ -70949,6 +70958,7 @@ define('controllers/I015/I015Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                        producto.setTotalCosto(data.total_costo);    
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -71016,6 +71026,7 @@ define('controllers/I015/I015Controller',[
                         cantidad: producto.cantidad,
                         cantidad_enviada: producto.cantidad_ingresada,
                         lote: producto.lote,
+                        total_costo: producto.total_costo,
                         fechaVencimiento: producto.fecha_vencimiento,
                         item_id: producto.item_id,
                         docTmpId: $scope.doc_tmp_id
@@ -73563,6 +73574,7 @@ define('services/I015/I015Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 item_id: parametro.data.item_id,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };

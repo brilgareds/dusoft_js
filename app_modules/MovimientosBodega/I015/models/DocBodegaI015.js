@@ -80,6 +80,7 @@ DocumentoBodegaI015.prototype.listarProductosTraslados = function (parametros, c
     var columnas = [
         "invD.movimiento_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invenPro.tipo_producto_id",
         G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\") as  cantidad"),
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
@@ -205,7 +206,7 @@ DocumentoBodegaI015.prototype.agregarItem = function (parametros, transaccion, c
             insert({bodega: parametros.bodega, cantidad: parametros.cantidad_enviada, centro_utilidad: parametros.centroUtilidad,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
                 fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
-                item_id_compras: parametros.item_id
+                item_id_compras: parametros.item_id, total_costo:parametros.total_costo
             });
 
     if (transaccion)

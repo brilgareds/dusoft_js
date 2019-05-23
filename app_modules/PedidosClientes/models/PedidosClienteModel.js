@@ -1985,6 +1985,8 @@ if(cotizacion.sede){
 PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function (cotizacion, callback) {
     if (cotizacion.control === true) {
 
+        let observacion_cartera = 'Aprobado automatico - ' + cotizacion.usuario_name;
+
         var sql = " INSERT INTO ventas_ordenes_pedidos_tmp(\
                 empresa_id,\
                 tipo_id_tercero,\
@@ -2021,7 +2023,7 @@ PedidosClienteModel.prototype.insertar_encabezado_pedido_cliente = function (cot
                     tipo_producto,\
                     centro_utilidad_id,\
                     '" + cotizacion.bodega + "' as bodega_id,\
-                    'Aprobado automatico' as observacion_cartera,\
+                    '" + observacion_cartera + "' as observacion_cartera,\
                     '0' as sw_aprobado_cartera,\
                     centro_destino,\
                     '" + cotizacion.bodega + "' as bodega_destino,\
@@ -2420,15 +2422,13 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function (cotizacio
                 valor_unitario: (Number(producto.precioVentaIva > 0)) ? Number(producto.precioVentaIva) : producto.precio_venta,
                 usuario_id: cotizacion.usuario_id,
                 fecha_registro: 'NOW()'
-
-
-            }).then(function (resultado) {
-        callback(false, resultado);
-    }).catch(function (error) {
-        console.log("err [modificar_detalle_cotizacion]: ", error);
-        callback(error);
-    });
-
+            })
+        .then(function (resultado) {
+            callback(false, resultado);
+        }).catch(function (error) {
+            console.log("err [modificar_detalle_cotizacion]: ", error);
+            callback(error);
+        });
 };
 
 /*
@@ -2727,6 +2727,8 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function (cotizacio
     });
 };
 
+const promesa = new Promise((resolve, reject) => { resolve(true); });
+
 
 /*
  * Autor : Camilo Orozco
@@ -2738,28 +2740,29 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function (cotizacio
  */
 PedidosClienteModel.prototype.observacion_cartera_cotizacion = function (cotizacion, callback)
 {
+    promesa
+        .then(response => {
+            cotizacion.observacion_cartera += ' - ' + cotizacion.usuario_name;
+            var sql_aux = '4'; // Estado Activo
 
-    var sql_aux = '4'; // Estado Activo
+            if (cotizacion.aprobado_cartera === 1)
+                sql_aux = '3'; // Estado Aprobado Cartera
 
-    if (cotizacion.aprobado_cartera === 1)
-        sql_aux = '3'; // Estado Aprobado Cartera
+            const query = G.knex('ventas_ordenes_pedidos_tmp')
+                .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+                .update({
+                    observacion_cartera: cotizacion.observacion_cartera,
+                    sw_aprobado_cartera: cotizacion.aprobado_cartera,
+                    estado: sql_aux
+                });
 
-    var query = G.knex('ventas_ordenes_pedidos_tmp')
-            .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-            .update({
-                observacion_cartera: cotizacion.observacion_cartera,
-                sw_aprobado_cartera: cotizacion.aprobado_cartera,
-                estado: sql_aux
-
-            });
-
-    query.then(function (resultado) {
-
-        callback(false, resultado.rows, resultado);
-    }).catch(function (error) {
-        console.log("err [observacion_cartera_cotizacion]: ", error);
-        callback(error);
-    });
+            return query;
+        }).then(resultado => {
+            callback(false, resultado.rows, resultado);
+        }).catch(function (error) {
+            console.log("err [observacion_cartera_cotizacion]: ", error);
+            callback(error);
+        });
 };
 
 
@@ -2772,6 +2775,7 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function (cotizac
  */
 PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function (pedido, callback)
 {
+    pedido.observacion_cartera += ' - ' + pedido.usuario_name;
     G.knex('ventas_ordenes_pedidos')
             .where('pedido_cliente_id', pedido.numero_pedido)
             .update({

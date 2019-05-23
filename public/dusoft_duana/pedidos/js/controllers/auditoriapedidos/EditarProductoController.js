@@ -35,7 +35,8 @@ define(["angular", "js/controllers",
 
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
-                auth_token: Usuario.getUsuarioActual().getToken()
+                auth_token: Usuario.getUsuarioActual().getToken(),
+                usuario_name: Usuario.getUsuarioActual().usuario
             };
 
             $scope.rootEditarProducto.caja = Caja.get(0, 0);

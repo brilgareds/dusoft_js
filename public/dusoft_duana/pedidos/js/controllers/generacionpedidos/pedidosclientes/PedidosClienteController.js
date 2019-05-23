@@ -58,7 +58,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
                     obj = {
                         session: $scope.session,
-                        data: {pedidos_clientes: {pedido: numero}}
+                        data: {
+                            pedidos_clientes: {pedido: numero},
+                            usuario_name: Sesion.getUsuarioActual().usuario
+                        }
                     };
                 }
 
@@ -67,7 +70,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
                     obj = {
                         session: $scope.session,
-                        data: {pedidos_clientes: {cotizacion: numero}}
+                        data: {
+                            pedidos_clientes: {cotizacion: numero},
+                            usuario_name: Sesion.getUsuarioActual().usuario
+                        }
                     };
                 }
 
@@ -214,7 +220,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_COTIZACION, "POST", obj, function (data) {
@@ -293,7 +300,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
                             termino_busqueda: {termino_busqueda: $scope.datos_view.termino_busqueda_productos}
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function (data) {
@@ -339,7 +347,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             pedido: $scope.Pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_PEDIDO, "POST", obj, function (data) {
@@ -379,7 +388,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         pedidos_clientes: {
                             pedido: $scope.Pedido,
                             termino_busqueda: $scope.datos_view.termino_busqueda_productos
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_PEDIDO, "POST", obj, function (data) {
@@ -438,7 +448,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             empresa_id: $scope.Pedido.get_empresa_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_clientes,
                             paginacion: false
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
@@ -487,7 +498,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             empresa_id: $scope.Pedido.get_empresa_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_clientes,
                             paginacion: false
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function (data) {
@@ -520,7 +532,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var obj = {
                     session: $scope.session,
-                    data: {}
+                    data: {usuario_name: Sesion.getUsuarioActual().usuario}
                 };
                 Request.realizarRequest(API.TERCEROS.LISTAR_VENDEDORES, "POST", obj, function (data) {
 
@@ -716,7 +728,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedidos_clientes: {
                                 cotizacion: $scope.Pedido,
                                 producto: $scope.datos_view.producto_seleccionado
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -749,11 +762,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 concentracion: '',
                                 tipoBusqueda: 0,
                                 termino_busqueda: $scope.datos_view.producto_seleccionado.codigo_producto
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
-                }
-                ;
+                };
 
                 Request.realizarRequest(url, "POST", obj, function (data) {
 
@@ -857,7 +870,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedidos_clientes: {
                                 cotizacion: $scope.Pedido,
                                 producto: $scope.datos_view.producto_seleccionado
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -873,7 +887,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedidos_clientes: {
                                 pedido: $scope.Pedido,
                                 producto: $scope.datos_view.producto_seleccionado
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
 
@@ -1018,7 +1033,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedido: $scope.Pedido,
                             producto: $scope.Pedido.get_productos(),
                             estado: estado_pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -1068,7 +1084,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedidos_clientes: {
                                 pedido: $scope.Pedido,
                                 producto: $scope.Pedido.get_productos()
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -1297,7 +1314,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -1337,8 +1355,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             contrato_id: $scope.Pedido.cliente.contrato_id,
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             tercero_id: $scope.Pedido.cliente.id,
-                            tipo_id_tercero: $scope.Pedido.cliente.tipo_id_tercero
-
+                            tipo_id_tercero: $scope.Pedido.cliente.tipo_id_tercero,
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                     // se consulta si necesita autorizacion de cartera
@@ -1358,7 +1376,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 bodega: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                 clienteMultiple: crearCotizacionDoble,
                                 sw_aprobado_cartera: '0'
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -1366,7 +1385,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function (data) {
                     if (data.status === 200) {
                         if ($scope.Pedido.cliente.sw_autorizacion === '0') {
-                            $scope.Pedido.set_observacion_cartera("OK");
+                            $scope.Pedido.set_observacion_cartera("Aprobado automatico");
                             that.generarPedidoCartera(1, 0);
                             respuesta = false;
                         }
@@ -1509,7 +1528,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 concentracion: '',
                                 tipoBusqueda: 0,
                                 termino_busqueda: ''
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
 
@@ -1715,7 +1735,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 bodega_origen_id: bodegaOrigen
                             }
 
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function (data) {
@@ -1773,7 +1794,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             productos: productos
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -1914,7 +1936,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 obj = {
                     session: $scope.session,
                     data: {
-                        cotizacion: $scope.Pedido.get_numero_cotizacion()
+                        cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -1963,7 +1986,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             bodega: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                             clienteMultiple: 1,
                                             sw_aprobado_cartera: 1
-                                        }
+                                        },
+                                        usuario_name: Sesion.getUsuarioActual().usuario
                                     }
                                 };
 
@@ -1991,7 +2015,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     session: $scope.session,
                     data: {
                         cotizacion: $scope.Pedido.get_numero_cotizacion(),
-                        bodega: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                        bodega: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 Request.realizarRequest(url, "POST", obj, function (data) {
@@ -2015,7 +2040,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         data: {
                             pedidos_clientes: {
                                 cotizacion: $scope.Pedido
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -2029,7 +2055,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             pedidos_clientes: {
                                 pedido: $scope.Pedido,
                                 aprobado: aprobado
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -2071,7 +2098,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -2133,7 +2161,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             cotizacion: cotizacions
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
                 var bodegaCotizacion = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
@@ -2178,7 +2207,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE (CLIENTE: ', //+ $scope.Pedido.cliente.nombre_tercero + "" +$scope.Pedido.cliente.tipo_id_tercero + ": " +$scope.Pedido.cliente.id +")",
                             productos: resultado,
                             pedidoCliente: 0
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -2271,7 +2301,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             data: {
                                 pedidos_clientes: {
                                     cotizacion: cotizacions
-                                }
+                                },
+                                usuario_name: Sesion.getUsuarioActual().usuario
                             }
                         };
 
@@ -2315,7 +2346,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                                         estado: 0
                                     }
-                                }
+                                },
+                                usuario_name: Sesion.getUsuarioActual().usuario
                             }
                         };
                         Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_COTIZACION, "POST", paramActEstadoCotizacion, function (datos) {

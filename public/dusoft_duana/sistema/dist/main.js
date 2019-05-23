@@ -33593,6 +33593,14 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 icono: 'glyphicon glyphicon-list-alt',
                 btn_function: 'sshConnection'
             };
+            let btn_sshGitLogs = {
+                title: 'Logs',
+                name: 'logs',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-align-left',
+                btn_function: 'sshConnection'
+            };
             let btn_dbStatusDefault = {
                 title: 'Status',
                 name: 'querysActiveInDb',
@@ -33722,12 +33730,31 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 ],
                 obj: []
             };
+            $scope.monitorModulos.GIT = {
+                title: 'GIT',
+                width: serverSizeMax,
+                tableClass: 'tablePc',
+                actions: [
+                    btn_sshStatusDefault,
+                    btn_sshGitLogs
+                ],
+                obj: []
+            };
 
             // Funcion para crear Servidor con Modulos y Sockets
             $scope.crearServer = (server, Modulos) => {
                 $scope.monitoreo[server] = {};
                 $scope.monitoreo.servers.push(server);
-                if (server === 246) {
+
+                if (server === 117) {
+                    $scope.monitoreo.serversName[server] = 'Server ' + server + ' (Servidor de Imagenes)';
+                } else if (server === 191) {
+                    $scope.monitoreo.serversName[server] = 'Server ' + server + ' (Test)';
+                } else if (server === 216) {
+                    $scope.monitoreo.serversName[server] = 'Server ' + server + ' (Dusoft #1)';
+                } else if (server === 229) {
+                    $scope.monitoreo.serversName[server] = 'Server ' + server + ' (Dusoft #2)';
+                } else if (server === 246) {
                     $scope.monitoreo.serversName[server] = 'Base de Datos';
                 } else {
                     $scope.monitoreo.serversName[server] = 'Server ' + server;
@@ -33763,9 +33790,9 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             // Creando servidores, Agregando Modulos y agregando Sockets
             $scope.crearServer(246, ['POSTGRES']); // Creando servidor 246
             $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
-            $scope.crearServer(191, ['PC', 'PM2']); // Creando servidor 191
-            $scope.crearServer(216, ['PC', 'PM2', 'JASPER']); // Creando servidor 216
-            $scope.crearServer(229, ['PC', 'PM2_DISABLED']); // Creando servidor 229
+            $scope.crearServer(191, ['PC', 'PM2', 'GIT']); // Creando servidor 191
+            $scope.crearServer(216, ['PC', 'PM2', 'JASPER', 'GIT']); // Creando servidor 216
+            $scope.crearServer(229, ['PC', 'PM2_DISABLED', 'GIT']); // Creando servidor 229
 
             // Variables y funciones para Estadistica de Memoria
             $scope.datosGrafico = [{
@@ -33835,7 +33862,6 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
         }]);
 });
-
 
 define('controllers/Sistema/LogsController',["angular", "js/controllers",
 ], function(angular, controllers) {
@@ -42992,7 +43018,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-'use strict';
+
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64

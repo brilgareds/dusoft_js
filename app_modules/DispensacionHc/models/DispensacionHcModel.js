@@ -912,6 +912,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
         query.then(function(resultado){ 
             callback(false, resultado)
         }).catch(function(err){    
+            console.log(G.sqlformatter.format(query.toString())); 
             console.log("Error [listarMedicamentosFormulados]: ", err);
             callback(err);
         });                          

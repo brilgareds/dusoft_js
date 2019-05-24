@@ -1423,6 +1423,13 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
    }
    if (datos.laboratorio.search("�") !== -1){
        datos.laboratorio = datos.laboratorio.replace(/�/g, "A");
+   }
+   
+   if (datos.laboratorio.search("LABORATORIOS") !== -1){
+       datos.laboratorio = datos.laboratorio.replace(/LABORATORIOS/g, "");
+   }
+   if (datos.laboratorio.search("LABORATORIO") !== -1){       
+       datos.laboratorio = datos.laboratorio.replace(/LABORATORIO/g, "");
    }   
    
    datos.producto=getCleanedString(datos.producto);

@@ -492,12 +492,14 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
    
         if(bodega.bodega!=='03'){
             var complemento = "MAGISTERIO";
+            var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){        
              complemento="";
+             ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
             archivoName = complemento+"_"+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
-            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
             archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
@@ -572,6 +574,9 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         bodega.logError = err;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega, function () {
+            if(bodega.empresa!=='03' && bodega.empresa!=='FD'){ 
+            G.Q.ninvoke(that.m_drArias, 'eliminarRotacionMedipol', bodega); 
+            }
             callback(err);
         });
 
@@ -626,12 +631,15 @@ throw {msj:"Error"};return;
          farmacias=respuesta;
         if(bodega.bodega!=='03'){
             var complemento = "MAGISTERIO - ";
+            var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
              complemento="";
+             ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+ listarPlanes[0].nom_bode;
-            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
-            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
+            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";      
+       
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, ordenPor, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
             archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
@@ -644,6 +652,7 @@ throw {msj:"Error"};return;
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
+        resultados.empresa = bodega.empresa;
         
         if(bodega.bodega!=='03'){
             return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
@@ -896,7 +905,11 @@ function __creaExcel(data, callback) {
         }
 
         worksheet.getColumn('A').hidden = true;
-        worksheet.getColumn('D').hidden = true;
+        if(data.empresa!=='03' && data.empresa!=='FD'){
+          worksheet.getColumn('C').hidden = true;
+        }else{
+          worksheet.getColumn('D').hidden = true;  
+        }
         worksheet.getColumn('E').hidden = true;
         worksheet.getColumn('F').hidden = true;
 
@@ -939,12 +952,13 @@ function __creaExcel(data, callback) {
     });
 };
 
-function __organizaRotacion(index, data, resultado, callback) {
+function __organizaRotacion(index, data,ordenPor, resultado, callback) {
+  
     var _resultado = data[index];
     index++;
 
     if (_resultado) {
-        callback(false, sortJSON(resultado, 'molecula', 'asc'));
+        callback(false, sortJSON(resultado, ordenPor.orden, ordenPor.asc));
     }
 
     var resultColumna = {
@@ -974,7 +988,7 @@ function __organizaRotacion(index, data, resultado, callback) {
 
     resultado.push(resultColumna);
 
-    return __organizaRotacion(index, data, resultado, callback);
+    return __organizaRotacion(index, data,ordenPor, resultado, callback);
 }
 
 function __organizaRotacionFarmacia(index, data, resultado, callback) {

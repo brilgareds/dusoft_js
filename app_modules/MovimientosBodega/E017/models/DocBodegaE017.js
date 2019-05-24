@@ -172,6 +172,7 @@ DocumentoBodegaE017.prototype.listarProductos = function (parametros, callback) 
     var columnas = [
         "invenPro.codigo_producto",
         "invenPro.tipo_producto_id",
+        "inven.costo",
         "tPro.descripcion as nombreTipo",
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
         "exisLote.existencia_actual AS existencia",
@@ -183,9 +184,13 @@ DocumentoBodegaE017.prototype.listarProductos = function (parametros, callback) 
             .column(columnas)
             .from("existencias_bodegas as exisBodega")
             .innerJoin("inventarios_productos as invenPro", "exisBodega.codigo_producto", "invenPro.codigo_producto")
+            .innerJoin("inventarios AS inven", function () {
+                this.on("exisBodega.codigo_producto", "inven.codigo_producto")
+                        .on("exisBodega.empresa_id", "inven.empresa_id");
+            })
             .innerJoin("inv_subclases_inventarios AS subclase", function () {
                 this.on("invenPro.subclase_id", "subclase.subclase_id")
-                        .on("invenPro.clase_id", "subclase.clase_id")
+                        .on("invenPro.clase_id", "subclase.clase_id");
             })
             .innerJoin("existencias_bodegas_lote_fv AS exisLote", function () {
                 this.on("exisBodega.empresa_id", "exisLote.empresa_id")
@@ -225,7 +230,8 @@ DocumentoBodegaE017.prototype.agregarItem = function (parametros, callback) {
     var query = G.knex("inv_bodegas_movimiento_tmp_d").
             insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centroUtilidad,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
-                fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId
+                fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
+                total_costo: parametros.total_costo
             });
 
     query.then(function (resultado) {
@@ -270,6 +276,7 @@ DocumentoBodegaE017.prototype.consultarProductosTraslados = function (parametros
     var columnas = [
         "invD.item_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invenPro.tipo_producto_id",
         G.knex.raw("fc_descripcion_producto(\"invD\".\"codigo_producto\") as descripcion"),
         "invD.cantidad",

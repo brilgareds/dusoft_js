@@ -200,6 +200,10 @@ E017Controller.prototype.agregarItem = function (req, res) {
         res.send(G.utils.r(req.url, 'La cantidad no esta definida', 404, {}));
         return;
     }
+    if (args.total_costo === undefined || args.total_costo === 0) {
+        res.send(G.utils.r(req.url, 'El costo total no esta definid0', 404, {}));
+        return;
+    }
     if (args.lote === undefined) {
         res.send(G.utils.r(req.url, 'El lote no esta definida', 404, {}));
         return;
@@ -223,6 +227,7 @@ E017Controller.prototype.agregarItem = function (req, res) {
         lote: args.lote,
         fechaVencimiento: args.fechaVencimiento,
         docTmpId: args.docTmpId,
+        total_costo: args.total_costo,
         usuarioId: usuarioId
     };
     var msj;

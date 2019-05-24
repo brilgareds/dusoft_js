@@ -76,8 +76,8 @@
                         </div>
                         <div class="panel-body">
                             <div class="contenedor-modulos-btns">
-                                <div style="display: inline-block;" ng-click="btnAccion(modulo, btn, server)" ng-repeat="btn in monitoreo[server][modulo].actions track by $index" class={{btn.class}}>
-                                    <button type="button" ng-if="!btn.htmlPersonalizado" style="background: inherit; border: 0px;" ng-disabled="btn.disable"><i class="{{btn.icono}}"></i> {{btn.title}}</button>
+                                <div style="display: inline-block;" ng-disabled="btn.disable" ng-click="btnAccion(modulo, btn, server)" ng-repeat="btn in monitoreo[server][modulo].actions track by $index" class={{btn.class}}>
+                                    <button type="button" ng-if="!btn.htmlPersonalizado" style="background: inherit; border: 0px;"><i class="{{btn.icono}}"></i> {{btn.title}}</button>
                                     <div ng-if="btn.htmlPersonalizado" class="form-group" style="background: inherit; border: 0px; margin-bottom: 0px; display: inline-block; margin-right: auto; margin-left: auto;">
                                         <label class="sr-only" for="exampleInputAmount">Kill Process</label>
                                         <div class="input-group">

@@ -45392,6 +45392,7 @@ define('url',["angular"], function (angular) {
             },
             'I011': {
                 'LISTAR_BODEGAS': BASE_URL + '/movBodegas/I011/listarBodegas',
+                'LISTAR_EMPRESAS': BASE_URL + '/movBodegas/I011/listarEmpresas',
                 'LISTAR_BODEGA_ID': BASE_URL + '/movBodegas/I011/listarBodegaId',
                 'CONSULTAR_DETALLE_DEVOLUCION': BASE_URL + '/movBodegas/I011/consultarDetalleDevolucion',
                 'CONSULTAR_PRODUCTOS_VALIDADOS': BASE_URL + '/movBodegas/I011/consultarProductosValidados',
@@ -54196,6 +54197,7 @@ define('models/E007/ProductoE007',["angular", "js/models", "includes/classes/Pro
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.disponible = disponible;
+                this.total_costo = 0;
                 this.lote = "";
                 this.fecha_vencimiento = "";
                 this.item_id = item_id;
@@ -54229,6 +54231,14 @@ define('models/E007/ProductoE007',["angular", "js/models", "includes/classes/Pro
 
             ProductoE007.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed();
+            };
+                        
+            ProductoE007.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoE007.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoE007.prototype.setItemId = function (item_id) {
@@ -54271,6 +54281,7 @@ define('models/E009/ProductoDevolucion',["angular", "js/models", "includes/class
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.item_id = item_id;
+                this.total_costo = 0;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
                 this.subClase = subClase;
@@ -54312,6 +54323,14 @@ define('models/E009/ProductoDevolucion',["angular", "js/models", "includes/class
 
             ProductoDevolucion.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+            
+            ProductoDevolucion.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoDevolucion.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
             
             ProductoDevolucion.prototype.setItemId = function (item_id) {
@@ -54405,6 +54424,7 @@ define('models/E017/ProductoDevolucionE017',["angular", "js/models", "includes/c
                 this.cantidad = cantidad;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
+                this.total_costo = 0;
                 this.lote = lote || "";
                 this.subClase = subClase;
                 this.autorizado = true;
@@ -54437,6 +54457,14 @@ define('models/E017/ProductoDevolucionE017',["angular", "js/models", "includes/c
             
             ProductoDevolucionE017.prototype.setSubClase = function (subClase) {
                 this.subClase = subClase;
+            };
+            
+            ProductoDevolucionE017.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoDevolucionE017.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
             
             ProductoDevolucionE017.prototype.setCantidad = function (cantidad) {
@@ -55509,6 +55537,14 @@ define('models/I011/DocumentoIngresoDevolucion',["angular", "js/models", "includ
                 return this.bodega;
             };
             
+            DocumentoIngresoDevolucion.prototype.set_empresa = function(empresa) {
+                this.empresa = empresa;
+            };
+
+            DocumentoIngresoDevolucion.prototype.get_empresa = function() {
+                return this.empresa;
+            };
+            
             DocumentoIngresoDevolucion.prototype.setDocumentoDevolucion = function(documento) {
                 this.documentoDevolucion = documento;
             };
@@ -55551,6 +55587,7 @@ define('models/I011/ProductoIngresoDevolucion',["angular", "js/models", "include
                 this.cantidad = cantidad;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
                 this.novedad = novedad;
+                this.total_costo = 0;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
@@ -55585,6 +55622,14 @@ define('models/I011/ProductoIngresoDevolucion',["angular", "js/models", "include
 
             ProductoIngresoDevolucion.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+
+            ProductoIngresoDevolucion.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoIngresoDevolucion.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoIngresoDevolucion.prototype.setItemId = function (item_id) {
@@ -55933,6 +55978,7 @@ define('models/I015/ProductoI015',["angular", "js/models", "includes/classes/Pro
 
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
+                this.total_costo = 0;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
@@ -55959,6 +56005,14 @@ define('models/I015/ProductoI015',["angular", "js/models", "includes/classes/Pro
 
             ProductoI015.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+                        
+            ProductoI015.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoI015.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoI015.prototype.getCantidadIngresada = function () {
@@ -56075,6 +56129,7 @@ define('models/I008/ProductoI008',["angular", "js/models", "includes/classes/Pro
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
+                this.total_costo = 0;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.lote = lote || "";
@@ -56108,6 +56163,14 @@ define('models/I008/ProductoI008',["angular", "js/models", "includes/classes/Pro
 
             ProductoI008.prototype.setCantidadIngresada = function (cantidad_ingresada) {
                 this.cantidad_ingresada = cantidad_ingresada;
+            };
+
+            ProductoI008.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoI008.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoI008.prototype.setItemId = function (item_id) {
@@ -58755,7 +58818,7 @@ define('controllers/ABC1/ABC1Controller',["angular", "js/controllers", 'includes
                 var request = new XMLHttpRequest();
                 request.open('HEAD', url, false);
                 request.send();
-                if(request.status == 200) {
+                if(request.status === 200) {
                     console.log('PDF existe!!');
                     window.open(url, '_blank');
                 } else {
@@ -59721,6 +59784,7 @@ define('controllers/ABC1/ABC1Controller',["angular", "js/controllers", 'includes
             that.init();
         }])
 });
+
 
 define('controllers/ABC1/ABC1GestionarClientesController',["angular", "js/controllers"], function (angular, controllers) {
 
@@ -62205,6 +62269,7 @@ define('controllers/ASC1/ASC1Controller',["angular", "js/controllers", 'includes
         }])
 });
 
+
 define('controllers/ASC1/ASC1GestionarClientesController',["angular", "js/controllers"], function (angular, controllers) {
 
     controllers.controller('E007GestionarClientesController', [
@@ -63469,6 +63534,7 @@ define('controllers/E007/E007GestionarProductosController',["angular", "js/contr
                 productos.forEach(function (data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.cantidad_disponible, data.tipo_producto_id);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -63612,6 +63678,7 @@ define('controllers/E007/E007GestionarProductosController',["angular", "js/contr
                                         cantidad: producto.cantidad,
                                         lote: producto.lote,
                                         fechaVencimiento: producto.fecha_vencimiento,
+                                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                                         disponible: producto.disponible,
                                         docTmpId: $scope.doc_tmp_id
                                     }
@@ -63817,6 +63884,7 @@ define('controllers/E009/E009Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
+                    producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -64213,6 +64281,7 @@ define('controllers/E009/E009GestionarProductosController',["angular", "js/contr
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
                     producto.setNombreTipo(data.nombreTipo);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -64288,6 +64357,7 @@ define('controllers/E009/E009GestionarProductosController',["angular", "js/contr
                     codigoProducto: producto.codigo_producto,
                     cantidad: producto.cantidad,
                     lote: producto.lote,
+                    total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                     fechaVencimiento: producto.fecha_vencimiento,
                     docTmpId: $scope.doc_tmp_id
                 };
@@ -64517,6 +64587,7 @@ define('controllers/E017/E017Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
+                            producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -64937,6 +65008,7 @@ define('controllers/E017/E017GestionarProductosController',["angular", "js/contr
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
                     producto.setNombreTipo(data.nombreTipo);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -65044,6 +65116,7 @@ define('controllers/E017/E017GestionarProductosController',["angular", "js/contr
                         bodega: Empresa.centroUtilidad.bodega.codigo,
                         codigoProducto: producto.codigo_producto,
                         cantidad: producto.cantidad,
+                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
                         docTmpId: $scope.doc_tmp_id
@@ -68436,6 +68509,7 @@ define('controllers/I008/I008Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                            producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -68505,6 +68579,7 @@ define('controllers/I008/I008Controller',[
                         lote: producto.lote,
                         fechaVencimiento: producto.fecha_vencimiento,
                         item_id: producto.item_id,
+                        total_costo: producto.total_costo,
                         docTmpId: $scope.doc_tmp_id
                     }
                 };
@@ -68550,6 +68625,7 @@ define('controllers/I008/I008Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id, 0);
+                            producto.setTotalCosto(data.total_costo);
                     producto.setItemIdCompra(data.item_id_compras);
 
                     $scope.datos_view.listado_productos_validados.push(producto);
@@ -68740,7 +68816,7 @@ define('controllers/I008/I008Controller',[
                     data: {
                         listado: $scope.datos_view.listado_productos_validados,
                         doc_tmp_id: $scope.doc_tmp_id,
-                        empresa_id:usuario.getEmpresa().getCodigo()
+                        empresa_id: usuario.getEmpresa().getCodigo()
                     }
                 };
 
@@ -68947,6 +69023,19 @@ define('controllers/I011/I011Controller',[
                 });
             };
 
+            that.buscarEmpresas = function (callback) {
+                var obj = {
+                    session: $scope.session
+                };
+                I011Service.buscarEmpresa(obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.listarEmpresas);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
             that.buscarBodegaPorId = function (id, callback) {
                 var obj = {
                     session: $scope.session,
@@ -68976,10 +69065,11 @@ define('controllers/I011/I011Controller',[
                 });
             };
 
-            that.buscarDevoluciones = function (parametro) {
+            that.buscarDevoluciones = function (bodega,empresa) {
                 var obj = {
                     session: $scope.session,
-                    bodega: parametro
+                    bodega: bodega,
+                    empresa: empresa
                 };
                 I011Service.buscarDevoluciones(obj, function (data) {
                     if (data.status === 200) {
@@ -68994,6 +69084,7 @@ define('controllers/I011/I011Controller',[
                 var obj = {
                     session: $scope.session,
                     data: {
+                        empresa: $scope.documento_ingreso.get_empresa(),
                         numero_doc: $scope.documento_ingreso.getDocumentoDevolucion().numero,
                         prefijo: $scope.documento_ingreso.getDocumentoDevolucion().prefijo
                     }
@@ -69022,6 +69113,8 @@ define('controllers/I011/I011Controller',[
                             data.tipo_producto_id, data.lote, data.torre, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id);
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
+                    producto.setTotalCosto(data.total_costo);
+                    producto.costo = parseFloat(data.total_costo) / parseFloat(data.cantidad);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -69180,6 +69273,9 @@ define('controllers/I011/I011Controller',[
                 that.buscarBodega(function (data) {
                     $scope.bodegas = data;
                 });
+                that.buscarEmpresas(function (data) {
+                    $scope.Empresas = data;
+                });
             });
 
             //  Abre slider para gestionar productos
@@ -69207,7 +69303,8 @@ define('controllers/I011/I011Controller',[
             };
 
             $scope.onBuscarDevoluciones = function () {
-                that.buscarDevoluciones($scope.documento_ingreso.get_bodega());
+                $scope.documento_ingreso.documentoDevolucion = null;
+                that.buscarDevoluciones($scope.documento_ingreso.get_bodega(),$scope.documento_ingreso.get_empresa());
             };
 
             $scope.onBuscarProductosDevoluciones = function () {
@@ -69274,6 +69371,7 @@ define('controllers/I011/I011Controller',[
                     empresa_envia: $scope.documento_ingreso.getDocumentoDevolucion().empresa_id,
                     lote: producto.lote,
                     fechaVencimiento: producto.fecha_vencimiento,
+                    total_costo: producto.total_costo,
                     docTmpId: $scope.doc_tmp_id
                 };
                 that.insertarProductos(parametro);
@@ -69640,6 +69738,7 @@ define('controllers/I011/ModificarProductoController',["angular", "js/controller
                     return;
                 }
                 item.novedadAnexa = "CAMBIO LOTE MANUAL";
+                item.total_costo = parseFloat(fila.costo) * parseFloat(item.cantidad_ingresada );
                 $scope.btn_adicionar_producto(item);
                 var time = setTimeout(function () {
                     index++;
@@ -70872,6 +70971,7 @@ define('controllers/I015/I015Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                        producto.setTotalCosto(data.total_costo);    
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -70939,6 +71039,7 @@ define('controllers/I015/I015Controller',[
                         cantidad: producto.cantidad,
                         cantidad_enviada: producto.cantidad_ingresada,
                         lote: producto.lote,
+                        total_costo: producto.total_costo,
                         fechaVencimiento: producto.fecha_vencimiento,
                         item_id: producto.item_id,
                         docTmpId: $scope.doc_tmp_id
@@ -72028,6 +72129,7 @@ define('services/E007/E007Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 disponible: parametro.data.disponible,
+                                total_costo: parametro.data.total_costo,
                                 bodega: parametro.data.bodega
                             }
                         };
@@ -72392,6 +72494,7 @@ define('services/E017/E017Service',["angular", "js/services"], function (angular
                                 cantidad: parametro.data.cantidad,
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };
@@ -72820,6 +72923,7 @@ define('services/I008/I008Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 item_id: parametro.data.item_id,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };
@@ -72930,6 +73034,28 @@ define('services/I011/I011Service',["angular", "js/services"], function (angular
                         );
 
                     };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 22/05/2019
+                     * +Descripcion: lista las bodegas
+                     */
+                    self.buscarEmpresa = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I011.LISTAR_EMPRESAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
                     
                     /*
                      * @Author: German Galvis.
@@ -72988,7 +73114,8 @@ define('services/I011/I011Service',["angular", "js/services"], function (angular
                                 {
                                     session: obj.session,
                                     data: {
-                                        bodega: obj.bodega
+                                        bodega: obj.bodega,
+                                        empresa: obj.empresa
                                     }
                                 },
                                 function (data) {
@@ -73461,6 +73588,7 @@ define('services/I015/I015Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 item_id: parametro.data.item_id,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };

@@ -28,6 +28,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
                 return this.bodega;
             };
             
+            DocumentoIngresoDevolucion.prototype.set_empresa = function(empresa) {
+                this.empresa = empresa;
+            };
+
+            DocumentoIngresoDevolucion.prototype.get_empresa = function() {
+                return this.empresa;
+            };
+            
             DocumentoIngresoDevolucion.prototype.setDocumentoDevolucion = function(documento) {
                 this.documentoDevolucion = documento;
             };

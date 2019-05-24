@@ -25,6 +25,28 @@ DocumentoBodegaI011.prototype.listarBodegas = function (parametros, callback) {
 
 /**
  * @author German Galvis
+ * +Descripcion consulta todas las empresas
+ * seleccionada
+ * @params obj: sesion
+ * @fecha 2019-05-22
+ */
+DocumentoBodegaI011.prototype.listarEmpresas = function (callback) {
+    var query = G.knex
+            .select()
+            .from('empresas')
+            .whereIn('empresa_id',['FD','HV'] )
+            .andWhere('sw_activa','1');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [listarEmpresas]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
  * +Descripcion consulta todas las bodegas que tengan el id enviado
  * seleccionada
  * @params obj: bodegaId
@@ -55,16 +77,18 @@ DocumentoBodegaI011.prototype.listarDevoluciones = function (parametros, callbac
 
     var subquery = G.knex
             .select('numero_doc_farmacia')
-            .from('inv_documento_verificacion');
+            .from('inv_documento_verificacion')
+            .where('empresa_id', parametros.empresa);
 
     var query = G.knex
             .select()
             .from('inv_bodegas_movimiento')
             .where('prefijo', 'EDB')
-            .andWhere('empresa_destino', parametros)
+            .andWhere('empresa_destino', parametros.bodega)
+            .andWhere('empresa_id', parametros.empresa)
             .andWhere('numero', 'not in', subquery)
             .orderBy('numero', 'desc');
-    
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -125,6 +149,7 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
     var columnas = [
         "invD.movimiento_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invenPro.tipo_producto_id",
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
         G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\") as  cantidad"),
@@ -150,6 +175,7 @@ DocumentoBodegaI011.prototype.consultarDetalleDevolucion = function (parametros,
             .leftJoin("param_torreproducto AS param", "invD.codigo_producto", "param.codigo_producto")
             .where('invD.numero', parametros.numero_doc)
             .andWhere("invD.prefijo", parametros.prefijo)
+            .andWhere("invD.empresa_id", parametros.empresa_id)
             .andWhere(subQuery);
 
     query.then(function (resultado) {
@@ -299,7 +325,7 @@ DocumentoBodegaI011.prototype.agregarItem = function (parametros, transaccion, c
             .insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centroUtilidad,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
                 fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
-                item_id_compras: parametros.movimiento_id
+                item_id_compras: parametros.movimiento_id, total_costo: parametros.total_costo
             });
     if (transaccion)
         query.transacting(transaccion);

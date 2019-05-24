@@ -22,6 +22,25 @@ I011Controller.prototype.listarBodegas = function (req, res) {
             }).
             done();
 };
+
+/**
+ * @author German Galvis
+ * +Descripcion lista las empresas
+ * @fecha 2019-05-22
+ */
+I011Controller.prototype.listarEmpresas = function (req, res) {
+    var that = this;
+    var parametro = req.session.user;
+    G.Q.nfcall(that.m_i011.listarEmpresas).
+            then(function (resultado) {
+                res.send(G.utils.r(req.url, 'Consultar listar empresas ok!!!!', 200, {listarEmpresas: resultado}));
+            }).
+            fail(function (err) {
+                res.send(G.utils.r(req.url, 'Error al Consultar listado de empresas', 500, {listarEmpresas: {}}));
+            }).
+            done();
+};
+
 /**
  * @author German Galvis
  * +Descripcion trae registro de la bodega seleccionada
@@ -88,8 +107,13 @@ I011Controller.prototype.listarTorres = function (req, res) {
 I011Controller.prototype.listarDevoluciones = function (req, res) {
     var that = this;
     var args = req.body.data;
-    var parametro = args.bodega;
-    G.Q.nfcall(that.m_i011.listarDevoluciones, parametro).
+
+    var parametros = {
+        bodega: args.bodega,
+        empresa: args.empresa
+    };
+
+    G.Q.nfcall(that.m_i011.listarDevoluciones, parametros).
             then(function (resultado) {
                 res.send(G.utils.r(req.url, 'Consultar listar bodegas ok!!!!', 200, {listarDevoluciones: resultado}));
             }).
@@ -115,9 +139,14 @@ I011Controller.prototype.consultarDetalleDevolucion = function (req, res) {
         res.send(G.utils.r(req.url, 'prefijo no esta definido', 404, {}));
         return;
     }
+    if (args.empresa === undefined || args.empresa === '') {
+        res.send(G.utils.r(req.url, 'empresa no esta definida', 404, {}));
+        return;
+    }
 
     var parametros = {
         numero_doc: args.numero_doc,
+        empresa_id: args.empresa,
         prefijo: args.prefijo,
         usuario_id: usuarioId
     };
@@ -243,6 +272,11 @@ I011Controller.prototype.agregarItem = function (req, res) {
     var args = req.body.data;
     var usuarioId = req.session.user.usuario_id;
 
+    if (args.total_costo === undefined || args.total_costo === 0) {
+        res.send(G.utils.r(req.url, 'El costo total no esta definido', 404, {}));
+        return;
+    }
+
     var parametros = {
         empresaId: args.empresaId,
         centroUtilidad: args.centroUtilidad,
@@ -258,6 +292,7 @@ I011Controller.prototype.agregarItem = function (req, res) {
         numero: args.numero_doc,
         movimiento_id: args.item_id,
         novedad_id: args.novedadId,
+        total_costo: args.total_costo,
         novedad_anexa: args.novedadAnexa
     };
 

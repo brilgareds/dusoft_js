@@ -29,6 +29,28 @@ define(["angular", "js/services"], function (angular, services) {
                         );
 
                     };
+
+                    /*
+                     * @Author: German Galvis.
+                     * @fecha 22/05/2019
+                     * +Descripcion: lista las bodegas
+                     */
+                    self.buscarEmpresa = function (obj, callback) {
+                        Request.realizarRequest(
+                                API.I011.LISTAR_EMPRESAS,
+                                "POST",
+                                {
+                                    session: obj.session,
+                                    data: {
+                                    }
+                                },
+                                function (data) {
+
+                                    callback(data);
+                                }
+                        );
+
+                    };
                     
                     /*
                      * @Author: German Galvis.
@@ -87,7 +109,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 {
                                     session: obj.session,
                                     data: {
-                                        bodega: obj.bodega
+                                        bodega: obj.bodega,
+                                        empresa: obj.empresa
                                     }
                                 },
                                 function (data) {

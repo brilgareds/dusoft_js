@@ -135,7 +135,8 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
     }
     var columna2 = [ 
         "b.descripcion as zona",
-        G.knex.raw("'MAGISTERIO - ' || a.descripcion as nombre_bodega"), 
+//        G.knex.raw("'MAGISTERIO - ' || a.descripcion as nombre_bodega"), 
+        G.knex.raw("CASE WHEN POSITION ('PUERTOS' IN a.descripcion)  = 0 THEN 'MAGISTERIO - ' || a.descripcion ELSE  a.descripcion END as nombre_bodega "), 
         "a.empresa_id",
         "a.centro_utilidad",
         "a.bodega",
@@ -1425,11 +1426,11 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
        datos.laboratorio = datos.laboratorio.replace(/�/g, "A");
    }
    
-   if (datos.laboratorio.search("LABORATORIOS") !== -1){
-       datos.laboratorio = datos.laboratorio.replace(/LABORATORIOS/g, "");
-   }
    if (datos.laboratorio.search("LABORATORIO") !== -1){       
-       datos.laboratorio = datos.laboratorio.replace(/LABORATORIO/g, "");
+       datos.laboratorio = datos.laboratorio.replace(/LABORATORIO /g, "");
+    if (datos.laboratorio.search("LABORATORIOS") !== -1){
+       datos.laboratorio = datos.laboratorio.replace(/LABORATORIOS /g, "");
+     }
    }   
    
    datos.producto=getCleanedString(datos.producto);
@@ -1438,8 +1439,8 @@ DrAriasModel.prototype.insertRotacionMedipol = function(datos, callback) {
                     empresa_id : datos.empresa_id,
                     bodega : datos.bodega,
                     codigo_producto : datos.codigo_producto,
-                    producto : datos.producto,
-                    laboratorio : datos.laboratorio,
+                    producto : datos.producto.toUpperCase() ,
+                    laboratorio : datos.laboratorio.trim(),
                     molecula : datos.molecula,
                     cantidad_total_despachada : datos.cantidad_total_despachada,
                     existencia_farmacia : datos.existencia_farmacia,

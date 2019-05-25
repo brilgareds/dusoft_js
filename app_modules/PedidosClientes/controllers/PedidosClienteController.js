@@ -1451,7 +1451,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
     
-    console.log('args.pedidos_clientes',args.pedidos_clientes);
+
 
     //cotizacion.numero_cotizacion
 

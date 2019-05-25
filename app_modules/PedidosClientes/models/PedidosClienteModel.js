@@ -1328,8 +1328,13 @@ PedidosClienteModel.prototype.confirmacionExistenciaPedido = function (obj, call
     var query = G.knex("ventas_ordenes_pedidos_tmp").
                   where("pedido_cliente_id_tmp", obj.pedido).
                   select(['observacion_cartera','sw_aprobado_cartera']);
- console.log("err [listarProducto]:", G.sqlformatter.format(query.toString()));
+
     query.then(function (resultado) {
+     
+        if(resultado.length === 0){
+            callback(true);
+            return;
+        }
         if(resultado[0].observacion_cartera === '' || resultado[0].sw_aprobado_cartera === '4'){
             callback(false, resultado);
         }else{
@@ -3127,7 +3132,7 @@ PedidosClienteModel.prototype.autorizarCabeceraCotizacion = function (cotizacion
     var query = G.knex('ventas_ordenes_pedidos_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .update(updateData);
-             console.log("err [listarProducto]:", G.sqlformatter.format(query.toString()));
+            
     query.then(function (rows) {
         callback(false, rows);
     }).catch(function (error) {

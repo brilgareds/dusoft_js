@@ -1703,6 +1703,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             if(valida){                                              
                                                 that.generarPedidoCartera(aprobado, denegar);
                                             }else{
+                                                if($scope.Pedido.get_numero_pedido()=== undefined)
                                                 AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya fue aprobada");
                                                 $state.go('ListarPedidosClientes');
                                             }
@@ -1720,6 +1721,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             
             that.confirmacionExistenciaPedido = function(callback){
+                console.log("$scope.Pedido.get_numero_pedido()",$scope.Pedido.get_numero_pedido());
+                        if($scope.Pedido.get_numero_pedido()!== undefined){
+                            console.log("ok");
+                             callback(true);
+                        }
                            var obj = {
                                     session: $scope.session,
                                     data: {
@@ -1729,7 +1735,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     }
                                 };
                   Request.realizarRequest(API.PEDIDOS.CLIENTES.CONFIRMACION_EXISTENCIA_PEDIDO, "POST", obj, function (data) {                      
-                      
+                      console.log('data::::',data);
                       if(data.status === 200){
                           callback(true); 
                       }else{

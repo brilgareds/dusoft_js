@@ -489,7 +489,9 @@ define([
                     session: $scope.session,
                     data: {
                         listado: $scope.datos_view.listado_productos_validados,
-                        doc_tmp_id: $scope.doc_tmp_id
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        prefijo_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().prefijo,
+                        numero_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().numero
                     }
                 };
 

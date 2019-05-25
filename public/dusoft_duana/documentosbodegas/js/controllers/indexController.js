@@ -1040,7 +1040,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             session: $scope.session,
                             data: {
                                 listado: $scope.listado_productos,
-                                doc_tmp_id: datos.doc_tmp_id
+                                doc_tmp_id: datos.doc_tmp_id,
+                                prefijo_doc_farmacia: datos.prefijo_idc,
+                                numero_doc_farmacia: datos.numero_factura
                             }
                         };
 

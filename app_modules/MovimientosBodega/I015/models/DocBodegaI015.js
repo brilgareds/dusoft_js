@@ -519,4 +519,28 @@ DocumentoBodegaI015.prototype.consultarFarmaciaOrigen = function (parametro, cal
         callback(err);
     });
 };
+
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el estado del traslado
+ * @fecha 2019-05-25
+ */
+DocumentoBodegaI015.prototype.actualizarEstadoTraslado = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_traslados_farmacia")
+            .where('prefijo', parametros.prefijo_doc_farmacia)
+            .andWhere('numero', parametros.numero_doc_farmacia)
+            .andWhere('empresa_id', 'FD')
+            .update('sw_estado', 1);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
+};
 module.exports = DocumentoBodegaI015;

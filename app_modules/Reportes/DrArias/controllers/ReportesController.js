@@ -389,8 +389,10 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             item.empresa = item.empresa_id;
             item.centroUtilidad = item.centro_utilidad;
             item.remitentes = correosRemitentes;
+            item.fechaToday = fechaToday;
 
             __rotacionesBodegas(that, item,function (data) {
+                console.log("data:::",data);
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
                         var subject = "Error al Generar Rotacion (ver detalles) " + fechaToday;
@@ -573,9 +575,12 @@ console.time('__enviar_correo_electronico');
         return true;
         
     }).then(function (resultados) {
+       
+        infoResult.estado = 200;
         callback(false, infoResult);
 
     }).fail(function (err) {
+        console.log("Error ",err);
         bodega.swEstadoCorreo = 4;
         bodega.logError = err;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
@@ -583,10 +588,11 @@ console.time('__enviar_correo_electronico');
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){ 
             G.Q.ninvoke(that.m_drArias, 'eliminarRotacionMedipol', bodega); 
             }
+            err.estado = undefined;
             callback(err);
         });
 
-        console.log("error controller __rotacionesBodegasGeneracionExcel ", err);
+        console.log("Error controller __rotacionesBodegasGeneracionExcel ", err);
     }).done();
 }
 

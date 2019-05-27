@@ -909,7 +909,7 @@ function __creaExcel(data, callback) {
     header.push({header: 'Promedio Mes', key: 'g', width: 9, style: style});
     header.push({header: 'Stock Farmacia', key: 'h', width: 8.5, style: style});
     header.push({header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style});
-    header.push({header: '', key: 'j', width: 10, style: style});
+    header.push({header: '', key: 'j', width: 7, style: style});
     header.push({header: 'Stock Bodega', key: 'k', width: 7.5, style: style});
        
     worksheet.columns = header;

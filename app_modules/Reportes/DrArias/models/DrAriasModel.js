@@ -136,7 +136,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
     var columna2 = [ 
         "b.descripcion as zona",
 //        G.knex.raw("'MAGISTERIO - ' || a.descripcion as nombre_bodega"), 
-        G.knex.raw("CASE WHEN POSITION ('PUERTOS' IN a.descripcion)  = 0 THEN 'MAGISTERIO - ' || a.descripcion ELSE  a.descripcion END as nombre_bodega "), 
+        G.knex.raw("CASE WHEN POSITION ('PUERTOS' IN a.descripcion) = 0 and POSITION('BOSQUE' IN a.descripcion) = 0  THEN 'MAGISTERIO - ' || a.descripcion ELSE a.descripcion END as nombre_bodega"), 
         "a.empresa_id",
         "a.centro_utilidad",
         "a.bodega",
@@ -225,7 +225,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
              }) 
            }).as("b").orderBy(filtro, orden);
            
-//console.log(G.sqlformatter.format(query.toString())); 
+console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
 

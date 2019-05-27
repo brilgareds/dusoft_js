@@ -518,8 +518,9 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         if (planilla_id !== "" && planilla_id !== undefined) {
             sql3 += " AND q.planilla_id = :1";
         }
-        sql3 += " AND (q.planilla_id is null or q.planilla_id='0')";
-//sql3 += " AND q.planilla_id is null";
+//        sql3 += " AND (q.planilla_id is null or q.planilla_id='0')";
+         
+        sql3 += " AND q.planilla_id is null";
     }
 
     var sql = "( select a.*,case when b.planilla_id is not null then true else false end  as chequeado from (\

@@ -9,16 +9,16 @@ define(["angular", "js/controllers",
     'models/auditoriapedidos/Caja',
     "controllers/auditoriapedidos/AuditoriaPedidosClientesController",
     "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
-   // "controllers/auditoriapedidos/AuditoriaDespachos",
-    "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
+    // "controllers/auditoriapedidos/AuditoriaDespachos",
+    "controllers/auditoriapedidos/EditarProductoController"], function (angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal", 'Auditor', 'Usuario',"localStorageService","AuditoriaDespachoService",
-        function($scope, $rootScope, Request,
+        "$modal", 'Auditor', 'Usuario', "localStorageService", "AuditoriaDespachoService",
+        function ($scope, $rootScope, Request,
                 Empresa, Cliente, Farmacia,
                 PedidoAuditoria, Separador, DocumentoTemporal,
                 API, socket, AlertService,
@@ -26,7 +26,7 @@ define(["angular", "js/controllers",
 
             $scope.Empresa = Empresa;
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-            
+
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -59,31 +59,31 @@ define(["angular", "js/controllers",
             };
 
 
-           /* var obj = {
-                session: $scope.session,
-                data: {
-                    documento_temporal: {
-                        documento_temporal_id: 1,
-                        usuario_id: 1350,
-                        filtro: {busqueda: true},
-                        numero_pedido: 8000
-                    }
-                }
-            };*/
+            /* var obj = {
+             session: $scope.session,
+             data: {
+             documento_temporal: {
+             documento_temporal_id: 1,
+             usuario_id: 1350,
+             filtro: {busqueda: true},
+             numero_pedido: 8000
+             }
+             }
+             };*/
 
 
             var that = this;
 
-            $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
+            $scope.buscarPedidosSeparados = function (obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
 
                 if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS;
                 }
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-                    
+
                     if (data.obj && data.obj.documentos_temporales !== undefined) {
                         callback(data.obj, paginando, tipo);
                     }
@@ -91,9 +91,9 @@ define(["angular", "js/controllers",
                 });
 
             };
-           
 
-            that.crearDocumentoTemporal = function(obj, tipo) {
+
+            that.crearDocumentoTemporal = function (obj, tipo) {
 
                 var documento_temporal = DocumentoTemporal.get();
                 documento_temporal.setDatos(obj);
@@ -101,9 +101,9 @@ define(["angular", "js/controllers",
                 var pedido = PedidoAuditoria.get(obj);
                 pedido.setDatos(obj);
                 pedido.setTipo(tipo);
-                var multiple=obj.es_pedido_origen? obj.es_pedido_origen: obj.es_pedido_destino? obj.es_pedido_destino : obj.es_pedido_final?  obj.es_pedido_final : 'No Multiple';
+                var multiple = obj.es_pedido_origen ? obj.es_pedido_origen : obj.es_pedido_destino ? obj.es_pedido_destino : obj.es_pedido_final ? obj.es_pedido_final : 'No Multiple';
                 pedido.setPedidoMultiple(multiple);
-                
+
                 documento_temporal.empresa_id = obj.empresa_id;
                 documento_temporal.centro_utilidad = obj.centro_utilidad || '1';
                 documento_temporal.bodega_id = obj.bodega_id || '03';
@@ -146,19 +146,19 @@ define(["angular", "js/controllers",
 //console.log("*****",documento_temporal);
                 return documento_temporal;
             };
-            
-           $scope.obtenerDocumento = function(numero, tipo){
+
+            $scope.obtenerDocumento = function (numero, tipo) {
                 var documentos = Empresa.getDocumentoTemporal(tipo);
-                for(var i in documentos){
+                for (var i in documentos) {
                     var documento = documentos[i];
-                    if(documento.getPedido().get_numero_pedido() === numero){
+                    if (documento.getPedido().get_numero_pedido() === numero) {
                         return documento;
                     }
                 }
             };
 
 
-            $scope.renderPedidosSeparados = function(data, paginando, tipo) {
+            $scope.renderPedidosSeparados = function (data, paginando, tipo) {
 
                 var items = data.documentos_temporales.length;
                 var evento = (tipo === 1) ? "Cliente" : "Farmacia";
@@ -181,24 +181,24 @@ define(["angular", "js/controllers",
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
                 $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
-                
+
             };
 
 
 
             //logica detalle
 
-            $scope.buscarDetalleDocumentoTemporal = function(obj, paginando, tipo, callback) {
+            $scope.buscarDetalleDocumentoTemporal = function (obj, paginando, tipo, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES;
 
                 if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
-                       
+
                         if (data.obj.documento_temporal !== undefined) {
                             callback(data, paginando);
                         }
@@ -206,9 +206,9 @@ define(["angular", "js/controllers",
                 });
 
             };
-            
 
-            that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback) {
+
+            that.buscarProductosSeparadosEnDocumento = function (obj, tipo, callback) {
 
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE;
 
@@ -216,7 +216,7 @@ define(["angular", "js/controllers",
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA;
                 }
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
 
@@ -227,7 +227,7 @@ define(["angular", "js/controllers",
                 });
             };
 
-            that.renderDetalleDocumentoTemporal = function(documento, productos, tipo) {
+            that.renderDetalleDocumentoTemporal = function (documento, productos, tipo) {
                 //Vaciar el listado de Productos
 
                 documento.getPedido().vaciarProductos();
@@ -245,20 +245,20 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.onKeyDocumentosSeparadosPress = function(ev, documento, params, tipo) {
+            $scope.onKeyDocumentosSeparadosPress = function (ev, documento, params, tipo) {
 
 
-                that.buscarProductosSeparadosEnDocumento(params, tipo, function(data) {
+                that.buscarProductosSeparadosEnDocumento(params, tipo, function (data) {
                     if (data.status === 200) {
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
-                       
+
 
                         that.renderDetalleDocumentoTemporal(documento, productos, 1);
                     }
                 });
             };
 
-            that.crearProductoPedidoDocumentoTemporal = function(obj, tipo) {
+            that.crearProductoPedidoDocumentoTemporal = function (obj, tipo) {
 
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
 
@@ -285,8 +285,8 @@ define(["angular", "js/controllers",
                 producto_pedido_separado.cantidad_despachada = obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada = producto_pedido_separado.cantidad_solicitada - obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada_real = obj.cantidad_solicitada;
-                producto_pedido_separado.observacionJustificacionSeparador = obj.observacion_justificacion_separador; 
-                                               
+                producto_pedido_separado.observacionJustificacionSeparador = obj.observacion_justificacion_separador;
+
 
                 producto_pedido_separado.setLote(lote_pedido);
 
@@ -298,10 +298,10 @@ define(["angular", "js/controllers",
 
 
             //Trae el Listado de Documentos de Usuario
-            $scope.traerListadoDocumentosUsuario = function(obj, callback) {
+            $scope.traerListadoDocumentosUsuario = function (obj, callback) {
 
-                
-                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
+
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         callback(data);
@@ -312,14 +312,14 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.validarDocumentoUsuario = function(obj, tipo, callback) {
+            $scope.validarDocumentoUsuario = function (obj, tipo, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
 
                 if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
@@ -332,12 +332,12 @@ define(["angular", "js/controllers",
                 /* Fin Request */
             };
 
-            $scope.esDocumentoBodegaValido = function(bodega_id) {
+            $scope.esDocumentoBodegaValido = function (bodega_id) {
                 return (!bodega_id > 0) ? false : true;
             };
 
 
-            $scope.onAbrirVentanaLotes = function(documento, documento_despacho, row) {
+            $scope.onAbrirVentanaLotes = function (documento, documento_despacho, row) {
 
                 //almacenar lotes del mismo producto
                 var productos = [];
@@ -348,7 +348,7 @@ define(["angular", "js/controllers",
                     var _producto = documento.getPedido().getProductos()[i];
 
                     if (_producto.codigo_producto === producto.codigo_producto) {
-                       
+
                         _producto.lote.cantidad_ingresada = _producto.cantidad_separada;
                         productos.push(_producto);
                     }
@@ -363,16 +363,16 @@ define(["angular", "js/controllers",
                     templateUrl: 'views/auditoriapedidos/editarproducto.html',
                     controller: "EditarProductoController",
                     resolve: {
-                        documento: function() {
+                        documento: function () {
                             return documento;
                         },
-                        producto: function() {
+                        producto: function () {
                             return producto;
                         },
-                        productos: function() {
+                        productos: function () {
                             return  productos;
                         },
-                        documento_despacho: function() {
+                        documento_despacho: function () {
                             return documento_despacho;
                         }
                     }
@@ -383,12 +383,12 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.traerProductosAuditatos = function(obj) {
+            $scope.traerProductosAuditatos = function (obj) {
 
-                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function (data) {
 
                     if (data.status === 200) {
-                      
+
                         that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados, $scope.productosAuditados);
                     }
 
@@ -396,26 +396,26 @@ define(["angular", "js/controllers",
 
             };
 
-            that.renderProductosAuditados = function(data, arreglo) {
-                
+            that.renderProductosAuditados = function (data, arreglo) {
+
                 for (var i in data) {
                     var obj = data[i];
                     var producto = ProductoPedido.get(
                             obj.codigo_producto, obj.descripcion_producto, obj.existencia_bodega, 0, obj.cantidad_solicitada,
                             obj.cantidad_ingresada, obj.observacion_cambio
-                    );
-                    
+                            );
+
                     producto.setNumeroCaja(obj.numero_caja);
-                    
+
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                     lote.item_id = obj.item_id;
                     lote.setExistenciaActual(obj.existencia_actual);
-                    
-                    
-                    if((parseInt(lote.getExistenciaActual()) <  parseInt(obj.cantidad_ingresada)) ||
-                      (parseInt(producto.getExistencia()) <  parseInt(obj.cantidad_ingresada))){
-                         lote.setTieneExistencia(false);
-                     }
+
+
+                    if ((parseInt(lote.getExistenciaActual()) < parseInt(obj.cantidad_ingresada)) ||
+                            (parseInt(producto.getExistencia()) < parseInt(obj.cantidad_ingresada))) {
+                        lote.setTieneExistencia(false);
+                    }
 
                     producto.setLote(lote);
 
@@ -426,7 +426,7 @@ define(["angular", "js/controllers",
             };
 
 
-            that.sacarProductoAuditados = function(_producto) {
+            that.sacarProductoAuditados = function (_producto) {
                 var count = 0;
                 for (var i in $scope.productosAuditados) {
                     var producto = $scope.productosAuditados[i];
@@ -439,74 +439,74 @@ define(["angular", "js/controllers",
             };
 
 
-        $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row) {
-            
-            var msj = "Favor tener en cuenta que la caja es la número:  "+row.entity.getNumeroCaja();
-            
-            AlertService.mostrarVentanaAlerta("Mensaje del sistema", msj, function(aceptar){
+            $scope.onEliminarProductoAuditado = function (DocumentoTemporal, row) {
 
-               if(!aceptar){
-                   return;
-               }
+                var msj = "Favor tener en cuenta que la caja es la número:  " + row.entity.getNumeroCaja();
 
-               var obj = {
-                   session: $scope.session,
-                   data: {
-                       documento_temporal: {
-                           item_id: row.entity.lote.item_id,
-                           auditado: false,
-                           numero_caja: 0,
-                           documento_temporal_id: DocumentoTemporal.documento_temporal_id,
-                           codigo_producto: row.entity.codigo_producto,
-                           cantidad_pendiente: 0,
-                           justificacion_auditor: "",
-                           existencia: "",
-                           usuario_id: DocumentoTemporal.separador.usuario_id
-                       }
-                   }
-               };
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", msj, function (aceptar) {
 
-               Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
-
-                   if (data.status === 200) {
-                       that.sacarProductoAuditados(row.entity);
-                       AlertService.mostrarMensaje("success", data.msj); 
-
-                   }
-               });
-
-           });
-
-        };
-
-        $scope.onCerrarCaja = function(caja, tipoPedido) {
-            var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
-            var obj = {
-                session: $scope.session,
-                data: {
-                    documento_temporal: {
-                        documento_temporal_id: caja.documento_temporal_id,
-                        numero_caja: caja.numero_caja,
-                        tipo: caja.tipo,
-                        tipo_pedido: tipoPedido
+                    if (!aceptar) {
+                        return;
                     }
-                }
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            documento_temporal: {
+                                item_id: row.entity.lote.item_id,
+                                auditado: false,
+                                numero_caja: 0,
+                                documento_temporal_id: DocumentoTemporal.documento_temporal_id,
+                                codigo_producto: row.entity.codigo_producto,
+                                cantidad_pendiente: 0,
+                                justificacion_auditor: "",
+                                existencia: "",
+                                usuario_id: DocumentoTemporal.separador.usuario_id
+                            }
+                        }
+                    };
+
+                    Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function (data) {
+
+                        if (data.status === 200) {
+                            that.sacarProductoAuditados(row.entity);
+                            AlertService.mostrarMensaje("success", data.msj);
+
+                        }
+                    });
+
+                });
+
             };
 
-            Request.realizarRequest(url, "POST", obj, function(data) {
+            $scope.onCerrarCaja = function (caja, tipoPedido) {
+                var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        documento_temporal: {
+                            documento_temporal_id: caja.documento_temporal_id,
+                            numero_caja: caja.numero_caja,
+                            tipo: caja.tipo,
+                            tipo_pedido: tipoPedido
+                        }
+                    }
+                };
 
-                if (data.status === 200) {
-                    caja.caja_cerrada = '1';
+                Request.realizarRequest(url, "POST", obj, function (data) {
 
-                } else {
-                    AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
-                }
-            });
+                    if (data.status === 200) {
+                        caja.caja_cerrada = '1';
+
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
+                    }
+                });
             };
 
 
 
-            that.sacarCaja = function(caja) {
+            that.sacarCaja = function (caja) {
                 for (var i in $scope.cajasSinCerrar) {
                     var _caja = $scope.cajasSinCerrar[i];
 
@@ -517,67 +517,67 @@ define(["angular", "js/controllers",
                     }
                 }
             };
-            
-           that.sincronizarDocumento = function(documento, despacho){
+
+            that.sincronizarDocumento = function (documento, despacho) {
                 var obj = {
                     session: $scope.session,
                     documento: {
-                        prefijo_documento : despacho.prefijo_documento,
-                        numero_documento : despacho.numero_documento,
-                        bodega_destino : (documento.pedido.tipo !== 1) ? documento.pedido.farmacia.bodega_id : documento.bodega_id,
+                        prefijo_documento: despacho.prefijo_documento,
+                        numero_documento: despacho.numero_documento,
+                        bodega_destino: (documento.pedido.tipo !== 1) ? documento.pedido.farmacia.bodega_id : documento.bodega_id,
                         empresa_id: despacho.empresa_id,
-                        tipo_pedido:documento.pedido.tipo,
-                        numero_pedido : documento.pedido.numero_pedido,
+                        tipo_pedido: documento.pedido.tipo,
+                        numero_pedido: documento.pedido.numero_pedido,
                         background: true
                     }
                 };
-                
 
-                AuditoriaDespachoService.sincronizarDocumento(obj, function(data){
-                    if(data.status === 200){
+
+                AuditoriaDespachoService.sincronizarDocumento(obj, function (data) {
+                    if (data.status === 200) {
                         //AlertService.mostrarMensaje("success", "Documento sincronizado correctamente");
                     }
                 });
-                
+
             };
-            
-            that.mostrarVentanaPendientesInvalidos = function(pendientes){
-                
+
+            that.mostrarVentanaPendientesInvalidos = function (pendientes) {
+
 
                 $scope.opts = {
                     size: 'lg',
                     backdrop: 'static',
                     dialogClass: "editarproductomodal",
                     templateUrl: 'views/auditoriapedidos/pendientesInvalidos.html',
-                    controller:["$scope", "pendientes", "$modalInstance", function($scope, pendientes, $modalInstance){
-                            
+                    controller: ["$scope", "pendientes", "$modalInstance", function ($scope, pendientes, $modalInstance) {
+
                             $scope.pendientes = pendientes;
-                            
+
                             $scope.listadoPendientes = {
                                 data: 'pendientes',
                                 enableColumnResize: true,
                                 enableRowSelection: false,
                                 showFilter: true,
-                                enableHighlighting:true,
-                                size:'sm',
+                                enableHighlighting: true,
+                                size: 'sm',
                                 columnDefs: [
-                                    {field: 'codigo_producto', displayName: 'Codigo', width:120},
+                                    {field: 'codigo_producto', displayName: 'Codigo', width: 120},
                                     {field: 'descripcion_producto', displayName: 'Descripcion'},
-                                    {field: 'cantidad_solicitada', displayName: 'Solicitado', width:100},
-                                    {field: 'cantidad_ingresada', displayName: 'Ingresado', width:100}
+                                    {field: 'cantidad_solicitada', displayName: 'Solicitado', width: 100},
+                                    {field: 'cantidad_ingresada', displayName: 'Ingresado', width: 100}
 
                                 ]
 
                             };
-                            
-                            $scope.onCerrar = function(){
+
+                            $scope.onCerrar = function () {
                                 $modalInstance.close();
                             };
-                            
-                            
-                    }],
+
+
+                        }],
                     resolve: {
-                        pendientes: function() {
+                        pendientes: function () {
                             return pendientes;
                         }
                     }
@@ -586,13 +586,15 @@ define(["angular", "js/controllers",
                 var modalInstance = $modal.open($scope.opts);
 
             };
-           
-            
-            $scope.generarDocumento = function(documento) {
+
+
+            $scope.generarDocumento = function (documento) {
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
+                var urlRotulo = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
+                    urlRotulo = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
                 }
 
                 var obj = {
@@ -603,17 +605,17 @@ define(["angular", "js/controllers",
                             documento_temporal_id: documento.documento_temporal_id,
                             auditor_id: documento.auditor.operario_id,
                             usuario_id: documento.separador.usuario_id,
-                            bodega_documento_id : documento.getBodegasDocId(),
+                            bodega_documento_id: documento.getBodegasDocId(),
                             bodega: documento.bodega_id,
-                            bodega_seleccionada:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                            bodega_seleccionada: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                         }
                     }
                 };
                 //console.log('url', url);
 
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    
+                Request.realizarRequest(url, "POST", obj, function (data) {
+
                     if (data.status === 200) {
 
                         $scope.productosNoAuditados = [];
@@ -623,9 +625,9 @@ define(["angular", "js/controllers",
 
 
                         $scope.$broadcast("onRefrescarListadoPedidos");
-                        
+
                         $scope.$broadcast("cerrarDetalleCliente");
-                        
+
                         $scope.$broadcast("cerrarDetalleFarmacia");
 
                         $scope.documento_generado = data.obj.movimientos_bodegas;
@@ -646,14 +648,14 @@ define(["angular", "js/controllers",
                                         <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                     </div>',
                             scope: $scope,
-                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
-                            }]
+                            controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                                    $scope.close = function () {
+                                        $modalInstance.close();
+                                    };
+                                }]
                         };
-                       
-                         //var modalInstance = $modal.open($scope.opts);
+
+                        //var modalInstance = $modal.open($scope.opts);
                         //generar el pdf
                         var obj = {
                             session: $scope.session,
@@ -665,108 +667,138 @@ define(["angular", "js/controllers",
                                 }
                             }
                         };
-                        Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", obj, function(data) {
+                        Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", obj, function (data) {
                             if (data.status === 200) {
-                                
-                               
+
+
                                 var nombre = data.obj.movimientos_bodegas.nombre_pdf;
                                 var detallado = data.obj.movimientos_bodegas.datos_documento;
-                                
-                                    /**
-                                     * @fecha: 26/10/2015
-                                     * +Descripcion: Se envia el detallado del documento el cual se
-                                     * pintara en una plantilla html y se imprimira posteriormente
-                                     * @author Cristian Ardila
-                                     */
-                                    localStorageService.set("DocumentoDespachoImprimir",detallado);
-                                   $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                                   
-                                  if(empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() !=='03'){
-                                   that.sincronizarDocumento(documento, $scope.documento_generado);
-                               }
+
+                                /**
+                                 * @fecha: 26/10/2015
+                                 * +Descripcion: Se envia el detallado del documento el cual se
+                                 * pintara en una plantilla html y se imprimira posteriormente
+                                 * @author Cristian Ardila
+                                 */
+                                localStorageService.set("DocumentoDespachoImprimir", detallado);
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+
+                                if (empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() !== '03') {
+                                    that.sincronizarDocumento(documento, $scope.documento_generado);
+                                }
                             }
 
                         });
 
+                        //var modalInstance = $modal.open($scope.opts);
+                        //generar el rotulo 
+
+                        var obj2 = {
+                            session: $scope.session,
+                            data: {
+                                documento_temporal: {
+                                    numero_pedido: documento.pedido.numero_pedido,
+                                    numero_caja: undefined,
+                                    tipo: undefined,
+                                    todos: true,
+                                    prefijo: $scope.documento_generado.prefijo_documento,
+                                    documento: $scope.documento_generado.numero_documento
+                                }
+                            }
+                        };
+
+                        Request.realizarRequest(urlRotulo, "POST", obj2, function (data) {
+
+                            if (data.status === 200) {
+                                var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
+                                var documentoDespacho = $scope.documento_generado.prefijo_documento + "-" + $scope.documento_generado.numero_documento;
+
+                                $scope.visualizarReporte("/reports/" + nombre_reporte, documentoDespacho, "_blank");
+//                                $scope.visualizarReporte("/reports/" + nombre_reporte, documentoDespacho, "download");
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        });
 
 
-                    }  else if(parseInt(data.status) !== 500 ) { 
-                        
-                     if(parseInt(data.status) === 404 ) {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                     }
 
-                       
+                    } else if (parseInt(data.status) !== 500) {
+
+                        if (parseInt(data.status) === 404) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
+
+
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes = [];
                         $scope.cajasSinCerrar = [];
 
                         var productosNoAuditados = [];
-                        
-                        
-                        if(movimientos_bodegas.productos_pendientes_invalidos && movimientos_bodegas.productos_pendientes_invalidos.length > 0){
-                            
+
+
+                        if (movimientos_bodegas.productos_pendientes_invalidos && movimientos_bodegas.productos_pendientes_invalidos.length > 0) {
+
                             that.mostrarVentanaPendientesInvalidos(movimientos_bodegas.productos_pendientes_invalidos);
                             return;
                         }
-                        
+
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
                         } /*else if(documento, movimientos_bodegas.productosSinExistencias !== undefined){
-                            // that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productosSinExistencias, 2);
-                            
-                            //Señala los productos que no tienen existencias debido a traslados realizados en los lotes
-                            for(var i in $scope.productosAuditados){
-                                var _producto = $scope.productosAuditados[i];
-                                for(var ii in movimientos_bodegas.productosSinExistencias){
-                                    
-                                    var _productoSinExistencia = movimientos_bodegas.productosSinExistencias[ii];
-                                    if(_producto.getCodigoProducto() === _productoSinExistencia.codigo_producto && 
-                                       _producto.getLote().getCodigo() === _productoSinExistencia.lote &&
-                                       _producto.getLote().getFechaVencimiento() === _productoSinExistencia.fecha_vencimiento){
-                                            //console.log("producto sin existencia ", _productoSinExistencia);
-                                            _producto.getLote().setTieneExistencia(false);
-                                            _producto.getLote().setExistenciaActual(_productoSinExistencia.existencia_actual);
-                                            _producto.setExistencia(_productoSinExistencia.existencia_bodega);
-                                    }
-                                }
-                                
-                            }
-                        }*/
-                        
-                        
+                         // that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productosSinExistencias, 2);
+                         
+                         //Señala los productos que no tienen existencias debido a traslados realizados en los lotes
+                         for(var i in $scope.productosAuditados){
+                         var _producto = $scope.productosAuditados[i];
+                         for(var ii in movimientos_bodegas.productosSinExistencias){
+                         
+                         var _productoSinExistencia = movimientos_bodegas.productosSinExistencias[ii];
+                         if(_producto.getCodigoProducto() === _productoSinExistencia.codigo_producto && 
+                         _producto.getLote().getCodigo() === _productoSinExistencia.lote &&
+                         _producto.getLote().getFechaVencimiento() === _productoSinExistencia.fecha_vencimiento){
+                         //console.log("producto sin existencia ", _productoSinExistencia);
+                         _producto.getLote().setTieneExistencia(false);
+                         _producto.getLote().setExistenciaActual(_productoSinExistencia.existencia_actual);
+                         _producto.setExistencia(_productoSinExistencia.existencia_bodega);
+                         }
+                         }
+                         
+                         }
+                         }*/
+
+
 
                         if (movimientos_bodegas.cajas_no_cerradas) {
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;
                         }
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error generando el documento, favor revisar los productos auditados.");
-                        $rootScope.$emit("productoAuditado",{},documento);
+                        $rootScope.$emit("productoAuditado", {}, documento);
                     }
                 });
             };
-            
+
             $scope.ejecutar = true;
             socket.on("onNotificarGenerarI002", function (data) {
-               console.log("*********data***********",data);
-               console.log("*********data***********",data.parametros);
-               console.log("*********data***********",data.parametros.respuesta);
-               if (data.parametros.status === 200 && $scope.ejecutar) {
-                   $scope.ejecutar = false;
-                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se Genera Pedido Automatico No. "+data.parametros.respuesta.pedidoFinal);
+                console.log("*********data***********", data);
+                console.log("*********data***********", data.parametros);
+                console.log("*********data***********", data.parametros.respuesta);
+                if (data.parametros.status === 200 && $scope.ejecutar) {
+                    $scope.ejecutar = false;
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se Genera Pedido Automatico No. " + data.parametros.respuesta.pedidoFinal);
                     var nombre = data.parametros.respuesta.nomb_pdf;
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                     }, 0);
-               }
-            });         
+                }
+            });
             /**
              * +Descripcion: metodo que se emite al auditar un producto prosiguiendo
              * a consultar los productos auditados
              */
-            $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal) {
+            $rootScope.$on("productoAuditado", function (e, producto, DocumentoTemporal) {
                 if (DocumentoTemporal.getPedido() === undefined) {
                     return;
                 }
@@ -787,12 +819,12 @@ define(["angular", "js/controllers",
 
             });
 
-            $rootScope.$on("onGenerarPdfRotulo", function(e, tipo, numero_pedido, numero_caja, tipoCaja) {
+            $rootScope.$on("onGenerarPdfRotulo", function (e, tipo, numero_pedido, numero_caja, tipoCaja) {
                 $scope.onImprimirRotulo(tipo, numero_pedido, numero_caja, tipoCaja);
             });
 
 
-            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja, tipoCaja) {
+            $scope.onImprimirRotulo = function (tipo, numero_pedido, numero_caja, tipoCaja) {
 
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
@@ -812,7 +844,7 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", obj, function (data) {
                     if (data.status === 200) {
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
 
@@ -824,7 +856,7 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.$on("onDetalleCerrado", function() {
+            $scope.$on("onDetalleCerrado", function () {
 
                 $scope.productosAuditados = [];
                 $scope.productosNoAuditados = [];
@@ -832,16 +864,16 @@ define(["angular", "js/controllers",
                 $scope.cajasSinCerrar = [];
             });
 
-            socket.on("onListarDocumentosTemporalesClientes", function(data) {
-                   console.log("onListarDocumentosTemporalesClientes");
+            socket.on("onListarDocumentosTemporalesClientes", function (data) {
+                console.log("onListarDocumentosTemporalesClientes");
                 if (data.status === 200) {
                     var temporal = data.obj.documento_temporal_clientes[0];
-                    var empresa = Usuario.getUsuarioActual().getEmpresa(); 
- 
-                    if(empresa.getCodigo() === temporal.empresa_id && 
-                       empresa.getCentroUtilidadSeleccionado().getCodigo() === temporal.centro_destino && 
-                       empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() === temporal.bodega_destino){
-                   
+                    var empresa = Usuario.getUsuarioActual().getEmpresa();
+
+                    if (empresa.getCodigo() === temporal.empresa_id &&
+                            empresa.getCentroUtilidadSeleccionado().getCodigo() === temporal.centro_destino &&
+                            empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() === temporal.bodega_destino) {
+
 
                         $scope.notificacionclientes++;
                         for (var i in data.obj.documento_temporal_clientes) {
@@ -852,21 +884,21 @@ define(["angular", "js/controllers",
 
                         }
                     }
-                    
+
                 }
             });
 
-            socket.on("onListarDocumentosTemporalesFarmacias", function(data) {
+            socket.on("onListarDocumentosTemporalesFarmacias", function (data) {
                 console.log("onListarDocumentosTemporalesFarmacias");
                 if (data.status === 200) {
-                    
+
                     var temporal = data.obj.documento_temporal_farmacias[0];
-                    var empresa = Usuario.getUsuarioActual().getEmpresa(); 
- 
-                    if(empresa.getCodigo() === temporal.empresa_destino && 
-                       empresa.getCentroUtilidadSeleccionado().getCodigo() === temporal.centro_destino && 
-                       empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() === temporal.bodega_destino){
-                   
+                    var empresa = Usuario.getUsuarioActual().getEmpresa();
+
+                    if (empresa.getCodigo() === temporal.empresa_destino &&
+                            empresa.getCentroUtilidadSeleccionado().getCodigo() === temporal.centro_destino &&
+                            empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() === temporal.bodega_destino) {
+
                         $scope.notificacionfarmacias++;
                         for (var i in data.obj.documento_temporal_farmacias) {
                             var obj = data.obj.documento_temporal_farmacias[i];
@@ -875,13 +907,13 @@ define(["angular", "js/controllers",
                             $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
 
                         }
-                   
+
                     }
-                    
+
                 }
             });
-            
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 socket.remove(["onListarDocumentosTemporalesFarmacias", "onListarDocumentosTemporalesClientes"]);
             });
         }]);

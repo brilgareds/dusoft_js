@@ -93,6 +93,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 productos.forEach(function (data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.cantidad_disponible, data.tipo_producto_id);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -236,6 +237,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                         cantidad: producto.cantidad,
                                         lote: producto.lote,
                                         fechaVencimiento: producto.fecha_vencimiento,
+                                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                                         disponible: producto.disponible,
                                         docTmpId: $scope.doc_tmp_id
                                     }

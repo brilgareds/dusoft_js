@@ -1239,21 +1239,50 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             //Aceptar la cotizacion
             $scope.aceptar_cotizacion = function () {
-                var cotizacion = localStorageService.get("cotizacion");
+                that.consultarEstadoCotizacion(function(data){
+                    console.log('data.obj.pedidos_clientes.estado',data.obj.pedidos_clientes.estado);
+                   if(data.obj.pedidos_clientes.estado !== '5'){
+                    var cotizacion = localStorageService.get("cotizacion");
 
-                if (cotizacion) {
-                    var parametros = {busqueda: cotizacion.numero_cotizacion,
-                        pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0}
-                    };
-                    localStorageService.add("terminoBusqueda", parametros);
-                }
-
-                that.actualizarCabeceraPedidoCliente(function (respuesta) {
-                    if (respuesta) {
-                        $state.go('ListarPedidosClientes');
+                    if (cotizacion) {
+                        var parametros = {busqueda: cotizacion.numero_cotizacion,
+                            pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0}
+                        };
+                        localStorageService.add("terminoBusqueda", parametros);
                     }
 
-                });
+                    that.actualizarCabeceraPedidoCliente(function (respuesta) {
+                        if (respuesta) {
+                            $state.go('ListarPedidosClientes');
+                        }
+
+                    });
+                  }else{
+                      AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya tiene Pedido");
+                      $state.go('ListarPedidosClientes');
+                  }
+                });                 
+            };
+            
+            that.consultarEstadoCotizacion = function (callback) {
+                   if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                    var parametros = {
+                        session: $scope.session,
+                        data: {
+                               pedidos_clientes: {cotizacion: $scope.Pedido.get_numero_cotizacion()}
+                              }
+                    };
+                    // se consulta si necesita autorizacion de cartera
+                    Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION, "POST", parametros, function (data) {
+
+                        if (data.status === 200) {
+                            console.log("data");
+                            callback(data);
+                        }else{
+                            callback(false);
+                        }
+                    });
+                }
             };
 
             /**
@@ -1658,7 +1687,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 17/11/2016
              */
             that.autorizarCotizacionCartera = function (aprobado, denegar) {
-
+                $scope.mensaje="";  
+                console.log('-----',aprobado);
+                if(aprobado === 4){
+                    $scope.mensaje="Desea Denegar la cotizacion ?";  
+                  }else{
+                    $scope.mensaje="Desea Autorizar la cotizacion ?";  
+                  }
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1666,7 +1701,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea autorizar la cotizacion ?</h4>\
+                                    <h4 class="modal-title">{{mensaje}}</h4>\
                                 </div>\
                                 <div class="modal-body">\
                                      \
@@ -1680,8 +1715,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
                             $scope.confirmar = function () {
-                                that.generarPedidoCartera(aprobado, denegar);
-                                $modalInstance.close();
+                                        if(aprobado === 4){
+                                            $scope.desaprobarCartera(4, 0);
+                                        }else{
+                                        that.confirmacionExistenciaPedido(function(valida){
+
+                                            if(valida){                                              
+                                                that.generarPedidoCartera(aprobado, denegar);
+                                            }else{
+                                                if($scope.Pedido.get_numero_pedido()=== undefined)
+                                                AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya fue aprobada");
+                                                $state.go('ListarPedidosClientes');
+                                            }
+                                        });
+                                       }
+                                        $modalInstance.close();
+                                  
                             };
                             $scope.close = function () {
                                 $modalInstance.close();
@@ -1689,6 +1738,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }]
                 };
                 var modalInstance = $modal.open($scope.opts);
+            };
+            
+            that.confirmacionExistenciaPedido = function(callback){
+                console.log("$scope.Pedido.get_numero_pedido()",$scope.Pedido.get_numero_pedido());
+                        if($scope.Pedido.get_numero_pedido()!== undefined){
+                            console.log("ok");
+                             callback(true);
+                        }
+                           var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        pedidos_clientes: {
+                                            numeroCotizacion: $scope.Pedido.get_numero_cotizacion()
+                                        }
+                                    }
+                                };
+                  Request.realizarRequest(API.PEDIDOS.CLIENTES.CONFIRMACION_EXISTENCIA_PEDIDO, "POST", obj, function (data) {                      
+                      console.log('data::::',data);
+                      if(data.status === 200){
+                          callback(true); 
+                      }else{
+                          callback(false); 
+                      }
+                     
+                  });
             };
 
 
@@ -1985,7 +2059,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             cotizacion: $scope.Pedido,
                                             bodega: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                             clienteMultiple: 1,
-                                            sw_aprobado_cartera: 1
+                                            sw_aprobado_cartera: denegar
                                         },
                                         usuario_name: Sesion.getUsuarioActual().usuario
                                     }
@@ -2004,6 +2078,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         } else {
                             that.generarObservacionCartera(aprobado);
                         }
+                    }else{
+                    console.log("oho");
                     }
                 });
 
@@ -2080,6 +2156,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             $scope.volver_cotizacion();
                         }
                     } else {
+                        
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         //$scope.volver_cotizacion();
                     }
@@ -2115,7 +2192,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
-                        //$scope.volver_cotizacion();
+                        $scope.volver_cotizacion();
                     }
                 });
             };

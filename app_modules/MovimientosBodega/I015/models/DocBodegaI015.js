@@ -80,6 +80,7 @@ DocumentoBodegaI015.prototype.listarProductosTraslados = function (parametros, c
     var columnas = [
         "invD.movimiento_id",
         "invD.codigo_producto",
+        "invD.total_costo",
         "invenPro.tipo_producto_id",
         G.knex.raw("(\"invD\".\"cantidad\" -\"invD\".\"cantidad_recibida\") as  cantidad"),
         G.knex.raw("fc_descripcion_producto(\"invenPro\".\"codigo_producto\") as descripcion"),
@@ -205,7 +206,7 @@ DocumentoBodegaI015.prototype.agregarItem = function (parametros, transaccion, c
             insert({bodega: parametros.bodega, cantidad: parametros.cantidad_enviada, centro_utilidad: parametros.centroUtilidad,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
                 fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
-                item_id_compras: parametros.item_id
+                item_id_compras: parametros.item_id, total_costo:parametros.total_costo
             });
 
     if (transaccion)
@@ -517,5 +518,29 @@ DocumentoBodegaI015.prototype.consultarFarmaciaOrigen = function (parametro, cal
         console.log("err [consultarFarmaciaOrigen]:", err);
         callback(err);
     });
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el estado del traslado
+ * @fecha 2019-05-25
+ */
+DocumentoBodegaI015.prototype.actualizarEstadoTraslado = function (parametros, transaccion, callback) {
+    var query = G.knex("inv_bodegas_movimiento_traslados_farmacia")
+            .where('prefijo', parametros.prefijo_doc_farmacia)
+            .andWhere('numero', parametros.numero_doc_farmacia)
+            .andWhere('empresa_id', 'FD')
+            .update('sw_estado', 1);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+
 };
 module.exports = DocumentoBodegaI015;

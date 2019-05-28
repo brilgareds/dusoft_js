@@ -1,4 +1,6 @@
 
+/* global G */
+
 var I015Controller = function (movimientos_bodegas, m_i015) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
@@ -11,7 +13,7 @@ var I015Controller = function (movimientos_bodegas, m_i015) {
  * @fecha 2018-05-07
  */
 I015Controller.prototype.listarBodegas = function (req, res) {
-    var that = this; 
+    var that = this;
     var args = req.body.data;
 
     G.Q.nfcall(that.m_i015.listarBodegas, args).
@@ -152,8 +154,10 @@ I015Controller.prototype.eliminarGetDocTemporal = function (req, res) {
     }
 
     var docTmpId = args.doc_tmp_id;
-    var parametros = {docTmpId: docTmpId, usuarioId: usuarioId};
-
+    var parametros = {docTmpId: docTmpId,
+        usuarioId: usuarioId,
+        prefijo_doc_farmacia: args.prefijo_doc_farmacia,
+        numero_doc_farmacia: args.numero_doc_farmacia};
 
     G.knex.transaction(function (transaccion) {
 
@@ -164,6 +168,9 @@ I015Controller.prototype.eliminarGetDocTemporal = function (req, res) {
         }).then(function () {
 
             return G.Q.nfcall(that.m_i015.eliminarDocumentoTemporal, parametros, transaccion);
+        }).then(function () {
+
+            return G.Q.nfcall(that.m_i015.actualizarEstadoTraslado, parametros, transaccion);
         }).then(function () {
 
             return G.Q.nfcall(__updateMovimiento, that, listado, parametros, 0, transaccion);
@@ -213,6 +220,10 @@ I015Controller.prototype.agregarItem = function (req, res) {
         res.send(G.utils.r(req.url, 'La cantidad no esta definida', 404, {}));
         return;
     }
+    if (args.total_costo === undefined || args.total_costo === 0) {
+        res.send(G.utils.r(req.url, 'El costo total no esta definido', 404, {}));
+        return;
+    }
     if (args.lote === undefined) {
         res.send(G.utils.r(req.url, 'El lote no esta definida', 404, {}));
         return;
@@ -238,6 +249,7 @@ I015Controller.prototype.agregarItem = function (req, res) {
         fechaVencimiento: args.fechaVencimiento,
         docTmpId: args.docTmpId,
         item_id: args.item_id,
+        total_costo: args.total_costo,
         usuarioId: usuarioId
     };
     var msj;

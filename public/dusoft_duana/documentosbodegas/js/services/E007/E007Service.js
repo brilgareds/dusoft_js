@@ -157,6 +157,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 disponible: parametro.data.disponible,
+                                total_costo: parametro.data.total_costo,
                                 bodega: parametro.data.bodega
                             }
                         };

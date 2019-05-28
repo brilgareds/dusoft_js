@@ -113,7 +113,9 @@ define(["angular", "js/services"], function (angular, services) {
                             session: parametro.session,
                             data: {
                                 listado: parametro.data.listado,
-                                doc_tmp_id: parametro.data.doc_tmp_id
+                                doc_tmp_id: parametro.data.doc_tmp_id,
+                                prefijo_doc_farmacia: parametro.data.prefijo_doc_farmacia,
+                                numero_doc_farmacia: parametro.data.numero_doc_farmacia
                             }
                         };
                         Request.realizarRequest(API.I015.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
@@ -141,6 +143,7 @@ define(["angular", "js/services"], function (angular, services) {
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 item_id: parametro.data.item_id,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };

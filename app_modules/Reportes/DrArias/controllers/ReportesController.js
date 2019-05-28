@@ -322,7 +322,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-
+    console.time('loop');
     args.data.bodegas.forEach(function (item) {
         item.remitente = args.data.remitente;  //guardarControlRotacion   0     
         item.remitentes = args.data.remitentes;
@@ -345,6 +345,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
                     var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
                     __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
                 }
+                console.timeEnd('loop');
             }
         });
 
@@ -355,7 +356,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
 Reportes.prototype.generarRotacionesMovil = function (req, res) {
     var that = this;
     var args = req.body;
- 
+
     var usuarioId = req.body.session.usuario_id;
     var remitentes = args.data.remitentes;
     var today = new Date();
@@ -388,8 +389,10 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             item.empresa = item.empresa_id;
             item.centroUtilidad = item.centro_utilidad;
             item.remitentes = correosRemitentes;
+            item.fechaToday = fechaToday;
 
             __rotacionesBodegas(that, item,function (data) {
+                console.log("data:::",data);
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
                         var subject = "Error al Generar Rotacion (ver detalles) " + fechaToday;
@@ -418,6 +421,8 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
 function __rotacionesBodegas(that, bodega, callback) {
     
     if(bodega.empresa!=='03' && bodega.empresa!=='FD'){   
+        console.log("Medipol");
+        that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
         G.Q.nfcall(__InsertarMedipol,that,2,bodega).then(function (respuesta) {
             return  G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega);
         
@@ -461,7 +466,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
         
         if(bodega.bodega!=='03'){
-           
+            console.time('consultarRotacion');
             return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
         }else{
             console.log("rotacionFarmaciasDuana ",bodega.bodega);
@@ -469,7 +474,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         }
 
     }).then(function (respuesta) {
-
+           console.timeEnd('consultarRotacion');
         if (respuesta.length > 0) {
 
             listarPlanes = respuesta;
@@ -492,12 +497,15 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
    
         if(bodega.bodega!=='03'){
             var complemento = "MAGISTERIO";
+            var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){        
              complemento="";
+             ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
-            archivoName = complemento+"_"+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
-            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
+            archivoName = complemento+"_"+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";       
+            console.time('organizaRotacion');
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
             archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
@@ -505,20 +513,21 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         }
         
     }).then(function (resultados) {
-
+   console.timeEnd('organizaRotacion');
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
-        
+        resultados.empresa = bodega.empresa;
+       
         if(bodega.bodega!=='03'){
-            
+            console.time('__creaExcel');
             return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
         }else{
             return G.Q.nfcall(__creaExcelFarmacias, resultados,farmacias);
         }
 
     }).then(function (resultados) {
-
+console.timeEnd('__creaExcel');
         bodega.swEstadoCorreo = 2;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
@@ -546,10 +555,11 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
 
         var nombre_archivo = archivoName;
         var message = "Rotacion Dr. DUARTE";
-
+console.time('__enviar_correo_electronico');
         return G.Q.nfcall(__enviar_correo_electronico, that, to, ruta_archivo, nombre_archivo, subject, message);
 
     }).then(function (resultados) {
+        console.timeEnd('__enviar_correo_electronico');
         bodega.swEstadoCorreo = 3;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
@@ -565,17 +575,24 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         return true;
         
     }).then(function (resultados) {
+       
+        infoResult.estado = 200;
         callback(false, infoResult);
 
     }).fail(function (err) {
+        console.log("Error ",err);
         bodega.swEstadoCorreo = 4;
         bodega.logError = err;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega, function () {
+            if(bodega.empresa!=='03' && bodega.empresa!=='FD'){ 
+            G.Q.ninvoke(that.m_drArias, 'eliminarRotacionMedipol', bodega); 
+            }
+            err.estado = undefined;
             callback(err);
         });
 
-        console.log("error controller __rotacionesBodegasGeneracionExcel ", err);
+        console.log("Error controller __rotacionesBodegasGeneracionExcel ", err);
     }).done();
 }
 
@@ -595,7 +612,7 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
        
         //that.io.sockets.emit('onNotificarRotacion', notificacion);  
         //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
-console.log("bodega************* ",bodega);
+//console.log("bodega************* ",bodega);
 throw {msj:"Error"};return;
         return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);
 
@@ -626,12 +643,15 @@ throw {msj:"Error"};return;
          farmacias=respuesta;
         if(bodega.bodega!=='03'){
             var complemento = "MAGISTERIO - ";
+            var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
              complemento="";
+             ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+ listarPlanes[0].nom_bode;
-            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";            
-            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);//rotacion normal
+            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";      
+       
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, ordenPor, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
             archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
@@ -644,6 +664,7 @@ throw {msj:"Error"};return;
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
+        resultados.bodega = bodega.bodega;
         
         if(bodega.bodega!=='03'){
             return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
@@ -729,14 +750,18 @@ function __InsertarMedipol(that,dias,bodega,callback){
        control : control,
        fechaToday: bodega.fechaToday
     };
-    console.log("Fechas::: ",data);
-    G.Q.nfcall(__wsMedipol,data).then(function(result){ 
-       console.log("result.resultado.length",result.resultado.length); 
+    console.time('webservice');
+    
+    G.Q.nfcall(__wsMedipol,data).then(function(result){
+        console.timeEnd('webservice');
+      console.log("Medipol length",result.resultado.length); 
      lengthDataWS = result.resultado.length;
-     
+     console.time('save_table');
      return G.Q.nfcall(__InsertarProductosMedipol,that,data,result.resultado ,0);
     
     }).then(function(datos){
+        console.timeEnd('save_table');
+        console.log("Inserto"); 
        if(datos !== lengthDataWS){
            console.log("Diferencia en el ws y lo que se inserto en db",datos,lengthDataWS);
            console.log("Diferencia en el ws y lo que se inserto en db");
@@ -849,7 +874,7 @@ function __wsMedipol(data,callback){
 
 
 function __creaExcel(data, callback) {
-    
+    console.log("__creaExcel");
     
     var workbook = new G.Excel.Workbook();
     var worksheet = workbook.addWorksheet(data.nameHoja, {properties: {tabColor: {argb: 'FFC0000'}}});
@@ -865,20 +890,30 @@ function __creaExcel(data, callback) {
 
     var style = {font: font, border: border};
 
-    worksheet.columns = [
-        {header: 'CODIGO', key: 'a', style: style},
-        {header: 'PRODUCTO - ' + data.name, key: 'b', width: 50, style: style},
-        {header: 'MOLECULA', key: 'c', width: 25, style: style},
-        {header: 'LABORATORIO', key: 'd', style: style},
-        {header: 'TIPO PRODUCTO', key: 'e', style: style},
-        {header: 'NIVEL', key: 'f', style: style},
-        {header: 'Promedio Mes', key: 'g', width: 9, style: style},
-        {header: 'Stock Farmacia', key: 'h', width: 8.5, style: style},
-        {header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style},
-        {header: '', key: 'j', width: 10, style: style},
-        {header: 'Stock Bodega', key: 'k', width: 7.5, style: style}
-    ];
-
+    var laboratorio = {header: 'LABORATORIO', key: 'd', style: style}; 
+    var molecula = {header: 'MOLECULA', key: 'c', style: style}; 
+    laboratorio.width = 0;
+    molecula.width = 0;
+    if(data.empresa!=='03' && data.empresa!=='FD'){
+      laboratorio.width = 25;
+    }else{
+      molecula.width = 25; 
+    }
+    var header = [];
+    header.push({header: 'CODIGO', key: 'a', style: style});
+    header.push({header: 'PRODUCTO - ' + data.name, key: 'b', width: 50, style: style});
+    header.push(molecula);
+    header.push(laboratorio);
+    header.push({header: 'TIPO PRODUCTO', key: 'e', style: style});
+    header.push({header: 'NIVEL', key: 'f', style: style});
+    header.push({header: 'Promedio Mes', key: 'g', width: 9, style: style});
+    header.push({header: 'Stock Farmacia', key: 'h', width: 8.5, style: style});
+    header.push({header: 'Pedido 60 Dias', key: 'i', width: 7.5, style: style});
+    header.push({header: '', key: 'j', width: 7, style: style});
+    header.push({header: 'Stock Bodega', key: 'k', width: 7.5, style: style});
+       
+    worksheet.columns = header;
+    
     worksheet.views = [
         {zoomScale: 160, state: 'frozen', xSplit: 1, ySplit: 1, activeCell: 'A1'}
     ];
@@ -894,11 +929,6 @@ function __creaExcel(data, callback) {
             worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
                 element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
         }
-
-        worksheet.getColumn('A').hidden = true;
-        worksheet.getColumn('D').hidden = true;
-        worksheet.getColumn('E').hidden = true;
-        worksheet.getColumn('F').hidden = true;
 
         i++;
     });
@@ -934,17 +964,18 @@ function __creaExcel(data, callback) {
 
 // save workbook to disk
     workbook.xlsx.writeFile(G.dirname + "/files/Rotaciones/" + data.nameArchivo).then(function () {
-        console.log("saved");
+        console.log("Saved Excel");
         callback(false, data.nameArchivo);
     });
 };
 
-function __organizaRotacion(index, data, resultado, callback) {
+function __organizaRotacion(index, data,ordenPor, resultado, callback) {
+  
     var _resultado = data[index];
     index++;
 
     if (_resultado) {
-        callback(false, sortJSON(resultado, 'molecula', 'asc'));
+        callback(false, sortJSON(resultado, ordenPor.orden, ordenPor.asc));
     }
 
     var resultColumna = {
@@ -974,7 +1005,7 @@ function __organizaRotacion(index, data, resultado, callback) {
 
     resultado.push(resultColumna);
 
-    return __organizaRotacion(index, data, resultado, callback);
+    return __organizaRotacion(index, data,ordenPor, resultado, callback);
 }
 
 function __organizaRotacionFarmacia(index, data, resultado, callback) {
@@ -1202,7 +1233,7 @@ function __creaExcelFarmacias(data,farmacias, callback) {
 function sortJSON(data, key, orden) {
     return data.sort(function (a, b) {
         var x = a[key],
-                y = b[key];
+            y = b[key];
 
         if (orden === 'asc') {
             return ((x < y) ? -1 : ((x > y) ? 1 : 0));

@@ -1323,6 +1323,29 @@ PedidosClienteModel.prototype.consultarEstadoActualPedidoCliente = function (obj
 
 };
 
+PedidosClienteModel.prototype.confirmacionExistenciaPedido = function (obj, callback) {
+
+    var query = G.knex("ventas_ordenes_pedidos_tmp").
+                  where("pedido_cliente_id_tmp", obj.pedido).
+                  select(['observacion_cartera','sw_aprobado_cartera']);
+
+    query.then(function (resultado) {
+     
+        if(resultado.length === 0){
+            callback(true);
+            return;
+        }
+        if(resultado[0].observacion_cartera === '' || resultado[0].sw_aprobado_cartera === '4'){
+            callback(false, resultado);
+        }else{
+            callback(true);
+        }
+    }).catch(function (err) {
+        console.log("err [confirmacionExistenciaPedido]: ", err);
+        callback(err);
+    });
+};
+
 /**
  * @api {sql} actualizar_responsables_pedidos Actualizar Responsables Pedido
  * @apiName Actualizar Responsables Pedido
@@ -3103,21 +3126,25 @@ PedidosClienteModel.prototype.autorizarCabeceraCotizacion = function (cotizacion
     if (cotizacion.observacion_cartera.length > 0) {
         cotizacion.observacion_cartera += ' - ' + cotizacion.usuario_name;
     }
+    let updateData = {
+        sw_aprobado_cartera: cotizacion.sw_aprobado_cartera,
+        observacion_cartera: cotizacion.observacion_cartera
+     };
+    
+    if(cotizacion.observacion_cartera.trim() !==''){
+        updateData.estado = '5';
+    }
 
-    G.knex('ventas_ordenes_pedidos_tmp')
-            .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-            .update({
-                //sw_aprobado_cartera: 1,
-                sw_aprobado_cartera: cotizacion.sw_aprobado_cartera,
-                observacion_cartera: cotizacion.observacion_cartera
-
-            }).then(function (rows) {
+    let query = G.knex('ventas_ordenes_pedidos_tmp')
+        .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+        .update(updateData);
+            
+    query.then(function (rows) {
         callback(false, rows);
     }).catch(function (error) {
         console.log("err [autorizarCabeceraCotizacion]", error);
         callback(error);
     });
-
 };
 /*
  * @author : Cristian Ardila

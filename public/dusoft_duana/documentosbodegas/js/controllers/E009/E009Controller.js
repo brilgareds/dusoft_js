@@ -127,6 +127,7 @@ define([
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
+                    producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };

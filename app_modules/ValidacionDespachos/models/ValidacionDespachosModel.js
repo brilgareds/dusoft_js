@@ -741,6 +741,7 @@ ValidacionDespachosModel.prototype.listarRegistroSalida = function (obj, callbac
                     this.orWhere("h.nombre", 'ilike', '%' + obj.busqueda + '%');
                     this.orWhere("a.fecha_envio", 'ilike', '%' + obj.busqueda + '%');
                     this.orWhere("b.nombre_tercero", 'ilike', '%' + obj.busqueda + '%');
+                    this.orWhere("b.tercero_id", 'ilike', '%' + obj.busqueda + '%');
                 }
             }).orderBy("a.fecha_registro", "desc")
             .limit(G.settings.limit).

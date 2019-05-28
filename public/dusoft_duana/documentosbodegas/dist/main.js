@@ -54197,6 +54197,7 @@ define('models/E007/ProductoE007',["angular", "js/models", "includes/classes/Pro
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
                 this.disponible = disponible;
+                this.total_costo = 0;
                 this.lote = "";
                 this.fecha_vencimiento = "";
                 this.item_id = item_id;
@@ -54230,6 +54231,14 @@ define('models/E007/ProductoE007',["angular", "js/models", "includes/classes/Pro
 
             ProductoE007.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed();
+            };
+                        
+            ProductoE007.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoE007.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoE007.prototype.setItemId = function (item_id) {
@@ -55969,6 +55978,7 @@ define('models/I015/ProductoI015',["angular", "js/models", "includes/classes/Pro
 
                 this.tipoProducto = tipoProducto;
                 this.cantidad = cantidad;
+                this.total_costo = 0;
                 this.cantidad_ingresada = cantidad_ingresada || 0;
                 this.item_id = item_id;
                 this.fecha_vencimiento = fecha_vencmiento || "";
@@ -55995,6 +56005,14 @@ define('models/I015/ProductoI015',["angular", "js/models", "includes/classes/Pro
 
             ProductoI015.prototype.getCantidad = function () {
                 return parseFloat(this.cantidad).toFixed(2);
+            };
+                        
+            ProductoI015.prototype.getTotalCosto = function () {
+                return this.total_costo;
+            };
+
+            ProductoI015.prototype.setTotalCosto = function (total_costo) {
+                this.total_costo = total_costo;
             };
 
             ProductoI015.prototype.getCantidadIngresada = function () {
@@ -57483,7 +57501,9 @@ define('controllers/indexController',["angular", "js/controllers"], function (an
                             session: $scope.session,
                             data: {
                                 listado: $scope.listado_productos,
-                                doc_tmp_id: datos.doc_tmp_id
+                                doc_tmp_id: datos.doc_tmp_id,
+                                prefijo_doc_farmacia: datos.prefijo_idc,
+                                numero_doc_farmacia: datos.numero_factura
                             }
                         };
 
@@ -63516,6 +63536,7 @@ define('controllers/E007/E007GestionarProductosController',["angular", "js/contr
                 productos.forEach(function (data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.cantidad_disponible, data.tipo_producto_id);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -63659,6 +63680,7 @@ define('controllers/E007/E007GestionarProductosController',["angular", "js/contr
                                         cantidad: producto.cantidad,
                                         lote: producto.lote,
                                         fechaVencimiento: producto.fecha_vencimiento,
+                                        total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                                         disponible: producto.disponible,
                                         docTmpId: $scope.doc_tmp_id
                                     }
@@ -63864,6 +63886,7 @@ define('controllers/E009/E009Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, 0,
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.item_id);
+                    producto.setTotalCosto(data.total_costo);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -64260,6 +64283,7 @@ define('controllers/E009/E009GestionarProductosController',["angular", "js/contr
                     var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.existencia).toFixed(),
                             data.tipo_producto_id, data.subClase, data.lote, $filter('date')(fecha, "dd/MM/yyyy"));
                     producto.setNombreTipo(data.nombreTipo);
+                    producto.setTotalCosto(data.costo);
                     $scope.datos_form.listado_productos.push(producto);
                 });
             };
@@ -64335,6 +64359,7 @@ define('controllers/E009/E009GestionarProductosController',["angular", "js/contr
                     codigoProducto: producto.codigo_producto,
                     cantidad: producto.cantidad,
                     lote: producto.lote,
+                    total_costo:  parseFloat(producto.cantidad) *  parseFloat(producto.total_costo),
                     fechaVencimiento: producto.fecha_vencimiento,
                     docTmpId: $scope.doc_tmp_id
                 };
@@ -69091,6 +69116,7 @@ define('controllers/I011/I011Controller',[
                     producto.setNovedadNombre("Acción");
                     producto.setNovedadAnexa(" ");
                     producto.setTotalCosto(data.total_costo);
+                    producto.costo = parseFloat(data.total_costo) / parseFloat(data.cantidad);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -69639,6 +69665,7 @@ define('controllers/I011/I011Controller',[
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
                 $scope.documento_ingreso.set_bodega(datos_documento.datosAdicionales.bodega_seleccionada);
+                $scope.documento_ingreso.set_empresa(datos_documento.datosAdicionales.farmacia_id);
                 var doc_devolucion = {
                     numero: datos_documento.datosAdicionales.numero,
                     prefijo: datos_documento.datosAdicionales.prefijo_edb,
@@ -69714,6 +69741,7 @@ define('controllers/I011/ModificarProductoController',["angular", "js/controller
                     return;
                 }
                 item.novedadAnexa = "CAMBIO LOTE MANUAL";
+                item.total_costo = parseFloat(fila.costo) * parseFloat(item.cantidad_ingresada );
                 $scope.btn_adicionar_producto(item);
                 var time = setTimeout(function () {
                     index++;
@@ -70946,6 +70974,7 @@ define('controllers/I015/I015Controller',[
                     var fecha = sumarDias(new Date(data.fecha_vencimiento), 1);
                     var producto = Producto.get(data.codigo_producto, data.descripcion, data.tipo_producto_id, data.lote,
                             $filter('date')(fecha, "dd/MM/yyyy"), parseFloat(data.cantidad).toFixed(), data.movimiento_id, 0);
+                        producto.setTotalCosto(data.total_costo);    
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -71013,6 +71042,7 @@ define('controllers/I015/I015Controller',[
                         cantidad: producto.cantidad,
                         cantidad_enviada: producto.cantidad_ingresada,
                         lote: producto.lote,
+                        total_costo: producto.total_costo,
                         fechaVencimiento: producto.fecha_vencimiento,
                         item_id: producto.item_id,
                         docTmpId: $scope.doc_tmp_id
@@ -71248,7 +71278,9 @@ define('controllers/I015/I015Controller',[
                     session: $scope.session,
                     data: {
                         listado: $scope.datos_view.listado_productos_validados,
-                        doc_tmp_id: $scope.doc_tmp_id
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        prefijo_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().prefijo,
+                        numero_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().numero
                     }
                 };
 
@@ -72102,6 +72134,7 @@ define('services/E007/E007Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 disponible: parametro.data.disponible,
+                                total_costo: parametro.data.total_costo,
                                 bodega: parametro.data.bodega
                             }
                         };
@@ -73532,7 +73565,9 @@ define('services/I015/I015Service',["angular", "js/services"], function (angular
                             session: parametro.session,
                             data: {
                                 listado: parametro.data.listado,
-                                doc_tmp_id: parametro.data.doc_tmp_id
+                                doc_tmp_id: parametro.data.doc_tmp_id,
+                                prefijo_doc_farmacia: parametro.data.prefijo_doc_farmacia,
+                                numero_doc_farmacia: parametro.data.numero_doc_farmacia
                             }
                         };
                         Request.realizarRequest(API.I015.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {
@@ -73560,6 +73595,7 @@ define('services/I015/I015Service',["angular", "js/services"], function (angular
                                 lote: parametro.data.lote,
                                 fechaVencimiento: parametro.data.fechaVencimiento,
                                 item_id: parametro.data.item_id,
+                                total_costo: parametro.data.total_costo,
                                 docTmpId: parametro.data.docTmpId
                             }
                         };

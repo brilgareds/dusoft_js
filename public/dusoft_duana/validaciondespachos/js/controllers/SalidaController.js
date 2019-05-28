@@ -314,7 +314,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.empaque = {cantidadCaja: obj.cantidad_caja, cantidadNevera: obj.cantidad_nevera, cantidadBolsa: obj.cantidad_bolsa};
                         $scope.root.cliente = {tercero_id: obj.tercero_id, tipo_id_tercero: obj.tipo_id_tercero, nombre_tercero: obj.nombre_tercero};
                         $scope.root.observacion = obj.observacion;
-                        if (parseInt(obj.guia_multiple) > 0) {
+                        if (parseInt(obj.guia_multiple) >= 0) { //se agrega igual a cero para que liste las planillas 100  
                             $scope.root.isGuia = false;
                             obj.modificar = 1;
                             that.documentosPlanillasDetalle(obj);

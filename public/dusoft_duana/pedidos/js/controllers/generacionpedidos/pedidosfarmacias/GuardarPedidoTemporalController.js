@@ -475,11 +475,11 @@ define(["angular", "js/controllers",
                     }
                     if (datos.status === 500) {
                         mensaje = datos.msj;
-                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema..", mensaje);
                     }
                     if (datos.status === 404) {
                         mensaje = datos.msj;
-                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema...", mensaje);
                     }
                      
                     if (datos.status === 403) {
@@ -494,6 +494,7 @@ define(["angular", "js/controllers",
 
                 });
             } else {
+               
                 self.generarPedido(0, function(){
                     
                 });

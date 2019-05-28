@@ -113,7 +113,8 @@ define(["angular", "js/controllers",
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
                             estadoMultiplePedido: multiplePedido === null ? 0 : multiplePedido.multiple_pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -161,7 +162,8 @@ define(["angular", "js/controllers",
                             cotizacion: $scope.Pedido,
                             producto: $scope.datos_form.producto_seleccionado,
                             estadoMultiplePedido: that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -204,7 +206,8 @@ define(["angular", "js/controllers",
                         pedidos_clientes: {
                             pedido: $scope.Pedido,
                             producto: $scope.datos_form.producto_seleccionado
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -234,7 +237,8 @@ define(["angular", "js/controllers",
                     data: {
                         laboratorios: {
                             termino_busqueda: ''
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 
@@ -356,7 +360,8 @@ define(["angular", "js/controllers",
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
                                 estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido,// -> Este parametro debe ser habilitado y verificar su funcionamiento en busqueda avanzada de productos cuando se pase a produccion el tema de pedidos multiples
 //                                estadoMultiplePedido: 0
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -392,7 +397,8 @@ define(["angular", "js/controllers",
                                 estadoMultiplePedido: that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
 
 
-                            }
+                            },
+                            usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
                 }
@@ -683,13 +689,13 @@ define(["angular", "js/controllers",
              *              las moleculas
              */
             that.buscar_moleculas = function (callback) {
-
                 var obj = {
                     session: $scope.session,
                     data: {
                         moleculas: {
                             termino_busqueda: $scope.datos_view.termino_busqueda_moleculas
-                        }
+                        },
+                        usuario_name: Sesion.getUsuarioActual().usuario
                     }
                 };
 

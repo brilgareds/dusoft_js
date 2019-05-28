@@ -217,7 +217,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
                     })
             .where(function () {
                 this.andWhere(G.knex.raw("a.empresa_id in ('M6','H2')"))
-                   // .andWhere(G.knex.raw("c.fecha_registro is not null"))
+                    .andWhere(G.knex.raw("c.fecha_registro is not null"))
 
                     if(obj.filtro!== undefined && obj.filtro !== "" ){
                      this.andWhere(G.knex.raw("a.descripcion ilike '%"+obj.filtro+"%'"))    
@@ -225,7 +225,7 @@ DrAriasModel.prototype.rotacionZonas = function (obj,callback) {
              }) 
            }).as("b").orderBy(filtro, orden);
            
-console.log(G.sqlformatter.format(query.toString())); 
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado);
 

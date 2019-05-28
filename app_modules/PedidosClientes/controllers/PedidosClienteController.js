@@ -1424,11 +1424,13 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function (req, res) {
  * @returns {unresolved}
  */
 PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
-
-
     var that = this;
-
     var args = req.body.data;
+
+    // console.log('Eyyy, ', 'args: ', args);
+    if (args.observacion_cartera !== undefined && args.observacion_cartera.length > 0) {
+        args.observacion_cartera += ' - ' + args.usuario_name;
+    }
 
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes === '') {
@@ -1437,6 +1439,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
     }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
+    cotizacion.usuario_name = args.usuario_name;
 
     if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
@@ -1448,7 +1451,8 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         bodegaDestino: args.pedidos_clientes.bodega,
         that: that,
         sw_aprobado_cartera: args.pedidos_clientes.sw_aprobado_cartera,
-        clienteMultiple: args.pedidos_clientes.clienteMultiple
+        clienteMultiple: args.pedidos_clientes.clienteMultiple,
+        usuario_name: args.usuario_name
     };
     
 
@@ -1460,9 +1464,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         return parametros.clienteMultiple === 1 ? true : false;
 
     }).then(function (resultado) {
-
         if (resultado) {
-
             return G.Q.nfcall(__insertarCabeceraDetalleBodegasMultiple, parametros);
 
         } else {
@@ -1551,8 +1553,8 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
         bodega: Object.keys(datos)[index],
         numero_cotizacion: datos[Object.keys(datos)[index]][0].numero_cotizacion,
         control: parametros.bodegaActual !== Object.keys(datos)[index],
-        nit: Object.keys(datos)[index] === '03' ? '830023202' : Object.keys(datos)[index] === '06' ? '830080649' : '' //si la bodega actual es duana se crea el pedido con el nit de cosmitet y viceversa
-
+        nit: Object.keys(datos)[index] === '03' ? '830023202' : Object.keys(datos)[index] === '06' ? '830080649' : '', //si la bodega actual es duana se crea el pedido con el nit de cosmitet y viceversa
+        usuario_name: parametros.usuario_name
     };
 //   console.log(index+"Object.keys(datos)[index] ",Object.keys(datos)[index]);
 //   console.log(index+"cabecera",cabecera);
@@ -1564,50 +1566,42 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
 
 // if(parametros.bodegaActual !== cabecera.bodega){
 
-    G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_encabezado_pedido_cliente", cabecera).then(function (rows) {
+    G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_encabezado_pedido_cliente", cabecera)
+        .then(function (rows) {
+            if (parametros.bodegaActual !== cabecera.bodega) {
+                parametros.bodega = cabecera.bodega;
+                parametros.numeroPedido = rows.rows[0].numero_pedido;
+                parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
 
-        if (parametros.bodegaActual !== cabecera.bodega) {
-            parametros.bodega = cabecera.bodega;
-            parametros.numeroPedido = rows.rows[0].numero_pedido;
-            parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
-            return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_detalle_pedido_cliente", parametros);//detalle de la cotizacion
-        } else {
-            parametros.bodega = cabecera.bodega;
-            parametros.numeroPedido = cabecera.numero_cotizacion;
-            parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
-            return true;
-        }
+                return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_detalle_pedido_cliente", parametros);//detalle de la cotizacion
+            } else {
+                parametros.bodega = cabecera.bodega;
+                parametros.numeroPedido = cabecera.numero_cotizacion;
+                parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
 
+                return true;
+            }
+        }).then(function (resultado) {
+            //  return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
+            //  }).then(function (resultado) {
 
+            return G.Q.nfcall(__totalizarPedido, productos, 0, 0);
+        }).then(function (resultado) {
+            var cotizacion = {numero_cotizacion: parametros.numeroPedido, total: resultado, empresa_id: empresa, centro_utilidad_id: centro_utilidad, bodega_id: bodega};
 
-    }).then(function (resultado) {
-        //  return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
-
-        //  }).then(function (resultado) {  
-
-        return G.Q.nfcall(__totalizarPedido, productos, 0, 0);
-
-    }).then(function (resultado) {
-
-        var cotizacion = {numero_cotizacion: parametros.numeroPedido, total: resultado, empresa_id: empresa, centro_utilidad_id: centro_utilidad, bodega_id: bodega};
-
-        return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
-
-    }).then(function (resultado) {
-        if (parametros.bodegaActual !== cabecera.bodega) {//validar
-            idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
-            idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
-        } else {
-            idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
-            idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
-        }
-        __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
-
-    }).fail(function (err) {
-
-        callback(err);
-
-    }).done();
+            return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
+        }).then(function (resultado) {
+            if (parametros.bodegaActual !== cabecera.bodega) {//validar
+                idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
+                idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
+            } else {
+                idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
+                idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
+            }
+            __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
+        }).fail(function (err) {
+            callback(err);
+        }).done();
 }
 
 
@@ -2796,6 +2790,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function (req, res) {
 
     var cotizacion = args.pedidos_clientes.cotizacion;
     cotizacion.usuario_id = req.session.user.usuario_id;
+    cotizacion.usuario_name = args.usuario_name;
     var productos = cotizacion.productos;
 
 
@@ -4447,6 +4442,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function (req, res) {
     var pedido = args.pedidos_clientes.pedido;
     var aprobado = args.pedidos_clientes.aprobado;
     pedido.usuario_id = req.session.user.usuario_id;
+    pedido.usuario_name = args.usuario_name;
 
     if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'El numero de pedido no esta definido o esta vacio', 404, {}));

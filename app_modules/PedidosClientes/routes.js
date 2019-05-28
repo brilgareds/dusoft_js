@@ -291,5 +291,9 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.actualizarPedidoMultipleCliente(req, res);
     });
     
+    app.post('/api/PedidosClientes/confirmacionExistenciaPedido', function(req, res) {
+        c_pedidos_clientes.confirmacionExistenciaPedido(req, res);
+    });
+    
      
 };

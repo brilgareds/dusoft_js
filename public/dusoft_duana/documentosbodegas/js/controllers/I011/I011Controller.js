@@ -688,6 +688,7 @@ define([
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
                 $scope.documento_ingreso.set_bodega(datos_documento.datosAdicionales.bodega_seleccionada);
+                $scope.documento_ingreso.set_empresa(datos_documento.datosAdicionales.farmacia_id);
                 var doc_devolucion = {
                     numero: datos_documento.datosAdicionales.numero,
                     prefijo: datos_documento.datosAdicionales.prefijo_edb,

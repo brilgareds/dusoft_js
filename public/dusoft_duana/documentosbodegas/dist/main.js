@@ -57501,7 +57501,9 @@ define('controllers/indexController',["angular", "js/controllers"], function (an
                             session: $scope.session,
                             data: {
                                 listado: $scope.listado_productos,
-                                doc_tmp_id: datos.doc_tmp_id
+                                doc_tmp_id: datos.doc_tmp_id,
+                                prefijo_doc_farmacia: datos.prefijo_idc,
+                                numero_doc_farmacia: datos.numero_factura
                             }
                         };
 
@@ -69663,6 +69665,7 @@ define('controllers/I011/I011Controller',[
                 $scope.doc_tmp_id = datos_documento.datosAdicionales.doc_tmp;
                 $scope.documento_ingreso.set_observacion(datos_documento.datosAdicionales.observacion);
                 $scope.documento_ingreso.set_bodega(datos_documento.datosAdicionales.bodega_seleccionada);
+                $scope.documento_ingreso.set_empresa(datos_documento.datosAdicionales.farmacia_id);
                 var doc_devolucion = {
                     numero: datos_documento.datosAdicionales.numero,
                     prefijo: datos_documento.datosAdicionales.prefijo_edb,
@@ -71275,7 +71278,9 @@ define('controllers/I015/I015Controller',[
                     session: $scope.session,
                     data: {
                         listado: $scope.datos_view.listado_productos_validados,
-                        doc_tmp_id: $scope.doc_tmp_id
+                        doc_tmp_id: $scope.doc_tmp_id,
+                        prefijo_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().prefijo,
+                        numero_doc_farmacia: $scope.documento_ingreso.get_documento_traslado().numero
                     }
                 };
 
@@ -73560,7 +73565,9 @@ define('services/I015/I015Service',["angular", "js/services"], function (angular
                             session: parametro.session,
                             data: {
                                 listado: parametro.data.listado,
-                                doc_tmp_id: parametro.data.doc_tmp_id
+                                doc_tmp_id: parametro.data.doc_tmp_id,
+                                prefijo_doc_farmacia: parametro.data.prefijo_doc_farmacia,
+                                numero_doc_farmacia: parametro.data.numero_doc_farmacia
                             }
                         };
                         Request.realizarRequest(API.I015.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function (data) {

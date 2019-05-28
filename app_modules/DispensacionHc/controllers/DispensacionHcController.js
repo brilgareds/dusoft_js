@@ -574,7 +574,8 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     }
 
     var parametros = {evolucionId:args.listar_medicamentos_formulados.evolucionId};   
-   
+   console.log("args.listar_medicamentos_formulados::",args.listar_medicamentos_formulados); 
+   console.log("listarMedicamentosFormulados::",parametros); 
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosFormulados',parametros).then(function(resultado){
       
         if(resultado.length > 0){ 

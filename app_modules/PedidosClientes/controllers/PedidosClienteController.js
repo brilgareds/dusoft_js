@@ -57,6 +57,39 @@ PedidosCliente.prototype.listarFacturasPedido = function (req, res) {
 
 
 };
+PedidosCliente.prototype.confirmacionExistenciaPedido = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {confirmacionExistenciaPedido: []}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numeroCotizacion === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de pedido', 404, {confirmacionExistenciaPedido: []}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.numeroCotizacion;
+
+    var parametros = {pedido: pedido};
+    G.Q.ninvoke(that.m_pedidos_clientes, 'confirmacionExistenciaPedido', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            res.send(G.utils.r(req.url, 'Consulta facturas', 200, {confirmacionExistenciaPedido: resultado}));
+        } else {
+            throw 'Consulta sin resultados';
+        }
+
+
+    }).fail(function (err) {
+        console.log("confirmacion Existencia Pedido ",err);
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
 /**
  * +Descripcion Controlador encargado de consultar el sw_autorizacion del 
@@ -1417,6 +1450,8 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         sw_aprobado_cartera: args.pedidos_clientes.sw_aprobado_cartera,
         clienteMultiple: args.pedidos_clientes.clienteMultiple
     };
+    
+
 
     //cotizacion.numero_cotizacion
 

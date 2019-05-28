@@ -734,6 +734,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 15/06/2016
          */
        $scope.$on('emitAutorizarDispensacionMedicamento', function(e, parametros) { 
+           console.log("emitAutorizarDispensacionMedicamento",parametros);
             if(parametros.pendientes === 0){
                 that.listarMedicamentosFormulados(parametros);
             }else{

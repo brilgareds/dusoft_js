@@ -297,10 +297,10 @@ define(["angular", "js/controllers",
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
-                if (obj.get_estado_cotizacion() === '6' && obj.get_observacion_cartera() !== '') {
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "ya se genero pedido en la bodega contraria");
-                    return;
-                }
+//                if (obj.get_estado_cotizacion() === '6' && obj.get_observacion_cartera() !== '') {
+//                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "ya se genero pedido en la bodega contraria");
+//                    return;
+//                }
 
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {

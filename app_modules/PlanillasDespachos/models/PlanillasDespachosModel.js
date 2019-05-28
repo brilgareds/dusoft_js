@@ -518,6 +518,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         if (planilla_id !== "" && planilla_id !== undefined) {
             sql3 += " AND q.planilla_id = :1";
         }
+//        sql3 += " AND (q.planilla_id is null or q.planilla_id='0')";
+         
         sql3 += " AND q.planilla_id is null";
     }
 
@@ -746,7 +748,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
     var sql3 = sql + " union " + sql2;
 
     var query = G.knex.raw(sql3, {1: planilla_id, 2: '%' + termino_busqueda + '%', 3: obj.tercero_id, 4: obj.tipo_id_tercero});
-
+//console.log(G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado.rows);
     }).catch(function (err) {

@@ -85,7 +85,8 @@ define(["angular"], function (angular) {
                     'ACTUALIZAR_BODEGA_COTIZACION_CLIENTES_MULTIPLE': BASE_URL + '/PedidosClientes/actualizarBodegaCotizacionClientesMultiples',
                     'PEDIDO_CLIENTE_A_PEDIDO_FARMACIA': BASE_URL + '/PedidosClientes/pedidoClienteAPedidoFarmacia',
                     'DUPLICAR_PEDIDO': BASE_URL + '/PedidosClientes/duplicarPedido',
-                    'ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL + '/PedidosClientes/actualizarPedidoMultipleCliente'
+                    'ACTUALIZAR_PEDIDO_MULTIPLE_CLIENTE': BASE_URL + '/PedidosClientes/actualizarPedidoMultipleCliente',
+                    'CONFIRMACION_EXISTENCIA_PEDIDO': BASE_URL + '/PedidosClientes/confirmacionExistenciaPedido'
                 },
                 FARMACIAS: {
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',

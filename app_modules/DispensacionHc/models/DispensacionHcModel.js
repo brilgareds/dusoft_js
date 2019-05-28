@@ -912,6 +912,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
         query.then(function(resultado){ 
             callback(false, resultado)
         }).catch(function(err){    
+            console.log(G.sqlformatter.format(query.toString())); 
             console.log("Error [listarMedicamentosFormulados]: ", err);
             callback(err);
         });                          
@@ -2258,7 +2259,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
         if( sumaTotalDispensados === 0){    
 
             G.Q.ninvoke(that,'consultarPendientesFormula',parametros.evolucion).then(function(resultado){  
-
+                console.log("consultarPendientesFormula->>>",resultado);
                 if(resultado.rows.length > 0){
                     totalInsertadosPendientes = 1;
                 }
@@ -2592,7 +2593,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);  
         }).then(function(){
-                return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)          
+                return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1);   
         }).then(function(resultado){
           
             if(resultado.length >0 || obj.parametro1.todoPendiente === '1'){                                   

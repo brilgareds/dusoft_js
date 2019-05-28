@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parametrizacion Productos Clientes</title>
+</head>
+<body>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h5 style="font-weight: bolder; text-align: left; margin:2px;">Buscador de Contratos</h5>
+    </div> <!-- style="background: #0f528c;" -->
+    <div class="panel-body" id="search_provider">
+        <form class="col-sm-12" ng-submit="listContracts()">
+            <div class="col-sm-2 col-lg-1">
+                <!--
+                <label for="">Tipo Contrato </label>
+                <button type="button" class="form-control btn btn-default dropdown-toggle ng-binding" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{root.form.searchContract.contractType}} <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="contractType in root.init.contractTypes" class="ng-scope">
+                        <a ng-click="updateContractType(contractType)" class="ng-binding">{{contractType}}</a>
+                    </li>
+                </ul>
+                -->
+                <label for="">Contrato Generico</label><br>
+                <div style="text-align: center;">
+                    <div class="material-switch pull-right">
+                        <input id="switch1" name="switch1" ng-model="root.form.searchContract.generic" type="checkbox"/>
+                        <label for="switch1" class="label-primary"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label for="">CONTRATO</label><input type="text" class="form-control" ng-model="root.form.searchContract.numberContract" placeholder="Nº CONTRATO">
+            </div>
+            <div class="col-sm-3">
+                <label for="">Unidad Negocio</label><input type="text" class="form-control" ng-model="root.form.searchContract.businessUnit" autocomplete="" placeholder="Nº Unidad Negocio">
+            </div>
+            <div class="col-sm-2">
+                <label for="">Tercero</label><input type="text" class="form-control" ng-model="root.form.searchContract.thirdPartyNames" placeholder="Nombre Tercero">
+            </div>
+            <div class="col-sm-2">
+                <label for=""><br></label>
+                <button type="submit" ng-click="" class="form-control btn cyan">
+                    <i class="glyphicon glyphicon-search"></i> BUSCAR
+                </button>
+            </div>
+        </form>
+    </div><br>
+</div><br>
+
+<div class="panel panel-primary">
+    <div class="panel-heading title-container-nota">
+        <h5 style="font-weight: bolder; text-align: center; margin:2px;">Parametrizacion Productos Clientes</h5>
+    </div>
+    <div class="panel-body"><br>
+        <div class="container-table">
+            <div class="table-responsive">
+                <div class="defaultGrid grid-responsive col-sm-12" style="padding: 0px;" ng-grid="ParametrizacionProductosClientes">
+                </div>
+            </div>
+        </div>
+    </div><br>
+</div><br>
+
+</body>
+</html>

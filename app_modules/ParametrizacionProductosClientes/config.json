@@ -1,0 +1,21 @@
+{
+    "module": "ParametrizacionProductosClientes",
+    "dependency": {
+        "controllers": [{
+                "ParametrizacionProductosClientesController": {
+                    "module": "ParametrizacionProductosClientes",
+                    "controller": "ParametrizacionProductosClientesController",
+                    "alias": "c_parametrizacionProductosClientes"
+                }
+            }],
+        "models": [{
+                "ParametrizacionProductosClientesModel": {
+                    "module": "ParametrizacionProductosClientes",
+                    "model": "ParametrizacionProductosClientesModel",
+                    "alias": "m_parametrizacionProductosClientes"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

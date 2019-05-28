@@ -1,0 +1,154 @@
+#search_provider div {
+    display: inline-block;
+}
+.cyan {
+    color: #fff;
+    background-color: #28a3c7;
+    border-color: #28a3c7;
+}
+
+.cyan:active {
+    color: #fff;
+    background: #1c7f9c;
+}
+
+.cyan:hover {
+    color: #fff;
+}
+
+.cyan:focus {
+    color: #fff;
+}
+
+.modal-dialog {
+    width: 90%;
+}
+
+.material-switch > input[type="checkbox"] {
+    display: none;
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative;
+    width: 40px;
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(255, 255, 255);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: 15px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 45px;
+}
+
+.dlk-radio input[type="radio"], .dlk-radio input[type="checkbox"] {
+    margin-left: -99999px;
+    display:none;
+}
+.dlk-radio input[type="radio"] + .glyphicon, .dlk-radio input[type="checkbox"] + .glyphicon {
+    opacity:0.15
+}
+.dlk-radio input[type="radio"]:checked + .glyphicon, .dlk-radio input[type="checkbox"]:checked + .glyphicon {
+    opacity:1
+}
+
+.switch1 {
+    position: relative; width: 100px;
+    margin: 3px auto;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+
+.switch1-checkbox {
+    display: none;
+}
+
+.switch1-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 30px;
+}
+
+.switch1-inner {
+    display: block; width: 200%; margin-left: -100%;
+    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+    right: 0px;
+}
+
+.switch1-inner:before, .switch1-inner:after {
+    display: block; float: left; width: 50%; height: 20px; padding: 0; line-height: 20px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+    border-radius: 30px;
+    box-shadow: 0px 15px 0px rgba(0,0,0,0.08) inset;
+}
+
+.switch1-inner:before {
+    content: "Activo";
+    padding-left: 10px;
+    background-color: #337ab7; color: #FFFFFF;
+    border-radius: 30px 0 0 30px;
+}
+
+.switch1-inner:after {
+    content: "Inactivo";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: #999999;
+    text-align: right;
+    border-radius: 0 30px 30px 0;
+}
+
+.switch1-switch {
+    display: block; width: 30px; margin: 0px;
+    border: 2px solid #999999; border-radius: 30px;
+    position: absolute; top: 0; bottom: 0; right: 70px;
+    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+    background: #FFFFFF;
+    background-image: radial-gradient(rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 80%);
+    box-shadow: 0 1px 1px white inset;
+}
+
+.switch1-checkbox:checked + .switch1-label .switch1-inner {
+    margin-left: 0;
+}
+
+.switch1-checkbox:checked + .switch1-label .switch1-switch {
+    right: 0px;
+}
+
+.table-responsive .ngCellText {
+    display: flex;
+    align-items: center;
+}
+
+.table-responsive .glyphicon {
+    top: 4px;
+}

@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <button type="button" class="close" style="opacity: 0.5;" ng-click="cerrarVentana()">&times;</button>
+    <h4 class="modal-title" style="color: #1c59b5;">
+        Contrato #{{contrato_numero}}
+    </h4>
+</div>
+<div class="modal-body">
+    <div class="panel panel-primary">
+        <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700; text-transform: uppercase;">
+            Productos del Contrato
+        </div>
+        <div class="panel-body"><br>
+            <div ng-grid="contractProducts" class="table-responsive">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="cerrarVentana()">Cerrar</button>
+</div>

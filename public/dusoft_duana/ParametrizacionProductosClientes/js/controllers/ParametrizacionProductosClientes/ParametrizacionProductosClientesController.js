@@ -105,6 +105,8 @@ define(
 
                 $scope.listContractProducts = (Contract, modal=true) => {
                     $scope.lastListContractProducts = Contract;
+                    console.log('Contract is: ', Contract);
+
                     let obj = {
                         session: $scope.session,
                         data: Contract
@@ -201,10 +203,10 @@ define(
                     enableRowSelection: false,
                     enableColumnResize: true,
                     columnDefs: [
-                        { field: 'contrato_numero', displayName: "Codigo", width: "20%" },
-                        { field: 'contrato_tipo', displayName: "Descripcion", width: "30%" },
-                        { field: 'contrato_fecha_i', displayName: "Costo Compra", width: "20%" },
-                        { field: 'contrato_fecha_f', displayName: "Costo Venta", width: "20%" },
+                        { field: 'producto_codigo', displayName: "Codigo", width: "20%" },
+                        { field: 'producto_descripcion', displayName: "Descripcion", width: "50%" },
+                        { field: 'producto_precio_pactado', displayName: "Precio Venta", width: "20%" },
+                        // { field: 'contrato_fecha_f', displayName: "Costo Venta", width: "20%" },
                         { displayName: 'Modificar', width: "5%", cellTemplate: `
                             <div style="text-align: center;">
                                 <i class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: #0c99d0; font-size: 20px;"></i>

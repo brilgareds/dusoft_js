@@ -125,6 +125,59 @@ ParametrizacionProductosClientesModel.prototype.listContractProducts = (obj, cal
     console.log('In model "listContractProducts"');
     const offset = 0;
     const limit = 50;
+    obj = {
+        descripcion: '',
+        laboratorio: '',
+        principio_activo: '',
+        number_money: obj.number_money
+    };
+
+    promesa
+        .then(response => {
+            const query = G.knex
+                .column([
+                    'a.codigo_producto as producto_codigo',
+                    G.knex.raw('fc_descripcion_producto(b.codigo_producto) as producto_descripcion'),
+                    'b.sw_requiereautorizacion_despachospedidos as producto_sw_autorizaciondespachos',
+                    'a.precio_pactado as producto_precio_pactado'])
+                .from('vnts_contratos_clientes_productos as a')
+                .innerJoin('inventarios_productos as b', function () {
+                    this.on('a.codigo_producto', 'b.codigo_producto')
+                        .on('a.contrato_cliente_id', 'contrato_cliente_id')})
+                .innerJoin('inv_subclases_inventarios as c', function () {
+                    this.on('b.grupo_id', 'c.grupo_id')
+                        .on('b.clase_id', 'c.clase_id')
+                        .on('b.subclase_id', 'c.subclase_id')})
+                .innerJoin('inv_clases_inventarios as d', function () {
+                    this.on('c.grupo_id', 'd.grupo_id')
+                        .on('c.clase_id', 'd.clase_id')}) /* --b.estado = '1' */
+                .where('b.descripcion', 'ILIKE', `%${obj.descripcion}%`)
+                .andWhere('c.descripcion', 'ILIKE', `%${obj.laboratorio}%`)
+                .andWhere('d.descripcion', 'ILIKE', `%${obj.principio_activo}%`)
+                .orderBy('b.descripcion')
+                .limit(limit)
+                .offset(offset);
+
+            console.log('Query is: ', G.sqlformatter.format(query.toString()));
+            return query;
+        }).then(productos => {
+            console.log('Sql fine!!!');
+            if (productos.length > 0) {
+                for (let producto of productos ) {
+                    producto.producto_precio_pactado = obj.number_money(producto.producto_precio_pactado);
+                }
+            }
+            callback(false, response);
+        }).catch(err => {
+            console.log('Error: ', err);
+            callback(err);
+        });
+};
+
+ParametrizacionProductosClientesModel.prototype.listInventaryProducts = (obj, callback) => {
+    console.log('In model "listInventaryProducts"');
+    const offset = 0;
+    const limit = 50;
 
     promesa
         .then(response => {

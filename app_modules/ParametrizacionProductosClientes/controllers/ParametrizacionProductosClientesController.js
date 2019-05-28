@@ -6,6 +6,24 @@ let ParametrizacionProductosClientes = function (m_parametrizacionProductosClien
     that.m_parametrizacionProductosClientes = m_parametrizacionProductosClientes;
 };
 
+/*************************************/
+/********* FUNCIONES FORMATO ********/
+/***********************************/
+
+const number_money = (price) => {
+    let newPrice = new Intl.NumberFormat("de-DE").format(price);
+    newPrice = '$' + newPrice
+        .replace(/(,)/g, "coma")
+        .replace(/(\.)/g, "punto")
+        .replace(/(coma)/g, ".")
+        .replace(/(punto)/g, ",");
+    return newPrice;
+};
+
+/****************************************/
+/********* FUNCIONES RECURSIVAS ********/
+/***************************************/
+
 /****************************************/
 /********* FUNCIONES Secundarias ******/
 /************************************/
@@ -55,6 +73,7 @@ ParametrizacionProductosClientes.prototype.listContractProducts = (req, res) => 
     console.log('In controller "listContractProducts"');
 
     let params = req.body.data;
+    params.number_money = number_money;
 
     promesa
         .then(response => {
@@ -66,25 +85,6 @@ ParametrizacionProductosClientes.prototype.listContractProducts = (req, res) => 
            res.send(G.utils.r(req.url, err.msg, 500, err));
         });
 };
-
-
-/*************************************/
-/********* FUNCIONES FORMATO ********/
-/***********************************/
-
-const number_money = (price) => {
-    let newPrice = new Intl.NumberFormat("de-DE").format(price);
-    newPrice = '$' + newPrice
-        .replace(/(,)/g, "coma")
-        .replace(/(\.)/g, "punto")
-        .replace(/(coma)/g, ".")
-        .replace(/(punto)/g, ",");
-    return newPrice;
-};
-
-/****************************************/
-/********* FUNCIONES RECURSIVAS ********/
-/***************************************/
 
 ParametrizacionProductosClientes.$inject = ["m_parametrizacionProductosClientes"];
 module.exports = ParametrizacionProductosClientes;

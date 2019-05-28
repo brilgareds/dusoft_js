@@ -1,4 +1,6 @@
 
+/* global G */
+
 var OrdenesCompra = function (ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios, m_actasTecnicas, m_e008, m_movimientos_bodegas, m_i002, c_i002, c_pedidos_clientes, m_pedidos_clientes, c_e008, c_pedidos_farmacias, m_pedidos_farmacias) {
 
     this.m_ordenes_compra = ordenes_compras;
@@ -2808,6 +2810,7 @@ function __ejecutaAsignacionDePedido(that, parametros, callback) {
         if (parametros.pedidos[0].sw_tipo_pedido === '0') {//farmacia
             obj.body.data.documento_temporal.direccion_cliente = pedidos[0].nombre_farmacia;
             obj.body.data.documento_temporal.nombre_cliente = pedidos[0].nombre_farmacia;
+            obj.body.data.documento_temporal.tipo_pedido = 2;
         } else {
 
             var direccion = '';

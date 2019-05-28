@@ -1427,7 +1427,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    console.log('Eyyy, ', 'args: ', args);
+    // console.log('Eyyy, ', 'args: ', args);
     if (args.observacion_cartera !== undefined && args.observacion_cartera.length > 0) {
         args.observacion_cartera += ' - ' + args.usuario_name;
     }
@@ -2789,6 +2789,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function (req, res) {
     }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
+    cotizacion.usuario_id = req.session.user.usuario_id;
     cotizacion.usuario_name = args.usuario_name;
     var productos = cotizacion.productos;
 

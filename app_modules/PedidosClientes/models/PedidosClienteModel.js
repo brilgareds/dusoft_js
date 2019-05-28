@@ -3096,11 +3096,13 @@ PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function (cotizacio
         console.log("err [actualizarCabeceraCotizacion]", error);
         callback(error);
     });
-
 };
 
 PedidosClienteModel.prototype.autorizarCabeceraCotizacion = function (cotizacion, callback)
 {
+    if (cotizacion.observacion_cartera.length > 0) {
+        cotizacion.observacion_cartera += ' - ' + cotizacion.usuario_name;
+    }
 
     G.knex('ventas_ordenes_pedidos_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)

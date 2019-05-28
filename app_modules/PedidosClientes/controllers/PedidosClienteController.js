@@ -1406,6 +1406,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
     }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
+    cotizacion.usuario_name = args.usuario_name;
 
     if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));

@@ -2031,6 +2031,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var obj = {};
                 var url = '';
+
+                console.log('Aprobado: ', aprobado);
+
                 $scope.Pedido.set_aprobado_cartera(aprobado);
                 // Observacion cartera para cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {

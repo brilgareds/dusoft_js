@@ -86,6 +86,73 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
         callback(err);
     });
 };
+
+/**
+ * @author German Galvis
+ * +Descripcion lista las planillas de despacho realizadas por un documento especifico
+ * @fecha 2019-05-28 YYYY-MM-DD
+ * @returns {callback}
+ */
+PlanillasDespachosModel.prototype.listar_planillas_por_documento = function (fecha_inicial, fecha_final, termino_busqueda, callback) {
+
+    var columnas = [
+        "a.id",
+        "a.id as numero_guia",
+        "a.numero_guia_externo",
+        "a.tipo_planilla",
+        "b.transportadora_id",
+        "b.descripcion as nombre_transportadora",
+        "b.placa_vehiculo",
+        "b.estado as estado_transportadora",
+//        "e.tipo_pais_id as pais_id",
+//        "e.pais as nombre_pais",
+//        "d.tipo_dpto_id as departamento_id",
+//        "d.departamento as nombre_departamento",
+//        "a.ciudad_id",
+//        "c.municipio as nombre_ciudad",
+        "a.nombre_conductor",
+        "a.observacion",
+        "g.total_cajas",
+        "g.total_neveras",
+        "g.total_bolsas",
+        "a.usuario_id",
+        "f.nombre as nombre_usuario",
+        "a.estado",
+        G.knex.raw("case when a.estado = '0' then 'Anulada' \
+                     when a.estado = '1' then 'Activa' \
+                     when a.estado = '2' then 'Despachada' end as descripcion_estado"),
+        G.knex.raw("to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro"),
+        G.knex.raw("to_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho")
+    ];
+    var query = G.knex.select(columnas)
+            .from("inv_planillas_despacho as a")
+            .innerJoin("inv_transportadoras as b", "b.transportadora_id", "a.inv_transportador_id")
+            .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
+            .leftJoin(G.knex.raw("(select a.planilla_id, a.numero, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras, sum(a.cantidad_bolsas) as total_bolsas\
+                          from (select a.inv_planillas_despacho_id as planilla_id, a.numero, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 1\
+                      from inv_planillas_detalle_farmacias a\
+                      union\
+                      select a.inv_planillas_despacho_id as planilla_id, a.numero, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 2\
+                      from inv_planillas_detalle_clientes a\
+                      union all\
+                      select a.inv_planillas_despacho_id as planilla_id, a.numero, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 3\
+                      from inv_planillas_detalle_empresas a \
+                    ) as a group by 1,2\
+                  ) as g "), function () {
+
+                this.on("g.planilla_id", "a.id");
+            }).where(G.knex.raw("a.fecha_registro between '" + fecha_inicial + "' and '" + fecha_final + "'"))
+            .andWhere(G.knex.raw("g.numero " + G.constants.db().LIKE + "'%" + termino_busqueda + "'"))
+            .orderBy('a.id', 'desc');
+
+    query.then(function (resultado) {
+
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    });
+};
+
 /**
  * @author Cristian 
  * +Modifico German Galvis

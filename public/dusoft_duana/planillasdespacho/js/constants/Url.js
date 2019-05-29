@@ -9,6 +9,7 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'PLANILLAS': {
                 'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',
+                'LISTAR_PLANILLAS_DOC': BASE_URL + '/PlanillasDespachos/listarPorDoc',
                 'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
                 'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',

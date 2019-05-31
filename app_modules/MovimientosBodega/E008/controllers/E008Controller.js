@@ -1744,7 +1744,7 @@ E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
         }
 
         if (rows.length === 0) {
-            res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
+            res.send(G.utils.r(req.url, 'No se encontro el rotulo para el pedido', 404, {}));
             return;
         }
 
@@ -1822,7 +1822,7 @@ E008Controller.prototype.imprimirRotuloFarmacias = function (req, res) {
         }
 
         if (rows.length === 0) {
-            res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
+            res.send(G.utils.r(req.url, 'No se encontro el rotulo para el pedido', 404, {}));
             return;
         }
 

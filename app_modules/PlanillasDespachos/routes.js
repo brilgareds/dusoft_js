@@ -7,6 +7,10 @@ module.exports = function (app, di_container) {
         c_planillas_despachos.listarPlanillasDespachos(req, res);
     });
 
+    app.post('/api/PlanillasDespachos/listarPorDoc', function (req, res) {
+        c_planillas_despachos.listarPlanillasDespachosDoc(req, res);
+    });
+
     // Consultar los documentos de despacho de un farmacua 
     app.post('/api/PlanillasDespachos/documentosDespachosPorFarmacia', function (req, res) {
         c_planillas_despachos.consultarDocumentosDespachosPorFarmacia(req, res);

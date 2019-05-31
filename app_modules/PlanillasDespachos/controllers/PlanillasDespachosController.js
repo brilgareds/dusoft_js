@@ -48,6 +48,37 @@ PlanillasDespachos.prototype.listarPlanillasDespachos = function (req, res) {
     });
 };
 
+PlanillasDespachos.prototype.listarPlanillasDespachosDoc = function (req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || args.planillas_despachos.fecha_inicial === undefined || args.planillas_despachos.fecha_final === undefined || args.planillas_despachos.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final o termino_busqueda no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.fecha_inicial === '' || args.planillas_despachos.fecha_final === '') {
+        res.send(G.utils.r(req.url, 'fecha_inicial o fecha_final estan vacíos', 404, {}));
+        return;
+    }
+
+    var fecha_inicial = args.planillas_despachos.fecha_inicial;
+    var fecha_final = args.planillas_despachos.fecha_final;
+    var termino_busqueda = args.planillas_despachos.termino_busqueda;
+
+    that.m_planillas_despachos.listar_planillas_por_documento(fecha_inicial, fecha_final, termino_busqueda, function (err, lista_planillas_despachos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las planillas_despachos_por_documento', 500, {planillas_despachos: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de planillas_despachos', 200, {planillas_despachos: lista_planillas_despachos}));
+        }
+    });
+};
+
 // Consultar los documentos de despacho de una farmacia 
 PlanillasDespachos.prototype.consultarDocumentosDespachosPorFarmacia = function (req, res) {
 

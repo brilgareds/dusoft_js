@@ -322,7 +322,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-    console.time('loop');
+    
     args.data.bodegas.forEach(function (item) {
         item.remitente = args.data.remitente;  //guardarControlRotacion   0     
         item.remitentes = args.data.remitentes;
@@ -331,6 +331,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
         item.swEstadoCorreo = '0';
         item.logError = '';
         item.fechaToday = fechaToday;
+        item.nombreBodega = item.nombreBodega.replace("(Enviado)","");
 
         __rotacionesBodegas(that, item, function (data) {
 
@@ -345,7 +346,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
                     var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
                     __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
                 }
-                console.timeEnd('loop');
+           
             }
         });
 
@@ -468,7 +469,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
             return productosLista;
         }else if(bodega.bodega!=='03'){
-            console.time('consultarRotacion');
+      
             return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
         }else{
             console.log("rotacionFarmaciasDuana ",bodega.bodega);
@@ -476,7 +477,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         }
 
     }).then(function (respuesta) {
-           console.timeEnd('consultarRotacion',respuesta);
+           
         if (respuesta.length > 0) {
 
             listarPlanes = respuesta;
@@ -498,14 +499,14 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         farmacias=respuesta;
    
         if(bodega.bodega!=='03'){
-            var complemento = "MAGISTERIO";
+            var complemento = "MAGISTERIO_";
             var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){        
              complemento="";
              ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
-            archivoName = complemento+"_"+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";       
+            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";       
         
             return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, []);//rotacion normal
         }else{
@@ -599,6 +600,8 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
 }
 
 function __rotacionesBodegasMovil(that, bodega, res,callback) {
+    console.log("__rotacionesBodegasMovil");
+    console.log("__rotacionesBodegasMovil",bodega);
     var name;
     var archivoName;
     var today = new Date();
@@ -644,7 +647,7 @@ throw {msj:"Error"};return;
         
          farmacias=respuesta;
         if(bodega.bodega!=='03'){
-            var complemento = "MAGISTERIO - ";
+            var complemento = "MAGISTERIO_";
             var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
              complemento="";

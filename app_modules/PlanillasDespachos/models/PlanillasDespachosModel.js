@@ -311,7 +311,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
         this.andWhere('a.empresa_id', obj.empresa_id);
         this.andWhere('a.tipo_id_tercero', obj.tipo_id);
         this.andWhere('a.tercero_id', obj.tercero_id);
-        this.whereIn('b.estado_pedido', [2, 3, 8, 9]);
+        this.whereIn('b.estado_pedido', [2, 3, 5, 8, 9]);
         this.andWhere(G.knex.raw("a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_clientes b )"));
         this.andWhere(G.knex.raw("( a.prefijo || ' ' || a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \
                     a.numero :: varchar " + G.constants.db().LIKE + "'%" + obj.termino_busqueda + "%' or \

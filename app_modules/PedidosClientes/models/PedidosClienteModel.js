@@ -2634,7 +2634,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
                 this.on("a.tipo_id_tercero", "j.tipo_id_tercero")
                     .on("a.tercero_id", "j.tercero_id")
                     .on("a.empresa_id", "j.empresa_id")
-                    .on(G.knex.raw('a.bodega_id = ' + parametros[4]))
+                    .on(G.knex.raw("a.bodega_id = '"+ parametros[4]+"'"))
                     .on(G.knex.raw("j.estado = '1'"));
             });
 
@@ -2642,7 +2642,8 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
         .then(resultado => {
             callback(false, resultado);
         }).catch(err => {
-            console.log("err [listar_cotizaciones]: ", err);
+            console.log(G.sqlformatter.format(queryPrincipal.toString()));
+            console.log("err:::: [listar_cotizaciones]: ", err);
             callback(err);
         });
 };

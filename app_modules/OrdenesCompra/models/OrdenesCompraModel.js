@@ -1,3 +1,5 @@
+/* global G */
+
 var OrdenesCompraModel = function(m_unidad_negocio, m_proveedores) {
     this.m_unidad_negocio = m_unidad_negocio;
     this.m_proveedores    = m_proveedores;
@@ -243,7 +245,6 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     
    var query = G.knex.column(columns).
     from("inventarios_productos  as a").
-
     innerJoin("inventarios as b", "a.codigo_producto", "b.codigo_producto").
     innerJoin("inv_subclases_inventarios as c", function(){
          this.on("a.subclase_id", "c.subclase_id" ).

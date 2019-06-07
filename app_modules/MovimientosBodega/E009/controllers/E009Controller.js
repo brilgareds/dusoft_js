@@ -423,7 +423,7 @@ E009Controller.prototype.crearDocumento = function (req, res) {
                 detalle: detalle[0],
                 impresion: impresion,
                 archivoHtml: 'documentoE009.html',
-                reporte: "documentoE009"}, function (nombre_pdf) {
+                reporte: "documentoE009"+ parametros.empresaId}, function (nombre_pdf) {
                 res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
             });
         } else {
@@ -460,7 +460,7 @@ E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
         numeracionDocumento: args.numeracion
     };
     try {
-        var nomb_pdf = "documentoE009" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        var nomb_pdf = "documentoE009"+ parametros.empresaId + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
         if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
             res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
             return;
@@ -490,7 +490,7 @@ E009Controller.prototype.crearDocumentoImprimir = function (req, res) {
                 detalle: detalle[0],
                 impresion: impresion,
                 archivoHtml: 'documentoE009.html',
-                reporte: "documentoE009"}, function (nombre_pdf) {
+                reporte: "documentoE009"+ parametros.empresaId}, function (nombre_pdf) {
                 res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
             });
         } else {

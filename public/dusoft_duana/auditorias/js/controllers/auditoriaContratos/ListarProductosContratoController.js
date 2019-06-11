@@ -81,7 +81,8 @@ define(["angular", "js/controllers",
                 $scope.datos_view.listado_productos = [];
                 productos.forEach(function (data) {
                     var producto = ProductoContrato.get(data.contrato_cliente_id, data.empresa_id, data.nombre_tercero, data.codigo_producto, data.descripcion,
-                            parseFloat(data.precio_pactado).toFixed(2), data.nombre, data.usuario_id, parseFloat(data.costo_sin_iva).toFixed(2), parseFloat(data.deficit).toFixed(2));
+                            parseFloat(data.precio_pactado).toFixed(2), data.nombre, data.usuario_id, parseFloat(data.costo_sin_iva).toFixed(2), parseFloat(data.deficit).toFixed(2)
+                            , data.justificacion);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -96,9 +97,10 @@ define(["angular", "js/controllers",
                     {field: 'get_nombre_tercero()', displayName: 'Cliente', width: "17%"},
                     {field: 'get_codigo()', displayName: 'Codigo Producto', width: "8%"},
                     {field: 'get_descripcion()', displayName: 'Descripcion', width: "32%"},
-                    {field: 'get_precio_pactado()', displayName: 'Precio Pactado', width: "8%"},
-                    {field: 'get_costo_ultima_compra()', displayName: "Costo Sin IVA", width: "9%"},
-                    {field: 'get_deficit()', displayName: "Deficit", width: "9%"},
+                    {field: 'get_precio_pactado()', displayName: 'Precio Pactado', width: "7%"},
+                    {field: 'get_costo_ultima_compra()', displayName: "Costo Sin IVA", width: "8%"},
+                    {field: 'get_deficit()', displayName: "Deficit", width: "6%"},
+                    {field: 'get_justificacion()', displayName: "Justificacion", width: "9%"},
                     {field: 'get_usuario()', displayName: "Usuario", width: "15%"}
                 ]
             };

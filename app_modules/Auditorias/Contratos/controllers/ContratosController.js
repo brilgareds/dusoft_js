@@ -93,7 +93,8 @@ function __creaExcel(data, callback) {
     header.push({header: 'PRECIO PACTADO', key: 'f', width: 20, style: style});
     header.push({header: 'COSTO SIN IVA', key: 'g', width: 15, style: style});
     header.push({header: 'DEFICIT', key: 'h', width: 9, style: style});
-    header.push({header: 'USUARIO', key: 'i', width: 15, style: style});
+    header.push({header: 'JUSTIFICACION', key: 'i', width: 15, style: style});
+    header.push({header: 'USUARIO', key: 'j', width: 15, style: style});
 
     worksheet.columns = header;
 
@@ -104,7 +105,7 @@ function __creaExcel(data, callback) {
     data.forEach(function (element) {
 
         worksheet.addRow([element.nombre_tercero, element.codigo_producto, element.descripcion, parseFloat(element.precio_pactado).toFixed(2),
-             parseFloat(element.costo_sin_iva).toFixed(2), parseFloat(element.deficit).toFixed(2), element.nombre]);
+             parseFloat(element.costo_sin_iva).toFixed(2), parseFloat(element.deficit).toFixed(2), element.justificacion, element.nombre]);
 
         i++;
     });
@@ -133,6 +134,7 @@ function __creaExcel(data, callback) {
     worksheet.getCell('E1').style = style;
     worksheet.getCell('F1').style = style;
     worksheet.getCell('G1').style = style;
+    worksheet.getCell('H1').style = style;
 
 // save workbook to disk
     workbook.xlsx.writeFile(G.dirname + "/public/reports/Auditorias/" + data.nameArchivo).then(function () {

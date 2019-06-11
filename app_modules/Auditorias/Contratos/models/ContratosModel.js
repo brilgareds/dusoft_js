@@ -20,6 +20,7 @@ AuditoriaContratos.prototype.listarProductosContrato = function (parametros, cal
         G.knex.raw("fc_descripcion_producto(b.codigo_producto) as descripcion"),
         "b.precio_pactado",
         "b.usuario_id",
+        "b.justificacion",
         "e.nombre",
         "c.costo",
         "c.costo_ultima_compra",

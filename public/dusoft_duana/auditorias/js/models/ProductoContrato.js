@@ -2,7 +2,7 @@ define(["angular", "js/models"], function (angular, models) {
 
     models.factory('ProductoContrato', [function () {
 
-            function ProductoContrato(id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit) {
+            function ProductoContrato(id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion) {
                 this.id = id || 0;
                 this.empresa_id = empresa_id;
                 this.nombre_tercero = nombre_tercero;
@@ -13,11 +13,12 @@ define(["angular", "js/models"], function (angular, models) {
                 this.usuario_id = usuario_id;
                 this.costo_ultima_compra = costo_ultima_compra;
                 this.deficit = deficit;
+                this.justificacion = justificacion;
                 this.seleccionado = false;
             }
 
-            this.get = function (id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit) {
-                return new ProductoContrato(id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit);
+            this.get = function (id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion) {
+                return new ProductoContrato(id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion);
             };
 
             ProductoContrato.prototype.set_empresa_id = function (empresa_id) {
@@ -50,6 +51,14 @@ define(["angular", "js/models"], function (angular, models) {
 
             ProductoContrato.prototype.get_codigo = function () {
                 return this.codigo;
+            };
+
+            ProductoContrato.prototype.set_justificacion = function (justificacion) {
+                this.justificacion = justificacion;
+            };
+
+            ProductoContrato.prototype.get_justificacion = function () {
+                return this.justificacion;
             };
 
             ProductoContrato.prototype.set_descripcion = function (descripcion) {

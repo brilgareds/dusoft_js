@@ -80,10 +80,15 @@
     opacity:1
 }
 
-.switch1 {
-    position: relative; width: 100px;
+.switch1, .switch2 {
+    position: relative;
+    width: 100px;
     margin: 3px auto;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.switch2 {
+    width: 160px;
+    margin: 3px 0px;
 }
 
 .switch1-checkbox {
@@ -95,37 +100,61 @@
     border: 2px solid #999999; border-radius: 30px;
 }
 
-.switch1-inner {
+.switch1-inner, .switch2-inner {
     display: block; width: 200%; margin-left: -100%;
     -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
     -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
     right: 0px;
 }
 
-.switch1-inner:before, .switch1-inner:after {
-    display: block; float: left; width: 50%; height: 20px; padding: 0; line-height: 20px;
-    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+.switch1-inner:before, .switch1-inner:after, .switch2-inner:before, .switch2-inner:after {
+    display: block;
+    float: left;
+    width: 50%;
+    height: 20px;
+    line-height: 20px;
+    padding: 0;
+    font-size: 14px;
+    color: white;
+    font-family: Trebuchet, Arial, sans-serif;
+    font-weight: bold;
     -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
     border-radius: 30px;
     box-shadow: 0px 15px 0px rgba(0,0,0,0.08) inset;
+}
+.switch2-inner:before, .switch2-inner:after {
+    height: 30px;
+    line-height: 30px;
 }
 
 .switch1-inner:before {
     content: "Activo";
     padding-left: 10px;
+    background-color: #5493ca; color: #FFFFFF;
+    border-radius: 30px 0 0 30px;
+}
+.switch2-inner:before {
+    content: 'Texto Plano';
+    padding-left: 10px;
     background-color: #337ab7; color: #FFFFFF;
     border-radius: 30px 0 0 30px;
 }
 
-.switch1-inner:after {
-    content: "Inactivo";
+.switch1-inner:after, .switch2-inner:after {
+    content: 'Inactivo';
     padding-right: 10px;
-    background-color: #EEEEEE; color: #999999;
+    background-color: #EEEEEE;
+    color: #999999;
     text-align: right;
     border-radius: 0 30px 30px 0;
 }
+.switch2-inner:after {
+    content: 'Formato Manual';
+    background-color: #337ab7;
+    color: #FFF;
+}
 
-.switch1-switch {
+.switch1-switch, .switch2-switch {
     display: block; width: 30px; margin: 0px;
     border: 2px solid #999999; border-radius: 30px;
     position: absolute; top: 0; bottom: 0; right: 70px;
@@ -135,12 +164,15 @@
     background-image: radial-gradient(rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 80%);
     box-shadow: 0 1px 1px white inset;
 }
+.switch2-switch {
+    right: 130px;
+}
 
-.switch1-checkbox:checked + .switch1-label .switch1-inner {
+.switch1-checkbox:checked + .switch1-label .switch1-inner, .switch1-checkbox:checked + .switch1-label .switch2-inner {
     margin-left: 0;
 }
 
-.switch1-checkbox:checked + .switch1-label .switch1-switch {
+.switch1-checkbox:checked + .switch1-label .switch1-switch, .switch1-checkbox:checked + .switch1-label .switch2-switch {
     right: 0px;
 }
 
@@ -148,7 +180,149 @@
     display: flex;
     align-items: center;
 }
+.table-responsive .ngHeaderContainer {
+    background: #337ab7;
+    color: #FFF;
+    border: #337ab7 !important;
+}
+
+.table-responsive {
+    width: 100%;
+    height: auto;
+    border: 1px solid #dedede;
+    padding: 0px 0px 0px 0px;
+}
+
+.table-responsive > tbody > tr:nth-child(even):not(.tr-customer) {
+    background-color: #fdfdfd;
+}
+
+.table-responsive > tbody > tr:nth-child(odd):not(.tr-customer) {
+    background-color: #f3f3f3;
+}
+.table-responsive2 thead tr, .table-responsive thead tr {
+    background-color: #eaeaea;
+}
+
+.table-responsive2 tbody tr td, .table-responsive tbody tr td {
+    position: relative;
+}
+
+.table-responsive2 > *:nth-child(even):not(.tr-customer) {
+    background-color: #fdfdfd;
+}
+
+.table-responsive2 > *:nth-child(odd):not(.tr-customer) {
+    background-color: #f3f3f3;
+}
+
+.table-responsive2 > tbody > .tr-customer, .table-responsive tbody > .tr-customer {
+    background-color: #FFF;
+}
+
+.table-responsive2 > tbody > .tr-customer *, .table-responsive > tbody > .tr-customer * {
+    text-transform: capitalize;
+}
+
+.table-responsive2 tbody tr:hover, .table-responsive tbody tr:hover {
+    background-color: #E5E5E5;
+}
+
+.table-responsive2 tbody tr input, .table-responsive tbody tr input{
+    cursor: pointer;
+}
+
+.table-responsive2 th:not(:first-child), .table-responsive2 td:not(:first-child),
+.table-responsive th:not(:first-child), .table-responsive td:not(:first-child) {
+    border-left: 2px solid #dedede;
+}
+
+.title-detalle {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.table-responsive2 td {
+    white-space: nowrap;
+}
+
+.table-responsive2 th, .table-responsive2 td, .table-responsive th, .table-responsive td {
+    padding: 5px;
+    height: 35px;
+    min-height: 35px;
+    max-height: 35px;
+}
 
 .table-responsive .glyphicon {
     top: 4px;
+}
+
+i.glyphicon {
+    cursor: pointer;
+}
+.table-responsive.contractProducts .ngViewport.ng-scope {
+    height: 160px !important;
+}
+.span-flex-center {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+.well {
+    margin-bottom: 0px;
+}
+.label3 > i {
+    font-size: 20px;
+}
+
+.checkbox3 {
+    opacity: 0;
+    display: none;
+ }
+.checkbox3 + .label3 {
+    color: #7086b1;
+}
+.checkbox3:checked + .label3 {
+    color: #0a7bdc;
+}
+.label3:hover > i {
+    filter: contrast(400%);
+}
+
+.container-factura-info div:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    text-transform: uppercase;
+    padding: 4px;
+}
+.container-factura-info div:nth-child(1) span {
+    border: 1px solid #1d7896;
+    border-radius: 2px;
+    padding: 5px 30px;
+}
+.container-factura-info div:nth-child(2) {
+    display: flex;
+    justify-content: space-around;
+    text-transform: uppercase;
+    border: 1px solid #98bae4;
+    padding: 20px;
+}
+.container-factura-info div:nth-child(2) span {
+    text-align: center;
+}
+.container-factura-info div:nth-child(2) label {
+    border: 1px solid #1d7896;
+    border-radius: 2px;
+    padding: 5px 20px;
+    margin-bottom: 0px;
+}
+.total-saldo {
+    background-color: #337ab7;
+    color: #FFF;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-around;
+}
+.ngViewport {
+    height: 300px !important;
 }

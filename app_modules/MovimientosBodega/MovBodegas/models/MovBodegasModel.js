@@ -561,7 +561,8 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
 
 
 MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = function (numero, prefijo, empresa_id, tipo_documento, callback) {
-
+    console.log('test 8.3');
+    console.log('tipo_documento: ', tipo_documento);
     var sql = "";
 
     switch (tipo_documento) {
@@ -594,7 +595,7 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                             JOIN centros_utilidad as d ON (c.centro_utilidad = d.centro_utilidad)\
                             AND (c.empresa_id = d.empresa_id)\
                             JOIN empresas as e ON (d.empresa_id = e.empresa_id)\
-                            JOIN tipo_dptos as f on f.tipo_pais_id=d.tipo_pais_id and f.tipo_dpto_id =d.tipo_dpto_id\
+                            LEFT JOIN tipo_dptos as f on f.tipo_pais_id=d.tipo_pais_id and f.tipo_dpto_id =d.tipo_dpto_id\
                             WHERE   a.empresa_id = :3\
                             AND a.prefijo = :2\
                             AND a.numero = :1\
@@ -602,8 +603,10 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                     )as x";
             break;
     }
-
+    console.log('8.4');
    var query = G.knex.raw(sql, {1: numero, 2: prefijo, 3: empresa_id});
+    console.log('8.5');
+    console.log('query is: ', G.sqlformatter.format(query.toString()));
 
             query.
             then(function (resultado) {

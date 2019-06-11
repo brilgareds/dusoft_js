@@ -1243,6 +1243,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     console.log('data.obj.pedidos_clientes.estado',data.obj.pedidos_clientes.estado);
                    if(data.obj.pedidos_clientes.estado !== '5'){
                     var cotizacion = localStorageService.get("cotizacion");
+                    console.log('cotizacion: ', cotizacion);
 
                     if (cotizacion) {
                         var parametros = {busqueda: cotizacion.numero_cotizacion,
@@ -1257,7 +1258,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
 
                     });
-                  }else{
+                  } else {
                       AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya tiene Pedido");
                       $state.go('ListarPedidosClientes');
                   }

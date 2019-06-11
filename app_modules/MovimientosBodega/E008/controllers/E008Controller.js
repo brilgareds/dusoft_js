@@ -3130,7 +3130,7 @@ E008Controller.prototype.actualizarCajaDeTemporales = function (req, res) {
 
 
 E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
-
+    console.log('Test 1');
     var that = this;
     var args = req.body.data;
 
@@ -3141,25 +3141,26 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
         res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan definidos', 404, {}));
         return;
     }
-
+    console.log('Test 2');
     if (args.movimientos_bodegas.numero === "" || args.movimientos_bodegas.prefijo === "" || args.movimientos_bodegas.empresa === "") {
         res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan vacios', 404, {}));
         return;
     }
-
+    console.log('Test 3');
     var numero = args.movimientos_bodegas.numero;
     var prefijo = args.movimientos_bodegas.prefijo;
     var empresa = args.movimientos_bodegas.empresa;
     var datos_documento = {};
 
-
+    console.log('Test 4');
     that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function (err, rows) {
-
+        console.log('Test 5');
         if (err || rows.length === 0) {
             console.log("err imprimirDocumentoDespacho", err);
             res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
             return;
         }
+        console.log('Test 6');
         datos_documento.encabezado = rows[0];
         datos_documento.encabezado.total = 0;
         datos_documento.encabezado.subTotal = 0;
@@ -3170,22 +3171,24 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
         if (datos_documento.encabezado.direccion_sede != null) {
             datos_documento.encabezado.direccion = datos_documento.encabezado.direccion_sede;
         }
-
+        console.log('Test 7');
         that.m_movimientos_bodegas.consultar_detalle_documento_despacho(numero, prefijo, empresa, function (err, rows) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
                 return;
             }
-
+            console.log('Test 8');
             datos_documento.detalle = rows;
+            console.log('Test 8.2');
             that.m_movimientos_bodegas.consultar_datos_adicionales_documento(numero, prefijo, empresa, datos_documento.encabezado.tipo_doc_bodega_id, function (err, rows) {
-                if (err || rows.length === 0) {
+                if (err || (rows.length === 0)) {
+                    console.log('Test After 8');
                     res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
                     return;
                 }
-
+                console.log('Test 9');
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
-
+                console.log('Test 10');
                 datos_documento.serverUrl = req.protocol + '://' + req.get('host') + "/";
 
                 //Calculo de totales
@@ -3193,7 +3196,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                     datos_documento.encabezado.subTotal += detalle.valor_unitario * detalle.cantidad;
                     datos_documento.encabezado.totalIva += (detalle.iva * detalle.cantidad);
                 });
-
+                console.log('Test 11');
                 datos_documento.encabezado.total = datos_documento.encabezado.subTotal + datos_documento.encabezado.totalIva;
                 datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
                 datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
@@ -3204,6 +3207,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
                 }else{
                  datos_documento.encabezado.departamentos = datos_documento.adicionales.departamento;
                 }
+                console.log('Test 12');
                 //Se ordena por caja
                 datos_documento.detalle.sort(function (a, b) {
                     if (a.numero_caja > b.numero_caja) {
@@ -3216,7 +3220,6 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
 
                     return 0;
                 });
-
                 __generarPdfDespacho(datos_documento, function (nombre_pdf) {
 
                     res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {

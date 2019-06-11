@@ -51,6 +51,16 @@ define(["angular", "js/services"], function (angular, services) {
                         });
                     };
 
+                    const number_money = (price) => {
+                        let newPrice = new Intl.NumberFormat("de-DE").format(price);
+                        newPrice = '$ ' + newPrice
+                            .replace(/(,)/g, "coma")
+                            .replace(/(\.)/g, "punto")
+                            .replace(/(coma)/g, ".")
+                            .replace(/(punto)/g, ",");
+                        return newPrice;
+                    };
+
                     /**
                      * @author German Galvis
                      * +Descripcion Funcion encargada de serializar el resultado de la
@@ -70,6 +80,10 @@ define(["angular", "js/services"], function (angular, services) {
                             factura.setIdentificacion(data.tipo_id_tercero + " - " + data.tercero_id);
                             factura.setPrefijo(data.prefijo);
                             factura.setTipoFactura(data.tipo_factura);
+
+                            factura.deshabilitarNotaCredito = factura.saldo <= 0;
+                            factura.saldo_old = parseFloat(factura.saldo);
+                            factura.saldo = number_money(parseFloat(factura.saldo).toString());
                             facturas.push(factura);
                         });
 

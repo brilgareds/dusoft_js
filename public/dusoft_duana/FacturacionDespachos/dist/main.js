@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -59374,7 +59374,6 @@ define('controllers/facturacionCliente/FacturacionConsumoBarranquillaController'
                             scope: $scope,
                             controller: ['$scope', '$modalInstance', 'API', 'facturacionClientesService', function ($scope, $modalInstance, API, facturacionClientesService) {
 
-
                                     $scope.opciones_archivo = new Flow();
                                     $scope.opciones_archivo.target = API.FACTURACIONCLIENTES.SUBIR_ARCHIVO;
                                     $scope.opciones_archivo.testChunks = false;
@@ -65281,9 +65280,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         notasService.listarFacturas(obj, function (data) {
 
                             if (data.status === 200) {
-
                                 $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
-
                             } else {
                                 $scope.root.listarFacturas = null;
 
@@ -65310,9 +65307,9 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             {field: 'Identificación', width: "15%", displayName: 'Identificación', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getIdentificacion()}}</p></div>'},
                             {field: 'Tercero', width: "35%", displayName: 'Tercero', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombreProveedor()}}</p></div>'},
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
-                            {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getSaldo()| currency:"$ "}}</p></div>'},
+                            {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.saldo}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'saldo_old', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="row.entity.deshabilitarNotaCredito" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span>-->{{row.entity.saldo_old}}<--</button></div>'},
                             {field: 'ND', width: "6%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
                     };
@@ -66722,6 +66719,18 @@ define('services/notasService',["angular", "js/services"], function (angular, se
                         });
                     };
 
+                    const number_money = (price) => {
+                        console.log('Price init: ', price);
+                        let newPrice = new Intl.NumberFormat("de-DE").format(price);
+                        newPrice = '$ ' + newPrice
+                            .replace(/(,)/g, "coma")
+                            .replace(/(\.)/g, "punto")
+                            .replace(/(coma)/g, ".")
+                            .replace(/(punto)/g, ",");
+                        console.log('Price after: ', newPrice);
+                        return newPrice;
+                    };
+
                     /**
                      * @author German Galvis
                      * +Descripcion Funcion encargada de serializar el resultado de la
@@ -66741,6 +66750,10 @@ define('services/notasService',["angular", "js/services"], function (angular, se
                             factura.setIdentificacion(data.tipo_id_tercero + " - " + data.tercero_id);
                             factura.setPrefijo(data.prefijo);
                             factura.setTipoFactura(data.tipo_factura);
+
+                            factura.deshabilitarNotaCredito = factura.saldo <= 0;
+                            factura.saldo_old = parseFloat(factura.saldo);
+                            factura.saldo = number_money(parseFloat(factura.saldo).toString());
                             facturas.push(factura);
                         });
 
@@ -67481,7 +67494,7 @@ define('app',[
                     parent_name : "Despacho"
                 }).state('FacturacionProveedores', {
                     url: "/FacturacionProveedores",
-                    text: "Facturacion Proveedores", 
+                    text: "Facturacion Proveedores",
                     templateUrl: "views/facturacionProveedores/index.html",
                     parent_name: "Despacho",
                     controller: "FacturacionProveedorController"

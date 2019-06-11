@@ -13,8 +13,13 @@
                     "module": "ParametrizacionProductosClientes",
                     "model": "ParametrizacionProductosClientesModel",
                     "alias": "m_parametrizacionProductosClientes"
+                },
+                "productos_model": {
+                  "module": "Productos",
+                  "model": "ProductosModel",
+                  "alias": "m_productos"
                 }
-            }],
+        }],
         "events": [],
         "cronJobs": []
     }

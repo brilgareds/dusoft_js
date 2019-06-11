@@ -28,6 +28,7 @@
 
 .tablePc:not(.cells-auto) th:first-child, .tablePc:not(.cells-auto) td:first-child{
     width: 28%;
+    padding: 2px 0px;
 }
 .tablePc.cells-auto th {
     text-align: center;

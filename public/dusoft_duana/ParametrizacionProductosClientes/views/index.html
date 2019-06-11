@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="col-sm-3">
-                <label for="">CONTRATO</label><input type="text" class="form-control" ng-model="root.form.searchContract.numberContract" placeholder="Nº CONTRATO">
+                <label for="">Contrato</label><input type="text" class="form-control" ng-model="root.form.searchContract.numberContract" placeholder="Nº CONTRATO">
             </div>
             <div class="col-sm-3">
                 <label for="">Unidad Negocio</label><input type="text" class="form-control" ng-model="root.form.searchContract.businessUnit" autocomplete="" placeholder="Nº Unidad Negocio">
@@ -51,12 +51,44 @@
 
 <div class="panel panel-primary">
     <div class="panel-heading title-container-nota">
-        <h5 style="font-weight: bolder; text-align: center; margin:2px;">Parametrizacion Productos Clientes</h5>
+        <h5 style="font-weight: bolder; text-align: center; margin:2px;">Contratos Encontrados</h5>
     </div>
     <div class="panel-body"><br>
         <div class="container-table">
-            <div class="table-responsive">
-                <div class="defaultGrid grid-responsive col-sm-12" style="padding: 0px;" ng-grid="ParametrizacionProductosClientes">
+            <div class="table-responsive" style="height: auto;">
+                <!-- ng-style="{'opacity' : currentPage == 0 ? 0.4 : 1}" -->
+                <div class="defaultGrid grid-responsive col-sm-12" style="padding: 0px;" style="min-height: 20px;" ng-style="{'height' : (root.data.contracts.length > 0 ? 'auto' : 'initial'), 'opacity' : (root.data.contracts.length > 0 ? '1' : '0')}" ng-grid="ParametrizacionProductosClientes">
+                </div>
+            </div>
+        </div>
+    </div><br>
+</div><br>
+
+<div class="panel panel-primary">
+    <div class="panel-heading title-container-nota">
+        <h5 style="font-weight: bolder; text-align: center; margin:2px;">Crear Contrato Nuevo</h5>
+    </div>
+    <div class="panel-body"><br>
+        <div class="col-sm-12">
+            <div class="col-sm-12">
+                <div class="col-sm-3 col-lg-2">
+                    <label for="">Tipo de Contrato</label>
+                    <button type="button" class="form-control btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{root.form.newContract.type}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="contractTipe in root.init.contractTypes">
+                            <a ng-click="updateContractType(contractTipe)">{{contractTipe}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-3 col-lg-2">
+                    <label for="">Tipo de Doc</label>
+                    <button type="button" class="form-control btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{root.form.newContract.type}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="docType in root.init.docTypes">
+                            <a ng-click="updateDocType(docType)">{{docType}}</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

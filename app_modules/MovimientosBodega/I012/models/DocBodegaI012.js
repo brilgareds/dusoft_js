@@ -191,8 +191,8 @@ DocumentoBodegaI012.prototype.listarFacturas = function (parametros, callback) {
             .where('a.empresa_id', parametros.empresaId)
             .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
             .andWhere('a.tercero_id', parametros.documento)
-            .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"))
-            .andWhere(G.knex.raw("a.saldo > 0"));
+            .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"));
+//            .andWhere(G.knex.raw("a.saldo > 0"));
 
     query.union(function () {
         this.select(columnas2)
@@ -206,7 +206,7 @@ DocumentoBodegaI012.prototype.listarFacturas = function (parametros, callback) {
                 .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
                 .andWhere('a.tercero_id', parametros.documento)
                 .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"))
-                .andWhere(G.knex.raw("a.saldo > 0"))
+//                .andWhere(G.knex.raw("a.saldo > 0"))
                 .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"))
                 .orderBy(G.knex.raw("2"));
     });

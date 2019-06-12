@@ -235,7 +235,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 numero_doc_cliente: objs.data.ingreso.numero_doc_cliente,
                                 docTmpId: objs.data.ingreso.doc_tmp_id,
                                 valorTotalFactura: objs.data.ingreso.valor_total_factura,
-                                usuario_id: objs.data.ingreso.usuario_id
+                                usuario_id: objs.data.ingreso.usuario_id,
+                                tipoDocumento: objs.data.ingreso.tipoDocumento
                             }
                         };
                         Request.realizarRequest(API.I012.CREAR_DOCUMENTO, "POST", obj, function (data) {

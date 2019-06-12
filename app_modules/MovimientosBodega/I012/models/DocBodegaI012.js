@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaI012 = function () {
 };
 
@@ -525,7 +527,7 @@ DocumentoBodegaI012.prototype.updatefacturaD = function (parametros, transaccion
 
 /**
  * @author German Galvis
- * +Descripcion actualiza el el costo total del documento de bodega
+ * +Descripcion actualiza el costo total del documento de bodega
  * @fecha 09/04/2018
  */
 DocumentoBodegaI012.prototype.updateCostoTotalDocumento = function (parametros, transaccion, callback) {
@@ -533,6 +535,52 @@ DocumentoBodegaI012.prototype.updateCostoTotalDocumento = function (parametros, 
             .where('prefijo', parametros.prefijoDocumento)
             .andWhere('numero', parametros.numeracionDocumento)
             .update('total_costo',parametros.valorTotalFactura);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el saldo de la factura
+ * @fecha 12/06/2019
+ */
+DocumentoBodegaI012.prototype.updateSaldoFactura = function (parametros, transaccion, callback) {
+
+    var query = G.knex(parametros.tablaUpdate)
+            .where('prefijo', parametros.prefijo_doc_cliente)
+            .andWhere('factura_fiscal', parametros.numero_doc_cliente)
+            .andWhere('empresa_id', parametros.empresaId)
+            .update('saldo',0);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta el saldo de la factura
+ * @fecha 12/06/2019
+ */
+DocumentoBodegaI012.prototype.consultarSaldoFactura = function (parametros, transaccion, callback) {
+
+    var query = G.knex.select()
+            .from(parametros.tablaUpdate)
+            .where('prefijo', parametros.prefijo_doc_cliente)
+            .andWhere('factura_fiscal', parametros.numero_doc_cliente)
+            .andWhere('empresa_id', parametros.empresaId);
 
     if (transaccion)
         query.transacting(transaccion);

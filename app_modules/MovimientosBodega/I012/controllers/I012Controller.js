@@ -1,4 +1,6 @@
 
+/* global G */
+
 var I012Controller = function (movimientos_bodegas, m_i012) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
@@ -506,6 +508,7 @@ I012Controller.prototype.crearDocumento = function (req, res) {
     var nombreTercero = args.nombreTercero;
     var valorTotalFactura = args.valorTotalFactura;
     var parametros = {};
+    var tablaUpdate;
 
     if (args.docTmpId === '') {
         res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
@@ -519,6 +522,14 @@ I012Controller.prototype.crearDocumento = function (req, res) {
 
     var docTmpId = args.docTmpId;
     var cabecera = [];
+
+    if (args.tipoDocumento === 1) {
+        tablaUpdate = "inv_facturas_agrupadas_despacho";
+    } else if (args.tipoDocumento === 0) {
+        tablaUpdate = "inv_facturas_despacho";
+    }
+
+    parametros.tablaUpdate = tablaUpdate;
 
     G.knex.transaction(function (transaccion) {
         G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function (result) {
@@ -539,7 +550,19 @@ I012Controller.prototype.crearDocumento = function (req, res) {
 
         }).then(function () {
             return G.Q.nfcall(that.m_i012.updateCostoTotalDocumento, parametros, transaccion);
-            
+
+        }).then(function () {
+            return G.Q.nfcall(that.m_i012.consultarSaldoFactura, parametros, transaccion);
+
+        }).then(function (result) {
+            if (result.length > 0) {
+                if (result[0].saldo < 0) {
+                    return G.Q.nfcall(that.m_i012.updateSaldoFactura, parametros, transaccion);
+                }
+                return true;
+            } else {
+                return true;
+            }
         }).then(function () {
             return G.Q.nfcall(that.m_i012.eliminarMovimientoDevolucionCliente, parametros, transaccion);
 
@@ -667,9 +690,9 @@ I012Controller.prototype.crearHtmlDocumento = function (req, res) {
     G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros).then(function (result) {
         cabecera = result;
         if (result.length > 0) {
-            
+
             valorTotalFactura = parseFloat(cabecera[0].total_costo).toFixed(2);
-            
+
             return G.Q.nfcall(that.m_i012.consultar_detalle_documento, parametros);
         } else {
             throw 'Consulta getDoc sin resultados';

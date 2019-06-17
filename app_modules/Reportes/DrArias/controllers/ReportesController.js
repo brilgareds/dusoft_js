@@ -166,6 +166,22 @@ Reportes.prototype.listarPlanes = function (req, res) {
             done();
 };
 
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion controlador que lista los planes
+ * @params detalle: 
+ * @fecha 2016-06-17
+ */
+Reportes.prototype.listarTotalizadosBodegas = function (req, res) {
+    var that = this;
+    G.Q.ninvoke(that.m_drArias, 'listarTotalizadosBodegas').then(function (listarTotalizadosBodegas) {
+        res.send(G.utils.r(req.url, 'Listado Totalizados Bodegas', 200, {listarTotalizadosBodegas: listarTotalizadosBodegas}));
+    }).fail(function (err) {
+                console.log("Error controller listarPlanes ", err);
+        res.send(G.utils.r(req.url, 'Error listado Totalizados Bodegas', 500, {listarTotalizadosBodegas: err}));
+    }).done();
+};
+
 
 Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;

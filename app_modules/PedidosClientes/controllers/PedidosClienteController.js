@@ -5339,9 +5339,11 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
         if (precioVenta.valido) {
 
             if (precioVenta.valor > 0) {
-                producto.precioVentaIva = precioVenta.valor;
-                producto.precio_venta = precioVenta.valor;
+                producto.precioVentaIva = precioVenta.valor/(1+(producto.iva/100));
+                producto.precio_venta = precioVenta.valor/(1+(producto.iva/100));
+                producto.costo_ultima_compra = producto.costo_ultima_compra/(1+(producto.iva/100));
             }
+       
             productos_validos.push(producto);
         } else {
 

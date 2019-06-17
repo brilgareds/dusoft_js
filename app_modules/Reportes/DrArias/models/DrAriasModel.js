@@ -115,6 +115,23 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
   callback(err);
     });
 };
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion: listado de totales de bodegas
+ * @fecha 2019-06-14
+ */
+DrAriasModel.prototype.listarTotalizadosBodegas = function(callback) {
+
+    var sql = "select * from totalizados_bodegas() as datos(descripcion character varying, total numeric);";
+
+    var query = G.knex.raw(sql);
+    query.then(function(resultado) {
+  callback(false, resultado.rows);
+    }). catch (function(err) {
+  console.log("Error [listarPlanes] Parametros: ", err);
+  callback(err);
+    });
+};
 
 
 

@@ -2361,8 +2361,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function (args) {
         return G.Q.ninvoke(that.m_pedidos_clientes, "verificarPedidoMultiple", respuesta.data);
 
     }).then(function (resultado) {
-        console.log("resultadoresultadoresultado", resultado);
-        console.log("resultadoresultadoresultado", resultado[0].id_orden_pedido_origen);
+        
         respuesta.data.id_orden_pedido_origen = resultado[0].id_orden_pedido_origen;
         if (resultado.length > 0) {
             return G.Q.nfcall(__generacionAutomatica, respuesta);
@@ -2411,8 +2410,7 @@ function __generacionAutomatica(datos, callback) {
             return G.Q.nfcall(__recursivaProductosTemporalI002, datos, 0);
 
         }).then(function (resultado) {
-            console.log("datos.data.id_orden_pedido_origen", datos.data.id_orden_pedido_origen);
-            console.log("datos.data.id_orden_pedido_origen data", datos.data);
+         
             var parametros = {
                 usuario_id: datos.data.parametros.encabezado.usuario_id,
                 orden: datos.data.numero_orden,

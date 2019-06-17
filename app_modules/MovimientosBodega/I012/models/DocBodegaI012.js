@@ -1,3 +1,5 @@
+/* global G */
+
 var DocumentoBodegaI012 = function () {
 };
 
@@ -191,8 +193,8 @@ DocumentoBodegaI012.prototype.listarFacturas = function (parametros, callback) {
             .where('a.empresa_id', parametros.empresaId)
             .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
             .andWhere('a.tercero_id', parametros.documento)
-            .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"))
-            .andWhere(G.knex.raw("a.saldo > 0"));
+            .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"));
+//            .andWhere(G.knex.raw("a.saldo > 0"));
 
     query.union(function () {
         this.select(columnas2)
@@ -206,7 +208,7 @@ DocumentoBodegaI012.prototype.listarFacturas = function (parametros, callback) {
                 .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
                 .andWhere('a.tercero_id', parametros.documento)
                 .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"))
-                .andWhere(G.knex.raw("a.saldo > 0"))
+//                .andWhere(G.knex.raw("a.saldo > 0"))
                 .groupBy(G.knex.raw("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"))
                 .orderBy(G.knex.raw("2"));
     });
@@ -525,7 +527,7 @@ DocumentoBodegaI012.prototype.updatefacturaD = function (parametros, transaccion
 
 /**
  * @author German Galvis
- * +Descripcion actualiza el el costo total del documento de bodega
+ * +Descripcion actualiza el costo total del documento de bodega
  * @fecha 09/04/2018
  */
 DocumentoBodegaI012.prototype.updateCostoTotalDocumento = function (parametros, transaccion, callback) {
@@ -533,6 +535,52 @@ DocumentoBodegaI012.prototype.updateCostoTotalDocumento = function (parametros, 
             .where('prefijo', parametros.prefijoDocumento)
             .andWhere('numero', parametros.numeracionDocumento)
             .update('total_costo',parametros.valorTotalFactura);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion actualiza el saldo de la factura
+ * @fecha 12/06/2019
+ */
+DocumentoBodegaI012.prototype.updateSaldoFactura = function (parametros, transaccion, callback) {
+
+    var query = G.knex(parametros.tablaUpdate)
+            .where('prefijo', parametros.prefijo_doc_cliente)
+            .andWhere('factura_fiscal', parametros.numero_doc_cliente)
+            .andWhere('empresa_id', parametros.empresaId)
+            .update('saldo',0);
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        callback(err);
+    }).done();
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta el saldo de la factura
+ * @fecha 12/06/2019
+ */
+DocumentoBodegaI012.prototype.consultarSaldoFactura = function (parametros, transaccion, callback) {
+
+    var query = G.knex.select()
+            .from(parametros.tablaUpdate)
+            .where('prefijo', parametros.prefijo_doc_cliente)
+            .andWhere('factura_fiscal', parametros.numero_doc_cliente)
+            .andWhere('empresa_id', parametros.empresaId);
 
     if (transaccion)
         query.transacting(transaccion);

@@ -204,15 +204,15 @@ define(["angular",
                     disabled = false;
                 }
 
-                if (pedido.estado_actual_pedido === '5') {
+                if (pedido.estado_actual_pedido === '5' && pedido.cliente.id !== '830023202' && pedido.cliente.id !== '830080649') {
                     disabled = false;
                 }
 
-                if (pedido.estado_actual_pedido === '8') {
+                if (pedido.estado_actual_pedido === '8' && pedido.cliente.id !== '830023202' && pedido.cliente.id !== '830080649') {
                     disabled = false;
                 }
 
-                if (pedido.estado_actual_pedido === '9') {
+                if (pedido.estado_actual_pedido === '9' && pedido.cliente.id !== '830023202' && pedido.cliente.id !== '830080649') {
                     disabled = false;
                 }
                 

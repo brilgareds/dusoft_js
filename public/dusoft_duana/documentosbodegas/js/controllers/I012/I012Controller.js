@@ -632,7 +632,8 @@ define([
                             numero_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
                             doc_tmp_id: $scope.doc_tmp_id,
                             valor_total_factura: $scope.valorTotal,
-                            usuario_id: Usuario.getUsuarioActual().getId()
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            tipoDocumento: $scope.tipoDocumento
                         }
                     }
                 };

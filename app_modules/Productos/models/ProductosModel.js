@@ -393,7 +393,7 @@ ProductosModel.prototype.consultar_stock_producto_farmacia = function(empresa_id
     var sql = " select COALESCE(SUM(existencia::integer),0) as existencia from existencias_bodegas where \
                 codigo_producto = :1 and empresa_id = :2";
     
-   var query =  G.knex.raw(sql, {2 : 'FD', 1 : codigo_producto});
+   var query =  G.knex.raw(sql, {2 : empresa_id, 1 : codigo_producto});
     
    query.then(function(resultado){
        callback(false, resultado.rows);

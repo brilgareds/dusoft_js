@@ -3248,7 +3248,7 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function (pedido, produ
 
     var cantidadDespachar;
     var campoDespacho = "";
-    if (pedido.estadoSolicitud === '8') {
+    if (pedido.estadoSolicitud === '5' || pedido.estadoSolicitud === '8' || pedido.estadoSolicitud === '9') {
         cantidadDespachar = parseInt(producto.cantidadPendienteDespachar) + (producto.cantidad_inicial - producto.cantidadPendiente);
         campoDespacho = " numero_unidades = :2,";
 

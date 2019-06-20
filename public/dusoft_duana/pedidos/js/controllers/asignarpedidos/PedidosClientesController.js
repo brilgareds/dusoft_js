@@ -185,6 +185,7 @@ define(["angular",
                                             <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{opcionesModulo.btnCambiarEstadoPedidos}}" ng-click="modificar_estado_pedido_cliente(row.entity);"  >Cambiar Estado</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{opcionesModulo.btnCambiarEstadoPedidos}}" ng-click="desasignar_estado_pedido_cliente(row.entity);"  >Desasignar</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -365,6 +366,60 @@ define(["angular",
                             };
 
                             Request.realizarRequest(API.PEDIDOS.ELIMINAR_RESPONSABLE_CLIENTE, "POST", obj, function(data) {
+
+                                AlertService.mostrarMensaje("warning", data.msj);
+
+                                if (data.status === 200) {
+
+                                    $scope.pedido_seleccionado = null;
+                                    $scope.close();
+                                }
+                            });
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.desasignar_estado_pedido_cliente = function(row) {
+
+                $scope.pedido_seleccionado = row;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea DESASIGNAR el pedido #' + $scope.pedido_seleccionado.get_numero_pedido() + '?? </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="quitar_estado_pedido()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+
+                        $scope.quitar_estado_pedido = function() {
+
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_clientes: {
+                                        numero_pedido: $scope.pedido_seleccionado.get_numero_pedido()
+                                    }
+                                }
+                            };
+
+                            Request.realizarRequest(API.PEDIDOS.DESASIGNAR_PEDIDO_CLIENTE, "POST", obj, function(data) {
 
                                 AlertService.mostrarMensaje("warning", data.msj);
 

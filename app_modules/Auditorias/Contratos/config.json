@@ -1,0 +1,21 @@
+{
+    "module": "Contratos",
+    "dependency": {
+        "controllers": [{
+                "contratos_controller": {
+                    "module": "Auditorias/Contratos",
+                    "controller": "ContratosController",
+                    "alias": "c_contratos"
+                }
+            }],
+        "models": [{
+                "contratos_model": {
+                    "module": "Auditorias/Contratos",
+                    "model": "ContratosModel",
+                    "alias": "m_contratos"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

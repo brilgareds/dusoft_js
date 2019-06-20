@@ -65283,7 +65283,6 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                                 $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
                             } else {
                                 $scope.root.listarFacturas = null;
-
                             }
 
                         });
@@ -65309,7 +65308,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.saldo}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'saldo_old', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="row.entity.deshabilitarNotaCredito" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span>-->{{row.entity.saldo_old}}<--</button></div>'},
+                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="row.entity.deshabilitarNotaCredito" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "6%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
                     };
@@ -66720,14 +66719,12 @@ define('services/notasService',["angular", "js/services"], function (angular, se
                     };
 
                     const number_money = (price) => {
-                        console.log('Price init: ', price);
                         let newPrice = new Intl.NumberFormat("de-DE").format(price);
                         newPrice = '$ ' + newPrice
                             .replace(/(,)/g, "coma")
                             .replace(/(\.)/g, "punto")
                             .replace(/(coma)/g, ".")
                             .replace(/(punto)/g, ",");
-                        console.log('Price after: ', newPrice);
                         return newPrice;
                     };
 

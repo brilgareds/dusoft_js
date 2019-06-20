@@ -31,7 +31,11 @@ define(
                     };
                     $scope.root = {
                         init: {
-                            contractTypes: ['Cliente Especifico', 'Unidad de Negocio', 'Contrato Generico'],
+                            contractTypes: [
+                                { cod: 1, name: 'Cliente Especifico' },
+                                { cod: 2, name: 'Unidad de Negocio' },
+                                { cod: 3, name: 'Contrato Generico' }],
+                            docTypes: ['CC', 'NIT'],
                             checkbox: true
                         },
                         form: {
@@ -45,8 +49,18 @@ define(
                                 mode: false
                             },
                             newContract: {
-                                type: '-Seleccione un Tipo-',
-                                tipo_doc: ''
+                                type: { name: '-Seleccione uno-' },
+                                docType: 'NIT',
+                                checkInIva: true,
+                                facturacionAgrupada: true,
+                                sincronizar: false,
+                                generic: false,
+                                seller: {
+                                    nombre: '-Seleccione uno-'
+                                },
+                                businessUnit: {
+                                    name: '-Seleccione una-'
+                                }
                             }
                         },
                         data: {
@@ -56,14 +70,38 @@ define(
                             contracts: [],
                             contractProducts: [],
                             searchProducts: [{}]
+                        },
+                        permits: {
+                            crearContrato: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_crear_contrato
                         }
                     };
+                    $scope.listContracts();
+                    $scope.sellers();
+                    $scope.businessUnits();
                     // $scope.root.form.newContract.type = $scope.root.init.contractTypes[0];
                 };
-
                 $scope.updateContractType = (newType) => {
-                    console.log('NewType: ', newType);
                     $scope.root.form.newContract.type = newType;
+                    if (newType === '') { }
+                };
+                $scope.updateDocType = (newType) => { $scope.root.form.newContract.sellerDocType = newType; };
+                $scope.updateBusinessUnit = (newUnit) => { $scope.root.form.newContract.businessUnit = newUnit; };
+                $scope.updateSeller = (seller) => { $scope.root.form.newContract.seller = seller; };
+
+                $scope.abrirFechaInicial = function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.abrirfechainicial = true;
+                    $scope.abrirfechafinal = false;
+                };
+
+                $scope.abrirFechaFinal = function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.abrirfechafinal = true;
+                    $scope.abrirfechainicial = false;
                 };
 
                 /******* Format Functions ******/
@@ -101,6 +139,28 @@ define(
                         } else {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", data.msj);
                         }
+                    });
+                };
+
+                $scope.sellers = () => {
+                    const obj = {
+                        session: $scope.session,
+                        data: {}
+                    };
+                    $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.SELLERS, obj, data => {
+                        if (data.status === 200) { $scope.root.init.sellers = data.obj; }
+                        else { AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", data.msj); }
+                    });
+                };
+
+                $scope.businessUnits = () => {
+                    const obj = {
+                        session: $scope.session,
+                        data: {}
+                    };
+                    $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.BUSINESS_UNITS, obj, data => {
+                        if (data.status === 200) { $scope.root.init.businessUnits = data.obj; }
+                        else { AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", data.msj); }
                     });
                 };
 
@@ -344,6 +404,11 @@ define(
                     }
                 };
 
+                $scope.permitInvalid = (permisoNombre) => {
+                    console.log(`El usuario no tiene el permiso "${permisoNombre}"!!`);
+                    AlertService.mostrarMensaje('danger', 'No tiene permisos para realizar esa funcion!!');
+                };
+
                 /************************/
                 /*** GRIDS (GRILLAS) ***/
                 /**********************/
@@ -393,25 +458,156 @@ define(
                         { field: 'contrato_fecha_f', displayName: "Fecha Fin", width: "8%" },
                         { field: 'contrato_valor', displayName: "Valor", width: "10%" },
                         { field: 'contrato_vendedor', displayName: "Vendedor", width: "15%" },
-                        { field: 'contrato_descripcion', displayName: "Descripcion - Contrato", width: "17%" },
+                        { field: 'contrato_descripcion', displayName: "Descripcion - Contrato", width: "16%" },
                         { displayName: 'Mod.', width: "5%", cellTemplate: `
                             <div style="text-align: center;">
                                 <i ng-if='row.entity.check' ng-click="listContractProducts(row.entity, true)" class="glyphicon glyphicon-list-alt" style="color: #0c99d0; font-size: 20px;"></i>
                                 <i ng-if='!row.entity.check' class="glyphicon glyphicon-list-alt" style="cursor:initial; color: #a9a9a9; font-size: 20px;"></i>
                             </div>` },
-                        { displayName: 'Estado', width: "8%", cellTemplate: `
-                            <div class="switch1">
+                        { displayName: 'Estado', width: "9%", cellTemplate: `
+                            <div class="switch1" ng-if="root.permits.crearContrato">
                                 <input type="checkbox" ng-model='row.entity.check' ng-change="updateStatusContract(row.rowIndex, row.entity, row.entity.check)" ng-checked="{{row.entity.check}}" name="switch1" class="switch1-checkbox" id="{{row.entity.contrato_numero}}">
                                 <label class="switch1-label" for="{{row.entity.contrato_numero}}">
-                                <span class="switch1-inner"></span>
-                                <span class="switch1-switch"></span>
+                                    <span class="switch1-inner"></span>
+                                    <span class="switch1-switch"></span>
                                 </label>
-                            </div>` }
+                            </div>
+                            <div class="switch1" ng-if="!root.permits.crearContrato">
+                                <input type="checkbox" ng-model='row.entity.check' name="switch1" class="switch1-checkbox" id="{{row.entity.contrato_numero}}" disabled>
+                                <label class="switch1-label" for="{{row.entity.contrato_numero}}" ng-click="permitInvalid('sw_permiso_crear_contrato')">
+                                    <span class="switch1-inner"></span>
+                                    <span class="switch1-switch"></span>
+                                </label>
+                            </div>
+
+` }
                         // { field: 'contrato_op', displayName: "Op", width: "10%" },
                         // { field: 'contrato_prod', displayName: "Prod", width: "10%" },
                         // { field: 'contrato_est', displayName: "Est", width: "10%" }
                         // { displayName: 'Crear', width: "5%", cellTemplate: '<div style="text-align: center;"><i ng-click="crearNotaTemporal(row.entity)" class="fa fa-plus-circle fa-2x" aria-hidden="true" style="color: #0c99d0;"></i></div>' }
                     ]
+                };
+
+                const validCreateContract = obj => {
+                    let error = {count: 0, msg: 'Formato incorrecto en los campos:\n'};
+
+                    $scope.root.form.newContract.sellerDocType = $scope.root.form.newContract.seller.sellerDocType;
+                    $scope.root.form.newContract.sellerDocNum = $scope.root.form.newContract.seller.sellerDocNum;
+                    $scope.root.form.newContract.businessUnitCod = $scope.root.form.newContract.businessUnit.codigo_unidad_negocio;
+
+                    if (!$scope.root.form.newContract.type.cod) {
+                        error.count++; error.msg += '"Tipo Contrato", ';
+                    }
+                    if ($scope.root.form.newContract.type.cod === 1 && !$scope.root.form.newContract.docType) {
+                        error.count++; error.msg += '"Tipo Documento Cliente", ';
+                    }
+                    if ($scope.root.form.newContract.type.cod === 1 && !$scope.root.form.newContract.docNum) {
+                        error.count++; error.msg += '"Numero Documento Cliente", ';
+                    }
+                    if ($scope.root.form.newContract.type.cod === 2 && !obj.businessUnit.codigo_unidad_negocio && obj.businessUnit.codigo_unidad_negocio !== 0) {
+                        error.count++; error.msg += '"Unidad de Negocio", ';
+                    }
+                    if (!obj.description) {
+                        error.count++; error.msg += '"Descripción", ';
+                    }
+                    if (!obj.dateInit) {
+                        error.count++; error.msg += '"Fecha Inicial", ';
+                    }
+                    if (!obj.dateExpired) {
+                        error.count++; error.msg += '"Fecha Vencimiento", ';
+                    }
+                    if (!obj.terms) {
+                        error.count++; error.msg += '"Condiciones", ';
+                    }
+                    if (!obj.observations) {
+                        error.count++; error.msg += '"Observaciones", ';
+                    }
+                    if (!obj.percGeneric) {
+                        error.count++; error.msg += '"Porcentaje Generico", ';
+                    }
+                    if (!obj.percBrand) {
+                        error.count++; error.msg += '"Porcentaje Marca", ';
+                    }
+                    if (!obj.percSupplies) {
+                        error.count++; error.msg += '"Porcentaje Insumos", ';
+                    }
+                    if (!obj.value) {
+                        error.count++; error.msg += '"Valor Contrato", ';
+                    }
+                    if (!obj.seller.sellerDocType || !obj.seller.sellerDocNum) {
+                        error.count++; error.msg += '"Vendedor", ';
+                    }
+                    error.msg = error.msg.substring(0, error.msg.length - 2);
+
+                    return error;
+                };
+
+                $scope.searchThird = () => {
+                    console.log('Helloo!! Is my!!');
+                    if ($scope.root.form.newContract.docNum) {
+                        const obj = {
+                            session: $scope.session,
+                            data: {
+                                docType: $scope.root.form.newContract.docType,
+                                docNum: $scope.root.form.newContract.docNum
+                            }
+                        };
+
+                        $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.SEARCH_THIRD, obj, data => {
+                            if (data.status === 200) {
+                                $scope.root.form.newContract.name = data.obj.nombre_tercero;
+                                $scope.root.form.newContract.address = data.obj.direccion;
+                                $scope.root.form.newContract.phone = data.obj.telefono;
+                                $scope.root.form.newContract.email = data.obj.email;
+
+                                console.log('The Third parties is: ', data.obj);
+                            } else { console.log(data.obj); AlertService.mostrarMensaje('danger', data.msj); }
+                        });
+                    }
+                };
+
+                $scope.createContract = () => {
+                    let error = validCreateContract($scope.root.form.newContract);
+
+                    if (error.count > 0) {
+                        AlertService.mostrarMensaje('danger', error.msg);
+                        return false;
+                    } else {
+                        $scope.root.form.newContract.generic = ($scope.root.form.newContract.type === 'Contrato Generico');
+                        $scope.root.form.newContract.sellerDocType = $scope.root.form.newContract.seller.sellerDocType;
+                        $scope.root.form.newContract.sellerDocNum = $scope.root.form.newContract.seller.sellerDocNum;
+                        $scope.root.form.newContract.businessUnitCod = $scope.root.form.newContract.businessUnit.codigo_unidad_negocio;
+                        $scope.root.form.newContract.typeCod = $scope.root.form.newContract.type.cod;
+
+                        let obj = {
+                            session: $scope.session,
+                            data: {
+                                contract: $scope.root.form.newContract
+                            }
+                        };
+
+                        $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.CREATE_CONTRACT, obj, data => {
+                            if (data.status === 200) {
+                                AlertService.mostrarMensaje('success', data.msj);
+                                $scope.root.form.searchContract = {
+                                    generic: false,
+                                    numberContract: '',
+                                    businessUnit: '',
+                                    thirdPartyNames: ''
+                                };
+
+                                if ($scope.root.form.newContract.type.cod === 1) {
+                                    $scope.root.form.searchContract.thirdPartyNames = $scope.root.form.newContract.name;
+                                } else if ($scope.root.form.newContract.type.cod === 2) {
+                                    $scope.root.form.searchContract.businessUnit = $scope.root.form.newContract.businessUnit.descripcion;
+                                } else if ($scope.root.form.newContract.type.cod === 3) {
+                                    $scope.root.form.searchContract.generic = true;
+                                }
+                                $scope.listContracts();
+                            }
+                            else { console.log('Error:', data.obj); AlertService.mostrarMensaje('warning', data.msj); }
+                        });
+                    }
                 };
 
                 $scope.updatePrice = (Contract, Product) => {

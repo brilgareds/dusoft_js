@@ -80,11 +80,16 @@
     opacity:1
 }
 
-.switch1, .switch2 {
+.switch1, .switch2, .switch3 {
     position: relative;
-    width: 100px;
+    width: 93px;
     margin: 3px auto;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+@media (min-width: 1400px) {
+    .switch1, .switch2, .switch3 {
+        width: 100px;
+    }
 }
 .switch2 {
     width: 160px;
@@ -100,21 +105,21 @@
     border: 2px solid #999999; border-radius: 30px;
 }
 
-.switch1-inner, .switch2-inner {
+.switch1-inner, .switch2-inner, .switch3-inner {
     display: block; width: 200%; margin-left: -100%;
     -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
     -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
     right: 0px;
 }
 
-.switch1-inner:before, .switch1-inner:after, .switch2-inner:before, .switch2-inner:after {
+.switch1-inner:before, .switch1-inner:after, .switch2-inner:before, .switch2-inner:after, .switch3-inner:before, .switch3-inner:after {
     display: block;
     float: left;
     width: 50%;
     height: 20px;
     line-height: 20px;
     padding: 0;
-    font-size: 14px;
+    font-size: 13px;
     color: white;
     font-family: Trebuchet, Arial, sans-serif;
     font-weight: bold;
@@ -122,25 +127,38 @@
     border-radius: 30px;
     box-shadow: 0px 15px 0px rgba(0,0,0,0.08) inset;
 }
-.switch2-inner:before, .switch2-inner:after {
+.switch3-inner:before, .switch3-inner:after {
+    height: 23px;
+    line-height: 23px;
+}
+
+
+@media (min-width: 1400px) {
+    .switch1-inner:before, .switch1-inner:after, .switch2-inner:before, .switch2-inner:after, .switch3-inner:before, .switch3-inner:after {
+        font-size: 14px;
+    }
+}
+
+.switch2-inner:before, .switch2-inner:after, .switch3-inner:after {
     height: 30px;
     line-height: 30px;
 }
 
-.switch1-inner:before {
+.switch1-inner:before, switch3-inner:before {
+    text-align: left;
     content: "Activo";
     padding-left: 10px;
     background-color: #5493ca; color: #FFFFFF;
     border-radius: 30px 0 0 30px;
 }
 .switch2-inner:before {
-    content: 'Texto Plano';
+    content: 'Archivo Plano';
     padding-left: 10px;
     background-color: #337ab7; color: #FFFFFF;
     border-radius: 30px 0 0 30px;
 }
 
-.switch1-inner:after, .switch2-inner:after {
+.switch1-inner:after, .switch2-inner:after, .switch3-inner:after {
     content: 'Inactivo';
     padding-right: 10px;
     background-color: #EEEEEE;
@@ -154,10 +172,10 @@
     color: #FFF;
 }
 
-.switch1-switch, .switch2-switch {
+.switch1-switch, .switch2-switch, .switch3-switch {
     display: block; width: 30px; margin: 0px;
     border: 2px solid #999999; border-radius: 30px;
-    position: absolute; top: 0; bottom: 0; right: 70px;
+    position: absolute; top: 0; bottom: 0; right: 63px;
     -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
     -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
     background: #FFFFFF;
@@ -168,11 +186,17 @@
     right: 130px;
 }
 
-.switch1-checkbox:checked + .switch1-label .switch1-inner, .switch1-checkbox:checked + .switch1-label .switch2-inner {
+@media (min-width: 1400px) {
+    .switch1-switch, .switch3-switch {
+        right: 70px;
+    }
+}
+
+.switch1-checkbox:checked + .switch1-label .switch1-inner, .switch1-checkbox:checked + .switch1-label .switch2-inner, .switch3-checkbox:checked + .switch3-label .switch3-inner  {
     margin-left: 0;
 }
 
-.switch1-checkbox:checked + .switch1-label .switch1-switch, .switch1-checkbox:checked + .switch1-label .switch2-switch {
+.switch1-checkbox:checked + .switch1-label .switch1-switch, .switch1-checkbox:checked + .switch1-label .switch2-switch, .switch3-checkbox:checked + .switch3-label .switch3-switch {
     right: 0px;
 }
 

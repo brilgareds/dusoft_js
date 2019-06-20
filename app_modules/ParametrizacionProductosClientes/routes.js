@@ -26,4 +26,16 @@ module.exports = function(app, di_container) {
     app.post(base + '/parametrizacionProductosClientes/updateProductContract', (req, res) => {
         c_parametrizacionProductosClientes.updateProductContract(req, res);
     });
+    app.post(base + '/parametrizacionProductosClientes/createContract', (req, res) => {
+        c_parametrizacionProductosClientes.createContract(req, res);
+    });
+    app.post(base + '/parametrizacionProductosClientes/sellers', (req, res) => {
+        c_parametrizacionProductosClientes.sellers(req, res);
+    });
+    app.post(base + '/parametrizacionProductosClientes/businessUnits', (req, res) => {
+        c_parametrizacionProductosClientes.businessUnits(req, res);
+    });
+    app.post(base + '/parametrizacionProductosClientes/searchThird', (req, res) => {
+        c_parametrizacionProductosClientes.searchThird(req, res);
+    });
 };

@@ -285,11 +285,99 @@ ParametrizacionProductosClientes.prototype.deleteProductContract = (req, res) =>
         }).then(response => {
             res.send(G.utils.r(req.url, `El producto '${args.productoId}' fue eliminado del contrato #${args.contratoId}`, 200, response));
         }).catch(err => {
-            if (err.msg === undefined) {
-                err.msg = 'Hubo un error!';
-            }
+            if (err.msg === undefined) { err.msg = 'Hubo un error!'; }
             console.log('err: ', err);
             res.send(G.utils.r(req.url, err.msg, 500, err));
+        });
+};
+
+const now = (oldDate='') => {
+    let date = {};
+
+    if (oldDate) { date = new Date(oldDate); }
+    else { date = new Date(); }
+
+    const dateNow = String(('0' + date.getDate()).slice(-2)
+        + '-'
+        + ('0' + (date.getMonth() + 1)).slice(-2)
+        + '-' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2)
+        + ':' + ('0' + date.getMinutes()).slice(-2)
+        + ':' + ('0' + date.getSeconds()).slice(-2));
+    return dateNow;
+};
+
+ParametrizacionProductosClientes.prototype.sellers = (req, res) => {
+    console.log('In controller "sellers"');
+
+    promesa
+        .then(response => {
+            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'sellers', {});
+        }).then(response => {
+            res.send(G.utils.r(req.url, 'Listando vendedores', 200, response));
+        }).catch(err => {
+            if (!err.msg) { err.msg = 'Hubo un error al buscar vendedores!' }
+            if (!err.status) { err.status = 500; }
+
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
+        });
+};
+
+ParametrizacionProductosClientes.prototype.searchThird = (req, res) => {
+    console.log('In controller "searchThird"');
+
+    let params = req.body.data;
+    params.empresa_id = req.body.session.empresaId;
+
+    promesa
+        .then(response => {
+            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'searchThird', params);
+        }).then(response => {
+
+            res.send(G.utils.r(req.url, 'Listando terceros', 200, response));
+        }).catch(err => {
+           if (err.msg === undefined) { err.msg = 'Error al listar terceros'; }
+           if (err.status === undefined) { err.status = 500; }
+
+           res.send(G.utils.r(req.url, err.msg, err.status, err));
+        });
+};
+
+ParametrizacionProductosClientes.prototype.businessUnits = (req, res) => {
+    console.log('In controller "businessUnits"');
+    let params = req.body.data;
+
+    promesa
+        .then(response => {
+            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'businessUnits', params);
+        }).then(response => {
+            res.send(G.utils.r(req.url, 'Listando las unidades de negocio', 200, response));
+        }).catch(err => {
+            if (err.msg === undefined) { err.msg = 'Error interno en "businessUnits"'; }
+            if (err.status === undefined) { err.status = 500; }
+            console.log('Error: ', err);
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
+        });
+};
+
+ParametrizacionProductosClientes.prototype.createContract = (req, res) => {
+    console.log('In controller "createContract"');
+    let params = req.body.data.contract;
+    params.userId = req.body.session.usuario_id;
+    params.empresaId = req.body.session.empresaId;
+    params.dateNow = now();
+    params.dateInit = now(params.dateInit);
+    params.dateExpired = now(params.dateExpired);
+
+    promesa
+        .then(response => {
+            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'createContract', params);
+        }).then(response => {
+            res.send(G.utils.r(req.url, 'Contrato creado con exito!', 200, response));
+        }).catch(err => {
+            if (err.status === undefined) { err.status = 500; }
+            if (err.msg === undefined) { err.msg = 'Hubo un error!'; }
+            console.log('Err: ', err);
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
         });
 };
 

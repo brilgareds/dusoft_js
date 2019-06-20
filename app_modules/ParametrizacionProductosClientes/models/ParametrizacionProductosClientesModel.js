@@ -35,22 +35,24 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                     'a.valor_contrato as contrato_valor',
                     'a.saldo',
                     'a.estado',
-                    G.knex.raw(`CASE\n
-                        WHEN a.contrato_generico = '1'\n
-                            THEN 'CONTRATO GENERICO'\n
-                        WHEN a.tipo_id_tercero IS NOT NULL\n
-                            THEN a.tipo_id_tercero||'-'||a.tercero_id||' ' ||c.nombre_tercero\n
-                        WHEN a.codigo_unidad_negocio IS NOT NULL\n
-                            THEN d.codigo_unidad_negocio||' - '||d.descripcion\n
-                        END as contrato_tipo`),
-                    G.knex.raw(`CASE\n
-                        WHEN a.contrato_generico = '1'\n
-                            THEN '3'\n
-                        WHEN a.tipo_id_tercero IS NOT NULL\n
-                            THEN '1'\n
-                        WHEN a.codigo_unidad_negocio IS NOT NULL\n
-                            THEN '2'\n
-                        END as tipo_contrato`)
+                    G.knex.raw(`
+                        CASE
+                            WHEN a.contrato_generico = '1'
+                                THEN 'CONTRATO GENERICO'
+                            WHEN a.tipo_id_tercero IS NOT NULL
+                                THEN a.tipo_id_tercero||'-'||a.tercero_id||' ' ||c.nombre_tercero
+                            WHEN a.codigo_unidad_negocio IS NOT NULL
+                                THEN d.codigo_unidad_negocio||' - '||d.descripcion
+                            END as contrato_tipo`),
+                    G.knex.raw(`
+                        CASE
+                            WHEN a.contrato_generico = '1'
+                                THEN '3'
+                            WHEN a.tipo_id_tercero IS NOT NULL
+                                THEN '1'
+                            WHEN a.codigo_unidad_negocio IS NOT NULL
+                                THEN '2'
+                            END as tipo_contrato`)
                 ])
                 .from('vnts_contratos_clientes as a')
                 .leftJoin('terceros_clientes as b', function () {
@@ -81,9 +83,8 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                 .orderBy('a.contrato_cliente_id')
                 .limit(limit)
                 .offset(offset);
-            console.log('filtros: ', filtros);
-            console.log('Query: ', G.sqlformatter.format(query.toString()));
 
+                console.log('Query is: ', G.sqlformatter.format(query.toString()));
             return query;
         }).then(contratos => {
             if (contratos.length > 0) {
@@ -95,6 +96,216 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
             callback(false, contratos);
         }).catch(err => {
             if (err.msg === undefined) { err.msg = 'Error en consulta "listContracts"'; }
+            callback(err);
+        });
+};
+
+const validCreateContract = obj => {
+    let error = { count: 0, msg: 'Formato incorrecto en los campos:\n' };
+    let response = {};
+
+    if (!obj.typeCod)       { error.count++; error.msg += '"typeCod", '; }
+    if (!obj.empresaId)     { error.count++; error.msg += '"empresaId", '; }
+    if (!obj.description)   { error.count++; error.msg += '"description", '; }
+    if (!obj.dateInit)      { error.count++; error.msg += '"dateInit", '; }
+    if (!obj.dateExpired)   { error.count++; error.msg += '"dateExpired", '; }
+    if (!obj.terms)         { error.count++; error.msg += '"terms", '; }
+    if (!obj.observations)  { error.count++; error.msg += '"observations", '; }
+    if (!obj.percGeneric)   { error.count++; error.msg += '"percGeneric", '; }
+    if (!obj.percBrand)     { error.count++; error.msg += '"percBrand", '; }
+    if (!obj.percSupplies)  { error.count++; error.msg += '"percSupplies", '; }
+    if (!obj.value)         { error.count++; error.msg += '"value", '; }
+    if (!obj.userId)        { error.count++; error.msg += '"userId", '; }
+    if (!obj.sellerDocType) { error.count++; error.msg += '"sellerDocType", '; }
+    if (!obj.sellerDocNum)  { error.count++; error.msg += '"sellerDocNum", '; }
+    if (!obj.dateNow)       { error.count++; error.msg += '"dateNow", '; }
+    if (!obj.typeCod)       { error.count++; error.msg += '"type", '; }
+    if (obj.typeCod === 1 && !obj.docType) { error.count++; error.msg += '"docType", '; }
+    if (obj.typeCod === 1 && !obj.docNum) { error.count++; error.msg += '"docNum", '; }
+    if (obj.typeCod === 2 && !obj.businessUnitCod && obj.businessUnitCod !== 0)  { error.count++; error.msg += '"businessUnitCod", '; }
+    error.msg = error.msg.substring(0, error.msg.length-2);
+
+    if (error.count > 0) { response.error = error; }
+    else {
+        obj.sw_sync = (!obj.sw_sync) ? '0':'1';
+        obj.sw_autorizacion = (!obj.sw_autorizacion) ? '0':'1';
+        obj.sw_bundled_billing = (!obj.sw_bundled_billing) ? '0':'1';
+        obj.checkInIva = (!obj.checkInIva) ? '0':'1';
+
+        response = obj;
+    }
+    return response;
+};
+
+ParametrizacionProductosClientesModel.prototype.sellers = (obj, callback) => {
+    console.log('In controller "sellers"');
+
+    promesa
+        .then(respoinse => {
+            const query = G.knex.column([
+                G.knex.raw('upper(a.nombre) as nombre'),
+                'a.tipo_id_vendedor as sellerDocType',
+                'a.vendedor_id as sellerDocNum',
+                'a.telefono'])
+                .from('vnts_vendedores as a')
+                .where('a.estado', '1');
+            return query;
+        }).then(response => {
+            callback(false, response);
+        }).catch(err => {
+            if (!err.msg) err.msg = 'No se encontraron vendedores disponibles!';
+            callback(err);
+        });
+};
+
+ParametrizacionProductosClientesModel.prototype.searchThird = (obj, callback) => {
+    console.log('In model "searchThird"');
+    let limit = 1;
+    let offset = 0;
+    obj.docNum = obj.docNum ? obj.docNum:'';
+    obj.docType = obj.docType ? obj.docType:'';
+
+    promesa
+        .then(response => {
+
+            let query = G.knex.column([
+                'a.tipo_id_tercero',
+                'a.tercero_id',
+                'a.direccion',
+                'a.telefono',
+                'a.email',
+                'a.nombre_tercero',
+                'a.tipo_bloqueo_id',
+                'c.descripcion as bloqueo',
+                'g.pais',
+                'f.departamento',
+                'municipio'])
+                .from('terceros as a')
+                .innerJoin('terceros_clientes as b', function () {
+                    this.on('a.tipo_id_tercero', 'b.tipo_id_tercero')
+                        .on('a.tercero_id', 'b.tercero_id')})
+                .leftJoin('inv_tipos_bloqueos as c', 'a.tipo_bloqueo_id', 'c.tipo_bloqueo_id')
+                .leftJoin('tipo_mpios as d', function () {
+                    this.on('a.tipo_pais_id', 'd.tipo_pais_id')
+                        .on('a.tipo_dpto_id', 'd.tipo_dpto_id')
+                        .on('a.tipo_mpio_id', 'd.tipo_mpio_id')})
+                .leftJoin('tipo_dptos as f', function () {
+                    this.on('d.tipo_pais_id', 'f.tipo_pais_id')
+                        .on('d.tipo_dpto_id', 'f.tipo_dpto_id')})
+                .leftJoin('tipo_pais as g', 'f.tipo_pais_id', 'g.tipo_pais_id')
+                .where('b.empresa_id', obj.empresa_id)
+                .andWhere('a.tipo_id_tercero', obj.docType)
+                .andWhere('a.tercero_id', obj.docNum)
+                .groupBy([
+                    'a.tipo_id_tercero',
+                    'a.tercero_id',
+                    'a.direccion',
+                    'a.telefono',
+                    'a.email',
+                    'a.nombre_tercero',
+                    'a.tipo_bloqueo_id',
+                    'c.descripcion',
+                    'g.pais',
+                    'f.departamento',
+                    'municipio'])
+                .orderBy('a.nombre_tercero')
+                .limit(limit)
+                .offset(offset);
+            // console.log('Query is: ', G.sqlformatter.format(query.toString()));
+
+            return query;
+        }).then(response => {
+            if (response.length > 0) {
+                response[0].direccion = response[0].direccion.replace(/s+/g, ' ');
+                callback(false, response[0]);
+            } else { throw { msg: 'No se encontro el tercero!!' }; }
+        }).catch(err => {
+            if (!err.msg) { err.msg = 'No fue posible encontrar terceros!'; }
+            callback(err);
+        });
+};
+
+ParametrizacionProductosClientesModel.prototype.createContract = (obj, callback) => {
+    console.log('In model "createContract"');
+    console.log('obj: ', obj);
+
+    promesa
+        .then(response => {
+            obj = validCreateContract(obj);
+            if (!obj.error) {
+                let fields = {
+                    empresa_id: obj.empresaId,
+                    descripcion: obj.description,
+                    fecha_inicio: obj.dateInit,
+                    fecha_final: obj.dateExpired,
+                    condiciones_cliente: obj.terms,
+                    observaciones: obj.observations,
+                    porcentaje_genericos: obj.percGeneric,
+                    porcentaje_marcas: obj.percBrand,
+                    porcentajes_insumos: obj.percSupplies,
+                    valor_contrato: obj.value,
+                    saldo: obj.value,
+                    usuario_id: obj.userId,
+                    tipo_id_vendedor: obj.sellerDocType,
+                    vendedor_id: obj.sellerDocNum,
+                    facturar_iva: obj.checkInIva,
+                    sw_sincroniza: obj.sw_sync,
+                    sw_autorizacion: obj.sw_autorizacion,
+                    sw_facturacion_agrupada: obj.sw_bundled_billing,
+                    fecha_registro: obj.dateNow,
+                    estado: '0'
+                };
+                if (obj.typeCod === 1) { fields.tipo_id_tercero = obj.docType; fields.tercero_id = obj.docNum; }
+                else if (obj.typeCod === 2) { fields.codigo_unidad_negocio = obj.businessUnitCod; }
+                else if (obj.typeCod === 3) { fields.contrato_generico = '1'; }
+
+                let query = G.knex('vnts_contratos_clientes').insert(fields);
+
+                return query;
+            } else {
+                let err = { msg : 'Campos invalidos para crear contrato!!' };
+                if (obj.error.msg) { err.msg = obj.error.msg; }
+                throw err;
+            }
+        }).then(response => {
+            callback(false, response);
+        }).catch(err => {
+            if (obj.typeCod === 1) {
+                err.msg = `No fue posible crear contrato con empresa "${obj.empresaId}" y tercero "${obj.docType} - ${obj.docNum}"!!`;
+            }
+            if (err.msg === undefined) { err.msg = 'Error al crear nuevo contrato!'; }
+            callback(err);
+        });
+};
+
+ParametrizacionProductosClientesModel.prototype.businessUnits = (obj, callback) => {
+    console.log('In model "businessUnit"');
+
+    promesa
+        .then(response => {
+            let filtro = 'true';
+            if (obj.codigo_unidad_negocio) { filtro = `a.codigo_unidad_negocio = '${obj.codigo_unidad_negocio}'`; }
+
+            let query = G.knex('unidades_negocio AS a')
+                .column([
+                    'a.codigo_unidad_negocio',
+                    G.knex.raw('upper(a.descripcion) as descripcion'),
+                    'a.empresa_id'])
+                .where('a.estado', '1')
+                .andWhere(G.knex.raw(filtro))
+                .orderBy('codigo_unidad_negocio');
+
+            return query;
+        }).then(units => {
+            if (units.length > 0) {
+                for (let unit of units) {
+                    unit.name = unit.codigo_unidad_negocio + ' - ' + unit.descripcion;
+                }
+
+            }
+            callback(false, units);
+        }).catch(err => {
+            if (err.msg === undefined) { err.msg = 'Error al listar las unidades de negocio!'; }
             callback(err);
         });
 };

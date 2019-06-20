@@ -177,7 +177,7 @@ ProductosModel.prototype.subeCosto_InsertInvBodAjusPrice = function(obj, callbac
 };
 
 ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
-   var sql = " select a.*, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
+   var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
     
    G.knex.raw(sql, {1:codigo_producto}).
    then(function(resultado){
@@ -192,7 +192,7 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
 // 
 ProductosModel.prototype.validar_producto_inventario = function(obj, callback) {
 
-   const sql = "select a. * from inventarios a where a.codigo_producto = :1 and a.empresa_id = :2";
+    var sql = " select a. * from inventarios a where a.codigo_producto = :1 and a.empresa_id = :2";
     
    G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id})
        .then(resultado => {

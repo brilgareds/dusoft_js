@@ -52,8 +52,10 @@
 <br>
 <div class="row">
     <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">
+
         <div flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
             <div class="drop txt-center" flow-drop="" ng-class="dropClass" >
+
                 <div class="col-md-12">
                     <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                     <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
@@ -71,7 +73,9 @@
                         <span class="sr-only ng-binding">{{root.progresoArchivo}}% Completado</span>
                     </div>
                 </div>
-            </div><br>
+            </div>
+
+            <br>
 
             <div class="well txt-center">
                 <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length" ng-disabled="validacion_buscar_productos() || Pedido.get_numero_pedido() > 0">

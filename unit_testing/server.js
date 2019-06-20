@@ -79,7 +79,7 @@ if (program.port)
 
 if (program.config) {
     G.settings.outputConfig();
-    return;
+//    return;
 }
 ;
 

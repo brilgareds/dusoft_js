@@ -322,7 +322,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-    console.time('loop');
+
     args.data.bodegas.forEach(function (item) {
         item.remitente = args.data.remitente;  //guardarControlRotacion   0     
         item.remitentes = args.data.remitentes;
@@ -331,6 +331,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
         item.swEstadoCorreo = '0';
         item.logError = '';
         item.fechaToday = fechaToday;
+        item.nombreBodega = item.nombreBodega.replace("(Enviado)","");
 
         __rotacionesBodegas(that, item, function (data) {
 
@@ -345,7 +346,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
                     var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
                     __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
                 }
-                console.timeEnd('loop');
+
             }
         });
 
@@ -392,7 +393,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             item.fechaToday = fechaToday;
 
             __rotacionesBodegas(that, item,function (data) {
-                console.log("data:::",data);
+
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
                         var subject = "Error al Generar Rotacion (ver detalles) " + fechaToday;
@@ -421,10 +422,10 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
 function __rotacionesBodegas(that, bodega, callback) {
     
     if(bodega.empresa!=='03' && bodega.empresa!=='FD'){   
-        console.log("Medipol");
+
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
-        G.Q.nfcall(__InsertarMedipol,that,2,bodega).then(function (respuesta) {
-            return  G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega);
+        G.Q.nfcall(__InsertarMedipol,that,2,bodega,[]).then(function (respuesta) {
+            return  G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega,respuesta);
         
         }).then(function (result) {
             callback(result);
@@ -435,7 +436,7 @@ function __rotacionesBodegas(that, bodega, callback) {
         });
     }else{
         
-        G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega).then(function (respuesta) {
+        G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega,[]).then(function (respuesta) {
             callback(respuesta);
         }).fail(function (err) {
            callback(err);
@@ -445,7 +446,7 @@ function __rotacionesBodegas(that, bodega, callback) {
     }
 }
     
-function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {    
+function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callback) {
     var name;
     var archivoName;
     var today = new Date();
@@ -465,8 +466,10 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         //that.io.sockets.emit('onNotificarRotacion', notificacion);  
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
         
-        if(bodega.bodega!=='03'){
-            console.time('consultarRotacion');
+        if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
+            return productosLista;
+        }else if(bodega.bodega!=='03'){
+
             return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
         }else{
             console.log("rotacionFarmaciasDuana ",bodega.bodega);
@@ -474,7 +477,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         }
 
     }).then(function (respuesta) {
-           console.timeEnd('consultarRotacion');
+
         if (respuesta.length > 0) {
 
             listarPlanes = respuesta;
@@ -496,15 +499,15 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         farmacias=respuesta;
    
         if(bodega.bodega!=='03'){
-            var complemento = "MAGISTERIO";
+            var complemento = "MAGISTERIO_";
             var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){        
              complemento="";
              ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
-            archivoName = complemento+"_"+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";       
-            console.time('organizaRotacion');
+            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
+
             return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
@@ -513,21 +516,21 @@ function __rotacionesBodegasGeneracionExcel(that, bodega, callback) {
         }
         
     }).then(function (resultados) {
-   console.timeEnd('organizaRotacion');
+
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
         resultados.empresa = bodega.empresa;
        
         if(bodega.bodega!=='03'){
-            console.time('__creaExcel');
+
             return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
         }else{
             return G.Q.nfcall(__creaExcelFarmacias, resultados,farmacias);
         }
 
     }).then(function (resultados) {
-console.timeEnd('__creaExcel');
+
         bodega.swEstadoCorreo = 2;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
@@ -555,11 +558,11 @@ console.timeEnd('__creaExcel');
 
         var nombre_archivo = archivoName;
         var message = "Rotacion Dr. DUARTE";
-console.time('__enviar_correo_electronico');
+
         return G.Q.nfcall(__enviar_correo_electronico, that, to, ruta_archivo, nombre_archivo, subject, message);
 
     }).then(function (resultados) {
-        console.timeEnd('__enviar_correo_electronico');
+
         bodega.swEstadoCorreo = 3;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
@@ -597,6 +600,8 @@ console.time('__enviar_correo_electronico');
 }
 
 function __rotacionesBodegasMovil(that, bodega, res,callback) {
+    console.log("__rotacionesBodegasMovil");
+    console.log("__rotacionesBodegasMovil",bodega);
     var name;
     var archivoName;
     var today = new Date();
@@ -642,7 +647,7 @@ throw {msj:"Error"};return;
         
          farmacias=respuesta;
         if(bodega.bodega!=='03'){
-            var complemento = "MAGISTERIO - ";
+            var complemento = "MAGISTERIO_";
             var ordenPor = {orden: 'molecula', asc:'asc'};
             if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
              complemento="";
@@ -731,16 +736,14 @@ throw {msj:"Error"};return;
  * @param {type} callback
  * @returns {void} 
  */
-function __InsertarMedipol(that,dias,bodega,callback){
+function __InsertarMedipol(that,dias,bodega,dato,callback){
     
     if(dias === 1){
-       callback(false,true);
+       callback(false,dato);
        return true; 
     }
-//    console.log("Dia :",dias);
-//    var formFecha = G.moment().subtract(dias, 'days');//G.moment().format();
+
     var control = G.moment().format('DD/MM/YYYY');
-//    var fecha = formFecha.format('YYYY-MM-DD');
     var lengthDataWS = -1;
     
     var data ={
@@ -748,26 +751,20 @@ function __InsertarMedipol(that,dias,bodega,callback){
        empresa : bodega.empresa, 
        centroUtilidad : bodega.centroUtilidad, 
        control : control,
-       fechaToday: bodega.fechaToday
+       fechaToday: bodega.fechaToday,
+       nombreBodega : bodega.nombreBodega
     };
-    console.time('webservice');
-    
+
     G.Q.nfcall(__wsMedipol,data).then(function(result){
-        console.timeEnd('webservice');
-      console.log("Medipol length",result.resultado.length); 
+
      lengthDataWS = result.resultado.length;
-     console.time('save_table');
-     return G.Q.nfcall(__InsertarProductosMedipol,that,data,result.resultado ,0);
+
+     return G.Q.nfcall(__InsertarProductosMedipol,that,data,result.resultado ,0,[]);
     
     }).then(function(datos){
-        console.timeEnd('save_table');
-        console.log("Inserto"); 
-       if(datos !== lengthDataWS){
-           console.log("Diferencia en el ws y lo que se inserto en db",datos,lengthDataWS);
-           console.log("Diferencia en el ws y lo que se inserto en db");
-       }
+
      dias--;
-     __InsertarMedipol(that,dias,bodega,callback);
+     __InsertarMedipol(that,dias,bodega,datos,callback);
      return;
     
     }).fail(function(err){
@@ -782,50 +779,54 @@ function __InsertarMedipol(that,dias,bodega,callback){
  * @param {type} callback
  * @returns {void} 
  */
-function __InsertarProductosMedipol(that,data,productos,index,callback){
+function __InsertarProductosMedipol(that,data,productos,index,productoLista,callback){
     var producto = productos[index];
 
     if(!producto){
         console.log("sale");
-        callback(false,index);//-1
+        console.log("sale",data);
+        callback(false,productoLista);//-1
         return;
     }
     
     producto = producto.split("@");
 
     if(!(producto[11] === 0  && producto[14] === 0  && producto[13] === 0)){    
-
+        if (producto[6].search("LABORATORIO") !== -1) {
+            producto[6] = producto[6].replace(/LABORATORIO /g, "");
+            if (producto[6].search("LABORATORIOS") !== -1) {
+                producto[6] = producto[6].replace(/LABORATORIOS /g, "");
+            }
+        }
         var parametros = { 
-                empresa_id : data.empresa,
-                bodega : data.codigo_farmacia,
-                nom_bodega : data.nombreBodega,
-                codigo_producto : producto[1],
-                producto : producto[2],
-                laboratorio : producto[6],
-                molecula : producto[4],
-                cantidad_total_despachada : producto[11],
-                existencia_farmacia : producto[14],
-                existencia_bd : producto[13],
-                mes : '2',
-                fecha : data.fechaToday,
-                centro_utilidad : data.centroUtilidad,
-                nivel : '0',
-                tipo_producto : 'Normales'
-        };
+                    codigo_producto : producto[1],
+                    producto : producto[2],
+                    nom_bode : data.nombreBodega,
+                    existencia : parseInt(producto[14]),
+                    mes : '2',
+                    existencia_bd : parseInt(producto[13]),
+                    laboratorio : producto[6],
+                    molecula : producto[4],
+                    sum : parseInt(producto[11]),
+                    nivel : '0',
+                    tipo_producto : 'Normales'
+                };
+           if(!(producto[11] == '0'  && producto[14] =='0'  && producto[13] == '0'))
+           productoLista.push(parametros);
 
-        G.Q.ninvoke(that.m_drArias,"insertRotacionMedipol",parametros).then(function(result){ 
-
+            var time = setTimeout(function () {
             index++;
-            __InsertarProductosMedipol(that,data,productos,index,callback);
+             __InsertarProductosMedipol(that,data,productos,index,productoLista,callback);
+            clearTimeout(time);
+            }, 0);
 
-        }).fail(function(err){
-                console.log("Error __InsertarProctosMedipol", producto);
-                console.log("Error __InsertarProctosMedipol", err);
-                return true;
-        });
     }else{
-        index++;
-        __InsertarProductosMedipol(that,data,productos,index,callback);
+
+        var time = setTimeout(function () {
+            index++;
+             __InsertarProductosMedipol(that,data,productos,index,productoLista,callback);
+            clearTimeout(time);
+        }, 0);
     }
 }
 

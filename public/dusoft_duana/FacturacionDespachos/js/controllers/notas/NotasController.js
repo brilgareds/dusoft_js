@@ -1204,9 +1204,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         notasService.listarFacturas(obj, function (data) {
 
                             if (data.status === 200) {
+
                                 $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
+
                             } else {
                                 $scope.root.listarFacturas = null;
+
                             }
 
                         });

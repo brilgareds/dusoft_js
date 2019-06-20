@@ -284,6 +284,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             scope: $scope,
                             controller: ['$scope', '$modalInstance', 'API', 'facturacionClientesService', function ($scope, $modalInstance, API, facturacionClientesService) {
 
+
                                     $scope.opciones_archivo = new Flow();
                                     $scope.opciones_archivo.target = API.FACTURACIONCLIENTES.SUBIR_ARCHIVO;
                                     $scope.opciones_archivo.testChunks = false;

@@ -1,3 +1,5 @@
+/* global G */
+
 var Sincronizacion = function (m_sincronizacion, m_clientes) {
 
     this.m_sincronizacion = m_sincronizacion;

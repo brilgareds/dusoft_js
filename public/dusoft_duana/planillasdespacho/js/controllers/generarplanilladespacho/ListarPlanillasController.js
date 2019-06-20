@@ -37,6 +37,20 @@ define(["angular", "js/controllers",
                 datepicker_fecha_final: false
             };
 
+            $scope.filtros = [
+                {nombre: "Global", id: 1},
+                {nombre: "Nro Documento", id: 2}
+
+            ];
+            $scope.filtro = $scope.filtros[0];
+
+            $scope.onSeleccionFiltro = function (filtro) {
+
+                $scope.filtro = filtro;
+                $scope.datos_view.termino_busqueda = '';
+
+            };
+
             // Variable para paginacion
             $scope.paginas = 0;
             $scope.cantidad_items = 0;
@@ -53,7 +67,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.buscar_planillas_despacho = function () {
-
+                var url = API.PLANILLAS.LISTAR_PLANILLAS;
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -65,7 +79,10 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.PLANILLAS.LISTAR_PLANILLAS, "POST", obj, function (data) {
+                if ($scope.filtro.id === 2) {
+                    url = API.PLANILLAS.LISTAR_PLANILLAS_DOC;
+                }
+                Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
                         that.render_planillas(data.obj.planillas_despachos);

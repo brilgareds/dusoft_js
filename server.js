@@ -140,7 +140,7 @@ if (G.program.port)
 
 if (G.program.config) {
     G.settings.outputConfig();
-    return;
+//    return;
 }
 
 /*=========================================

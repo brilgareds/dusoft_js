@@ -1772,7 +1772,7 @@ PedidosCliente.prototype.listarCotizaciones = function (req, res) {
             pagina_actual,
             estadoCotizacion,
             filtros, bodega, function (err, lista_cotizaciones) {
-
+console.log("Error ",err);
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));
                     return;

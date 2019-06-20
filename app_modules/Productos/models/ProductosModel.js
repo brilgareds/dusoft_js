@@ -194,12 +194,23 @@ ProductosModel.prototype.validar_producto_inventario = function(obj, callback) {
 
     var sql = " select a. * from inventarios a where a.codigo_producto = :1 and a.empresa_id = :2";
     
-   G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id}).
-   then(function(resultado){
-       callback(false, resultado.rows);
-   }).catch(function(err){
-       callback(err);
-   });
+   G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id})
+       .then(resultado => {
+           callback(false, resultado.rows);
+       }).catch(err => {
+           callback(err);
+       });
+};
+
+ProductosModel.prototype.validar_producto_inventario2 = function(obj, callback) {
+    const sql = "select *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios as a inner join inventarios_productos as b on a.codigo_producto = b.codigo_producto where a.codigo_producto = :1 and a.empresa_id = :2";
+
+    G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id})
+        .then(resultado => {
+            callback(false, resultado.rows);
+        }).catch(err => {
+        callback(err);
+    });
 };
 
 // Autor:      : Camilo Orozco 
@@ -379,6 +390,26 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, bodega_
    query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
+       callback(err);
+   });
+};
+
+// Autor:      : Andres -Mauricio Gonzalez
+// Descripcion : Consultar stock producto en farmacias
+// Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
+//               PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+
+ProductosModel.prototype.consultar_stock_producto_farmacia = function(empresa_id,codigo_producto,callback) {
+  
+    var sql = " select COALESCE(SUM(existencia::integer),0) as existencia from existencias_bodegas where \
+                codigo_producto = :1 and empresa_id = :2";
+    
+   var query =  G.knex.raw(sql, {2 : empresa_id, 1 : codigo_producto});
+    
+   query.then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       console.log("consultar_stock_producto_farmacia :",err);
        callback(err);
    });
 };

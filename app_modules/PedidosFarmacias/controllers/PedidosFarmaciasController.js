@@ -832,12 +832,12 @@ PedidosFarmacias.prototype.buscarProductos = function(req, res) {
         var productosOrderBy;
         productosOrderBy=productos.sort(dynamicMultiSort(['codigo_producto'], ['bodega']));           
         if (i === 0) {
-            res.send(G.utils.r(req.url, 'Lista de productos vacÃ­a', 200, {lista_productos: []}));
+            res.send(G.utils.r(req.url, 'Lista de productos vacia', 200, {lista_productos: []}));
             return;
         }
         
         productosOrderBy.forEach(function(producto) {
-            __consultarStockProducto(that, empresa_destino_id, bodega_destino_id, producto, function(err, _producto) {
+            __consultarStockProductoFarmacia(that, empresa_destino_id, bodega_destino_id, producto, function(err, _producto) {
 
                 producto = _producto;
 
@@ -3426,14 +3426,26 @@ function _generarDocumentoPedido(obj, callback) {
     });
 }
 ;
-
-
 /*
  * @Author: Eduar
  * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
  */
 function __consultarStockProducto(that, empresa_destino_id, bodega_destino_id,producto, callback) {
     that.m_productos.consultar_stock_producto(empresa_destino_id, bodega_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacias) {
+
+        producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
+        producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;
+
+        callback(err, producto);
+    });
+}
+
+/*
+ * @Author: Eduar
+ * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
+ */
+function __consultarStockProductoFarmacia(that, empresa_destino_id, bodega_destino_id,producto, callback) {
+    that.m_productos.consultar_stock_producto_farmacia(empresa_destino_id, producto.codigo_producto, function(err, total_existencias_farmacias) {
 
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
         producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;

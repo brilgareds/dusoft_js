@@ -40,6 +40,11 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/eliminarResponsablesPedido', function(req, res) {
         c_pedidos_clientes.eliminarResponsablesPedido(req, res);
     });
+    
+    // Desasignar el pedido
+    app.post('/api/PedidosClientes/desasignarPedidoCliente', function(req, res) {
+        c_pedidos_clientes.desasignarPedidoCliente(req, res);
+    });
 
     // Seleccionar los pedidos de un operario de bodega
     app.post('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {

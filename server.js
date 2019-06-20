@@ -29,6 +29,7 @@ if(process.argv.indexOf("cacheKey") !== -1){
  * Variables Globales
  * =========================================*/
 G = {};
+G.ip = require('ip');
 G.dirname = __dirname;
 G.settings = require('./lib/Settings').create();
 G.log = require('log4js');

@@ -11,7 +11,7 @@ var NotasProveedores = function (m_notasProveedores) {
 /************************************/
 
 NotasProveedores.prototype.TiposDoc = (req, res) => {
-    console.log('In controller "TiposDoc"');
+  
 
     G.Q.ninvoke(that.m_notasProveedores, 'TiposDoc', {})
         .then(resultado => {
@@ -23,7 +23,7 @@ NotasProveedores.prototype.TiposDoc = (req, res) => {
 };
 
 NotasProveedores.prototype.listarNotasProveedor = (req, res) => {
-    console.log('In controller "listarNotasProveedores"');
+   
     let parametros = req.body.data;
     parametros.empresaId = req.body.session.empresaId;
 
@@ -36,7 +36,7 @@ NotasProveedores.prototype.listarNotasProveedor = (req, res) => {
 };
 
 NotasProveedores.prototype.conceptosEspecificos = (req, res) => {
-    console.log('In controller "conceptosEspecificos"');
+
     let obj = req.body.data;
 
     G.Q.ninvoke(that.m_notasProveedores, 'conceptosEspecificos', obj)
@@ -67,7 +67,7 @@ NotasProveedores.prototype.agregarDetalleTemporal = (req, res) => {
 };
 
 NotasProveedores.prototype.eliminarProductoTemporal = (req, res) => {
-    console.log('In controller "eliminarProductoTemporal"');
+  
     let parametros = req.body.data;
 
     G.Q.ninvoke(that.m_notasProveedores, 'eliminarProductoTemporal', parametros)
@@ -80,7 +80,7 @@ NotasProveedores.prototype.eliminarProductoTemporal = (req, res) => {
 };
 
 NotasProveedores.prototype.crearNotaTemporal = (req, res) => {
-    console.log('In controller "temporalDetalle"');
+  
     let parametros = req.body.data;
     var data = {temporal: {}, factura: {}};
     parametros.empresaId = req.body.session.empresaId;
@@ -135,7 +135,7 @@ NotasProveedores.prototype.crearNotaTemporal = (req, res) => {
 };
 
 NotasProveedores.prototype.crearNota = (req, res) => {
-    console.log('In controller "crearNota"');
+ 
     let parametros = req.body.data;
     let parametrosNota = parametros.parametrosNota;
     let temporal = parametros.temporal;
@@ -189,7 +189,7 @@ NotasProveedores.prototype.crearNota = (req, res) => {
 };
 
 NotasProveedores.prototype.listarRetencionesAnuales = (req, res) => {
-    console.log('In controller "listarRetencionesAnuales"');
+  
     let parametros = req.body.data;
     let retenciones = {};
 
@@ -205,7 +205,7 @@ NotasProveedores.prototype.listarRetencionesAnuales = (req, res) => {
 const promesa = new Promise((resolve, reject) => { resolve(true); });
 
 NotasProveedores.prototype.imprimirNota = (req, res) => {
-    console.log('In controller "imprimirNota"');
+   
     let session = req.body.session;
     let parametros = req.body.data;
     parametros.rows.totalReteFuente = 0;
@@ -376,7 +376,7 @@ NotasProveedores.prototype.imprimirNota = (req, res) => {
 };
 
 NotasProveedores.prototype.verNotasFactura = function(req, res){
-    console.log('In controller "verNotasFactura"');
+  
     let notas = {
         encabezado: {},
         tipos: {

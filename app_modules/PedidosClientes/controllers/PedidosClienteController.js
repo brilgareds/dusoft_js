@@ -617,6 +617,52 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
     });
 };
 
+PedidosCliente.prototype.desasignarPedidoCliente = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacio', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    var parametros = {
+        numero_pedido: numero_pedido,
+        estado_pedido: '0',
+        usuario: usuarioId,
+        estadoEntrega: '1'
+    };
+    
+    G.knex.transaction(function (transaccion) {
+
+        parametros.transaccion = transaccion;
+        G.Q.ninvoke(that.m_pedidos_clientes, 'insertarResponsablesPedidos', parametros).then(function (resultado) {
+
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoActualPedidoCliente', parametros);
+
+        }).then(function (resul) {
+            parametros.transaccion.commit(resul);
+        }).fail(function (err) {
+            parametros.transaccion.rollback(err);
+        }).done();
+    }).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Pedido desasignado Correctamente', 200, {}));
+    }).catch(function (err) {
+        console.log("desasignarPedidoCliente  ", err);
+        res.send(G.utils.r(req.url, 'Error al desasignar el pedido', 500, {}));
+    }).done();
+};
+
 /**
  * @api {post} /api/PedidosClientes/listaPedidosOperarioBodega Listar Pedidos Operarios
  * @apiName listaPedidosOperarioBodega
@@ -4059,7 +4105,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
          *               estado (Estado del Pedido ) 1
          *               estado_pedido (Estado de solicitud ) 0
          */
-        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
+        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '5' || resultado[0].estado_pedido === '8' || resultado[0].estado_pedido === '9')) {
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
 
         } else {
@@ -5348,9 +5394,11 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
         if (precioVenta.valido) {
 
             if (precioVenta.valor > 0) {
-                producto.precioVentaIva = precioVenta.valor;
-                producto.precio_venta = precioVenta.valor;
+                producto.precioVentaIva = precioVenta.valor / (1 + (producto.iva / 100));
+                producto.precio_venta = precioVenta.valor / (1 + (producto.iva / 100));
+                producto.costo_ultima_compra = producto.costo_ultima_compra / (1 + (producto.iva / 100));
             }
+
             productos_validos.push(producto);
         } else {
 

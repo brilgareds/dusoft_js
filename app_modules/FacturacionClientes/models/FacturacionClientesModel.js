@@ -542,7 +542,6 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
     }
     return consulta;
 }
-;
 
 /**
  * @author Cristian Ardila
@@ -623,9 +622,8 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
 //    console.log(G.sqlformatter.format(query.toString()));
-    query.then(function (resultado) {
-
-        callback(false, resultado)
+    query.then(function (facturas) {
+        callback(false, facturas)
     }).catch(function (err) {
         console.log("err [listarFacturasGeneradas] ", err);
         callback({err: err, msj: "Error al consultar la lista de las facturas generadas"});

@@ -322,7 +322,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
     var today = new Date();
     var formato = 'DD-MM-YYYY hh:mm:ss a';
     var fechaToday = G.moment(today).format(formato);
-    
+
     args.data.bodegas.forEach(function (item) {
         item.remitente = args.data.remitente;  //guardarControlRotacion   0     
         item.remitentes = args.data.remitentes;
@@ -346,7 +346,7 @@ Reportes.prototype.generarRotaciones = function (req, res) {
                     var message = "Rotacion Dr. DUARTE <br><br>" + enviado + "<br> Error:  " + JSON.stringify(data) + " <br><br> Parametros: " + JSON.stringify(item);
                     __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, function () {});
                 }
-           
+
             }
         });
 
@@ -393,7 +393,7 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
             item.fechaToday = fechaToday;
 
             __rotacionesBodegas(that, item,function (data) {
-               
+
                 if (data.estado !== 200) {
                     if (item.remitente === '1') {
                         var subject = "Error al Generar Rotacion (ver detalles) " + fechaToday;
@@ -421,8 +421,8 @@ Reportes.prototype.generarRotacionesMovil = function (req, res) {
 
 function __rotacionesBodegas(that, bodega, callback) {
     
-    if(bodega.empresa!=='03' && bodega.empresa!=='FD'){   
-       
+    if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
+
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,bodega);
         G.Q.nfcall(__InsertarMedipol,that,2,bodega,[]).then(function (respuesta) {
             return  G.Q.nfcall(__rotacionesBodegasGeneracionExcel,that, bodega,respuesta);
@@ -445,8 +445,8 @@ function __rotacionesBodegas(that, bodega, callback) {
         });        
     }
 }
-    
-function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callback) {    
+
+function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callback) {
     var name;
     var archivoName;
     var today = new Date();
@@ -469,7 +469,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         if(bodega.empresa!=='03' && bodega.empresa!=='FD'){
             return productosLista;
         }else if(bodega.bodega!=='03'){
-      
+
             return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);//normal
         }else{
             console.log("rotacionFarmaciasDuana ",bodega.bodega);
@@ -477,7 +477,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         }
 
     }).then(function (respuesta) {
-           
+
         if (respuesta.length > 0) {
 
             listarPlanes = respuesta;
@@ -507,7 +507,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
             }
             name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
             archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";       
-        
+
             return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, []);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
@@ -516,14 +516,14 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         }
         
     }).then(function (resultados) {
-  
+
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
         resultados.empresa = bodega.empresa;
        
         if(bodega.bodega!=='03'){
-            
+
             return G.Q.nfcall(__creaExcel, resultados);//rotaciones normales
         }else{
             return G.Q.nfcall(__creaExcelFarmacias, resultados,farmacias);
@@ -562,7 +562,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
         return G.Q.nfcall(__enviar_correo_electronico, that, to, ruta_archivo, nombre_archivo, subject, message);
 
     }).then(function (resultados) {
-        
+
         bodega.swEstadoCorreo = 3;
         that.e_dr_arias.onNotificarRotacion(bodega.usuarioId, bodega);
         return G.Q.ninvoke(that.m_drArias, 'editarControlRotacion', bodega);
@@ -762,7 +762,7 @@ function __InsertarMedipol(that,dias,bodega,dato,callback){
      return G.Q.nfcall(__InsertarProductosMedipol,that,data,result.resultado ,0,[]);
     
     }).then(function(datos){
-     
+
      dias--;
      __InsertarMedipol(that,dias,bodega,datos,callback);
      return;
@@ -812,7 +812,7 @@ function __InsertarProductosMedipol(that,data,productos,index,productoLista,call
                     tipo_producto : 'Normales'
                 };
            if(!(producto[11] == '0'  && producto[14] =='0'  && producto[13] == '0'))    
-           productoLista.push(parametros);     
+           productoLista.push(parametros);
 
             var time = setTimeout(function () {
             index++;
@@ -821,7 +821,7 @@ function __InsertarProductosMedipol(that,data,productos,index,productoLista,call
             }, 0);
 
     }else{
-      
+
         var time = setTimeout(function () {
             index++;
              __InsertarProductosMedipol(that,data,productos,index,productoLista,callback);

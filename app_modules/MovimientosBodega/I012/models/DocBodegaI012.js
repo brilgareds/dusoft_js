@@ -192,7 +192,7 @@ DocumentoBodegaI012.prototype.listarFacturas = function (parametros, callback) {
             })
             .where('a.empresa_id', parametros.empresaId)
             .andWhere('a.tipo_id_tercero', parametros.tipo_documento)
-            .andWhere('a.tercero_id', parametros.documento)301206.
+            .andWhere('a.tercero_id', parametros.documento)
             .andWhere(G.knex.raw("(\"c\".\"cantidad\" <> \"c\".\"cantidad_devuelta\")"));
 //            .andWhere(G.knex.raw("a.saldo > 0"));
 

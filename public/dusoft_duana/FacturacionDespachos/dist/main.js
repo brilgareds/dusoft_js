@@ -59374,6 +59374,7 @@ define('controllers/facturacionCliente/FacturacionConsumoBarranquillaController'
                             scope: $scope,
                             controller: ['$scope', '$modalInstance', 'API', 'facturacionClientesService', function ($scope, $modalInstance, API, facturacionClientesService) {
 
+
                                     $scope.opciones_archivo = new Flow();
                                     $scope.opciones_archivo.target = API.FACTURACIONCLIENTES.SUBIR_ARCHIVO;
                                     $scope.opciones_archivo.testChunks = false;
@@ -65280,9 +65281,12 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                         notasService.listarFacturas(obj, function (data) {
 
                             if (data.status === 200) {
+
                                 $scope.root.listarFacturas = notasService.renderFacturas(data.obj.listarFacturas);
+
                             } else {
                                 $scope.root.listarFacturas = null;
+
                             }
 
                         });

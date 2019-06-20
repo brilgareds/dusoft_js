@@ -4050,7 +4050,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
          *               estado (Estado del Pedido ) 1
          *               estado_pedido (Estado de solicitud ) 0
          */
-        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
+        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '5' || resultado[0].estado_pedido === '8' || resultado[0].estado_pedido === '9')) {
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
 
         } else {
@@ -5339,9 +5339,11 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
         if (precioVenta.valido) {
 
             if (precioVenta.valor > 0) {
-                producto.precioVentaIva = precioVenta.valor;
-                producto.precio_venta = precioVenta.valor;
+                producto.precioVentaIva = precioVenta.valor/(1+(producto.iva/100));
+                producto.precio_venta = precioVenta.valor/(1+(producto.iva/100));
+                producto.costo_ultima_compra = producto.costo_ultima_compra/(1+(producto.iva/100));
             }
+       
             productos_validos.push(producto);
         } else {
 

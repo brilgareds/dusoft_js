@@ -51,4 +51,8 @@ module.exports = function(app, di_container) {
     app.post('/api/Reportes/DrArias/eliminarUsuarioAsociado', function(req, res) {
         c_Reportes.eliminarUsuarioAsociado(req, res);
     });
+    
+    app.post('/api/Reportes/DrArias/listarTotalizadosBodegas', function(req, res) {
+        c_Reportes.listarTotalizadosBodegas(req, res);
+    });
 };

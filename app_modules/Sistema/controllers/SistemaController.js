@@ -86,7 +86,7 @@ const limpiarRespuesta = (lineas) => {
 };
 
 Sistema.prototype.querysActiveInDb = (req, res) => {
-    console.log('In controller "querysActiveInDb"');
+
     let parametros = req.body.data;
     let funcion = parametros.action;
     let modulo = parametros.modulo;

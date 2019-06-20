@@ -952,7 +952,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'getNombreBodega()', displayName: 'Bodega', width: "10%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
-                                       <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 8" \n\
+                                       <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 5 || Pedido.getEstadoSolicitud() == 8 || Pedido.getEstadoSolicitud() == 9" \n\
                                         ng-model="row.entity.cantidad_solicitada" \n\
                                         validacion-numero-entero \n\
                                         ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"\
@@ -960,7 +960,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                   name="" id="" /> </div>'},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad pendiente", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
-                                       <input type="text" ng-disabled="Pedido.getEstadoSolicitud() != 8 || validaEdicion(row.entity)" \n\
+                                       <input type="text" ng-disabled="(Pedido.getEstadoSolicitud() != 5 && Pedido.getEstadoSolicitud() != 8 && Pedido.getEstadoSolicitud() != 9) || validaEdicion(row.entity)" \n\
                                         ng-model="row.entity.cantidadPendienteDespachar" \n\
                                         validacion-numero-entero \
                                         ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"\

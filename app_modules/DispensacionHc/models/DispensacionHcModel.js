@@ -2260,6 +2260,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
 
             G.Q.ninvoke(that,'consultarPendientesFormula',parametros.evolucion).then(function(resultado){  
                 console.log("consultarPendientesFormula->>>",resultado);
+                console.log("consultarPendientesFormula resultado.length->>>",resultado.length);
                 if(resultado.rows.length > 0){
                     totalInsertadosPendientes = 1;
                 }

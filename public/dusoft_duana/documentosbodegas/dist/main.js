@@ -70472,7 +70472,8 @@ define('controllers/I012/I012Controller',[
                             numero_doc_cliente: $scope.documento_ingreso.getFacturaDevolucion().factura_fiscal,
                             doc_tmp_id: $scope.doc_tmp_id,
                             valor_total_factura: $scope.valorTotal,
-                            usuario_id: Usuario.getUsuarioActual().getId()
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            tipoDocumento: $scope.tipoDocumento
                         }
                     }
                 };
@@ -73438,7 +73439,8 @@ define('services/I012/I012Service',["angular", "js/services"], function (angular
                                 numero_doc_cliente: objs.data.ingreso.numero_doc_cliente,
                                 docTmpId: objs.data.ingreso.doc_tmp_id,
                                 valorTotalFactura: objs.data.ingreso.valor_total_factura,
-                                usuario_id: objs.data.ingreso.usuario_id
+                                usuario_id: objs.data.ingreso.usuario_id,
+                                tipoDocumento: objs.data.ingreso.tipoDocumento
                             }
                         };
                         Request.realizarRequest(API.I012.CREAR_DOCUMENTO, "POST", obj, function (data) {

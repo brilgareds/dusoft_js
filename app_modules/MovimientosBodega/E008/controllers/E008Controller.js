@@ -46,7 +46,7 @@ function __documentoTemporalClientes(req, that, callback) {
 
     var args = req.body.data;
     var send = {};
-    console.log("documentoTemporalClientes:::", args);
+  
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.tipo_tercero_id === undefined || args.documento_temporal.tercero_id === undefined || args.documento_temporal.observacion === undefined) {
 //        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         send.msj = 'Algunos Datos Obligatorios Estan Vacíos';
@@ -423,7 +423,7 @@ function __detalleDocumentoTemporalConValidacionCantidadIngresada(req, that, cal
 //    var that = this;
     var send = {};
     var args = req.body.data;
-    console.log("detalleDocumentoTemporalConValidacionCantidadIngresada", args);
+    
 
     var validacion = __validarParametrosDetalleTemporal(args);
     if (!validacion.valido) {

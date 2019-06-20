@@ -1197,7 +1197,7 @@ FacturacionClientes.prototype.subirArchivo = function (req, res) {
     var args = req.body.data;
     // data
     if (args.data === undefined) {
-        res.send(G.utils.r(req.url, 'la data No Esta Definida', 404, {}));
+        res.send(G.utils.r(req.url, 'la data  No Esta Definida', 404, {}));
         return;
     }
     // nombre

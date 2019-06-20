@@ -119,6 +119,7 @@ define(["angular"], function (angular) {
                 'LISTAR_PEDIDOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidos', //depreciado  se debe confirmar hay redundancia?????
                 'ASIGNAR_RESPONSABLE_CLIENTE': BASE_URL + '/PedidosClientes/asignarResponsable',
                 'ELIMINAR_RESPONSABLE_CLIENTE': BASE_URL + '/PedidosClientes/eliminarResponsablesPedido',
+                'DESASIGNAR_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/desasignarPedidoCliente',
                 'ASIGNAR_RESPONSABLE_FARMACIA': BASE_URL + '/PedidosFarmacias/asignarResponsable',
                 'ELIMIAR_RESPONSABLE_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarResponsablesPedido',
                 'LISTAR_EMPRESAS': BASE_URL + '/PedidosFarmacias/obtenerEmpresas',

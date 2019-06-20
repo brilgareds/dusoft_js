@@ -1295,7 +1295,6 @@ PedidosClienteModel.prototype.insertarResponsablesPedidos = function (obj, callb
     var query = G.knex("ventas_ordenes_pedidos_estado").
             returning("venta_orden_pedido_estado_id").
             insert({pedido_cliente_id: obj.numero_pedido, estado: obj.estado_pedido, responsable_id: obj.responsable, fecha: 'now()', usuario_id: obj.usuario,sw_terminado:obj.sw_terminado});
-    console.log(G.sqlformatter.format(query.toString()));
         if (obj.transaccion)
         query.transacting(obj.transaccion);
         query.then(function (resultado) {

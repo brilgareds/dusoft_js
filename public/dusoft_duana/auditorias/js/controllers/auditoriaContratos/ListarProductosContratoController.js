@@ -80,9 +80,11 @@ define(["angular", "js/controllers",
 
                 $scope.datos_view.listado_productos = [];
                 productos.forEach(function (data) {
-                    var producto = ProductoContrato.get(data.contrato_cliente_id, data.empresa_id, data.nombre_tercero, data.codigo_producto, data.descripcion,
+                    var producto = ProductoContrato.get(data.contrato_cliente_id, data.empresa_id, data.nombre_tercero, data.codigo_producto, data.tipo_producto_id, data.descripcion,
                             parseFloat(data.precio_pactado).toFixed(2), data.nombre, data.usuario_id, parseFloat(data.costo_sin_iva).toFixed(2), parseFloat(data.deficit).toFixed(2)
                             , data.justificacion);
+                            producto.set_regulado(data.sw_regulado);
+                            producto.set_precio_regulado(data.precio_regulado);
                     $scope.datos_view.listado_productos.push(producto);
                 });
             };
@@ -95,10 +97,32 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_nombre_tercero()', displayName: 'Cliente', width: "17%"},
-                    {field: 'get_codigo()', displayName: 'Codigo Producto', width: "8%"},
-                    {field: 'get_descripcion()', displayName: 'Descripcion', width: "32%"},
-                    {field: 'get_precio_pactado()', displayName: 'Precio Pactado', width: "7%"},
-                    {field: 'get_costo_ultima_compra()', displayName: "Costo Sin IVA", width: "8%"},
+                    {field: 'get_codigo()', displayName: 'Codigo Producto', width: "8%",
+                    cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.get_tipo_producto() == 2">A</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 3">C</span>\
+                                                <span class="label label-warning" ng-show="row.entity.get_tipo_producto() == 4">I</span>\
+                                                <span class="label label-default" ng-show="row.entity.get_tipo_producto() == 5">Ne</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 8">Nu</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 9">Ge</span>\
+                                                <span ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
+                                            </div>'},
+                    {field: 'get_descripcion()', displayName: 'Descripcion', width: "25%"},
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "7%", cellFilter: "currency:'$ '",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                           <span ng-if="row.entity.es_regulado()" class="label label-danger" >R</span>\
+                                           <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
+                                       </div>'},
+                    {field: 'get_precio_pactado()', displayName: 'Precio Pactado', width: "7%", cellFilter: "currency:'$ '",
+                    cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                           <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
+                                       </div>'},
+                    {field: 'get_costo_ultima_compra()', displayName: "Costo Sin IVA", width: "8%",
+                    cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                           <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
+                                       </div>'},
                     {field: 'get_deficit()', displayName: "Deficit", width: "6%"},
                     {field: 'get_justificacion()', displayName: "Justificacion", width: "9%"},
                     {field: 'get_usuario()', displayName: "Usuario", width: "15%"}

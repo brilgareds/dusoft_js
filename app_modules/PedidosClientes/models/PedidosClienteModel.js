@@ -2553,7 +2553,6 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).orderBy("a.fecha_registro", "desc").as("a");
 
-
     var queryPrincipal = G.knex.column([
         "a.*",
         "h.pedido_cliente_id as numero_pedido",
@@ -2642,13 +2641,13 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
             });
 
     queryPrincipal
-            .then(resultado => {
-                callback(false, resultado);
-            }).catch(err => {
-        console.log(G.sqlformatter.format(queryPrincipal.toString()));
-        console.log("err:::: [listar_cotizaciones]: ", err);
-        callback(err);
-    });
+        .then(resultado => {
+            callback(false, resultado);
+        }).catch(err => {
+            console.log(G.sqlformatter.format(queryPrincipal.toString()));
+            console.log("err:::: [listar_cotizaciones]: ", err);
+            callback(err);
+        });
 };
 
 /*

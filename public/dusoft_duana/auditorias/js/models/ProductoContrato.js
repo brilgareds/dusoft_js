@@ -2,11 +2,14 @@ define(["angular", "js/models"], function (angular, models) {
 
     models.factory('ProductoContrato', [function () {
 
-            function ProductoContrato(id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion) {
+            function ProductoContrato(id, empresa_id, nombre_tercero, codigo, tipo_producto, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion) {
                 this.id = id || 0;
                 this.empresa_id = empresa_id;
                 this.nombre_tercero = nombre_tercero;
                 this.codigo = codigo;
+                this.tipo_producto = tipo_producto;
+                this.precio_regulado = 0;
+                this.tipo_producto = tipo_producto;
                 this.descripcion = descripcion;
                 this.precio_pactado = precio_pactado;
                 this.usuario = usuario;
@@ -17,8 +20,8 @@ define(["angular", "js/models"], function (angular, models) {
                 this.seleccionado = false;
             }
 
-            this.get = function (id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion) {
-                return new ProductoContrato(id, empresa_id, nombre_tercero, codigo, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion);
+            this.get = function (id, empresa_id, nombre_tercero, codigo, tipo_producto, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion) {
+                return new ProductoContrato(id, empresa_id, nombre_tercero, codigo, tipo_producto, descripcion, precio_pactado, usuario, usuario_id, costo_ultima_compra, deficit, justificacion);
             };
 
             ProductoContrato.prototype.set_empresa_id = function (empresa_id) {
@@ -51,6 +54,33 @@ define(["angular", "js/models"], function (angular, models) {
 
             ProductoContrato.prototype.get_codigo = function () {
                 return this.codigo;
+            };
+
+            ProductoContrato.prototype.set_tipo_producto = function (tipo_producto) {
+                this.tipo_producto = tipo_producto;
+            };
+
+            ProductoContrato.prototype.get_tipo_producto = function () {
+                return this.tipo_producto;
+            };
+
+            // Precio Regulado
+            ProductoContrato.prototype.set_regulado = function (sw_regulado) {
+                this.sw_regulado = sw_regulado;
+                return this;
+            };
+
+            ProductoContrato.prototype.set_precio_regulado = function (precio_regulado) {
+                this.precio_regulado = precio_regulado;
+                return this;
+            };
+
+            ProductoContrato.prototype.es_regulado = function () {
+                return (this.sw_regulado === '0') ? false : true;
+            };
+
+            ProductoContrato.prototype.get_precio_regulado = function () {
+                return this.precio_regulado;
             };
 
             ProductoContrato.prototype.set_justificacion = function (justificacion) {

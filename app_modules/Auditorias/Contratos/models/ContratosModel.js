@@ -16,6 +16,7 @@ AuditoriaContratos.prototype.listarProductosContrato = function (parametros, cal
         "a.empresa_id",
         "d.nombre_tercero",
         "b.contrato_cliente_id",
+        "f.tipo_producto_id",
         "b.codigo_producto",
         G.knex.raw("fc_descripcion_producto(b.codigo_producto) as descripcion"),
         "b.precio_pactado",
@@ -24,6 +25,8 @@ AuditoriaContratos.prototype.listarProductosContrato = function (parametros, cal
         "e.nombre",
         "c.costo",
         "c.costo_ultima_compra",
+        "c.precio_regulado",
+        "f.sw_regulado",
         G.knex.raw("(c.costo_ultima_compra)/((COALESCE(f.porc_iva,0)/100)+1) as costo_sin_iva"),
         G.knex.raw("( b.precio_pactado - (c.costo_ultima_compra)/((COALESCE(f.porc_iva,0)/100)+1)) AS deficit")
     ];

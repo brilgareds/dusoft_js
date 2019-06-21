@@ -24,8 +24,8 @@ AuditoriaContratos.prototype.listarProductosContrato = function (parametros, cal
         "e.nombre",
         "c.costo",
         "c.costo_ultima_compra",
-        G.knex.raw("(c.costo_ultima_compra-(c.costo_ultima_compra * (f.porc_iva /100) )) as costo_sin_iva"),
-        G.knex.raw("( b.precio_pactado - (c.costo_ultima_compra-(c.costo_ultima_compra * (f.porc_iva /100) ))) AS deficit")
+        G.knex.raw("(c.costo_ultima_compra)/((COALESCE(f.porc_iva,0)/100)+1) as costo_sin_iva"),
+        G.knex.raw("( b.precio_pactado - (c.costo_ultima_compra)/((COALESCE(f.porc_iva,0)/100)+1)) AS deficit")
     ];
 
     var query = G.knex.select(columnas)

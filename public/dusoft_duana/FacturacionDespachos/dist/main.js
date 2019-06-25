@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -64303,6 +64303,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                     $scope.sincronizarFI = function (data) {
 
                         that.sincronizarFI(data, function (resultado) {
+                            console.log('En sincronizacion!!!');
                         });
                     };
 
@@ -64329,6 +64330,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 
                                 $scope.buscarNota({which: 13});
                                 that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
+
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

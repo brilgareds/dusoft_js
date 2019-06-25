@@ -2553,6 +2553,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function (empresa_id, fecha_
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).orderBy("a.fecha_registro", "desc").as("a");
 
+
     var queryPrincipal = G.knex.column([
         "a.*",
         "h.pedido_cliente_id as numero_pedido",

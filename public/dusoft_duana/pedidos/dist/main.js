@@ -65804,7 +65804,6 @@ define('controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesContr
                     $scope.datos_view.filtro = $scope.datos_view.filtro === undefined ? {nombre: "Numero", tipo_busqueda: 0} : $scope.datos_view.filtro;
                     paginaActual = paginaActualCotizacionesPorAprobacion ? paginaActualCotizacionesPorAprobacion: 1;
                 }
-                console.log('La pagina actual es: ', paginaActual);
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
@@ -65848,15 +65847,8 @@ define('controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesContr
                             if ($scope.datos_view.pagina_actual_cotizaciones > 0) {
                                 $scope.datos_view.pagina_actual_cotizaciones--;
                             }
-                            if (paginaActual === 1) {
-                                console.log('Limpiando cotizaciones!!');
-                                $scope.Empresa.limpiar_cotizaciones();
-                                $scope.Empresa.set_cotizaciones({});
-                            }
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se encontraron mas registros");
                             return;
-                        } else {
-                            // that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
                         }
                         that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
                     }

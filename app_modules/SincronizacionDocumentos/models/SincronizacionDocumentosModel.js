@@ -785,12 +785,12 @@ SincronizacionDocumentosModel.prototype.listarTipoCuentaCategoria = function (ob
 SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, callback) {
     //console.log('entro en el modelo de "listarTiposCuentas"!');
 
-    var query = G.knex.select(
+    const query = G.knex.select(
         'doc_cu.prefijo as prefijo_id',
         'doc_cu.empresa_id',
         'doc_cu.centro_id',
         'doc_cu.bodega_id',
-        'doc_cu.cuenta',
+        'doc_cu.cuenta as cuenta_id',
         'doc_cu.sw_cuenta',
         'doc_cu.centro_costos_asientos',
         'doc_cu.centro_utilidad_asiento',
@@ -802,18 +802,16 @@ SincronizacionDocumentosModel.prototype.listarTiposCuentas = function (obj, call
         'tipos_cate.categoria_id')
         .from('documentos_cuentas as doc_cu')
         .leftJoin('tipos_cuentas_categorias as tipos_cate', 'doc_cu.cuenta_categoria', 'tipos_cate.categoria_id')
-        .where('doc_cu.empresa_id', '=', obj.empresa_id)
+        .where('doc_cu.empresa_id', obj.empresa_id)
         .andWhere('doc_cu.centro_id', obj.centro_id)
         .andWhere('doc_cu.bodega_id', obj.bodega_id)
         .andWhere('doc_cu.prefijo', obj.prefijo_id)
         .andWhere('doc_cu.parametrizacion_ws_fi', obj.servicio)
         .orderBy('tipos_cate.categoria_descripcion');
 
-
-    query.then(function (resultado) {
-        //console.log('Cuentas desde modelo: ', resultado);
+    query.then(resultado => {
         callback(false, resultado);
-    }).catch(function (err) {
+    }).catch(err => {
         console.log("error sql", err);
         callback(err);
     });

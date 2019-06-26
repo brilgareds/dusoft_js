@@ -18,9 +18,29 @@ define(["angular", "js/controllers"
             };
             $scope.credito_debito=false;
             $scope.debito_credito=false;
-            that.init = function (callback) {
-                $scope.root = {prefijo: {}};      
-                $scope.root.listarTiposServicios = [];
+
+            that.init = callback => {
+                $scope.root = {
+                    prefijo: {},
+                    listarTiposServicios: [],
+                    tipesEntries: [
+                        {
+                            title: 'Debito',
+                            name: 'debito',
+                            entries: {}
+                        },
+                        {
+                            title: 'Credito',
+                            name: 'credito',
+                            entries: {}
+                        }
+                    ],
+                    tipos_categorias: [
+                        { 'descripcion': 'Debito',  'id': 0 },
+                        { 'descripcion': 'Credito', 'id': 1 }
+                    ]
+                };
+
                 $scope.contador_checked = 0;
                 $scope.seccion_1 = false;
                 $scope.seccion_2 = false;
@@ -202,9 +222,10 @@ define(["angular", "js/controllers"
                 });
             };
             
-            that.listarTiposCuentas = function () {
+            that.listarTiposCuentas = () => {
                 console.log("listarTiposCuentas");
-                var obj = {
+
+                const obj = {
                     session: $scope.session,
                     data: {
                         empresa_id: $scope.documentosCuentas.empresa_id,
@@ -214,7 +235,7 @@ define(["angular", "js/controllers"
                         servicio: $scope.documentosCuentas.servicio
                     }
                 };
-                ServerServiceDoc.listarTiposCuentas(obj, function (data) {
+                ServerServiceDoc.listarTiposCuentas(obj, data => {
                     if (data.status === 200) {
                         console.log("data: ",data.obj.listarTiposCuentas);
                         var resultado = data.obj.listarTiposCuentas;
@@ -225,40 +246,25 @@ define(["angular", "js/controllers"
                         var categoria_vieja = '';
                         var cuentas_count = 0;
                         var cuentas_total = resultado.length;
-                        var cuenta = {};
+                        let entry = {};
                         $scope.root.listarTiposCuentas = {};
 
-                        for(key in resultado){
+                        for (let key in resultado) {
                             cuentas_count++;
-                            cuenta = resultado[key];
-                            categoria_nueva = cuenta.categoria_descripcion;
+                            entries = resultado[key];
+                            categoria_nueva = entries.categoria_descripcion;
 
-                            console.log('cuenta es: ', cuenta);
-
-                            datos_cuenta = {
-                                cuenta_id: cuenta.cuenta,
-                                categoria_id: cuenta.categoria_id,
-                                categoria_descripcion: cuenta.categoria_descripcion,
-                                centro_costos_asientos: cuenta.centro_costos_asientos,
-                                centro_utilidad_asiento: cuenta.centro_utilidad_asiento,
-                                cod_linea_costo_asiento: cuenta.cod_linea_costo_asiento,
-                                id_tercero_asiento: cuenta.id_tercero_asiento,
-                                observacion_asiento: cuenta.observacion_asiento,
-                                sw_cuenta: cuenta.sw_cuenta,
-                                parametrizacion_ws_fi: cuenta.parametrizacion_ws_fi
-                            };
+                            console.log('cuenta es: ', entries);
 
 
-                            if(cuenta.sw_cuenta === '0'){
-                                tipo_cuenta = 'debito';
-                            }else if(cuenta.sw_cuenta === '1'){
-                                tipo_cuenta = 'credito';
+
+                            tipo_cuenta = (entry.sw_cuenta === '0') ? 'debito':'credito';
+
+                            if($scope.documentosCuentas.categorias[entries.categoria_descripcion] === undefined) {
+                                $scope.documentosCuentas.categorias[entries.categoria_descripcion] = {};
                             }
-                            if($scope.documentosCuentas.categorias[cuenta.categoria_descripcion] === undefined){
-                                $scope.documentosCuentas.categorias[cuenta.categoria_descripcion] = {};
-                            }
-                            if($scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta] === undefined) {
-                                $scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta] = [];
+                            if($scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta] === undefined) {
+                                $scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta] = [];
                             }
                             if($scope.root.listarTiposCuentas['debito'] === undefined){
                                 $scope.root.listarTiposCuentas['debito'] = [];
@@ -267,57 +273,9 @@ define(["angular", "js/controllers"
                                 $scope.root.listarTiposCuentas['credito'] = [];
                             }
 
-                            /*******  BLOQUE1 PARA LLENAR LAS CUENTAS FALTANTES CON DATOS VACIOS *******/
-                            //  if(categoria_vieja !== ''){
-                            //     if(categoria_vieja !== categoria_nueva){
-                            //         console.log('Categoria vieja es: ', categoria_vieja);
-                            //         console.log('Objeto anterior es: ', $scope.documentosCuentas.categorias[categoria_vieja]);
-                            //
-                            //         datos_cuenta_vacio = {
-                            //             cuenta_id: '',
-                            //             categoria_id: '',
-                            //             categoria_descripcion: categoria_vieja,
-                            //             centro_costos_asientos: '',
-                            //             centro_utilidad_asiento: '',
-                            //             cod_linea_costo_asiento: '',
-                            //             id_tercero_asiento: '',
-                            //             observacion_asiento: '',
-                            //             sw_cuenta: ''
-                            //         };
-                            //
-                            //         if($scope.documentosCuentas.categorias[categoria_vieja]['debito'] === undefined){
-                            //             $scope.root.listarTiposCuentas['debito'].push(datos_cuenta_vacio);
-                            //         }else if($scope.documentosCuentas.categorias[categoria_vieja]['credito'] === undefined){
-                            //             $scope.root.listarTiposCuentas['credito'].push(datos_cuenta_vacio);
-                            //         }
-                            //         categoria_vieja = categoria_nueva;
-                            //     }
-                            // }else{
-                            //     categoria_vieja = categoria_nueva;
-                            // }
-                            $scope.documentosCuentas.categorias[cuenta.categoria_descripcion][tipo_cuenta].push(datos_cuenta);
-                            $scope.root.listarTiposCuentas[tipo_cuenta].push(datos_cuenta);
+                            $scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta].push(datos_cuenta);
+                            $scope.root.tipesEntries[tipo_cuenta].push(datos_cuenta);
                             //console.log('Array en ciclo: ', $scope.documentosCuentas);
-
-                            /*******  BLOQUE2 PARA LLENAR LAS CUENTAS FALTANTES CON DATOS VACIOS *******/
-                            // if(cuentas_total === cuentas_count){
-                            //     datos_cuenta_vacio = {
-                            //         cuenta_id: '',
-                            //         categoria_id: '',
-                            //         categoria_descripcion: cuenta.categoria_descripcion,
-                            //         centro_costos_asientos: '',
-                            //         centro_utilidad_asiento: '',
-                            //         cod_linea_costo_asiento: '',
-                            //         id_tercero_asiento: '',
-                            //         observacion_asiento: '',
-                            //         sw_cuenta: ''
-                            //     };
-                            //     if($scope.documentosCuentas.categorias[cuenta.categoria_descripcion]['debito'] === undefined){
-                            //         $scope.root.listarTiposCuentas['debito'].push(datos_cuenta_vacio);
-                            //     }else if($scope.documentosCuentas.categorias[cuenta.categoria_descripcion]['credito'] === undefined){
-                            //         $scope.root.listarTiposCuentas['credito'].push(datos_cuenta_vacio);
-                            //     }
-                            // }
                         };
                         //$scope.root.listarTiposCuentas = $scope.documentosCuentas;
                         console.log('Cuentas1 es: ', $scope.root.listarTiposCuentas);

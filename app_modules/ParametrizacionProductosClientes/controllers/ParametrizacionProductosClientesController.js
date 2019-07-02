@@ -112,6 +112,7 @@ const __validar_productos_archivo_plano = (that, index, filas, productosValidos,
 ParametrizacionProductosClientes.prototype.listContracts = (req, res) => {
     console.log('In controller "listContracts"');
     let params = req.body.data;
+    params.ordenar = req.body.ordenar;
     params.number_money = number_money;
 
     promesa
@@ -362,20 +363,24 @@ ParametrizacionProductosClientes.prototype.businessUnits = (req, res) => {
 ParametrizacionProductosClientes.prototype.createContract = (req, res) => {
     console.log('In controller "createContract"');
     let params = req.body.data.contract;
+    params.update = req.body.data.update;
     params.userId = req.body.session.usuario_id;
     params.empresaId = req.body.session.empresaId;
     params.dateNow = now();
     params.dateInit = now(params.dateInit);
     params.dateExpired = now(params.dateExpired);
+    params.number_money = number_money;
 
     promesa
         .then(response => {
-            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'createContract', params);
+            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'createOrUpdateContract', params);
         }).then(response => {
-            res.send(G.utils.r(req.url, 'Contrato creado con exito!', 200, response));
+            response.msg = (!params.update) ? 'Contrato creado con exito!':'Contrato actualizado con exito!';
+            console.log('response: ', response);
+            res.send(G.utils.r(req.url, response.msg, 200, response));
         }).catch(err => {
-            if (err.status === undefined) { err.status = 500; }
-            if (err.msg === undefined) { err.msg = 'Hubo un error!'; }
+            err.status = (!err.status) ? 500:err.status;
+            err.msg = (!err.msg) ? 'Hubo un error!':err.msg;
             console.log('Err: ', err);
             res.send(G.utils.r(req.url, err.msg, err.status, err));
         });

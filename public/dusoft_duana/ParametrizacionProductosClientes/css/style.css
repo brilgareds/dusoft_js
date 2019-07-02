@@ -285,7 +285,8 @@ i.glyphicon {
     cursor: pointer;
 }
 .table-responsive.contractProducts .ngViewport.ng-scope {
-    height: 160px !important;
+    height: auto !important;
+    max-height: 270px !important;
 }
 .span-flex-center {
     display: flex;

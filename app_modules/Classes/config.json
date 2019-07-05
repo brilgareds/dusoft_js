@@ -5,9 +5,150 @@
         "models": [{
             "facturacion_model": {
               "module": "Classes",
+              "model": "Adquiriente.class",
+              "alias": "m_adquiriente"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Autorizado.class",
+              "alias": "m_autorizado"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "CondicionesEntrega.class",
+              "alias": "m_condiciones_entrega"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Contacto.class",
+              "alias": "m_contacto"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Direccion.class",
+              "alias": "m_direccion"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "DocumentosAnexos.class",
+              "alias": "m_documentos_anexos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Entrega.class",
+              "alias": "m_entrega"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Facturador.class",
+              "alias": "m_facturador"
+            },
+            "facturacion_model": {
+              "module": "Classes",
               "model": "Facturas.class",
-              "alias": "m_facturacionElectronica"
+              "alias": "m_facturas"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "GrupoDeducciones.class",
+              "alias": "m_grupo_deducciones"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "GrupoImpuestos.class",
+              "alias": "m_grupo_impuestos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Items.class",
+              "alias": "m_items"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaAnticipos.class",
+              "alias": "m_lista_anticipos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaCaracteristicas.class",
+              "alias": "m_lista_caracteristicas"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaCargosDescuentos.class",
+              "alias": "m_lista_cargos_descuentos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaCorreciones",
+              "alias": "m_lista_correciones"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaDeducciones.class",
+              "alias": "m_lista_deducciones"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaDocumentosReferenciados.class",
+              "alias": "m_lista_documentos_referenciados"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaImpuestos.class",
+              "alias": "m_lista_impuestos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaResponsablesTributarios.class",
+              "alias": "m_lista_responsables_tributarios"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Mandatorio.class",
+              "alias": "m_mandatorio"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "NotasReferenciadas.class",
+              "alias": "m_notas_referenciadas"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Numeracion.class",
+              "alias": "m_numeracion"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Pago.class",
+              "alias": "m_pago"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "PeriodoFacturacion.class",
+              "alias": "m_periodo_facturacion"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Productos.class",
+              "alias": "m_productos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Resolucion.class",
+              "alias": "m_resolucion"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "tasa_cambio.class",
+              "alias": "m_tasa_cambio"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Transportista.class",
+              "alias": "m_transportista"
             }
+            
         }],
         "events": [],
         "cronJobs": []

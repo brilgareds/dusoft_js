@@ -1,4 +1,4 @@
-class listaDocumentosReferenciados {
+class ListaDocumentosReferenciados {
     constructor () {
         this._id = '';
         this._tipo = '';
@@ -48,4 +48,4 @@ class listaDocumentosReferenciados {
     }
 }
 
-module.exports = new listaDocumentosReferenciados;
+module.exports = new ListaDocumentosReferenciados;

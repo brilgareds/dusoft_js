@@ -1,0 +1,17 @@
+{
+  "name": "dusoft",
+  "description": "dusoft Duana",
+  "main": "",
+  "authors": [
+    "German Galvis <desarrollo2@duanaltda.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

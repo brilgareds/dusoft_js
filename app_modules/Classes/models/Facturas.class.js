@@ -1134,7 +1134,7 @@ class Facturas {
     }
 
     // FUNCIONES
-
+    
 }
 
 module.exports = new Facturas;

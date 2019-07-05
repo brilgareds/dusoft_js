@@ -1,7 +1,7 @@
 /* global G */
 
-var Sincronizacion = function (m_sincronizacion, m_clientes, m_facturacion) {
-    this.facturacion = m_facturacion;
+var Sincronizacion = function (m_sincronizacion, m_clientes, m_facturas) {
+    this.facturacion = m_facturas;
     this.m_sincronizacion = m_sincronizacion;
     this.m_clientes = m_clientes;
     this.test();
@@ -715,5 +715,5 @@ function __jsonFacturaAjdunto(obj, callback) {
 }
 
 
-Sincronizacion.$inject = ["m_sincronizacion", "m_clientes", "m_facturacion"];
+Sincronizacion.$inject = ["m_sincronizacion", "m_clientes", "m_facturas"];
 module.exports = Sincronizacion;

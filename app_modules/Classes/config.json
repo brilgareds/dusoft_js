@@ -1,0 +1,15 @@
+{
+    "module": "Classes",
+    "dependency": {
+        "controllers": [],
+        "models": [{
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Facturas.class",
+              "alias": "m_facturacionElectronica"
+            }
+        }],
+        "events": [],
+        "cronJobs": []
+    }
+}

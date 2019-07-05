@@ -9,6 +9,11 @@
                 }
             }],
         "models": [{
+                "facturacion_model": {
+                  "module": "Classes",
+                  "model": "Facturas.class",
+                  "alias": "m_facturacionElectronica"
+                },
                 "sincronizacion_model": {
                     "module": "Sincronizacion",
                     "model": "SincronizacionModel",

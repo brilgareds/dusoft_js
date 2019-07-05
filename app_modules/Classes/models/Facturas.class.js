@@ -44,9 +44,11 @@ class Facturas {
         this.fuenteCufe = '';
         this.posicionXQr = 0;
         this.posicionYQr = 0;
-        this.fechaEnvio = '';
-        this.descripcionGeneral = '';
-        this.resolucion = {};
+
+        this.fechaEnvio = '';           // Campo de Factura
+        this.descripcionGeneral = '';   // Campo de Factura
+        this.resolucion = {};           // Campo de Factura
+        this.listaCorrecciones = [];    // Campo de Nota
     }
 
 
@@ -1133,8 +1135,16 @@ class Facturas {
         return respuesta;
     }
 
+    get ListaCorrecciones() {
+        return this.listaCorrecciones;
+    }
+
+    set ListaCorrecciones(value) {
+        this.listaCorrecciones = value;
+    }
+
     // FUNCIONES
-    
+
 }
 
 module.exports = new Facturas;

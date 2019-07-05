@@ -13,13 +13,13 @@ var FacturacionClientesJobs = function(c_facturacion_clientes) {
 FacturacionClientesJobs.prototype.ejecutarJobProcesarDespachos = function() {
 
     var that = this;   
-    
+     if(!G.program.prod){
     var job = new G.cronJob( '*/1 * * * *', function () {
         
         that.c_facturacion_clientes.generarFacturasAgrupadasEnProceso();  
     });
     job.start();
-   
+     }
 };
 
 FacturacionClientesJobs.$inject = ["c_facturacion_clientes"];

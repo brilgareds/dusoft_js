@@ -158,13 +158,110 @@ Reportes.prototype.listarPlanes = function (req, res) {
 
     G.Q.ninvoke(that.m_drArias, 'listarPlanes').then(function (listarPlanes) {
         res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
-    }).
-            fail(function (err) {
+    }).fail(function (err) {
                 console.log("Error controller listarPlanes ", err);
                 res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
-            }).
-            done();
+    }).done();
 };
+
+Reportes.prototype.generarTotalizadosBodegasMes = function (req, res) {
+     var that = this;
+     var listarTotalizadosBodegas ;
+     var separacionBodega = {bodegaNormal:[],bodegaAnormal:[]};
+     var totales = {bodegaNormal:[],bodegaAnormal:[]};
+    G.Q.ninvoke(that.m_drArias, 'listarTotalizadosBodegasMes').then(function (result) {
+     listarTotalizadosBodegas=result;
+       return G.Q.nfcall(__separaBodegas,listarTotalizadosBodegas,0,{normal:[],anormal:[]});
+     
+    }).then(function (respuesta) {  
+        separacionBodega.bodegaNormal = respuesta.normal; 
+        separacionBodega.bodegaAnormal = respuesta.anormal;
+        return G.Q.nfcall(__distribuirTotales,separacionBodega.bodegaNormal,0,[],"",[],[],"",6,{totalx:0,totaly:0});
+    
+    }).then(function (respuesta) {  
+        totales.bodegaNormal = respuesta; 
+        return G.Q.nfcall(__distribuirTotales,separacionBodega.bodegaAnormal,0,[],"",[],[],"",3,{totalx:0,totaly:0});
+       
+    }).then(function (respuesta) {  
+        totales.bodegaAnormal = respuesta; 
+         
+         return G.Q.nfcall(__generar_reporte_orden_compra,totales);
+         
+    }).then(function (archivoName) {
+        var meses = new Array ("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+        var fecha = new Date();
+        var ano = meses[fecha.getMonth()] +' de '+fecha.getFullYear();
+        var sistemas = G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses;
+        remitente = G.settings.email_miguel_duarte;
+
+        var subject = "Totalizados Bodegas "+ano;
+        var to = remitente;
+        var ruta_archivo = G.dirname + "/public/reports/" + archivoName;
+
+        var nombre_archivo = archivoName;
+        var message = "Totalizados Bodegas "+ano;
+
+        return G.Q.nfcall(__enviar_correo_electronico, that, to, ruta_archivo, nombre_archivo, subject, message);
+        
+    }).then(function (respuesta) {
+        console.log("respuesta",respuesta);
+        res.send(respuesta);
+    
+    }).fail(function (err) {
+        console.log("Error generar Totalizados Bodegas Mes", err);
+        res.send(err);
+    }).done();
+};
+
+function __separaBodegas(bodegas,index,result,callback){
+     var bodega = bodegas[index];
+     if(!bodega){
+       callback(false,result); 
+       return;
+    }
+    if(bodega.nombre_bodega === 'BOD VTO DUANA' || bodega.nombre_bodega === 'BODEGA AJUSTES' || bodega.nombre_bodega === 'BOD VTO COSMITET'){
+        result.anormal.push(bodega);
+    }else{
+        result.normal.push(bodega);
+    }
+     index++;
+    __separaBodegas(bodegas,index,result,callback);
+}
+
+
+function __distribuirTotales(datos,index,respuesta,mes,bodegas,meses,nombre_bodega,nBodegas,totalXY,callback){
+    
+    var bodega = datos[index];
+    
+    
+    if(!bodega){
+       respuesta.push({mes : datos[index-1].mes , bodegas : bodegas, totalx : totalXY.totalx});
+       callback(false,{info: respuesta,meses: meses}); 
+       return;
+    }
+    
+   
+    if(bodega.mes !== mes){
+       if(mes !== "" ){          
+        respuesta.push({mes : datos[index-1].mes , bodegas : bodegas , totalx: totalXY.totalx});
+        totalXY.totalx  = 0;
+       }
+       mes = bodega.mes;
+       var bodegas = [];
+    }
+    
+    if(bodega.nombre_bodega !== nombre_bodega && nBodegas > 0){
+     nBodegas--;    
+     meses.push({bodega:bodega.nombre_bodega});
+     nombre_bodega=bodega.nombre_bodega;
+    }
+    
+    totalXY.totalx += parseInt(bodega.total);
+    bodegas.push({nombre_bodega: bodega.mes , total : bodega.total});
+    
+    index++;
+    __distribuirTotales(datos,index,respuesta,mes,bodegas,meses,nombre_bodega,nBodegas,totalXY,callback);
+}
 
 /**
  * @author Andres M Gonzalez
@@ -174,13 +271,86 @@ Reportes.prototype.listarPlanes = function (req, res) {
  */
 Reportes.prototype.listarTotalizadosBodegas = function (req, res) {
     var that = this;
+    var listarTotalizadosBodegasAll = [];
     G.Q.ninvoke(that.m_drArias, 'listarTotalizadosBodegas').then(function (listarTotalizadosBodegas) {
-        res.send(G.utils.r(req.url, 'Listado Totalizados Bodegas', 200, {listarTotalizadosBodegas: listarTotalizadosBodegas}));
+        
+        var enta1 = { descripcion: 'FARMACIA DUANA', total: '31218124.3500' }
+        listarTotalizadosBodegas.push(enta1)
+        var enta2 = { descripcion: 'BODEGA COSMITET', total: '31218124.3500' }
+        listarTotalizadosBodegas.push(enta2)
+        var enta3 = { descripcion: 'BOD VEC COSMITET', total: '10031021812.3500' }
+        listarTotalizadosBodegas.push(enta3)
+        listarTotalizadosBodegasAll = listarTotalizadosBodegas;        
+
+        return G.Q.nfcall(__totalizar,listarTotalizadosBodegasAll,0,0);
+    
+    }).then(function (respuesta) {
+        
+        let total = { descripcion: 'TOTAL:', total: respuesta.toString()};
+        listarTotalizadosBodegasAll.push(total);
+  
+        res.send(listarTotalizadosBodegasAll);
     }).fail(function (err) {
-                console.log("Error controller listarPlanes ", err);
+        console.log("Error controller listarPlanes ", err);
         res.send(G.utils.r(req.url, 'Error listado Totalizados Bodegas', 500, {listarTotalizadosBodegas: err}));
     }).done();
 };
+
+function __totalizar(listarTotalizadosBodegasAll,index,total,callback){
+    
+    bodega = listarTotalizadosBodegasAll[index];
+    if(!bodega){
+      callback(false,total);
+    }
+    total  += parseInt(bodega.total);
+    index++;
+    __totalizar(listarTotalizadosBodegasAll,index,total,callback);
+}
+
+function __generar_reporte_orden_compra(rows, callback) {
+   var fecha = new Date();
+   var ano = fecha.getFullYear();
+   var fecha = fecha.getDate()+'_'+fecha.getMonth()+'_'+ano+'_'+fecha.getHours()+'_'+fecha.getMinutes()
+   var nombre_reporte = "totales_Bodega_"+fecha+".pdf";
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/Reportes/DrArias/reports/plantillaExcel.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/Reportes/DrArias/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            phantom: {
+                format: 'Tabloid', 
+                orientation: 'landscape',
+            }
+        },
+        data: {
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+            valores : rows.bodegaNormal.info,
+            meses : rows.bodegaNormal.meses,
+            ano : ano,
+            valoresAnormal : rows.bodegaAnormal.info,
+            mesesAnormal : rows.bodegaAnormal.meses,
+        }
+    }, function (err, response) {
+        
+        if(!err){
+            response.body(function (body) {
+                
+                G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function (err) {
+
+                    if (!err) {
+                        callback(false,nombre_reporte);
+                    } else {
+                        callback(err);
+                    }
+                });
+            });
+        }else{
+            console.log("Error: ",err);
+            callback(err);
+        }
+    });
+}
 
 
 Reportes.prototype.rotacionZonas = function (req, res) {
@@ -1262,9 +1432,22 @@ function sortJSON(data, key, orden) {
     });
 }
 
+function saludo(hora){
+    var saludo = "";
+    if(hora >= 0 && hora < 12){
+       saludo = "Buen Dia," 
+    }else if(hora >= 12 && hora < 18){
+       saludo = "Buena Tarde,"  
+    }else if(hora >= 18 && hora < 0){
+       saludo = "Buena Noche,"  
+    }
+    return saludo;
+}
+
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
-
+    var fecha = new Date();
+    
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
@@ -1280,7 +1463,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         to: to,
         cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
-        html: message
+        html: saludo(fecha.getHours())+"<br>"+message
     };
 
     if (ruta_archivo !== "") {

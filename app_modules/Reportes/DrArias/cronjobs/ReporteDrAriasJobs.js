@@ -1,16 +1,12 @@
 
 var ReporteDrAriasJobs = function (m_drArias) {
     var that = this;
-    var ip = require('ip');
-
+    
     that.m_drArias = m_drArias;
    
-    if (ip.address() === '10.0.2.158') {
-
-       // if (G.program.prod) {
+//     if (G.program.prod) {
             that.iniciar();
-       // }
-    }
+//     }
 };
 
 
@@ -23,24 +19,46 @@ var jobInicio;
  */
 ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrArias    
     var that = this;
+  
+    var job = new G.cronJob('0 0 1 * *', function () {
+        __insertTotalesMensual(that);
+    });
+    job.start();
     
-//    var job = new G.cronJob('00 10 00 * * *', function () {
-//        __InsertarDrArias(that,'0');
-//             });
-//    
-//    jobInicio = new G.cronJob('00 30 * * * *', function () {
-//        __InsertarDrArias(that,'1');
-//    });
-    
-//    var job = new G.cronJob('00 00 06 * * *', function () {
-//        __InsertarMedipol(that,2,function(result){
-//                console.log("Termino: ",result); 
-//        });
-//    });
-
-   // jobInicio.start();
-//    job.start();
 };
+
+function __insertTotalesMensual(that){
+   var meses = new Array ("ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE");
+   var fecha = new Date();
+   var mes = meses[fecha.getMonth()];
+  G.Q.ninvoke(that.m_drArias,"listarTotalizadosBodegas").then(function(result){ 
+      G.Q.nfcall(__insertarTotalizadosBodegasMes,that,result,0,mes);
+  }).fail(function(err){
+       console.log("Error creando lista Totalizados Bodegas ", err);
+       return true;
+   });  
+}
+
+function __insertarTotalizadosBodegasMes(that,bodegas,index,mes,callback){
+    
+    var bodega = bodegas[index];
+    if(!bodega){
+        callback(false,true);
+        return;
+    }
+    
+    var obj = {nombre_bodega : bodega.descripcion, total:bodega.total, mes:mes};
+    console.log("result:::",bodega);
+    G.Q.ninvoke(that.m_drArias,"insertTotalizadosBodegasMes",obj).then(function(result){ 
+      console.log("result:::",result);
+      index++;
+       __insertarTotalizadosBodegasMes(that,bodegas,index,mes,callback);
+       
+    }).fail(function(err){
+       callback(err);
+       return true;
+   });
+}
 
 /*
  * @Author: Andres M. Gonzalez

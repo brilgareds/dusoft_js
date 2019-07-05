@@ -249,7 +249,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
      ];
 
    
-    G.knex.column(campos).
+   var query= G.knex.column(campos).
     from("existencias_bodegas as a").
     innerJoin("inventarios_productos as b", "a.codigo_producto","b.codigo_producto").
     innerJoin("inventarios as c", function(){
@@ -301,6 +301,94 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         
     }).        
     limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+     
+       callback(err);
+    });
+
+
+};
+
+
+/*
+ * @author Andres Mauricio Gonzalez
+ * @description Buscar producto con empresa, centro_utilidad y bodega FIJOS 
+ * @param {json empresa:[], centroUtilidad:[], bodega : [], terminoBusqueda :text} obj
+ * @param {type} callback
+ * @return {json}
+ */
+ProductosModel.prototype.buscarProductosPorEmpresas = function(obj, callback) {
+    console.log("obj.empres",obj.empresa);
+    console.log("obj.centroUtilidad",obj.centroUtilidad);
+    console.log("obj.bodega",obj.bodega);
+    var campos = [                
+        "a.empresa_id", 
+        "a.centro_utilidad",
+        "a.bodega",    
+        "e.descripcion as descripcion_molecula",
+        "b.codigo_producto", 
+        G.knex.raw("fc_descripcion_producto(b.codigo_producto) as nombre_producto"),
+        "b.unidad_id",
+        "b.estado", 
+        "b.codigo_invima",
+        "b.contenido_unidad_venta",
+        "b.sw_control_fecha_vencimiento",
+        "b.codigo_cum",
+        "a.existencia_minima",
+        "a.existencia_maxima",
+        G.knex.raw("a.existencia :: integer  as existencia"),
+        "c.existencia as existencia_total",
+        "c.costo_anterior",
+        "c.costo",
+        "c.costo_penultima_compra",
+        "c.costo_ultima_compra",
+        "c.precio_venta_anterior",
+        "c.precio_venta",
+        "c.precio_minimo",
+        "c.precio_maximo",
+        "c.sw_vende",
+        "c.grupo_contratacion_id",
+        "c.nivel_autorizacion_id",
+        "b.grupo_id",
+        "b.clase_id",
+        "b.subclase_id",
+        "b.porc_iva",
+        "b.tipo_producto_id",
+        "c.precio_regulado",
+        "f.descripcion as nombre_bodega"
+     ];
+
+   
+   var query= G.knex.column(campos).
+    from("existencias_bodegas as a").
+    innerJoin("inventarios_productos as b", "a.codigo_producto","b.codigo_producto").
+    innerJoin("inventarios as c", function(){
+         this.on("b.codigo_producto", "c.codigo_producto" ).
+         on("a.empresa_id", "c.empresa_id");
+    }).
+    innerJoin("inv_subclases_inventarios as e", function(){
+         this.on("b.grupo_id", "e.grupo_id" ).
+         on("b.clase_id", "e.clase_id").
+         on("b.subclase_id", "e.subclase_id");
+    }).
+    innerJoin("bodegas as f", function(){
+         this.on("a.empresa_id", "f.empresa_id" ).
+              on("a.centro_utilidad", "f.centro_utilidad" ).
+              on("a.bodega", "f.bodega" );
+    }).where(function(){
+        this.whereIn("a.empresa_id", obj.empresa);
+        this.whereIn("a.centro_utilidad", obj.centroUtilidad);
+        this.whereIn("a.bodega",obj.bodega);
+    }).andWhere(function() {
+
+       var termino = obj.terminoBusqueda;
+       this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE,   "%"+termino +"%");
+       this.orWhere("e.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+        
+    });
+    console.log("list", G.sqlformatter.format(query.toString()));
+    query.then(function(rows){
         callback(false, rows);
     }).catch(function(err){
      

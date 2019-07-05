@@ -914,3 +914,8 @@
   margin-left: 0;
   margin-right: 0;
 }
+.ngHeaderContainer {
+  background: #337ab7;
+  color: #FFF;
+  border: #337ab7 !important;
+}

@@ -64303,6 +64303,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                     $scope.sincronizarFI = function (data) {
 
                         that.sincronizarFI(data, function (resultado) {
+                            console.log('En sincronizacion!!!');
                         });
                     };
 
@@ -64329,6 +64330,7 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
 
                                 $scope.buscarNota({which: 13});
                                 that.mensajeSincronizacion(data.obj.respuestaFI.resultado.mensaje_bd, data.obj.respuestaFI.resultado.mensaje_ws);
+
                                 callback(true);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -65312,7 +65314,8 @@ define('controllers/notas/NotasController',["angular", "js/controllers"], functi
                             {field: 'Valor', width: "10%", displayName: 'Total', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase" >{{row.entity.getValorFactura()| currency:"$ "}}</p></div>'},
                             {field: 'Saldo', width: "10%", displayName: 'Saldo', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.saldo}}</p></div>'},
                             {field: 'Fecha', width: "10%", displayName: 'Fecha Registro', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getFechaRegistro() | date:"dd/MM/yyyy HH:mma"}}</p></div>'},
-                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="row.entity.deshabilitarNotaCredito" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            {field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
+                            //{field: 'NC', width: "6%", displayName: 'NC', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-disabled="row.entity.deshabilitarNotaCredito" ng-click="btn_seleccionar_nota(row.entity)" ><span class="glyphicon glyphicon-plus-sign"></span></button></div>'},
                             {field: 'ND', width: "6%", displayName: 'ND', cellClass: "ngCellText", cellTemplate: '<div class="col-xs-16 align-items-center"><button class="btn btn-default btn-xs center-block" ng-click="onNotaDebito(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button></div>'}
                         ]
                     };

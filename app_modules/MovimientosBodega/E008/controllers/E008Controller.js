@@ -3179,7 +3179,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
 
             datos_documento.detalle = rows;
             that.m_movimientos_bodegas.consultar_datos_adicionales_documento(numero, prefijo, empresa, datos_documento.encabezado.tipo_doc_bodega_id, function (err, rows) {
-                if (err || rows.length === 0) {
+                if (err || (rows.length === 0)) {
                     res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
                     return;
                 }
@@ -3216,7 +3216,6 @@ E008Controller.prototype.imprimirDocumentoDespacho = function (req, res) {
 
                     return 0;
                 });
-
                 __generarPdfDespacho(datos_documento, function (nombre_pdf) {
 
                     res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {

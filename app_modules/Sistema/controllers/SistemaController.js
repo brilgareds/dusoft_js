@@ -209,9 +209,10 @@ Sistema.prototype.sshConnection = (req, res) => {
             if (accion === 'status') {
                 parametros.sentencia = buscar_dusoft + ' && git status';
             } else if (accion === 'logs') {
-                parametros.sentencia = buscar_dusoft + " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ad)' --graph -100";
                 if (server !== 216) {
-                    parametros.sentencia += ' --date=format:%d/%m/%Y\\ %H:%M:%S';
+                    parametros.sentencia = buscar_dusoft + " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ad)' --graph -100 --date=format:%d/%m/%Y\\ %H:%M:%S";
+                } else {
+                    parametros.sentencia = buscar_dusoft + " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ai)' --graph -100";
                 }
             }
         } else {

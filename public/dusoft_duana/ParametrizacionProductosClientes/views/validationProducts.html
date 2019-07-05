@@ -1,0 +1,49 @@
+
+<div class="container-table" style="height: 234px; overflow-y: scroll;">
+    <table class="table-responsive contractProducts">
+        <tbody>
+        <tr style="background: #337ab7; color: #FFF; font-weight: 600;">
+            <td width="12%">Codigo</td>
+            <td width="30%">Descripcion</td>
+            <td width="8%">Autorizacion</td>
+            <td width="12%">Costo ultima compra</td>
+            <td width="13%">Precio venta</td>
+            <td width="20%">Justificación</td>
+            <td width="5%">Agregar</td>
+        </tr>
+        <tr ng-repeat="producto in root.data.searchProducts track by $index">
+            <td>{{producto.codigo}}</td>
+            <td>{{producto.descripcion}}</td>
+            <td>{{producto.requiere_autorizacion}}</td>
+            <td>{{producto.costo_ultima_compraString}}</td>
+            <td>
+                <div style="text-align: center; display: flex; justify-content: center;">
+                    <input ng-if="producto.withOutDocument" ng-model="producto.precio_venta" class="form-control" style="width: 90%; height: 30px;" type="number" placeholder="Inserte precio venta" required>
+                    <label ng-if="!producto.withOutDocument" style="width: 90%; height: 30px; display: flex; align-items: center; justify-content: center;">
+                        {{producto.precio_ventaString}}
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div style="text-align: center; display: flex; justify-content: center;">
+                    <input ng-disabled="producto.precio_venta > producto.costo_ultima_compra" ng-model="producto.justificacion" minlength="20" class="form-control" style="width: 90%; height: 30px;" type="text" placeholder="Justificación del precio de venta" title="Justifique cuando precio venta sea menor al costo">
+                </div>
+            </td>
+            <td>
+                <div style="text-align: center;">
+                    <input ng-click="test()" ng-model="producto.check" type="checkbox" id={{producto.codigo}} class="checkbox3">
+                    <label for={{producto.codigo}} class="label3">
+                        <i class="glyphicon glyphicon-check"></i>
+                    </label>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<span ng-show="root.data.searchProducts.length" ng-click="addProductsContract()" class="col-sm-offset-4 col-sm-4 col-lg-offset-5 col-lg-2 btn" style="background: #399039; color: #FFF; margin-bottom: 4px; margin-top: 20px;">
+    <span style="display: flex; justify-content: center; align-content: center;">
+        <i class="glyphicon glyphicon-plus" style="margin-right: 3px; top: 3px;"></i>
+        Agregar Productos al Contrato
+    </span>
+</span><br>

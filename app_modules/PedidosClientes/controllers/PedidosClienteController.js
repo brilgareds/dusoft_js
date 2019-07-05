@@ -86,7 +86,7 @@ PedidosCliente.prototype.confirmacionExistenciaPedido = function (req, res) {
 
 
     }).fail(function (err) {
-        console.log("confirmacion Existencia Pedido ",err);
+        console.log("confirmacion Existencia Pedido ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -337,37 +337,38 @@ PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
-PedidosCliente.prototype.asignarResponsablesPedidoAutomatico = function(req, callback) {
+PedidosCliente.prototype.asignarResponsablesPedidoAutomatico = function (req, callback) {
     var that = this;
-    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
-        callback(false,send);
-    }).fail(function(err) {
-	callback(err);
-    }).done(); 
+    G.Q.nfcall(__asignarResponsablesPedido, req, that).then(function (send) {
+        callback(false, send);
+    }).fail(function (err) {
+        callback(err);
+    }).done();
 };
 
-PedidosCliente.prototype.asignarResponsablesPedido= function(req, res) {
+PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
     var that = this;
-    G.Q.nfcall(__asignarResponsablesPedido,req,that).then(function(send) {
-        res.send(G.utils.r(req.url,send.msj, send.status, send.respuesta)); 
-    }).fail(function(err) {
-	console.log("listarGetDocTemporal ",err);
-        res.send(G.utils.r(req.url,err.msj, err.status, {err: err.respuesta}));
-    }).done();    
+    G.Q.nfcall(__asignarResponsablesPedido, req, that).then(function (send) {
+        res.send(G.utils.r(req.url, send.msj, send.status, send.respuesta));
+    }).fail(function (err) {
+        console.log("listarGetDocTemporal ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {err: err.respuesta}));
+    }).done();
 };
 
-function __asignarResponsablesPedido(req,that, callback) {
-  
+function __asignarResponsablesPedido(req, that, callback) {
+
     var send = {};
 
     var args = req.body.data;
 
     if (args.asignacion_pedidos === undefined || args.asignacion_pedidos.pedidos === undefined || args.asignacion_pedidos.estado_pedido === undefined || args.asignacion_pedidos.responsable === undefined) {
-       // res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
-        send.msj='Algunos Datos Obligatorios No Estan Definidos';
-        send.status=404;
-        send.respuesta="";
-        callback(false,send);;
+        // res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        send.msj = 'Algunos Datos Obligatorios No Estan Definidos';
+        send.status = 404;
+        send.respuesta = "";
+        callback(false, send);
+        ;
         return;
     }
 
@@ -375,10 +376,11 @@ function __asignarResponsablesPedido(req,that, callback) {
 
     if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "") {
 //        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
-        send.msj='Algunos Datos Obligatorios No Estan Definidos';
-        send.status=404;
-        send.respuesta="";
-        callback(false,send);;
+        send.msj = 'Algunos Datos Obligatorios No Estan Definidos';
+        send.status = 404;
+        send.respuesta = "";
+        callback(false, send);
+        ;
         return;
     }
 
@@ -419,10 +421,11 @@ function __asignarResponsablesPedido(req,that, callback) {
                 // Notificacion al operario de los pedidos que le fueron asignados
                 that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
 //                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
-                send.msj='Asignacion de Resposables';
-                send.status=200;
-                send.respuesta={};
-                callback(false,send);;
+                send.msj = 'Asignacion de Resposables';
+                send.status = 200;
+                send.respuesta = {};
+                callback(false, send);
+                ;
                 return;
             }
 
@@ -434,14 +437,15 @@ function __asignarResponsablesPedido(req,that, callback) {
             }
 
 //            res.send(G.utils.r(req.url, err.msj, err.status, {}));
-            send.msj=err.msj;
-            send.status=err.status;
-            send.respuesta={};
+            send.msj = err.msj;
+            send.status = err.status;
+            send.respuesta = {};
             callback(send);
         }).done();
 
     });
-};
+}
+;
 
 
 /**
@@ -461,7 +465,7 @@ function __asignarResponsablesPedido(req,that, callback) {
  */
 
 PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
-   var that = this;
+    var that = this;
 
     var args = req.body.data;
 
@@ -478,58 +482,58 @@ PedidosCliente.prototype.eliminarResponsablesPedido1 = function (req, res) {
     var numero_pedido = args.pedidos_clientes.numero_pedido;
     var estado_pedido = ''; // 0 = No asignado
     var responsables_pedido;
-    
+
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_pedido', numero_pedido).then(function (pedido_cliente) {
-        
+
         var pedido = pedido_cliente[0];
-        
+
         if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'obtener_responsables_del_pedido', numero_pedido);
         } else {
             res.send(G.utils.r(req.url, 'El Pedido No puede cambiar de estado', 200, {}));
             return;
         }
-        
+
     }).then(function (result) {
-        responsables_pedido=result;
-       
+        responsables_pedido = result;
+
         if (responsables_pedido === undefined || responsables_pedido.length < 2) {
             res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
             return;
         }
-        
+
         return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_responsables_pedidos', numero_pedido);
-        
+
     }).then(function (result) {
-       
+
         estado_pedido = responsables_pedido[0].estado;
-        
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizar_estado_actual_pedido', numero_pedido,estado_pedido);
-        
+
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizar_estado_actual_pedido', numero_pedido, estado_pedido);
+
     }).then(function (result) {
-      
+
         return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificarPedidosActualizados', {numero_pedido: numero_pedido});
-    
+
     }).then(function (result) {
-       
+
         if (responsables_pedido.length > 0) {
 
-           var responsable_estado_pedido = responsables_pedido[0];
-          return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificacionOperarioPedidosReasignados', {numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
-       
-        }else{
-          return true;
+            var responsable_estado_pedido = responsables_pedido[0];
+            return G.Q.ninvoke(that.e_pedidos_clientes, 'onNotificacionOperarioPedidosReasignados', {numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
+
+        } else {
+            return true;
         }
-        
+
     }).then(function (result) {
-        
+
         res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
-        
+
     }).fail(function (err) {
         console.log("Error eliminarResponsablesPedido ", err);
         res.send(G.utils.r(req.url, "Se ha generado un error interno", 500, {}));
     }).done();
-     
+
 }
 
 PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
@@ -554,7 +558,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
     that.m_pedidos_clientes.consultar_pedido(numero_pedido, function (err, pedido_cliente) {
 
         if (err || pedido_cliente.length === 0) {
-             console.log("Error",err,pedido_cliente.length);
+            console.log("Error", err, pedido_cliente.length);
         } else {
             var pedido = pedido_cliente[0];
 
@@ -611,6 +615,52 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
             }
         }
     });
+};
+
+PedidosCliente.prototype.desasignarPedidoCliente = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacio', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    var parametros = {
+        numero_pedido: numero_pedido,
+        estado_pedido: '0',
+        usuario: usuarioId,
+        estadoEntrega: '1'
+    };
+    
+    G.knex.transaction(function (transaccion) {
+
+        parametros.transaccion = transaccion;
+        G.Q.ninvoke(that.m_pedidos_clientes, 'insertarResponsablesPedidos', parametros).then(function (resultado) {
+
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoActualPedidoCliente', parametros);
+
+        }).then(function (resul) {
+            parametros.transaccion.commit(resul);
+        }).fail(function (err) {
+            parametros.transaccion.rollback(err);
+        }).done();
+    }).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Pedido desasignado Correctamente', 200, {}));
+    }).catch(function (err) {
+        console.log("desasignarPedidoCliente  ", err);
+        res.send(G.utils.r(req.url, 'Error al desasignar el pedido', 500, {}));
+    }).done();
 };
 
 /**
@@ -1112,7 +1162,7 @@ PedidosCliente.prototype.__insertarCotizacion = function (obj, cotizacion, callb
 
             }).then(function (result) {
 
-        var numero_cotizacion = result[0] ;
+        var numero_cotizacion = result[0];
 //        var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
         callback(false, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}});
 
@@ -1141,6 +1191,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function (req, res) {
     var that = this;
 
     var args = req.body.data;
+    var costos;
 
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
@@ -1222,6 +1273,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function (req, res) {
 
     }).then(function (resultado) {
 
+        costos = resultado;
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          */
@@ -1252,6 +1304,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function (req, res) {
          *               y si es asi se procede a modficar el detalle
          */
         if (rows.length === 0) {
+            producto.costo_unitario = costos[0].costo_ultima_compra;
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion', cotizacion, producto);
         } else {
             throw {msj: 'El producto ya aparece registrado en la cotizacion', status: 403};
@@ -1454,7 +1507,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
         clienteMultiple: args.pedidos_clientes.clienteMultiple,
         usuario_name: args.usuario_name
     };
-    
+
 
 
     //cotizacion.numero_cotizacion
@@ -1567,41 +1620,41 @@ function __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedid
 // if(parametros.bodegaActual !== cabecera.bodega){
 
     G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_encabezado_pedido_cliente", cabecera)
-        .then(function (rows) {
-            if (parametros.bodegaActual !== cabecera.bodega) {
-                parametros.bodega = cabecera.bodega;
-                parametros.numeroPedido = rows.rows[0].numero_pedido;
-                parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
+            .then(function (rows) {
+                if (parametros.bodegaActual !== cabecera.bodega) {
+                    parametros.bodega = cabecera.bodega;
+                    parametros.numeroPedido = rows.rows[0].numero_pedido;
+                    parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
 
-                return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_detalle_pedido_cliente", parametros);//detalle de la cotizacion
-            } else {
-                parametros.bodega = cabecera.bodega;
-                parametros.numeroPedido = cabecera.numero_cotizacion;
-                parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
+                    return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "insertar_detalle_pedido_cliente", parametros);//detalle de la cotizacion
+                } else {
+                    parametros.bodega = cabecera.bodega;
+                    parametros.numeroPedido = cabecera.numero_cotizacion;
+                    parametros.numeroPedidoorigen = cabecera.numero_cotizacion;
 
-                return true;
-            }
-        }).then(function (resultado) {
-            //  return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
-            //  }).then(function (resultado) {
+                    return true;
+                }
+            }).then(function (resultado) {
+        //  return G.Q.ninvoke(parametros.that.m_pedidos_clientes,"insertar_ventas_ordenes_pedido_multiple_clientes",parametros);
+        //  }).then(function (resultado) {
 
-            return G.Q.nfcall(__totalizarPedido, productos, 0, 0);
-        }).then(function (resultado) {
-            var cotizacion = {numero_cotizacion: parametros.numeroPedido, total: resultado, empresa_id: empresa, centro_utilidad_id: centro_utilidad, bodega_id: bodega};
+        return G.Q.nfcall(__totalizarPedido, productos, 0, 0);
+    }).then(function (resultado) {
+        var cotizacion = {numero_cotizacion: parametros.numeroPedido, total: resultado, empresa_id: empresa, centro_utilidad_id: centro_utilidad, bodega_id: bodega};
 
-            return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
-        }).then(function (resultado) {
-            if (parametros.bodegaActual !== cabecera.bodega) {//validar
-                idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
-                idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
-            } else {
-                idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
-                idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
-            }
-            __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
-        }).fail(function (err) {
-            callback(err);
-        }).done();
+        return G.Q.ninvoke(parametros.that.m_pedidos_clientes, "generar_pedido_cliente", cotizacion);
+    }).then(function (resultado) {
+        if (parametros.bodegaActual !== cabecera.bodega) {//validar
+            idsPedidos.numeroCotizacionDestino = parametros.numeroPedido;
+            idsPedidos.numeroPedidoDestino = resultado.numero_pedido;
+        } else {
+            idsPedidos.numeroCotizacionOrigen = cabecera.numero_cotizacion;
+            idsPedidos.numeroPedidoOrigen = resultado.numero_pedido;
+        }
+        __insertarCabeceraClientesCotizacion(datos, parametros, index, idsPedidos, callback);
+    }).fail(function (err) {
+        callback(err);
+    }).done();
 }
 
 
@@ -1772,7 +1825,7 @@ PedidosCliente.prototype.listarCotizaciones = function (req, res) {
             pagina_actual,
             estadoCotizacion,
             filtros, bodega, function (err, lista_cotizaciones) {
-console.log("Error ",err);
+                console.log("Error ", err);
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));
                     return;
@@ -2133,7 +2186,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
      *              proseguira a crearse en los siguientes metodos
      */
-    console.log("cotizacion.numero_cotizacion ",cotizacion.numero_cotizacion);
+    console.log("cotizacion.numero_cotizacion ", cotizacion.numero_cotizacion);
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         /**
@@ -2252,11 +2305,11 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
         }
 
     }).then(function (rows, result) {
-   
-        if(rows[0][0] !== undefined){
+
+        if (rows[0][0] !== undefined) {
             cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;
-        }else{
-            cotizacion.numero_cotizacion = rows[0]; 
+        } else {
+            cotizacion.numero_cotizacion = rows[0];
         }
         productosPreparadosCotizacion = [];
         productosPreparadosCotizacionInvalidos = [];
@@ -2702,7 +2755,7 @@ function __cantidadSolicitadaProducto(that, index, obj, productos, productosVali
         return;
 
     }).then(function (resultado) {
-        
+
         if (!resultado) {
 
             setTimeout(function () {
@@ -3252,6 +3305,7 @@ PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
 
     var that = this;
     var args = req.body.data;
+    var costos;
     var def = G.Q.defer();
     // Pedido
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
@@ -3363,6 +3417,7 @@ PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
 
     }).then(function (resultado) {
 
+        costos = resultado;
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          */
@@ -3414,7 +3469,7 @@ PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
         if (resultado.rows.length > 0) {
             throw 'El producto ya aparece registrado en el pedido';
         } else {
-
+            producto.costo_unitario = costos[0].costo_ultima_compra;
             return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarDetallePedido', pedido, producto);
         }
 
@@ -4050,7 +4105,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
          *               estado (Estado del Pedido ) 1
          *               estado_pedido (Estado de solicitud ) 0
          */
-        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
+        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '5' || resultado[0].estado_pedido === '8' || resultado[0].estado_pedido === '9')) {
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
 
         } else {
@@ -4799,19 +4854,19 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
                     productoUnidadMedida = resultado[0];
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productosSinDisponible.push(resultado[0]);
-                  
+
                     def.resolve();
                 } else {
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productoUnidadMedida = resultado[0];
-                   
+
                     return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
                 }
 
 
             }).then(function (resultado) {
-       
+
         index++;
 
         if (!resultado) {
@@ -5339,11 +5394,11 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
         if (precioVenta.valido) {
 
             if (precioVenta.valor > 0) {
-                producto.precioVentaIva = precioVenta.valor/(1+(producto.iva/100));
-                producto.precio_venta = precioVenta.valor/(1+(producto.iva/100));
-                producto.costo_ultima_compra = producto.costo_ultima_compra/(1+(producto.iva/100));
+                producto.precioVentaIva = precioVenta.valor / (1 + (producto.iva / 100));
+                producto.precio_venta = precioVenta.valor / (1 + (producto.iva / 100));
+                producto.costo_ultima_compra = producto.costo_ultima_compra / (1 + (producto.iva / 100));
             }
-       
+
             productos_validos.push(producto);
         } else {
 
@@ -5380,7 +5435,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
         return;
     }
 
-   
+
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion_multiple', cotizacion, producto).then(function (resultado) {
 
@@ -5796,10 +5851,10 @@ PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (
 };
 
 PedidosCliente.prototype.pedidoClienteAPedidoFarmaciaAutomatico = function (req, callback) {
-    
+
     var that = this;
     G.Q.nfcall(__pedidoClienteAPedidoFarmacia, req, that).then(function (send) {
-      
+
         callback(false, send);
     }).fail(function (err) {
         callback(err);
@@ -5821,12 +5876,12 @@ function __pedidoClienteAPedidoFarmacia(req, that, callback) {
     var args = req.body.data;
     var usuario_id;
 
-    if(args.usuario_id!==undefined && args.usuario_id!==''){
-       usuario_id = args.usuario_id;
-    }else{
-       usuario_id = req.session.user.usuario_id;
+    if (args.usuario_id !== undefined && args.usuario_id !== '') {
+        usuario_id = args.usuario_id;
+    } else {
+        usuario_id = req.session.user.usuario_id;
     }
-    
+
     var obj = {pedidoDestino: args.numero_pedido};
     var send = {};
     var farmacia_id;

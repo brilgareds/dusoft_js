@@ -194,12 +194,23 @@ ProductosModel.prototype.validar_producto_inventario = function(obj, callback) {
 
     var sql = " select a. * from inventarios a where a.codigo_producto = :1 and a.empresa_id = :2";
     
-   G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id}).
-   then(function(resultado){
-       callback(false, resultado.rows);
-   }).catch(function(err){
-       callback(err);
-   });
+   G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id})
+       .then(resultado => {
+           callback(false, resultado.rows);
+       }).catch(err => {
+           callback(err);
+       });
+};
+
+ProductosModel.prototype.validar_producto_inventario2 = function(obj, callback) {
+    const sql = "select *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios as a inner join inventarios_productos as b on a.codigo_producto = b.codigo_producto where a.codigo_producto = :1 and a.empresa_id = :2";
+
+    G.knex.raw(sql, {1:obj.codigo_producto,2:obj.empresa_id})
+        .then(resultado => {
+            callback(false, resultado.rows);
+        }).catch(err => {
+        callback(err);
+    });
 };
 
 // Autor:      : Camilo Orozco 

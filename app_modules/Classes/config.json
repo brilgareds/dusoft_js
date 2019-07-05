@@ -15,6 +15,11 @@
             },
             "facturacion_model": {
               "module": "Classes",
+              "model": "CentroCosto.class",
+              "alias": "m_centro_costo"
+            },
+            "facturacion_model": {
+              "module": "Classes",
               "model": "CondicionesEntrega.class",
               "alias": "m_condiciones_entrega"
             },
@@ -100,8 +105,13 @@
             },
             "facturacion_model": {
               "module": "Classes",
-              "model": "ListaResponsablesTributarios.class",
-              "alias": "m_lista_responsables_tributarios"
+              "model": "ListaImpuestos.class",
+              "alias": "m_lista_impuestos"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "ListaParticipantesConsorcio.class",
+              "alias": "m_lista_participantes_consorcio"
             },
             "facturacion_model": {
               "module": "Classes",
@@ -137,6 +147,11 @@
               "module": "Classes",
               "model": "Resolucion.class",
               "alias": "m_resolucion"
+            },
+            "facturacion_model": {
+              "module": "Classes",
+              "model": "Sucursal.class",
+              "alias": "m_sucursal"
             },
             "facturacion_model": {
               "module": "Classes",

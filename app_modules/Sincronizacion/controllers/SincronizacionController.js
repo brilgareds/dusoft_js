@@ -8,7 +8,7 @@ var Sincronizacion = function (m_sincronizacion, m_clientes, m_facturacion) {
 };
 
 Sincronizacion.prototype.test = function () {
-    console.log('Ejemploooo: ', this.facturacion); // 100
+    // console.log('Ejemploooo: ', this.facturacion); // 100
 };
 
 

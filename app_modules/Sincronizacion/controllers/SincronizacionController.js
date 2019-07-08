@@ -1,13 +1,54 @@
 /* global G */
+let that;
 
-let Sincronizacion = function (m_sincronizacion, m_clientes, m_facturas) {
-    this.facturacion = m_facturas;
+let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_condiciones_entrega, m_contacto,
+    m_direccion, m_documentos_anexos, m_entrega, m_facturador, m_facturas, m_grupo_deducciones, m_grupo_impuestos,
+    m_items, m_lista_anticipos, m_lista_caracteristicas, m_lista_cargos_descuentos, m_lista_correcciones,
+    m_lista_deducciones, m_lista_documentos_referenciados, m_lista_impuestos, m_lista_impuestos,
+    m_lista_participantes_consorcio, m_mandatorio, m_notas_referenciadas, m_numeracion, m_pago,
+    m_periodo_facturacion, m_productos, m_resolucion, m_sucursal, m_tasa_cambio, m_transportista, m_sincronizacion,
+    m_clientes) {
+
+    this.m_adquiriente = m_adquiriente;
+    this.m_autorizado = m_autorizado;
+    this.m_centro_costo = m_centro_costo;
+    this.m_condiciones_entrega = m_condiciones_entrega;
+    this.m_contacto = m_contacto;
+    this.m_direccion = m_direccion;
+    this.m_documentos_anexos = m_documentos_anexos;
+    this.m_entrega = m_entrega;
+    this.m_facturador = m_facturador;
+    this.m_facturas = m_facturas;
+    this.m_grupo_deducciones = m_grupo_deducciones;
+    this.m_grupo_impuestos = m_grupo_impuestos;
+    this.m_items = m_items;
+    this.m_lista_anticipos = m_lista_anticipos;
+    this.m_lista_caracteristicas = m_lista_caracteristicas;
+    this.m_lista_cargos_descuentos = m_lista_cargos_descuentos;
+    this.m_lista_correcciones = m_lista_correcciones;
+    this.m_lista_deducciones = m_lista_deducciones;
+    this.m_lista_documentos_referenciados = m_lista_documentos_referenciados;
+    this.m_lista_impuestos = m_lista_impuestos;
+    this.m_lista_participantes_consorcio = m_lista_participantes_consorcio;
+    this.m_mandatorio = m_mandatorio;
+    this.m_notas_referenciadas = m_notas_referenciadas;
+    this.m_numeracion = m_numeracion;
+    this.m_pago = m_pago;
+    this.m_periodo_facturacion = m_periodo_facturacion;
+    this.m_productos = m_productos;
+    this.m_resolucion = m_resolucion;
+    this.m_sucursal = m_sucursal;
+    this.m_tasa_cambio = m_tasa_cambio;
+    this.m_transportista = m_transportista;
     this.m_sincronizacion = m_sincronizacion;
     this.m_clientes = m_clientes;
-    this.test();
+    that = this;
+
+    that.test();
 };
 
 Sincronizacion.prototype.test = function () {
+
     // console.log('Ejemploooo: ', this.facturacion); // 100
 };
 
@@ -714,6 +755,12 @@ function __jsonFacturaAjdunto(obj, callback) {
     callback(false, crearFacturaElectronica);
 }
 
+Sincronizacion.$inject = ['m_adquiriente', 'm_autorizado', 'm_centro_costo', 'm_condiciones_entrega', 'm_contacto',
+    'm_direccion', 'm_documentos_anexos', 'm_entrega', 'm_facturador', 'm_facturas', 'm_grupo_deducciones',
+    'm_grupo_impuestos', 'm_items', 'm_lista_anticipos', 'm_lista_caracteristicas', 'm_lista_cargos_descuentos',
+    'm_lista_correcciones', 'm_lista_deducciones', 'm_lista_documentos_referenciados', 'm_lista_impuestos',
+    'm_lista_participantes_consorcio', 'm_mandatorio', 'm_notas_referenciadas', 'm_numeracion', 'm_pago',
+    'm_periodo_facturacion', 'm_productos', 'm_resolucion', 'm_sucursal', 'm_tasa_cambio', 'm_transportista',
+    'm_sincronizacion', 'm_clientes'];
 
-Sincronizacion.$inject = ["m_sincronizacion", "m_clientes", "m_facturas"];
 module.exports = Sincronizacion;

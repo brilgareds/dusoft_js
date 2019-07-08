@@ -1,78 +1,76 @@
-class ListaParticipantesConsorcio {
-    constructor () {
-        this._razonSocial = '';
-        this._tipoIdentificacion = 0;
-        this._identificacion = '';
-        this._digitoVerificacion = '';
-        this._porcentajeParticipacion = '';
-        this._obligacionTributaria = '';
-        this._regimen = '';
-        this._listaImpuestos = {};
-    }
+function ListaParticipantesConsorcio () {
+    this._razonSocial = '';
+    this._tipoIdentificacion = 0;
+    this._identificacion = '';
+    this._digitoVerificacion = '';
+    this._porcentajeParticipacion = '';
+    this._obligacionTributaria = '';
+    this._regimen = '';
+    this._listaImpuestos = {};
 
-    get razonSocial() {
+    ListaParticipantesConsorcio.prototype.get_razonSocial = function () {
         return this._razonSocial;
-    }
+    };
 
-    set razonSocial(value) {
-        this._razonSocial = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_razonSocial = function (newValue) {
+        this._razonSocial = newValue;
+    };
 
-    get tipoIdentificacion() {
+    ListaParticipantesConsorcio.prototype.get_tipoIdentificacion = function () {
         return this._tipoIdentificacion;
-    }
+    };
 
-    set tipoIdentificacion(value) {
-        this._tipoIdentificacion = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_tipoIdentificacion = function (newValue) {
+        this._tipoIdentificacion = newValue;
+    };
 
-    get identificacion() {
+    ListaParticipantesConsorcio.prototype.get_identificacion = function () {
         return this._identificacion;
-    }
+    };
 
-    set identificacion(value) {
-        this._identificacion = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_identificacion = function (newValue) {
+        this._identificacion = newValue;
+    };
 
-    get digitoVerificacion() {
+    ListaParticipantesConsorcio.prototype.get_digitoVerificacion = function () {
         return this._digitoVerificacion;
-    }
+    };
 
-    set digitoVerificacion(value) {
-        this._digitoVerificacion = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_digitoVerificacion = function (newValue) {
+        this._digitoVerificacion = newValue;
+    };
 
-    get porcentajeParticipacion() {
+    ListaParticipantesConsorcio.prototype.get_porcentajeParticipacion = function () {
         return this._porcentajeParticipacion;
-    }
+    };
 
-    set porcentajeParticipacion(value) {
-        this._porcentajeParticipacion = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_porcentajeParticipacion = function (newValue) {
+        this._porcentajeParticipacion = newValue;
+    };
 
-    get obligacionTributaria() {
+    ListaParticipantesConsorcio.prototype.get_obligacionTributaria = function () {
         return this._obligacionTributaria;
-    }
+    };
 
-    set obligacionTributaria(value) {
-        this._obligacionTributaria = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_obligacionTributaria = function (newValue) {
+        this._obligacionTributaria = newValue;
+    };
 
-    get regimen() {
+    ListaParticipantesConsorcio.prototype.get_regimen = function () {
         return this._regimen;
-    }
+    };
 
-    set regimen(value) {
-        this._regimen = value;
-    }
+    ListaParticipantesConsorcio.prototype.set_regimen = function (newValue) {
+        this._regimen = newValue;
+    };
 
-    get listaImpuestos() {
+    ListaParticipantesConsorcio.prototype.get_listaImpuestos = function () {
         return this._listaImpuestos;
-    }
+    };
 
-    set listaImpuestos(value) {
-        this._listaImpuestos = value;
-    }
-}
+    ListaParticipantesConsorcio.prototype.set_listaImpuestos = function (newValue) {
+        this._listaImpuestos = newValue;
+    };
+};
 
 module.exports = new ListaParticipantesConsorcio;

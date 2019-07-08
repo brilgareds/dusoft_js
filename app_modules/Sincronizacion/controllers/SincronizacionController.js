@@ -1,13 +1,14 @@
 /* global G */
+'use strict';
+
 let that;
 
 let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_condiciones_entrega, m_contacto,
     m_direccion, m_documentos_anexos, m_entrega, m_facturador, m_facturas, m_grupo_deducciones, m_grupo_impuestos,
     m_items, m_lista_anticipos, m_lista_caracteristicas, m_lista_cargos_descuentos, m_lista_correcciones,
-    m_lista_deducciones, m_lista_documentos_referenciados, m_lista_impuestos, m_lista_impuestos,
-    m_lista_participantes_consorcio, m_mandatorio, m_notas_referenciadas, m_numeracion, m_pago,
-    m_periodo_facturacion, m_productos, m_resolucion, m_sucursal, m_tasa_cambio, m_transportista, m_sincronizacion,
-    m_clientes) {
+    m_lista_deducciones, m_lista_documentos_referenciados, m_lista_impuestos, m_lista_participantes_consorcio,
+    m_mandatorio, m_notas_referenciadas, m_numeracion, m_pago, m_periodo_facturacion, m_productos, m_resolucion,
+    m_sucursal, m_tasa_cambio, m_transportista, m_sincronizacion, m_clientes) {
 
     this.m_adquiriente = m_adquiriente;
     this.m_autorizado = m_autorizado;
@@ -48,8 +49,16 @@ let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_co
 };
 
 Sincronizacion.prototype.test = function () {
+    console.log('Eyyyy', this.m_pago);
+    // console.log(JSON.parse(this.m_pago));
+    // console.log(this.m_pago.codigoMedioPago);
+    this.m_pago.set_id(7);
+    console.log('El valor final es: ', this.m_pago.get_id());
 
-    // console.log('Ejemploooo: ', this.facturacion); // 100
+    //console.log('\nEooo', this.m_pago);
+
+    // Sincronizacion.codigoMedioPago('Easd');
+    // Sincronizacion.fechaVencimiento('asdasdasd');
 };
 
 

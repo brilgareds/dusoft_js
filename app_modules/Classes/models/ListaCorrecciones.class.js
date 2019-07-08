@@ -1,4 +1,4 @@
-class listaCorrecciones {
+class ListaCorrecciones {
     constructor () {
         this._id = 0;
         this._codigo = '';
@@ -29,4 +29,4 @@ class listaCorrecciones {
         this._descripcion = value;
     }
 }
-module.exports = new listaCorrecciones;
+module.exports = new ListaCorrecciones;

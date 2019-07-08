@@ -1,41 +1,42 @@
-class Numeracion {
-    constructor(){
-        this._desde = 0;
-        this._hasta = 0;
-        this._fechaInicio = "";
-        this._fechaFin = "";
-    }
+function Numeracion() {
 
-    get desde() {
+    this._desde = 0;
+    this._hasta = 0;
+    this._fechaInicio = "";
+    this._fechaFin = "";
+
+
+    Numeracion.prototype.getDesde = function () {
         return this._desde;
     }
 
-    set desde(value) {
-        this._desde = value;
+    Numeracion.prototype.setDesde = function (_desde) {
+        this._desde = _desde;
     }
 
-    get hasta() {
+    Numeracion.prototype.getHasta = function () {
         return this._hasta;
     }
 
-    set hasta(value) {
-        this._hasta = value;
+    Numeracion.prototype.setHasta = function (_hasta) {
+        this._hasta = _hasta;
     }
 
-    get fechaInicio() {
+    Numeracion.prototype.getFechaInicio = function () {
         return this._fechaInicio;
     }
 
-    set fechaInicio(value) {
-        this._fechaInicio = value;
+    Numeracion.prototype.setFechaInicio = function (_fechaInicio) {
+        this._fechaInicio = _fechaInicio;
     }
 
-    get fechaFin() {
+    Numeracion.prototype.getFechaFin = function () {
         return this._fechaFin;
     }
 
-    set fechaFin(value) {
-        this._fechaFin = value;
+    Numeracion.prototype.setFechaFin = function (_fechaFin) {
+        this._fechaFin = _fechaFin;
     }
 }
-  module.exports = new Numeracion;
+;
+module.exports = new Numeracion;

@@ -1,44 +1,42 @@
 
-class PeriodoFacturacion {
-    constructor() {
+function PeriodoFacturacion() {
+
         this._fechaInicio = '';
         this._horaInicio = '';
         this._fechaFin = '';
         this._horaFin = '';
 
-    }
-
-    get fechaInicio() {
+    PeriodoFacturacion.prototype.getFechaInicio = function () {
         return this._fechaInicio;
-    }
+    };
 
-    set fechaInicio(value) {
+    PeriodoFacturacion.prototype.setFechaInicio = function (value) {
         this._fechaInicio = value;
-    }
+    };
 
-    get horaInicio() {
+    PeriodoFacturacion.prototype.getHoraInicio = function () {
         return this._horaInicio;
-    }
+    };
 
-    set horaInicio(value) {
+    PeriodoFacturacion.prototype.setHoraInicio = function (value) {
         this._horaInicio = value;
-    }
+    };
 
-    get fechaFin() {
+    PeriodoFacturacion.prototype.getFechaFin = function () {
         return this._fechaFin;
-    }
+    };
 
-    set fechaFin(value) {
+    PeriodoFacturacion.prototype.setFechaFin = function (value) {
         this._fechaFin = value;
-    }
+    };
 
-    get horaFin() {
+    PeriodoFacturacion.prototype.getHoraFin = function () {
         return this._horaFin;
-    }
+    };
 
-    set horaFin(value) {
+    PeriodoFacturacion.prototype.setHoraFin = function (value) {
         this._horaFin = value;
-    }
-}
+    };
+};
 
 module.exports = new PeriodoFacturacion;

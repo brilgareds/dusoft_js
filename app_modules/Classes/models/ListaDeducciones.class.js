@@ -1,6 +1,5 @@
 
-class ListaDeducciones {
-    constructor() {
+function ListaDeducciones() {
         this._codigo = '';
         this._nombre = '';
         this._baseGravable = 0.0;
@@ -10,61 +9,60 @@ class ListaDeducciones {
         this._unidad = 0.0;
     }
 
-    get codigo() {
+    ListaDeducciones.prototype.get_codigo = function() {
         return this._codigo;
     }
 
-    set codigo(value) {
+    ListaDeducciones.prototype.set_codigo = function(value) {
         this._codigo = value;
     }
 
-    get nombre() {
+    ListaDeducciones.prototype.get_nombre = function() {
         return this._nombre;
     }
 
-    set nombre(value) {
+    ListaDeducciones.prototype.set_nombre = function(value) {
         this._nombre = value;
     }
 
-    get baseGravable() {
+    ListaDeducciones.prototype.get_baseGravable = function() {
         return this._baseGravable;
     }
 
-    set baseGravable(value) {
+    ListaDeducciones.prototype.set_baseGravable = function(value) {
         this._baseGravable = value;
     }
 
-    get porcentaje() {
+    ListaDeducciones.prototype.get_porcentaje = function() {
         return this._porcentaje;
     }
 
-    set porcentaje(value) {
+    ListaDeducciones.prototype.set_porcentaje = function(value) {
         this._porcentaje = value;
     }
 
-    get valor() {
+    ListaDeducciones.prototype.get_valor = function() {
         return this._valor;
     }
 
-    set valor(value) {
+    ListaDeducciones.prototype.set_valor = function(value) {
         this._valor = value;
     }
 
-    get codigoUnidad() {
+    ListaDeducciones.prototype.get_codigoUnidad = function() {
         return this._codigoUnidad;
     }
 
-    set codigoUnidad(value) {
+    ListaDeducciones.prototype.set_codigoUnidad = function(value) {
         this._codigoUnidad = value;
     }
 
-    get unidad() {
+    ListaDeducciones.prototype.get_unidad = function() {
         return this._unidad;
     }
 
-    set unidad(value) {
+    ListaDeducciones.prototype.set_unidad = function(value) {
         this._unidad = value;
     }
-}
 
 module.exports = new ListaDeducciones;

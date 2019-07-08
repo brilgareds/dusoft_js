@@ -1,5 +1,4 @@
-class Items {
-    constructor () {
+function Items() {
         this._marca = '';
         this._modelo = '';
         this._codigoArticuloVendedor = '';
@@ -17,117 +16,117 @@ class Items {
         this._mandatorio = [];
     }
 
-    get marca() {
+    Items.prototype.get_marca = function() {
         return this._marca;
     }
 
-    set marca(value) {
+    Items.prototype.set_marca = function(value) {
         this._marca = value;
     }
 
-    get modelo() {
+    Items.prototype.get_modelo = function() {
         return this._modelo;
     }
 
-    set modelo(value) {
+    Items.prototype.set_modelo = function(value) {
         this._modelo = value;
     }
 
-    get codigoArticuloVendedor() {
+    Items.prototype.get_codigoArticuloVendedor = function() {
         return this._codigoArticuloVendedor;
     }
 
-    set codigoArticuloVendedor(value) {
+    Items.prototype.set_codigoArticuloVendedor = function(value) {
         this._codigoArticuloVendedor = value;
     }
 
-    get codigoExtendidoVendedor() {
+    Items.prototype.get_codigoExtendidoVendedor = function() {
         return this._codigoExtendidoVendedor;
     }
 
-    set codigoExtendidoVendedor(value) {
+    Items.prototype.set_codigoExtendidoVendedor = function(value) {
         this._codigoExtendidoVendedor = value;
     }
 
-    get codigoEstandar() {
+    Items.prototype.get_codigoEstandar = function() {
         return this._codigoEstandar;
     }
 
-    set codigoEstandar(value) {
+    Items.prototype.set_codigoEstandar = function(value) {
         this._codigoEstandar = value;
     }
 
-    get nombreEstandar() {
+    Items.prototype.get_nombreEstandar = function() {
         return this._nombreEstandar;
     }
 
-    set nombreEstandar(value) {
+    Items.prototype.set_nombreEstandar = function(value) {
         this._nombreEstandar = value;
     }
 
-    get descripcion() {
+    Items.prototype.get_descripcion = function() {
         return this._descripcion;
     }
 
-    set descripcion(value) {
+    Items.prototype.set_descripcion = function(value) {
         this._descripcion = value;
     }
 
-    get datosTecnicos() {
+    Items.prototype.get_datosTecnicos = function() {
         return this._datosTecnicos;
     }
 
-    set datosTecnicos(value) {
+    Items.prototype.set_datosTecnicos = function(value) {
         this._datosTecnicos = value;
     }
 
-    get cantidadPaquetes() {
+    Items.prototype.get_cantidadPaquetes = function() {
         return this._cantidadPaquetes;
     }
 
-    set cantidadPaquetes(value) {
+    Items.prototype.set_cantidadPaquetes = function(value) {
         this._cantidadPaquetes = value;
     }
 
-    get codigoPais() {
+    Items.prototype.get_codigoPais = function() {
         return this._codigoPais;
     }
 
-    set codigoPais(value) {
+    Items.prototype.set_codigoPais = function(value) {
         this._codigoPais = value;
     }
 
-    get nombrePais() {
+    Items.prototype.get_nombrePais = function() {
         return this._nombrePais;
     }
 
-    set nombrePais(value) {
+    Items.prototype.set_nombrePais = function(value) {
         this._nombrePais = value;
     }
 
-    get codigoLenguajePais() {
+    Items.prototype.get_codigoLenguajePais = function() {
         return this._codigoLenguajePais;
     }
 
-    set codigoLenguajePais(value) {
+    Items.prototype.set_codigoLenguajePais = function(value) {
         this._codigoLenguajePais = value;
     }
 
-    get listaCaracteristicas() {
+    Items.prototype.get_listaCaracteristicas = function() {
         return this._listaCaracteristicas;
     }
 
-    set listaCaracteristicas(value) {
+    Items.prototype.set_listaCaracteristicas = function(value) {
         this._listaCaracteristicas = value;
     }
 
-    get mandatorio() {
+    Items.prototype.get_mandatorio = function() {
         return this._mandatorio;
     }
 
-    set mandatorio(value) {
+    Items.prototype.set_mandatorio = function(value) {
         this._mandatorio = value;
     }
-}
+
 
 module.exports = new Items;

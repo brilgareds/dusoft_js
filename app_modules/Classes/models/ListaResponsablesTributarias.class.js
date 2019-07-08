@@ -1,34 +1,33 @@
 
-class ListaResponsablesTributarias {
-    constructor(){
+function ListaResponsablesTributarias() {
         this._codigo = "";
         this._nombre = "";
         this._descripcion = "";
     }
 
 
-    get codigo() {
+    ListaResponsablesTributarias.prototype.get_codigo = function() {
         return this._codigo;
     }
 
-    set codigo(value) {
+    ListaResponsablesTributarias.prototype.set_codigo = function(value) {
         this._codigo = value;
     }
 
-    get nombre() {
+    ListaResponsablesTributarias.prototype.get_nombre = function() {
         return this._nombre;
     }
 
-    set nombre(value) {
+    ListaResponsablesTributarias.prototype.set_nombre = function(value) {
         this._nombre = value;
     }
 
-    get descripcion() {
+    ListaResponsablesTributarias.prototype.get_descripcion = function() {
         return this._descripcion;
     }
 
-    set descripcion(value) {
+    ListaResponsablesTributarias.prototype.set_descripcion = function(value) {
         this._descripcion = value;
     }
-}
+
 module.exports = new ListaResponsablesTributarias;

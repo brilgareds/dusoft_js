@@ -1,6 +1,5 @@
 
-class ListaImpuestos {
-    constructor() {
+function ListaImpuestos() {
         this._codigo = '';
         this._nombre = '';
         this._baseGravable = 0.0;
@@ -11,61 +10,60 @@ class ListaImpuestos {
 
     }
 
-    get codigo() {
+    ListaImpuestos.prototype.get_codigo = function() {
         return this._codigo;
     }
 
-    set codigo(value) {
+    ListaImpuestos.prototype.set_codigo = function(value) {
         this._codigo = value;
     }
 
-    get nombre() {
+    ListaImpuestos.prototype.get_nombre = function() {
         return this._nombre;
     }
 
-    set nombre(value) {
+    ListaImpuestos.prototype.set_nombre = function(value) {
         this._nombre = value;
     }
 
-    get baseGravable() {
+    ListaImpuestos.prototype.get_baseGravable = function() {
         return this._baseGravable;
     }
 
-    set baseGravable(value) {
+    ListaImpuestos.prototype.set_baseGravable = function(value) {
         this._baseGravable = value;
     }
 
-    get porcentaje() {
+    ListaImpuestos.prototype.get_porcentaje = function() {
         return this._porcentaje;
     }
 
-    set porcentaje(value) {
+    ListaImpuestos.prototype.set_porcentaje = function(value) {
         this._porcentaje = value;
     }
 
-    get valor() {
+    ListaImpuestos.prototype.get_valor = function() {
         return this._valor;
     }
 
-    set valor(value) {
+    ListaImpuestos.prototype.set_valor = function(value) {
         this._valor = value;
     }
 
-    get codigoUnidad() {
+    ListaImpuestos.prototype.get_codigoUnidad = function() {
         return this._codigoUnidad;
     }
 
-    set codigoUnidad(value) {
+    ListaImpuestos.prototype.set_codigoUnidad = function(value) {
         this._codigoUnidad = value;
     }
 
-    get unidad() {
+    ListaImpuestos.prototype.get_unidad = function() {
         return this._unidad;
     }
 
-    set unidad(value) {
+    ListaImpuestos.prototype.set_unidad = function(value) {
         this._unidad = value;
     }
-}
 
 module.exports = new ListaImpuestos;

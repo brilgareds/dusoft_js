@@ -1,35 +1,33 @@
 
-class GruposDeducciones {
-    constructor() {
+function GruposDeducciones() {
         this._codigo = '';
         this._total = 0;
         this._listaDeducciones = {};
 
     }
 
-    get codigo() {
+    GruposDeducciones.prototype.get_codigo = function() {
         return this._codigo;
     }
 
-    set codigo(value) {
+    GruposDeducciones.prototype.set_codigo = function(value) {
         this._codigo = value;
     }
 
-    get total() {
+    GruposDeducciones.prototype.get_total = function() {
         return this._total;
     }
 
-    set total(value) {
+    GruposDeducciones.prototype.set_total = function(value) {
         this._total = value;
     }
 
-    get listaDeducciones() {
+    GruposDeducciones.prototype.get_listaDeducciones = function() {
         return this._listaDeducciones;
     }
 
-    set listaDeducciones(value) {
+    GruposDeducciones.prototype.set_listaDeducciones = function(value) {
         this._listaDeducciones = value;
     }
-}
 
 module.exports = new GruposDeducciones;

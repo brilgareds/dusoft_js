@@ -1,5 +1,4 @@
-class ListaDocumentosReferenciados {
-    constructor () {
+function ListaDocumentosReferenciados() {
         this._id = '';
         this._tipo = '';
         this._fecha = '';
@@ -7,45 +6,44 @@ class ListaDocumentosReferenciados {
         this._cufre = '';
     }
 
-    get id() {
+    ListaDocumentosReferenciados.prototype.get_id = function() {
         return this._id;
     }
 
-    set id(value) {
+    ListaDocumentosReferenciados.prototype.set_id = function(value) {
         this._id = value;
     }
 
-    get tipo() {
+    ListaDocumentosReferenciados.prototype.get_tipo = function() {
         return this._tipo;
     }
 
-    set tipo(value) {
+    ListaDocumentosReferenciados.prototype.set_tipo = function(value) {
         this._tipo = value;
     }
 
-    get fecha() {
+    ListaDocumentosReferenciados.prototype.get_fecha = function() {
         return this._fecha;
     }
 
-    set fecha(value) {
+    ListaDocumentosReferenciados.prototype.set_fecha = function(value) {
         this._fecha = value;
     }
 
-    get algoritmo() {
+    ListaDocumentosReferenciados.prototype.get_algoritmo = function() {
         return this._algoritmo;
     }
 
-    set algoritmo(value) {
+    ListaDocumentosReferenciados.prototype.set_algoritmo = function(value) {
         this._algoritmo = value;
     }
 
-    get cufre() {
+    ListaDocumentosReferenciados.prototype.get_cufre = function() {
         return this._cufre;
     }
 
-    set cufre(value) {
+    ListaDocumentosReferenciados.prototype.set_cufre = function(value) {
         this._cufre = value;
     }
-}
 
 module.exports = new ListaDocumentosReferenciados;

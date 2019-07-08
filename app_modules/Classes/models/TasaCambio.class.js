@@ -1,61 +1,61 @@
 
-class TasaCambio {
-    constructor() {
+function TasaCambio() {
+
         this._fechaCambio = '';
         this._codigoMonedaFacturado = '';
         this._codigoMonedaCambio = '';
         this._baseCambioFacturado = 0.0;
         this._baseCambio = 0.0;
         this._trm = 0.0;
-    }
+    
 
-    get fechaCambio() {
+    TasaCambio.prototype.getFechaCambio = function () {
         return this._fechaCambio;
-    }
+    };
 
-    set fechaCambio(value) {
+    TasaCambio.prototype.setFechaCambio = function (value) {
         this._fechaCambio = value;
-    }
+    };
 
-    get codigoMonedaFacturado() {
+    TasaCambio.prototype.getCodigoMonedaFacturado = function () {
         return this._codigoMonedaFacturado;
-    }
+    };
 
-    set codigoMonedaFacturado(value) {
+    TasaCambio.prototype.setCodigoMonedaFacturado = function (value) {
         this._codigoMonedaFacturado = value;
-    }
+    };
 
-    get codigoMonedaCambio() {
+    TasaCambio.prototype.getCodigoMonedaCambio = function () {
         return this._codigoMonedaCambio;
-    }
+    };
 
-    set codigoMonedaCambio(value) {
+    TasaCambio.prototype.setCodigoMonedaCambio = function (value) {
         this._codigoMonedaCambio = value;
-    }
+    };
 
-    get baseCambioFacturado() {
+    TasaCambio.prototype.getBaseCambioFacturado = function () {
         return this._baseCambioFacturado;
-    }
+    };
 
-    set baseCambioFacturado(value) {
+    TasaCambio.prototype.setBaseCambioFacturado = function (value) {
         this._baseCambioFacturado = value;
-    }
+    };
 
-    get baseCambio() {
+    TasaCambio.prototype.getBaseCambio = function () {
         return this._baseCambio;
-    }
+    };
 
-    set baseCambio(value) {
+    TasaCambio.prototype.setBaseCambio = function (value) {
         this._baseCambio = value;
-    }
+    };
 
-    get trm() {
+    TasaCambio.prototype.getTrm = function () {
         return this._trm;
-    }
+    };
 
-    set trm(value) {
+    TasaCambio.prototype.setTrm = function (value) {
         this._trm = value;
-    }
-}
+    };
+};
 
 module.exports = new TasaCambio;

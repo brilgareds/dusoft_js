@@ -1,5 +1,4 @@
-class ListaAnticipos {
-    constructor(){
+function ListaAnticipos() {
         this._id = "";
         this._valor = 0;
         this._fechaRecibo = "";
@@ -8,53 +7,52 @@ class ListaAnticipos {
         this._instrucciones = "";
     }
 
-    get id() {
+    ListaAnticipos.prototype.get_id = function() {
         return this._id;
     }
 
-    set id(value) {
+    ListaAnticipos.prototype.set_id = function(value) {
         this._id = value;
     }
 
-    get valor() {
+    ListaAnticipos.prototype.get_valor = function() {
         return this._valor;
     }
 
-    set valor(value) {
+    ListaAnticipos.prototype.set_valor = function(value) {
         this._valor = value;
     }
 
-    get fechaRecibo() {
+    ListaAnticipos.prototype.get_fechaRecibo = function() {
         return this._fechaRecibo;
     }
 
-    set fechaRecibo(value) {
+    ListaAnticipos.prototype.set_fechaRecibo = function(value) {
         this._fechaRecibo = value;
     }
 
-    get fechaPago() {
+    ListaAnticipos.prototype.get_fechaPago = function() {
         return this._fechaPago;
     }
 
-    set fechaPago(value) {
+    ListaAnticipos.prototype.set_fechaPago = function(value) {
         this._fechaPago = value;
     }
 
-    get horaPago() {
+    ListaAnticipos.prototype.get_horaPago = function() {
         return this._horaPago;
     }
 
-    set horaPago(value) {
+    ListaAnticipos.prototype.set_horaPago = function(value) {
         this._horaPago = value;
     }
 
-    get instrucciones() {
+    ListaAnticipos.prototype.get_instrucciones = function() {
         return this._instrucciones;
     }
 
-    set instrucciones(value) {
+    ListaAnticipos.prototype.set_instrucciones = function(value) {
         this._instrucciones = value;
     }
-}
 
   module.exports = new ListaAnticipos;

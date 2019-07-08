@@ -1,6 +1,5 @@
 
-class Adquiriente {
-    constructor() {
+function Adquiriente() {
         this._razonSocial = '';
         this._nombreRegistrado = '';
         this._tipoIdentificacion = 0;
@@ -22,158 +21,156 @@ class Adquiriente {
         this._centroCosto = [];
     }
 
-
-    get razonSocial() {
+    Adquiriente.prototype.get_razonSocial = function() {
         return this._razonSocial;
     }
 
-    set razonSocial(value) {
+    Adquiriente.prototype.set_razonSocial = function(value) {
         this._razonSocial = value;
     }
 
-    get nombreRegistrado() {
+    Adquiriente.prototype.get_nombreRegistrado= function() {
         return this._nombreRegistrado;
     }
 
-    set nombreRegistrado(value) {
+    Adquiriente.prototype.set_nombreRegistrado= function(value) {
         this._nombreRegistrado = value;
     }
 
-    get tipoIdentificacion() {
+    Adquiriente.prototype.get_tipoIdentificacion= function() {
         return this._tipoIdentificacion;
     }
 
-    set tipoIdentificacion(value) {
+    Adquiriente.prototype.set_tipoIdentificacion= function(value) {
         this._tipoIdentificacion = value;
     }
 
-    get identificacion() {
+    Adquiriente.prototype.get_identificacion= function() {
         return this._identificacion;
     }
 
-    set identificacion(value) {
+    Adquiriente.prototype.set_identificacion= function(value) {
         this._identificacion = value;
     }
 
-    get digitoVerificacion() {
+    Adquiriente.prototype.get_digitoVerificacion= function() {
         return this._digitoVerificacion;
     }
 
-    set digitoVerificacion(value) {
+    Adquiriente.prototype.set_digitoVerificacion= function(value) {
         this._digitoVerificacion = value;
     }
 
-    get naturaleza() {
+    Adquiriente.prototype.get_naturaleza= function() {
         return this._naturaleza;
     }
 
-    set naturaleza(value) {
+    Adquiriente.prototype.set_naturaleza= function(value) {
         this._naturaleza = value;
     }
 
-    get codigoRegimen() {
+    Adquiriente.prototype.get_codigoRegimen= function() {
         return this._codigoRegimen;
     }
 
-    set codigoRegimen(value) {
+    Adquiriente.prototype.set_codigoRegimen= function(value) {
         this._codigoRegimen = value;
     }
 
-    get responsabilidadFiscal() {
+    Adquiriente.prototype.get_responsabilidadFiscal= function() {
         return this._responsabilidadFiscal;
     }
 
-    set responsabilidadFiscal(value) {
+    Adquiriente.prototype.set_responsabilidadFiscal= function(value) {
         this._responsabilidadFiscal = value;
     }
 
-    get codigoImpuesto() {
+    Adquiriente.prototype.get_codigoImpuesto= function() {
         return this._codigoImpuesto;
     }
 
-    set codigoImpuesto(value) {
+    Adquiriente.prototype.set_codigoImpuesto= function(value) {
         this._codigoImpuesto = value;
     }
 
-    get nombreImpuesto() {
+    Adquiriente.prototype.get_nombreImpuesto= function() {
         return this._nombreImpuesto;
     }
 
-    set nombreImpuesto(value) {
+    Adquiriente.prototype.set_nombreImpuesto= function(value) {
         this._nombreImpuesto = value;
     }
 
-    get telefono() {
+    Adquiriente.prototype.get_telefono= function() {
         return this._telefono;
     }
 
-    set telefono(value) {
+    Adquiriente.prototype.set_telefono= function(value) {
         this._telefono = value;
     }
 
-    get email() {
+    Adquiriente.prototype.get_email= function() {
         return this._email;
     }
 
-    set email(value) {
+    Adquiriente.prototype.set_email= function(value) {
         this._email = value;
     }
 
-    get contacto() {
+    Adquiriente.prototype.get_contacto= function() {
         return this._contacto;
     }
 
-    set contacto(value) {
+    Adquiriente.prototype.set_contacto= function(value) {
         this._contacto = value;
     }
 
-    get direccion() {
+    Adquiriente.prototype.get_direccion= function() {
         return this._direccion;
     }
 
-    set direccion(value) {
+    Adquiriente.prototype.set_direccion= function(value) {
         this._direccion = value;
     }
 
-    get direccionFiscal() {
+    Adquiriente.prototype.get_direccionFiscal= function() {
         return this._direccionFiscal;
     }
 
-    set direccionFiscal(value) {
+    Adquiriente.prototype.set_direccionFiscal= function(value) {
         this._direccionFiscal = value;
     }
 
-    get listaResponsabilidadesTributarias() {
+    Adquiriente.prototype.get_listaResponsabilidadesTributarias= function() {
         return this._listaResponsabilidadesTributarias;
     }
 
-    set listaResponsabilidadesTributarias(value) {
+    Adquiriente.prototype.set_listaResponsabilidadesTributarias= function(value) {
         this._listaResponsabilidadesTributarias = value;
     }
 
-    get codigoCIUU() {
+    Adquiriente.prototype.get_codigoCIUU= function() {
         return this._codigoCIUU;
     }
 
-    set codigoCIUU(value) {
+    Adquiriente.prototype.set_codigoCIUU= function(value) {
         this._codigoCIUU = value;
     }
 
-    get sucursal() {
+    Adquiriente.prototype.get_sucursal= function() {
         return this._sucursal;
     }
 
-    set sucursal(value) {
+    Adquiriente.prototype.set_sucursal= function(value) {
         this._sucursal = value;
     }
 
-    get centroCosto() {
+    Adquiriente.prototype.get_centroCosto = function() {
         return this._centroCosto;
     }
 
-    set centroCosto(value) {
+    Adquiriente.prototype.set_centroCosto = function(value) {
         this._centroCosto = value;
     }
-}
 
 module.exports = new Adquiriente;

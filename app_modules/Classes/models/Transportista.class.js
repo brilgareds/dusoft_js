@@ -1,160 +1,160 @@
-class Transportista {
-    constructor(){
-        this._razonSocial = "";
-        this._nombreRegistrado = "";
-        this._tipoIdentificacion = 0;
-        this._identificacion = 0;
-        this._digitoVerificacion = 0;
-        this._naturaleza = "";
-        this._codigoRegimen = "";
-        this._responsabilidadFiscal = "";
-        this._codigoImpuesto = "";
-        this._nombreImpuesto = "";
-        this._telefono = "";
-        this._email = "";
-        this._contacto = {};
-        this._direccion = {};
-        this._direccionFiscal = {};
-        this._listaResponsabilidadesTributarias = [];
-        this._numeroMatricula = 0;
-    }
+function Transportista() {
 
-    get razonSocial() {
+    this._razonSocial = "";
+    this._nombreRegistrado = "";
+    this._tipoIdentificacion = 0;
+    this._identificacion = 0;
+    this._digitoVerificacion = 0;
+    this._naturaleza = "";
+    this._codigoRegimen = "";
+    this._responsabilidadFiscal = "";
+    this._codigoImpuesto = "";
+    this._nombreImpuesto = "";
+    this._telefono = "";
+    this._email = "";
+    this._contacto = {};
+    this._direccion = {};
+    this._direccionFiscal = {};
+    this._listaResponsabilidadesTributarias = [];
+    this._numeroMatricula = 0;
+
+    Transportista.prototype.getRazonSocial = function () {
         return this._razonSocial;
-    }
+    };
 
-    set razonSocial(value) {
+    Transportista.prototype.setRazonSocial = function (value) {
         this._razonSocial = value;
-    }
+    };
 
-    get nombreRegistrado() {
+    Transportista.prototype.getNombreRegistrado = function () {
         return this._nombreRegistrado;
-    }
+    };
 
-    set nombreRegistrado(value) {
+    Transportista.prototype.setNombreRegistrado = function (value) {
         this._nombreRegistrado = value;
-    }
+    };
 
-    get tipoIdentificacion() {
+    Transportista.prototype.getTipoIdentificacion = function () {
         return this._tipoIdentificacion;
-    }
+    };
 
-    set tipoIdentificacion(value) {
+    Transportista.prototype.setTipoIdentificacion = function (value) {
         this._tipoIdentificacion = value;
-    }
+    };
 
-    get identificacion() {
+    Transportista.prototype.getIdentificacion = function () {
         return this._identificacion;
-    }
+    };
 
-    set identificacion(value) {
+    Transportista.prototype.setIdentificacion = function (value) {
         this._identificacion = value;
-    }
+    };
 
-    get digitoVerificacion() {
+    Transportista.prototype.getDigitoVerificacion = function () {
         return this._digitoVerificacion;
-    }
+    };
 
-    set digitoVerificacion(value) {
+    Transportista.prototype.setDigitoVerificacion = function (value) {
         this._digitoVerificacion = value;
-    }
+    };
 
-    get naturaleza() {
+    Transportista.prototype.getNaturaleza = function () {
         return this._naturaleza;
-    }
+    };
 
-    set naturaleza(value) {
+    Transportista.prototype.setNaturaleza = function (value) {
         this._naturaleza = value;
-    }
+    };
 
-    get codigoRegimen() {
+    Transportista.prototype.getCodigoRegimen = function () {
         return this._codigoRegimen;
-    }
+    };
 
-    set codigoRegimen(value) {
+    Transportista.prototype.setCodigoRegimen = function (value) {
         this._codigoRegimen = value;
-    }
+    };
 
-    get responsabilidadFiscal() {
+    Transportista.prototype.getResponsabilidadFiscal = function () {
         return this._responsabilidadFiscal;
-    }
+    };
 
-    set responsabilidadFiscal(value) {
+    Transportista.prototype.setResponsabilidadFiscal = function (value) {
         this._responsabilidadFiscal = value;
-    }
+    };
 
-    get codigoImpuesto() {
+    Transportista.prototype.getCodigoImpuesto = function () {
         return this._codigoImpuesto;
-    }
+    };
 
-    set codigoImpuesto(value) {
+    Transportista.prototype.setCodigoImpuesto = function (value) {
         this._codigoImpuesto = value;
-    }
+    };
 
-    get nombreImpuesto() {
+    Transportista.prototype.getNombreImpuesto = function () {
         return this._nombreImpuesto;
-    }
+    };
 
-    set nombreImpuesto(value) {
+    Transportista.prototype.setNombreImpuesto = function (value) {
         this._nombreImpuesto = value;
-    }
+    };
 
-    get telefono() {
+    Transportista.prototype.getTelefono = function () {
         return this._telefono;
-    }
+    };
 
-    set telefono(value) {
+    Transportista.prototype.setTelefono = function (value) {
         this._telefono = value;
-    }
+    };
 
-    get email() {
+    Transportista.prototype.getEmail = function () {
         return this._email;
-    }
+    };
 
-    set email(value) {
+    Transportista.prototype.setEmail = function (value) {
         this._email = value;
-    }
+    };
 
-    get contacto() {
+    Transportista.prototype.getContacto = function () {
         return this._contacto;
-    }
+    };
 
-    set contacto(value) {
+    Transportista.prototype.setContacto = function (value) {
         this._contacto = value;
-    }
+    };
 
-    get direccion() {
+    Transportista.prototype.getDireccion = function () {
         return this._direccion;
-    }
+    };
 
-    set direccion(value) {
+    Transportista.prototype.setDireccion = function (value) {
         this._direccion = value;
-    }
+    };
 
-    get direccionFiscal() {
+    Transportista.prototype.getDireccionFiscal = function () {
         return this._direccionFiscal;
-    }
+    };
 
-    set direccionFiscal(value) {
+    Transportista.prototype.setDireccionFiscal = function (value) {
         this._direccionFiscal = value;
-    }
+    };
 
-    get listaResponsabilidadesTributarias() {
+    Transportista.prototype.getListaResponsabilidadesTributarias = function () {
         return this._listaResponsabilidadesTributarias;
-    }
+    };
 
-    set listaResponsabilidadesTributarias(value) {
+    Transportista.prototype.setListaResponsabilidadesTributarias = function (value) {
         this._listaResponsabilidadesTributarias = value;
-    }
+    };
 
-    get numeroMatricula() {
+    Transportista.prototype.getNumeroMatricula = function () {
         return this._numeroMatricula;
-    }
+    };
 
-    set numeroMatricula(value) {
+    Transportista.prototype.setNumeroMatricula = function (value) {
         this._numeroMatricula = value;
-    }
+    };
 }
+;
 
 
-  module.exports = new Transportista;
+module.exports = new Transportista;

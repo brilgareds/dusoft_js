@@ -1,5 +1,5 @@
-class Sucursal {
-    constructor () {
+ function Sucursal() {
+
         this._id = '';
         this._numeroMatricula = 0;
         this._razonSocial = '';
@@ -7,62 +7,61 @@ class Sucursal {
         this._direccion = '';
         this._telefono = '';
         this._email = '';
-    }
-
-    get id() {
+   
+    Sucursal.prototype.getId = function () {
         return this._id;
-    }
+    };
 
-    set id(value) {
+    Sucursal.prototype.setId = function (value) {
         this._id = value;
-    }
+    };
 
-    get numeroMatricula() {
+    Sucursal.prototype.getNumeroMatricula = function () {
         return this._numeroMatricula;
-    }
+    };
 
-    set numeroMatricula(value) {
+    Sucursal.prototype.setNumeroMatricula = function (value) {
         this._numeroMatricula = value;
-    }
+    };
 
-    get razonSocial() {
+    Sucursal.prototype.getRazonSocial = function () {
         return this._razonSocial;
-    }
+    };
 
-    set razonSocial(value) {
+    Sucursal.prototype.setRazonSocial = function (value) {
         this._razonSocial = value;
-    }
+    };
 
-    get prefijoFacturacion() {
+    Sucursal.prototype.getPrefijoFacturacion = function () {
         return this._prefijoFacturacion;
-    }
+    };
 
-    set prefijoFacturacion(value) {
+    Sucursal.prototype.setPrefijoFacturacion = function (value) {
         this._prefijoFacturacion = value;
-    }
+    };
 
-    get direccion() {
+    Sucursal.prototype.getDireccion = function () {
         return this._direccion;
-    }
+    };
 
-    set direccion(value) {
+    Sucursal.prototype.setDireccion = function (value) {
         this._direccion = value;
-    }
+    };
 
-    get telefono() {
+    Sucursal.prototype.getTelefono = function () {
         return this._telefono;
-    }
+    };
 
-    set telefono(value) {
+    Sucursal.prototype.setTelefono = function (value) {
         this._telefono = value;
-    }
+    };
 
-    get email() {
+    Sucursal.prototype.getEmail = function () {
         return this._email;
-    }
+    };
 
-    set email(value) {
+    Sucursal.prototype.setEmail = function (value) {
         this._email = value;
-    }
-}
+    };
+};
 module.exports = new Sucursal;

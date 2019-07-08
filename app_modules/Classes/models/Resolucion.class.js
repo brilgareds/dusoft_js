@@ -1,44 +1,44 @@
 
-class Resolucion {
-    constructor() {
+function Resolucion() {
+
         this._numero = '';
         this._horaInicio = '';
         this._fechaFin = '';
         this._numeracion = [];
-    }
+    
 
-    get numero() {
+    Resolucion.prototype.getNumero = function () {
         return this._numero;
-    }
+    };
 
-    set numero(value) {
+    Resolucion.prototype.setNumero = function (value) {
         this._numero = value;
-    }
+    };
 
-    get horaInicio() {
+    Resolucion.prototype.getHoraInicio = function () {
         return this._horaInicio;
-    }
+    };
 
-    set horaInicio(value) {
+    Resolucion.prototype.setHoraInicio = function (value) {
         this._horaInicio = value;
-    }
+    };
 
-    get fechaFin() {
+    Resolucion.prototype.getFechaFin = function () {
         return this._fechaFin;
-    }
+    };
 
-    set fechaFin(value) {
+    Resolucion.prototype.setFechaFin = function (value) {
         this._fechaFin = value;
-    }
+    };
 
-    get numeracion() {
+    Resolucion.prototype.getNumeracion = function () {
         return this._numeracion;
-    }
+    };
 
-    set numeracion(value) {
+    Resolucion.prototype.setNumeracion = function (value) {
         this._numeracion = value;
-    }
-}
+    };
+};
 
 module.exports = new Resolucion;
 

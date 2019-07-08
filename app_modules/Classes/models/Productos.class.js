@@ -1,5 +1,5 @@
-class Productos {
-    constructor () {
+function Productos() {
+
         this._numeroLinea = 0;
         this._informacion = '';
         this._cantidad = 0;
@@ -17,143 +17,142 @@ class Productos {
         this._listaImpuestos = [];
         this._listaDeducciones = [];
         this._listaCorrecciones = [];
-    }
-
-    get numeroLinea() {
+    
+    Productos.prototype.getNumeroLinea = function () {
         return this._numeroLinea;
-    }
+    };
 
-    set numeroLinea(value) {
+    Productos.prototype.setNumeroLinea = function (value) {
         this._numeroLinea = value;
-    }
+    };
 
-    get informacion() {
+    Productos.prototype.getInformacion = function () {
         return this._informacion;
-    }
+    };
 
-    set informacion(value) {
+    Productos.prototype.setInformacion = function (value) {
         this._informacion = value;
-    }
+    };
 
-    get cantidad() {
+    Productos.prototype.getCantidad = function () {
         return this._cantidad;
-    }
+    };
 
-    set cantidad(value) {
+    Productos.prototype.setCantidad = function (value) {
         this._cantidad = value;
-    }
+    };
 
-    get valorTotal() {
+    Productos.prototype.getValorTotal = function () {
         return this._valorTotal;
-    }
+    };
 
-    set valorTotal(value) {
+    Productos.prototype.setValorTotal = function (value) {
         this._valorTotal = value;
-    }
+    };
 
-    get idProducto() {
+    Productos.prototype.getIdProducto = function () {
         return this._idProducto;
-    }
+    };
 
-    set idProducto(value) {
+    Productos.prototype.setIdProducto = function (value) {
         this._idProducto = value;
-    }
+    };
 
-    get codigoPrecio() {
+    Productos.prototype.getCodigoPrecio = function () {
         return this._codigoPrecio;
-    }
+    };
 
-    set codigoPrecio(value) {
+    Productos.prototype.setCodigoPrecio = function (value) {
         this._codigoPrecio = value;
-    }
+    };
 
-    get codigoReferencia() {
+    Productos.prototype.getCodigoReferencia = function () {
         return this._codigoReferencia;
-    }
+    };
 
-    set codigoReferencia(value) {
+    Productos.prototype.setCodigoReferencia = function (value) {
         this._codigoReferencia = value;
-    }
+    };
 
-    get valorReferencia() {
+    Productos.prototype.getValorReferencia = function () {
         return this._valorReferencia;
-    }
+    };
 
-    set valorReferencia(value) {
+    Productos.prototype.setValorReferencia = function (value) {
         this._valorReferencia = value;
-    }
+    };
 
-    get valorUnitario() {
+    Productos.prototype.getValorUnitario = function () {
         return this._valorUnitario;
-    }
+    };
 
-    set valorUnitario(value) {
+    Productos.prototype.setValorUnitario = function (value) {
         this._valorUnitario = value;
-    }
+    };
 
-    get cantidadReal() {
+    Productos.prototype.getCantidadReal = function () {
         return this._cantidadReal;
-    }
+    };
 
-    set cantidadReal(value) {
+    Productos.prototype.setCantidadReal = function (value) {
         this._cantidadReal = value;
-    }
+    };
 
-    get codigoUnidad() {
+    Productos.prototype.getCodigoUnidad = function () {
         return this._codigoUnidad;
-    }
+    };
 
-    set codigoUnidad(value) {
+    Productos.prototype.setCodigoUnidad = function (value) {
         this._codigoUnidad = value;
-    }
+    };
 
-    get esMuestraComercial() {
+    Productos.prototype.getEsMuestraComercial = function () {
         return this._esMuestraComercial;
-    }
+    };
 
-    set esMuestraComercial(value) {
+    Productos.prototype.setEsMuestraComercial = function (value) {
         this._esMuestraComercial = value;
-    }
+    };
 
-    get item() {
+    Productos.prototype.getItem = function () {
         return this._item;
-    }
+    };
 
-    set item(value) {
+    Productos.prototype.setItem = function (value) {
         this._item = value;
-    }
+    };
 
-    get listaCargosDescuentos() {
+    Productos.prototype.getListaCargosDescuentos = function () {
         return this._listaCargosDescuentos;
-    }
+    };
 
-    set listaCargosDescuentos(value) {
+    Productos.prototype.setListaCargosDescuentos = function (value) {
         this._listaCargosDescuentos = value;
-    }
+    };
 
-    get listaImpuestos() {
+    Productos.prototype.getListaImpuestos = function () {
         return this._listaImpuestos;
-    }
+    };
 
-    set listaImpuestos(value) {
+    Productos.prototype.setListaImpuestos = function (value) {
         this._listaImpuestos = value;
-    }
+    };
 
-    get listaDeducciones() {
+    Productos.prototype.getListaDeducciones = function () {
         return this._listaDeducciones;
-    }
+    };
 
-    set listaDeducciones(value) {
+    Productos.prototype.setListaDeducciones = function (value) {
         this._listaDeducciones = value;
-    }
+    };
 
-    get listaCorrecciones() {
+    Productos.prototype.getListaCorrecciones = function () {
         return this._listaCorrecciones;
-    }
+    };
 
-    set listaCorrecciones(value) {
+    Productos.prototype.setListaCorrecciones = function (value) {
         this._listaCorrecciones = value;
-    }
-}
+    };
+};
 
 module.exports = new Productos;

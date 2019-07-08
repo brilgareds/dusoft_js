@@ -1,51 +1,52 @@
-class NotasReferenciadas {
-    constructor(){
-        this._id = "";
-        this._tipo = "";
-        this._fecha = "";
-        this._algoritmo = "";
-        this._cufe = "";
-    }
+function NotasReferenciadas() {
 
-    get id() {
+    this._id = "";
+    this._tipo = "";
+    this._fecha = "";
+    this._algoritmo = "";
+    this._cufe = "";
+
+
+    NotasReferenciadas.prototype.getId = function () {
         return this._id;
     }
 
-    set id(value) {
-        this._id = value;
+    NotasReferenciadas.prototype.setId = function (_id) {
+        this._id = _id;
     }
 
-    get tipo() {
+    NotasReferenciadas.prototype.getTipo = function () {
         return this._tipo;
     }
 
-    set tipo(value) {
-        this._tipo = value;
+    NotasReferenciadas.prototype.setTipo = function (_tipo) {
+        this._tipo = _tipo;
     }
 
-    get fecha() {
+    NotasReferenciadas.prototype.getFecha = function () {
         return this._fecha;
     }
 
-    set fecha(value) {
-        this._fecha = value;
+    NotasReferenciadas.prototype.setFecha = function (_fecha) {
+        this._fecha = _fecha;
     }
 
-    get algoritmo() {
+    NotasReferenciadas.prototype.getAlgoritmo = function () {
         return this._algoritmo;
     }
 
-    set algoritmo(value) {
-        this._algoritmo = value;
+    NotasReferenciadas.prototype.setAlgoritmo = function (_algoritmo) {
+        this._algoritmo = _algoritmo;
     }
 
-    get cufe() {
+    NotasReferenciadas.prototype.getCufe = function () {
         return this._cufe;
     }
 
-    set cufe(value) {
-        this._cufe = value;
+    NotasReferenciadas.prototype.setCufe = function (_cufe) {
+        this._cufe = _cufe;
     }
 }
+;
 
-  module.exports = new NotasReferenciadas;
+module.exports = new NotasReferenciadas;

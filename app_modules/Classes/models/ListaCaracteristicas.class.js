@@ -1,24 +1,22 @@
-class ListaCaracteristicas {
-    constructor () {
+function ListaCaracteristicas() {
         this._codigo = '';
         this._valor = '';
     }
 
-    get codigo() {
+    ListaCaracteristicas.prototype.get_codigo = function() {
         return this._codigo;
     }
 
-    set codigo(value) {
+    ListaCaracteristicas.prototype.set_codigo = function(value) {
         this._codigo = value;
     }
 
-    get valor() {
+    ListaCaracteristicas.prototype.get_valor = function() {
         return this._valor;
     }
 
-    set valor(value) {
+    ListaCaracteristicas.prototype.set_valor = function(value) {
         this._valor = value;
     }
-}
 
 module.exports = new ListaCaracteristicas;

@@ -1,5 +1,4 @@
-class Direccion {
-    constructor(){
+function Direccion() {
         this._codigoPais = "";
         this._nombrePais = "";
         this._codigoLenguajePais = "";
@@ -11,77 +10,76 @@ class Direccion {
         this._codigoPostal = "";
     }
 
-    get codigoPais() {
+    Direccion.prototype.get_codigoPais = function() {
         return this._codigoPais;
     }
 
-    set codigoPais(value) {
+    Direccion.prototype.set_codigoPais = function(value) {
         this._codigoPais = value;
     }
 
-    get nombrePais() {
+    Direccion.prototype.get_nombrePais = function() {
         return this._nombrePais;
     }
 
-    set nombrePais(value) {
+    Direccion.prototype.set_nombrePais = function(value) {
         this._nombrePais = value;
     }
 
-    get codigoLenguajePais() {
+    Direccion.prototype.get_codigoLenguajePais = function() {
         return this._codigoLenguajePais;
     }
 
-    set codigoLenguajePais(value) {
+    Direccion.prototype.set_codigoLenguajePais = function(value) {
         this._codigoLenguajePais = value;
     }
 
-    get codigoDepartamento() {
+    Direccion.prototype.get_codigoDepartamento = function() {
         return this._codigoDepartamento;
     }
 
-    set codigoDepartamento(value) {
+    Direccion.prototype.set_codigoDepartamento = function(value) {
         this._codigoDepartamento = value;
     }
 
-    get nombreDepartamento() {
+    Direccion.prototype.get_nombreDepartamento = function() {
         return this._nombreDepartamento;
     }
 
-    set nombreDepartamento(value) {
+    Direccion.prototype.set_nombreDepartamento = function(value) {
         this._nombreDepartamento = value;
     }
 
-    get codigoCiudad() {
+    Direccion.prototype.get_codigoCiudad = function() {
         return this._codigoCiudad;
     }
 
-    set codigoCiudad(value) {
+    Direccion.prototype.set_codigoCiudad = function(value) {
         this._codigoCiudad = value;
     }
 
-    get nombreCiudad() {
+    Direccion.prototype.get_nombreCiudad = function() {
         return this._nombreCiudad;
     }
 
-    set nombreCiudad(value) {
+    Direccion.prototype.set_nombreCiudad = function(value) {
         this._nombreCiudad = value;
     }
 
-    get direccionFisica() {
+    Direccion.prototype.get_direccionFisica = function() {
         return this._direccionFisica;
     }
 
-    set direccionFisica(value) {
+    Direccion.prototype.set_direccionFisica = function(value) {
         this._direccionFisica = value;
     }
 
-    get codigoPostal() {
+    Direccion.prototype.get_codigoPostal = function() {
         return this._codigoPostal;
     }
 
-    set codigoPostal(value) {
+    Direccion.prototype.set_codigoPostal = function(value) {
         this._codigoPostal = value;
     }
-}
 
   module.exports = new Direccion;

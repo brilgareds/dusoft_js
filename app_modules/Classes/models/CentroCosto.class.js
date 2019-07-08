@@ -1,5 +1,4 @@
-class CentroCosto {
-    constructor () {
+function CentroCosto() {
         this._id = '';
         this._nombre = '';
         this._direccion = '';
@@ -7,45 +6,45 @@ class CentroCosto {
         this._email = '';
     }
 
-    get id() {
+    CentroCosto.prototype.get_id = function() {
         return this._id;
     }
 
-    set id(value) {
+    CentroCosto.prototype.set_id= function(value) {
         this._id = value;
     }
 
-    get nombre() {
+    CentroCosto.prototype.get_nombre = function() {
         return this._nombre;
     }
 
-    set nombre(value) {
+    CentroCosto.prototype.set_nombre= function(value) {
         this._nombre = value;
     }
 
-    get direccion() {
+    CentroCosto.prototype.get_direccion = function() {
         return this._direccion;
     }
 
-    set direccion(value) {
+    CentroCosto.prototype.set_direccion= function(value) {
         this._direccion = value;
     }
 
-    get telefono() {
+    CentroCosto.prototype.get_telefono = function() {
         return this._telefono;
     }
 
-    set telefono(value) {
+    CentroCosto.prototype.set_telefono= function(value) {
         this._telefono = value;
     }
 
-    get email() {
+    CentroCosto.prototype.get_email = function() {
         return this._email;
     }
 
-    set email(value) {
+    CentroCosto.prototype.set_email= function(value) {
         this._email = value;
     }
-}
+
 
 module.exports = new CentroCosto;

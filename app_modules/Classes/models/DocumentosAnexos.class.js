@@ -1,33 +1,32 @@
-class DocumentosAnexos {
-    constructor(){
+function DocumentosAnexos() {
         this._id = "";
         this._tipo = "";
         this._fechaEmision = "";
     }
 
-    get id() {
+    DocumentosAnexos.prototype.get_id = function() {
         return this._id;
     }
 
-    set id(value) {
+    DocumentosAnexos.prototype.set_id = function(value) {
         this._id = value;
     }
 
-    get tipo() {
+    DocumentosAnexos.prototype.get_tipo = function() {
         return this._tipo;
     }
 
-    set tipo(value) {
+    DocumentosAnexos.prototype.set_tipo = function(value) {
         this._tipo = value;
     }
 
-    get fechaEmision() {
+    DocumentosAnexos.prototype.get_fechaEmision = function() {
         return this._fechaEmision;
     }
 
-    set fechaEmision(value) {
+    DocumentosAnexos.prototype.set_fechaEmision = function(value) {
         this._fechaEmision = value;
     }
-}
+
 
   module.exports = new DocumentosAnexos;

@@ -1,6 +1,5 @@
 
-class Facturador {
-    constructor() {
+function Facturador() {
         this._razonSocial = '';
         this._nombreRegistrado = '';
         this._tipoIdentificacion = 0;
@@ -20,160 +19,158 @@ class Facturador {
         this._codigoCIUU = '';
         this._sucursal = '';
         this._listaParticipantesConsorcio = {};
-
     }
 
-    get razonSocial() {
+    Facturador.prototype.get_razonSocial = function() {
         return this._razonSocial;
     }
 
-    set razonSocial(value) {
+    Facturador.prototype.set_razonSocial = function(value) {
         this._razonSocial = value;
     }
 
-    get nombreRegistrado() {
+    Facturador.prototype.get_nombreRegistrado = function() {
         return this._nombreRegistrado;
     }
 
-    set nombreRegistrado(value) {
+    Facturador.prototype.set_nombreRegistrado = function(value) {
         this._nombreRegistrado = value;
     }
 
-    get tipoIdentificacion() {
+    Facturador.prototype.get_tipoIdentificacion = function() {
         return this._tipoIdentificacion;
     }
 
-    set tipoIdentificacion(value) {
+    Facturador.prototype.set_tipoIdentificacion = function(value) {
         this._tipoIdentificacion = value;
     }
 
-    get identificacion() {
+    Facturador.prototype.get_identificacion = function() {
         return this._identificacion;
     }
 
-    set identificacion(value) {
+    Facturador.prototype.set_identificacion = function(value) {
         this._identificacion = value;
     }
 
-    get digitoVerificacion() {
+    Facturador.prototype.get_digitoVerificacion = function() {
         return this._digitoVerificacion;
     }
 
-    set digitoVerificacion(value) {
+    Facturador.prototype.set_digitoVerificacion = function(value) {
         this._digitoVerificacion = value;
     }
 
-    get naturaleza() {
+    Facturador.prototype.get_naturaleza = function() {
         return this._naturaleza;
     }
 
-    set naturaleza(value) {
+    Facturador.prototype.set_naturaleza = function(value) {
         this._naturaleza = value;
     }
 
-    get codigoRegimen() {
+    Facturador.prototype.get_codigoRegimen = function() {
         return this._codigoRegimen;
     }
 
-    set codigoRegimen(value) {
+    Facturador.prototype.set_codigoRegimen = function(value) {
         this._codigoRegimen = value;
     }
 
-    get responsabilidadFiscal() {
+    Facturador.prototype.get_responsabilidadFiscal = function() {
         return this._responsabilidadFiscal;
     }
 
-    set responsabilidadFiscal(value) {
+    Facturador.prototype.set_responsabilidadFiscal = function(value) {
         this._responsabilidadFiscal = value;
     }
 
-    get codigoImpuesto() {
+    Facturador.prototype.get_codigoImpuesto = function() {
         return this._codigoImpuesto;
     }
 
-    set codigoImpuesto(value) {
+    Facturador.prototype.set_codigoImpuesto = function(value) {
         this._codigoImpuesto = value;
     }
 
-    get nombreImpuesto() {
+    Facturador.prototype.get_nombreImpuesto = function() {
         return this._nombreImpuesto;
     }
 
-    set nombreImpuesto(value) {
+    Facturador.prototype.set_nombreImpuesto = function(value) {
         this._nombreImpuesto = value;
     }
 
-    get telefono() {
+    Facturador.prototype.get_telefono = function() {
         return this._telefono;
     }
 
-    set telefono(value) {
+    Facturador.prototype.set_telefono = function(value) {
         this._telefono = value;
     }
 
-    get email() {
+    Facturador.prototype.get_email = function() {
         return this._email;
     }
 
-    set email(value) {
+    Facturador.prototype.set_email = function(value) {
         this._email = value;
     }
 
-    get contacto() {
+    Facturador.prototype.get_contacto = function() {
         return this._contacto;
     }
 
-    set contacto(value) {
+    Facturador.prototype.set_contacto = function(value) {
         this._contacto = value;
     }
 
-    get direccion() {
+    Facturador.prototype.get_direccion = function() {
         return this._direccion;
     }
 
-    set direccion(value) {
+    Facturador.prototype.set_direccion = function(value) {
         this._direccion = value;
     }
 
-    get direccionFiscal() {
+    Facturador.prototype.get_direccionFiscal = function() {
         return this._direccionFiscal;
     }
 
-    set direccionFiscal(value) {
+    Facturador.prototype.set_direccionFiscal = function(value) {
         this._direccionFiscal = value;
     }
 
-    get listaResponsabilidadesTributarias() {
+    Facturador.prototype.get_listaResponsabilidadesTributarias = function() {
         return this._listaResponsabilidadesTributarias;
     }
 
-    set listaResponsabilidadesTributarias(value) {
+    Facturador.prototype.set_listaResponsabilidadesTributarias = function(value) {
         this._listaResponsabilidadesTributarias = value;
     }
 
-    get codigoCIUU() {
+    Facturador.prototype.get_codigoCIUU = function() {
         return this._codigoCIUU;
     }
 
-    set codigoCIUU(value) {
+    Facturador.prototype.set_codigoCIUU = function(value) {
         this._codigoCIUU = value;
     }
 
-    get sucursal() {
+    Facturador.prototype.get_sucursal = function() {
         return this._sucursal;
     }
 
-    set sucursal(value) {
+    Facturador.prototype.set_sucursal = function(value) {
         this._sucursal = value;
     }
 
-    get listaParticipantesConsorcio() {
+    Facturador.prototype.get_listaParticipantesConsorcio = function() {
         return this._listaParticipantesConsorcio;
     }
 
-    set listaParticipantesConsorcio(value) {
+    Facturador.prototype.set_listaParticipantesConsorcio = function(value) {
         this._listaParticipantesConsorcio = value;
     }
-}
 
 module.exports = new Facturador;

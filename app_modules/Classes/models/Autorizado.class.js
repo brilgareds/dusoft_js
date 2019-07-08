@@ -1,45 +1,44 @@
 
-class Autorizado {
-    constructor() {
+function Autorizado() {
+
         this._razonSocial = '';
         this._tipoIdentificacion = 0;
         this._identificacion = 0;
         this._digitoVerificacion = 0;
+        }
 
-    }
 
-
-    get razonSocial() {
+    Autorizado.prototype.get_razonSocial = function() {
         return this._razonSocial;
     }
 
-    set razonSocial(value) {
+    Autorizado.prototype.set_razonSocial= function(value) {
         this._razonSocial = value;
     }
 
-    get tipoIdentificacion() {
+    Autorizado.prototype.get_tipoIdentificacion = function() {
         return this._tipoIdentificacion;
     }
 
-    set tipoIdentificacion(value) {
+    Autorizado.prototype.set_tipoIdentificacion= function(value) {
         this._tipoIdentificacion = value;
     }
 
-    get identificacion() {
+    Autorizado.prototype.get_identificacion = function() {
         return this._identificacion;
     }
 
-    set identificacion(value) {
+    Autorizado.prototype.set_identificacion= function(value) {
         this._identificacion = value;
     }
 
-    get digitoVerificacion() {
+    Autorizado.prototype.get_digitoVerificacion = function() {
         return this._digitoVerificacion;
     }
 
-    set digitoVerificacion(value) {
+    Autorizado.prototype.set_digitoVerificacion= function(value) {
         this._digitoVerificacion = value;
     }
-}
+
 
 module.exports = new Autorizado;

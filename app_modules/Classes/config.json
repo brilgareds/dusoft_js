@@ -3,10 +3,165 @@
     "dependency": {
         "controllers": [],
         "models": [{
+            "adquiriente_model": {
+              "module": "Classes",
+              "model": "Adquiriente.class",
+              "alias": "m_adquiriente"
+            },
+            "autorizado_model": {
+              "module": "Classes",
+              "model": "Autorizado.class",
+              "alias": "m_autorizado"
+            },
+            "centro_costo_model": {
+              "module": "Classes",
+              "model": "CentroCosto.class",
+              "alias": "m_centro_costo"
+            },
+            "condiciones_entrega_model": {
+              "module": "Classes",
+              "model": "CondicionesEntrega.class",
+              "alias": "m_condiciones_entrega"
+            },
             "facturacion_model": {
               "module": "Classes",
+              "model": "Contacto.class",
+              "alias": "m_contacto"
+            },
+            "direccion_model": {
+              "module": "Classes",
+              "model": "Direccion.class",
+              "alias": "m_direccion"
+            },
+            "documentosAnexos_model": {
+              "module": "Classes",
+              "model": "DocumentosAnexos.class",
+              "alias": "m_documentos_anexos"
+            },
+            "entrega_model": {
+              "module": "Classes",
+              "model": "Entrega.class",
+              "alias": "m_entrega"
+            },
+            "facturador_model": {
+              "module": "Classes",
+              "model": "Facturador.class",
+              "alias": "m_facturador"
+            },
+            "facturas_model": {
+              "module": "Classes",
               "model": "Facturas.class",
-              "alias": "m_facturacionElectronica"
+              "alias": "m_facturas"
+            },
+            "grupo_deducciones_model": {
+              "module": "Classes",
+              "model": "GruposDeducciones.class",
+              "alias": "m_grupo_deducciones"
+            },
+            "grupo_impuestos_model": {
+              "module": "Classes",
+              "model": "GruposImpuestos.class",
+              "alias": "m_grupo_impuestos"
+            },
+            "items_model": {
+              "module": "Classes",
+              "model": "Items.class",
+              "alias": "m_items"
+            },
+            "lista_anticipos_model": {
+              "module": "Classes",
+              "model": "ListaAnticipos.class",
+              "alias": "m_lista_anticipos"
+            },
+            "lista_caracteristicas_model": {
+              "module": "Classes",
+              "model": "ListaCaracteristicas.class",
+              "alias": "m_lista_caracteristicas"
+            },
+            "lista_cargos_descuentos_model": {
+              "module": "Classes",
+              "model": "ListaCargosDescuentos.class",
+              "alias": "m_lista_cargos_descuentos"
+            },
+            "lista_correcciones_model": {
+              "module": "Classes",
+              "model": "ListaCorrecciones.class",
+              "alias": "m_lista_correcciones"
+            },
+            "lista_deducciones_model": {
+              "module": "Classes",
+              "model": "ListaDeducciones.class",
+              "alias": "m_lista_deducciones"
+            },
+            "lista_documentos_referenciados_model": {
+              "module": "Classes",
+              "model": "ListaDocumentosReferenciados.class",
+              "alias": "m_lista_documentos_referenciados"
+            },
+            "lista_impuestos_model": {
+              "module": "Classes",
+              "model": "ListaImpuestos.class",
+              "alias": "m_lista_impuestos"
+            },
+            "lista_impuestos_model": {
+              "module": "Classes",
+              "model": "ListaImpuestos.class",
+              "alias": "m_lista_impuestos"
+            },
+            "lista_participantes_consorcio_model": {
+              "module": "Classes",
+              "model": "ListaParticipantesConsorcio.class",
+              "alias": "m_lista_participantes_consorcio"
+            },
+            "mandatorio_model": {
+              "module": "Classes",
+              "model": "Mandatorio.class",
+              "alias": "m_mandatorio"
+            },
+            "notas_referenciadas_model": {
+              "module": "Classes",
+              "model": "NotasReferenciadas.class",
+              "alias": "m_notas_referenciadas"
+            },
+            "numeracion_model": {
+              "module": "Classes",
+              "model": "Numeracion.class",
+              "alias": "m_numeracion"
+            },
+            "pago_model": {
+              "module": "Classes",
+              "model": "Pago.class",
+              "alias": "m_pago"
+            },
+            "periodo_facturacion_model": {
+              "module": "Classes",
+              "model": "PeriodoFacturacion.class",
+              "alias": "m_periodo_facturacion"
+            },
+            "productos_model": {
+              "module": "Classes",
+              "model": "Productos.class",
+              "alias": "m_productos"
+            },
+            "resolucion_model": {
+              "module": "Classes",
+              "model": "Resolucion.class",
+              "alias": "m_resolucion"
+            },
+            "sucursal_model": {
+              "module": "Classes",
+              "model": "Sucursal.class",
+              "alias": "m_sucursal"
+            },
+            "tasa_cambio_model": {
+              "module": "Classes",
+              "model": "TasaCambio.class",
+              "alias": "m_tasa_cambio"
+            },
+            "transportista_model": {
+              "module": "Classes",
+              "model": "Transportista.class",
+              "alias": "m_transportista"
             }
         }],
         "events": [],

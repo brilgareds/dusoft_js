@@ -1,33 +1,42 @@
-class ListaResponsablesTributarios {
-    constructor(){
-        this._codigo = "";
-        this._nombre = "";
-        this._descripcion = "";
+class CondicionesEntrega {
+    constructor() {
+        this._id = "";
+        this._incoterm = "";
+        this._metodoPago = "";
+        this._riesgoPerdida = "";
     }
 
-
-    get codigo() {
-        return this._codigo;
+    get id() {
+        return this._id;
     }
 
-    set codigo(value) {
-        this._codigo = value;
+    set id(value) {
+        this._id = value;
     }
 
-    get nombre() {
-        return this._nombre;
+    get incoterm() {
+        return this._incoterm;
     }
 
-    set nombre(value) {
-        this._nombre = value;
+    set incoterm(value) {
+        this._incoterm = value;
     }
 
-    get descripcion() {
-        return this._descripcion;
+    get metodoPago() {
+        return this._metodoPago;
     }
 
-    set descripcion(value) {
-        this._descripcion = value;
+    set metodoPago(value) {
+        this._metodoPago = value;
+    }
+
+    get riesgoPerdida() {
+        return this._riesgoPerdida;
+    }
+
+    set riesgoPerdida(value) {
+        this._riesgoPerdida = value;
     }
 }
-  module.exports = new ListaResponsablesTributarios;
+
+module.exports = new CondicionesEntrega;

@@ -53,6 +53,12 @@ module.exports = function(app, di_container) {
     });
     
     app.post('/api/Reportes/DrArias/listarTotalizadosBodegas', function(req, res) {
+        console.log("listarTotalizadosBodegas-----");
         c_Reportes.listarTotalizadosBodegas(req, res);
+    });
+    
+    app.post('/api/Reportes/DrArias/generarTotalizadosBodegasMes', function(req, res) {
+        console.log("generarTotalizadosBodegasMes-----");
+        c_Reportes.generarTotalizadosBodegasMes(req, res);
     });
 };

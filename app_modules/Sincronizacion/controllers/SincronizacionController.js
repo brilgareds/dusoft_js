@@ -1,14 +1,14 @@
 /* global G */
 
-var Sincronizacion = function (m_sincronizacion, m_clientes, m_facturacionElectronica) {
-    this.facturacion = m_facturacionElectronica;
+let Sincronizacion = function (m_sincronizacion, m_clientes, m_facturas) {
+    this.facturacion = m_facturas;
     this.m_sincronizacion = m_sincronizacion;
     this.m_clientes = m_clientes;
     this.test();
 };
 
 Sincronizacion.prototype.test = function () {
-    //console.log('Ejemploooo: ', this.facturacion); // 100
+    // console.log('Ejemploooo: ', this.facturacion); // 100
 };
 
 
@@ -715,5 +715,5 @@ function __jsonFacturaAjdunto(obj, callback) {
 }
 
 
-Sincronizacion.$inject = ["m_sincronizacion", "m_clientes", "m_facturacionElectronica"];
+Sincronizacion.$inject = ["m_sincronizacion", "m_clientes", "m_facturas"];
 module.exports = Sincronizacion;

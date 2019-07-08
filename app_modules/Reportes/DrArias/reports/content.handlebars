@@ -1,0 +1,5 @@
+{{xlsxRemove "xl/worksheets/sheet1.xml" "worksheet.sheetData[0].row" 1}} 
+{{#each people}} 
+{{#xlsxAdd "xl/worksheets/sheet1.xml" "worksheet.sheetData[0].row"}}
+
+{{/xlsxAdd}} {{/each}} {{{xlsxPrint}}}

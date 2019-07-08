@@ -122,14 +122,56 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
  */
 DrAriasModel.prototype.listarTotalizadosBodegas = function(callback) {
 
-    var sql = "select * from totalizados_bodegas() as datos(descripcion character varying, total numeric);";
+    var sql = "select descripcion, total||'' as total from totalizados_bodegas() as datos(descripcion character varying, total numeric) order by total desc ;";
 
     var query = G.knex.raw(sql);
     query.then(function(resultado) {
-  callback(false, resultado.rows);
+          
+      callback(false, resultado.rows);
     }). catch (function(err) {
-  console.log("Error [listarPlanes] Parametros: ", err);
-  callback(err);
+               console.log("Error [listarTotalizadosBodegas] Parametros: ", err);
+     callback(err);
+    });
+};
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion: listado de totales de bodegas
+ * @fecha 2019-06-14
+ */
+DrAriasModel.prototype.listarTotalizadosBodegasMes = function(callback) {
+
+    var sql = "select * from reporte_totalizados_bodegas order by fecha_registro,nombre_bodega;";
+
+    var query = G.knex.raw(sql);
+    query.then(function(resultado) {
+          
+      callback(false, resultado.rows);
+    }). catch (function(err) {
+               console.log("Error [listarTotalizadosBodegasMes] Parametros: ", err);
+     callback(err);
+    });
+};
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion: insertar totales de bodegas mes
+ * @fecha 2019-06-14
+ */
+DrAriasModel.prototype.insertTotalizadosBodegasMes = function(obj,callback) {
+
+    var query = G.knex("reporte_totalizados_bodegas").
+                insert({
+                    nombre_bodega: obj.nombre_bodega,
+                    total: obj.total,
+                    mes: obj.mes,
+                    fecha_registro: 'now()'
+                });
+
+   query.then(function(resultado) {
+          
+      callback(false, resultado.rows);
+    }). catch (function(err) {
+               console.log("Error [listarTotalizadosBodegasMes] Parametros: ", err);
+     callback(err);
     });
 };
 

@@ -45,18 +45,94 @@ let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_co
     this.m_clientes = m_clientes;
     that = this;
 
-    that.test();
+    // that.test();
 };
 
+// const promesa = new Promise((resolve, reject) => { resolve(true); });
+
 Sincronizacion.prototype.test = function () {
-    console.log('Eyyyy', this.m_pago);
-    // console.log(JSON.parse(this.m_pago));
-    // console.log(this.m_pago.codigoMedioPago);
-    this.m_pago.set_id(7);
-    console.log('El valor final es: ', this.m_pago.get_id());
+    let count = 0;
+    let cantidadFunciones = 2;
 
+    const p1 = new Promise((resolve, reject) => {
+        G.Q.ninvoke(_productos)
+    });
+    const p2 = new Promise((resolve, reject) => {
+
+    });
+    const p3 = new Promise((resolve, reject) => {
+
+    });
+    const p4 = new Promise((resolve, reject) => {
+
+    });
+
+    Promise.all([p1, p2, p3, p4])
+        .then(values => {
+            console.log(values);
+        }, reason => {
+            console.log(reason)
+        });
+
+
+
+
+
+    new Promise(() => {
+        console.log('test 1');
+        console.log('count: ', count, 'cantidadFunciones: ', cantidadFunciones);
+        new Promise(() => {
+            count++;
+            console.log('test 2');
+            console.log('count: ', count, 'cantidadFunciones: ', cantidadFunciones);
+            if (count === cantidadFunciones) {
+                console.log('Deberia de salir aqui!!');
+                return true;
+            }
+        }).catch(error => {
+            console.log('error: ', error);
+            throw error;
+        });
+
+        new Promise(() => {
+            count++;
+            console.log('test 3');
+            console.log('count: ', count, 'cantidadFunciones: ', cantidadFunciones);
+            if (count === cantidadFunciones) { return true; }
+        }).catch(error => {
+            console.log('error: ', error);
+            throw error;
+        });
+
+        new Promise(() => {
+            count++;
+            if (count === cantidadFunciones) { return true; }
+        }).catch(error => {
+            console.log('error: ', error);
+            throw error;
+        });
+
+        new Promise(() => {
+            count++;
+            if (count === cantidadFunciones) { return true; }
+        }).catch(error => {
+            console.log('error: ', error);
+            throw error;
+        });
+    }).then(response => {
+
+        console.log('fine!!');
+    }).catch(error => {
+
+        console.log('error: ', error);
+    });
+
+    // console.log('Eyyyy', this.m_pago);
+    // // console.log(JSON.parse(this.m_pago));
+    // // console.log(this.m_pago.codigoMedioPago);
+    // this.m_pago.setId(7);
+    // console.log('El valor final es: ', this.m_pago.getId());
     //console.log('\nEooo', this.m_pago);
-
     // Sincronizacion.codigoMedioPago('Easd');
     // Sincronizacion.fechaVencimiento('asdasdasd');
 };

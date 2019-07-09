@@ -1,7 +1,8 @@
 
 /* global G */
 
-var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion, e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos) {
+var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion,
+    e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
@@ -11,6 +12,7 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
     this.e_facturacion_clientes = e_facturacion_clientes;
     this.m_pedidos_clientes = m_pedidos_clientes;
     this.c_sincronizacion = c_sincronizacion;
+    this.m_facturas = m_facturas;
 
     G.log.configure({
         appenders: [
@@ -31,6 +33,10 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
 
     G.log.loadAppender('file');
 };
+
+const promesa = new Promise((resolve, reject) => { resolve(true); });
+
+
 
 
 var logger = G.log.getLogger('facturacion_clientes');
@@ -2816,10 +2822,9 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
 
 }
 
-function __productos(productos, index, productosDian, callback) {
+const __productos = function (productos, index, productosDian, callback) {
     var item = productos[index];
     var formato = 'DD-MM-YYYY';
-
 
     if (!item) {
         callback(false, productosDian);
@@ -2926,9 +2931,9 @@ function __productos(productos, index, productosDian, callback) {
         __productos(productos, index, productosDian, callback);
         clearTimeout(timer);
     }, 0);
-}
+};
 
-function __productosAdjunto(productos, index, productosDian, callback) {
+    const __productosAdjunto = function (productos, index, productosDian, callback) {
     var item = productos[index];
     var formato = 'DD-MM-YYYY';
 
@@ -2985,9 +2990,123 @@ function __productosAdjunto(productos, index, productosDian, callback) {
         __productosAdjunto(productos, index, productosDian, callback);
         clearTimeout(timer);
     }, 0);
-}
+};
+
+
+FacturacionClientes.prototype._productos = () => {
+
+    let count = 0;
+    let cantidadFunciones = 2;
+    let facturas = this.m_facturas;
+
+    new Promise((resolve, reject) => {
+        facturas = __productosAdjunto();
+    });
+};
 
 FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
+    that = this;
+    var args = req.body.data.imprimir_reporte_factura;
+    var productos;
+    var resultado;
+    var data;
+    const factura = this.m_facturas;
+    // console.log("factura ",factura);
+    G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
+        resultado = data;
+        console.log('Data: ', resultado);
+
+
+
+        var subTotal = resultado.valores.subTotal.replace(".", "");
+        var total = resultado.valores.totalFactura.replace(".", "");
+
+        factura.set_Tipodocumento('FE');
+        factura.set_Versiondocumento('01');
+        factura.set_Registrar(false);
+        factura.set_Codigotipodocumento('01');
+        factura.set_Tipooperacion('10');
+        factura.set_Prefijodocumento(resultado.cabecera.prefijo);
+        // var json = {
+        //     codigoMoneda: "COP",
+        //     fechaExpedicion: resultado.cabecera.fecha_registro,
+        //     fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
+        //     codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
+        //     numeroIdentificacion: resultado.cabecera.tercero_id,
+        //     identificadorConsecutivo: resultado.cabecera.factura_fiscal,
+        //     identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
+        //     mediosPago: resultado.cabecera.tipo_pago_id,
+        //     desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
+        //     hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
+        //     prefijo: resultado.cabecera.prefijo,
+        //     perfilEmision: "CLIENTE",
+        //     perfilUsuario: "CLIENTE",
+        //     productos: productos,
+        //     subtotalFactura: resultado.cabecera.subtotal,
+        //     ReteFuente: resultado.valores.retencionFuenteSf,
+        //     baseGravableReteFuente: resultado.valores.baseRetencionFuente,
+        //     IVA: resultado.valores.Iva,
+        //     baseGravableIVA: resultado.cabecera.subtotal,
+        //     ReteICA: resultado.valores.retencionIcaSf,
+        //     baseGravableReteICA: resultado.valores.baseRetencionIca,
+        //     ReteIVA: resultado.valores.retencionIvaSf,
+        //     baseGravableReteIVA: resultado.valores.baseRetencionIva,
+        //     tipoFactura: 1,
+        //     totalFactura: total.replace(".", ""),
+        //
+        //     coordXQr: 164,
+        //     coordYQr: 260,
+        //     coordXCufe: 110,
+        //     coordYCufe: 256,
+        //     pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
+        // };
+        console.log("factura",factura);
+        // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
+return false;
+
+    // }).then(function (respuesta) {
+    //
+    //     data = respuesta;
+    //     var parametros = {
+    //         empresa_id: args.empresaId,
+    //         prefijo: resultado.cabecera.prefijo,
+    //         factura_fiscal: resultado.cabecera.factura_fiscal,
+    //         sw_factura_dian: respuesta.sw_factura_dian,
+    //         json_envio: data.lastRequest,
+    //         respuesta_ws: data
+    //     };
+    //
+    //     if (respuesta.sw_factura_dian === '1') {
+    //
+    //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+    //
+    //     } else if (respuesta.sw_factura_dian === '0') {
+    //
+    //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+    //
+    //     }
+    //
+    // }).then(function (resultado) {
+    //
+    //     if (data.sw_factura_dian === '1') {
+    //
+    //         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+    //
+    //     } else if (data.sw_factura_dian === '0') {
+    //
+    //         res.send(G.utils.r(req.url, data.msj, data.status, data));
+    //
+    //     }
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, err.msj, err.status, err));
+
+    }).done();
+
+};
+
+FacturacionClientes.prototype.generarSincronizacionDian_original = function (req, res) {
     that = this;
     var args = req.body.data.imprimir_reporte_factura;
     var productos;
@@ -2996,60 +3115,11 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 
     G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
         resultado = data;
+        console.log('Data: ', resultado);
 
         return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
 
     }).then(function (productos) {
-        /*        var json = {
-         codigoMoneda: "COP",
-         descripcion: "",
-         fechaExpedicion: resultado.cabecera.fecha_registro,
-         fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
-         icoterms: '',
-         codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
-         numeroIdentificacion: resultado.cabecera.tercero_id,
-         identificadorConsecutivo: resultado.cabecera.factura_fiscal,
-         identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
-         mediosPago: resultado.cabecera.tipo_pago_id,
-         nombreSucursal: "",
-         desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
-         hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
-         prefijo: resultado.cabecera.prefijo,
-         perfilEmision: "CLIENTE",
-         perfilUsuario: "CLIENTE",
-         productos: productos,
-         subtotalFactura: resultado.cabecera.subtotal, //decimal OPCIONAL -
-         
-         //            nombreReteFuente: "ReteFuente", //String -
-         ReteFuente: resultado.valores.retencionFuenteSf, //decimal -
-         baseGravableReteFuente: resultado.valores.baseRetencionFuente, //decimal -
-         
-         //            nombreIVA: "IVA", //String -
-         IVA: resultado.valores.Iva, //decimal -
-         baseGravableIVA: resultado.cabecera.subtotal, //decimal -
-         
-         //            nombreReteICA: "ReteICA", //String -
-         ReteICA: resultado.valores.retencionIcaSf, //decimal -
-         baseGravableReteICA: resultado.valores.baseRetencionIca, //decimal -
-         
-         //            nombreReteIVA: "ReteIVA", //String -
-         ReteIVA: resultado.valores.retencionIvaSf, //decimal -
-         baseGravableReteIVA: resultado.valores.baseRetencionIva, //decimal -
-         
-         tipoFactura: 1, //numeric -
-         totalFactura: resultado.valores.totalFactura, //decimal OPCIONAL -
-         nombreAdquirente: resultado.cabecera.nombre_tercero,
-         vendedor: resultado.cabecera.nombre,
-         numeroPedido: resultado.cabecera.pedido_cliente_id,
-         totalenLetras: resultado.valores.totalFacturaLetra,
-         observacionesPedido: resultado.detalle[0].observacion + ", PEDIDOS FACTURADOS: " + resultado.cabecera.pedido_cliente_id, //resultado.cabecera.observacion,
-         observacionesDespacho: "", resultado.detalle[0].obs_despacho, 
-         elaboradoPor: resultado.imprimio.usuario,
-         tipoFormato: '1',  // diferencia el tipo de factura esperando definicion del campo por parte de certicamara
-         condiciones: resultado.cabecera.observaciones,
-         mensajeResolucion: resultado.cabecera.texto1,
-         mensajeContribuyente: resultado.cabecera.texto2 + " " + resultado.cabecera.texto3
-         };*/
 var subTotal = resultado.valores.subTotal.replace(".", "");
 var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
@@ -4168,6 +4238,6 @@ function __generarCsvBarranquilla(datos, callback) {
     });
 }
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos"];
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos", "m_facturas"];
 
 module.exports = FacturacionClientes;

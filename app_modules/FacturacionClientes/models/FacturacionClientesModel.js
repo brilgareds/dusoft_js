@@ -5,6 +5,8 @@ var FacturacionClientesModel = function (m_e008) {
     this.m_e008 = m_e008;
 };
 var logger = G.log.getLogger('facturacion_clientes');
+
+const promesa = new Promise((resolve, reject) => { resolve(true); });
 /**
  * @fecha 2017/06/01
  * +Descripcion Metodo encargado de actualizar el estado de proceso de un pedido

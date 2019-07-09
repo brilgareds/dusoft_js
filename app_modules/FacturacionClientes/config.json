@@ -43,6 +43,11 @@
                     "module": "PedidosClientes",
                     "model": "PedidosClienteModel",
                     "alias": "m_pedidos_clientes"
+                },
+                "factura_clase_model": {
+                  "module": "Classes",
+                  "model": "Facturas.class",
+                  "alias": "m_facturas"
                 }
             }],
         "events": [{

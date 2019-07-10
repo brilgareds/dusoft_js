@@ -1,8 +1,7 @@
-
 /* global G */
 
 var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion,
-    e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas) {
+                                    e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas, m_pago, m_productos) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
@@ -13,6 +12,8 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
     this.m_pedidos_clientes = m_pedidos_clientes;
     this.c_sincronizacion = c_sincronizacion;
     this.m_facturas = m_facturas;
+    this.m_pago = m_pago;
+    this.m_productos = m_productos;
 
     G.log.configure({
         appenders: [
@@ -34,9 +35,9 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
     G.log.loadAppender('file');
 };
 
-const promesa = new Promise((resolve, reject) => { resolve(true); });
-
-
+const promesa = new Promise((resolve, reject) => {
+    resolve(true);
+});
 
 
 var logger = G.log.getLogger('facturacion_clientes');
@@ -60,10 +61,12 @@ FacturacionClientes.prototype.procesosFacturacion = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.procesosFacturacion",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.procesosFacturacion",
             "usuario_id": usuario,
             "parametros: ": "No tiene",
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -89,10 +92,12 @@ FacturacionClientes.prototype.listarTiposTerceros = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.listarTiposTerceros",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.listarTiposTerceros",
             "usuario_id": usuario,
             "parametros: ": "No tiene",
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -134,10 +139,12 @@ FacturacionClientes.prototype.listarPrefijosFacturas = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.listarPrefijosFacturas",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.listarPrefijosFacturas",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -175,9 +182,9 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function (req, res) {
     }
 
     if (args.listar_facturas_generadas.numero === "" &&
-            args.listar_facturas_generadas.pedidoClienteId === "" &&
-            args.listar_facturas_generadas.terminoBusqueda === "" &&
-            args.listar_facturas_generadas.nombreTercero === "") {
+        args.listar_facturas_generadas.pedidoClienteId === "" &&
+        args.listar_facturas_generadas.terminoBusqueda === "" &&
+        args.listar_facturas_generadas.nombreTercero === "") {
 
         res.send(G.utils.r(req.url, 'Debe diligenciar un criterio de busqueda', 404, {listar_facturas_generadas: []}));
         return;
@@ -214,17 +221,19 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.listarFacturasGeneradas",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.listarFacturasGeneradas",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
 
 /**
- * 
+ *
  * @param {type} req
  * @param {type} res
  * @returns {undefined}
@@ -261,7 +270,8 @@ FacturacionClientes.prototype.listarClientes = function (req, res) {
     var usuario = req.session.user.usuario_id;
 
 
-    var parametros = {empresaId: empresaId,
+    var parametros = {
+        empresaId: empresaId,
         terminoBusqueda: terminoBusqueda,
         paginaActual: paginaActual,
         filtro: filtro,
@@ -278,15 +288,16 @@ FacturacionClientes.prototype.listarClientes = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.listarClientes",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.listarClientes",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
-
 
 
 FacturacionClientes.prototype.listarDocumentosPorFacturar = function (req, res) {
@@ -299,7 +310,7 @@ FacturacionClientes.prototype.listarDocumentosPorFacturar = function (req, res) 
     }
 
     if (args.facturas_consumo.numeroDocumento === undefined || !args.facturas_consumo.tipoTerceroId ||
-            !args.facturas_consumo.terceroId) {
+        !args.facturas_consumo.terceroId) {
         res.send(G.utils.r(req.url, 'Se requiere el numero documento, documento y tipo de tercero', 404, {facturas_consumo: []}));
         return;
     }
@@ -312,11 +323,10 @@ FacturacionClientes.prototype.listarDocumentosPorFacturar = function (req, res) 
             throw 'No hay documentos disponibles para este cliente';
         }
 
-    }).
-            fail(function (err) {
+    }).fail(function (err) {
 
-                res.send(G.utils.r(req.url, err, 500, {}));
-            }).done();
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
 
 
 };
@@ -409,17 +419,22 @@ FacturacionClientes.prototype.listarPedidosClientes = function (req, res) {
 
         if (resultado.length > 0) {
 
-            return res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes: listaPedidosClientes, lista_prefijos: resultado}));
+            return res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {
+                listar_pedidos_clientes: listaPedidosClientes,
+                lista_prefijos: resultado
+            }));
 
         } else {
             throw 'El cliente no tiene pedidos para facturar';
         }
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.listarPedidosClientes",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.listarPedidosClientes",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
@@ -441,20 +456,23 @@ function __listarDocumentosPedidos(that, index, pedidos, empresaId, documentos, 
     }
 
 
-    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDocumentosPedidos', {empresaId: empresaId, pedidoClienteId: pedido.pedido_cliente_id, estado: 0}).
-            then(function (resultado) {
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDocumentosPedidos', {
+        empresaId: empresaId,
+        pedidoClienteId: pedido.pedido_cliente_id,
+        estado: 0
+    }).then(function (resultado) {
 
-                if (resultado.length > 0) {
-                    documentos.push(resultado);
-                }
+        if (resultado.length > 0) {
+            documentos.push(resultado);
+        }
 
-                index++;
-                var timer = setTimeout(function () {
-                    clearTimeout(timer);
-                    __listarDocumentosPedidos(that, index, pedidos, empresaId, documentos, callback);
-                }, 0);
+        index++;
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            __listarDocumentosPedidos(that, index, pedidos, empresaId, documentos, callback);
+        }, 0);
 
-            }).fail(function (err) {
+    }).fail(function (err) {
         console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
         callback(err);
     }).done();
@@ -481,7 +499,11 @@ function __recorrerPedidos(that, index, pedidos, empresa, consultaDocumentos, do
 
     index++;
 
-    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDocumentosPedidos', {empresaId: empresa, pedidoClienteId: pedido.pedido, estado: 1}).then(function (resultado) {
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDocumentosPedidos', {
+        empresaId: empresa,
+        pedidoClienteId: pedido.pedido,
+        estado: 1
+    }).then(function (resultado) {
 
         if (resultado.length > 0) {
 
@@ -507,7 +529,7 @@ function __recorrerPedidos(that, index, pedidos, empresa, consultaDocumentos, do
 
 /**
  * +Descripcion Se agregan los despachos al arreglo de documentos seleccionados relacionados
- *              a un proceso 
+ *              a un proceso
  */
 function __agregarDocumentosPedido(index, documentos, documentoSeleccionado, callback) {
 
@@ -543,9 +565,9 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
 
 
     if (args.procesar_factura_cosmitet === undefined) {
@@ -604,7 +626,10 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
             return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPedidosClientes', parametros)
 
         } else {
-            throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+            throw {
+                msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
+                status: 409
+            };
         }
 
     }).then(function (resultado) {
@@ -624,7 +649,10 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
             parametros.idProceso = resultado[0].id;
             G.Q.nfcall(__insertarFacturaEnProcesoDetalle, that, 0, pedidosCosmitet, parametros.idProceso);
         } else {
-            throw {msj: '[insertarFacturaEnProceso]: No se creo la cabecera para el proceso de facturacion', status: 404};
+            throw {
+                msj: '[insertarFacturaEnProceso]: No se creo la cabecera para el proceso de facturacion',
+                status: 404
+            };
         }
 
     }).then(function (resultado) {
@@ -633,10 +661,12 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.procesarDespachos",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.procesarDespachos",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         that.e_facturacion_clientes.onNotificarFacturacionTerminada({generar_factura_agrupada: ''}, 'Se ha presentado errores en el proceso', 500, usuario);
     });
@@ -684,7 +714,8 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
 
     var that = this;
     var idProceso;
-    var parametros = {empresaId: '', tipoIdTercero: '', terceroId: '', documentoId: '', estado: 1,
+    var parametros = {
+        empresaId: '', tipoIdTercero: '', terceroId: '', documentoId: '', estado: 1,
         tipoPago: '', usuario: '', direccion_ip: '', pedidos: [], facturacionCosmitet: 1
     };
 
@@ -723,7 +754,10 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
 
     }).then(function (resultado) {
 
-        return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id: idProceso.id, estado: '4'});
+        return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {
+            id: idProceso.id,
+            estado: '4'
+        });
 
     }).then(function () {
 
@@ -733,44 +767,55 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
 
         resultadoFacturacionAgrupada = resultado;
         return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion",
-                {id: idProceso.id, estado: '3', factura_fiscal: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].numeracion,
-                    prefijo: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].id});
+            {
+                id: idProceso.id,
+                estado: '3',
+                factura_fiscal: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].numeracion,
+                prefijo: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].id
+            });
 
     }).then(function (resultado) {
 
         that.e_facturacion_clientes.onNotificarFacturacionTerminada(
-                resultadoFacturacionAgrupada.data,
-                resultadoFacturacionAgrupada.msj,
-                200,
-                parametros.usuario
-                );
+            resultadoFacturacionAgrupada.data,
+            resultadoFacturacionAgrupada.msj,
+            200,
+            parametros.usuario
+        );
     }).fail(function (err) {
         if (!idProceso) {
             console.log('(crontab) Sin facturas en proceso!');
             return true;
         }
-        G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {id: idProceso.id, estado: '2'}).then(function (resultado) {
+        G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion", {
+            id: idProceso.id,
+            estado: '2'
+        }).then(function (resultado) {
 
         }).fail(function (err) {
             logger.error("-----------------------------------");
-            logger.error({"metodo": "FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso",
+            logger.error({
+                "metodo": "FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso",
                 "usuario_id": parametros.usuario,
                 "parametros: ": parametros,
                 "parametroBodegaDocId": parametroBodegaDocId,
                 "consultaDocumentos": consultaDocumentos,
                 "documentosSeleccionados": documentosSeleccionados,
-                "resultado: ": err});
+                "resultado: ": err
+            });
             logger.error("-----------------------------------");
             console.log("Error Inesperado, consulte con el admin [generarPedidoBodegaFarmacia]: ", err);
         });
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso",
             "usuario_id": parametros.usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
             "consultaDocumentos": consultaDocumentos,
             "documentosSeleccionados": documentosSeleccionados,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         console.log("err [generarPedidoBodegaFarmacia]: ", err);
     });
@@ -794,9 +839,9 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function (req, res) {
      */
 //    var ip ='::ffff:10.0.2.158';
     var ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
 
     if (args.generar_factura_agrupada === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_agrupada: []}));
@@ -833,7 +878,11 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function (req, res) {
     };
 
 
-    var parametroBodegaDocId = {variable: "documento_factura_" + parametros.empresaId, tipoVariable: 1, modulo: 'FacturasDespacho'};
+    var parametroBodegaDocId = {
+        variable: "documento_factura_" + parametros.empresaId,
+        tipoVariable: 1,
+        modulo: 'FacturasDespacho'
+    };
 
     G.Q.ninvoke(that, "__generarFacturasAgrupadas", parametros, parametroBodegaDocId, ip).then(function (resultado) {
 
@@ -845,7 +894,6 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function (req, res) {
     });
 
 };
-
 
 
 /**
@@ -907,7 +955,10 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
 
         if (resultado.length > 0) {
 
-            throw {msj: 'Se ha generado un error (Duplicate-key) Al crear la factura [' + documentoFacturacion[0].id + "-" + documentoFacturacion[0].numeracion + "]", status: 409};
+            throw {
+                msj: 'Se ha generado un error (Duplicate-key) Al crear la factura [' + documentoFacturacion[0].id + "-" + documentoFacturacion[0].numeracion + "]",
+                status: 409
+            };
 
         } else {
 
@@ -923,13 +974,17 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
         if (!resultado || resultado.length > 0) {
             parametros.direccion_ip = ip;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'transaccionGenerarFacturasAgrupadas',
-                    {documento_facturacion: documentoFacturacion,
-                        consultar_tercero_contrato: consultarTerceroContrato,
-                        consultar_parametros_retencion: consultarParametrosRetencion,
-                        parametros: parametros
-                    });
+                {
+                    documento_facturacion: documentoFacturacion,
+                    consultar_tercero_contrato: consultarTerceroContrato,
+                    consultar_parametros_retencion: consultarParametrosRetencion,
+                    parametros: parametros
+                });
         } else {
-            throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+            throw {
+                msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
+                status: 409
+            };
         }
 
     }).then(function (resultado) {
@@ -946,12 +1001,18 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
 //    }).then(function (resultado) {
 
         callback(false, {
-            status: 200,
-            msj: 'Se genera la factura satisfactoriamente',
-            data: {generar_factura_agrupada: documentoFacturacion,
-                resultado_sincronizacion_ws: {resultado: {mensaje_ws: 'No sincronizado', mensaje_bd: "Log Registrado Correctamente "}}// resultado
+                status: 200,
+                msj: 'Se genera la factura satisfactoriamente',
+                data: {
+                    generar_factura_agrupada: documentoFacturacion,
+                    resultado_sincronizacion_ws: {
+                        resultado: {
+                            mensaje_ws: 'No sincronizado',
+                            mensaje_bd: "Log Registrado Correctamente "
+                        }
+                    }// resultado
+                }
             }
-        }
         );
 
 
@@ -1025,10 +1086,12 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function (re
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametro,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -1040,7 +1103,6 @@ FacturacionClientes.prototype.eliminarTotalTemporalFacturaConsumo = function (re
 };
 
 
-
 function __consultarTemporaldetalleFactura(that, def, index, pedidos, callback) {
 
     var pedido = pedidos[index];
@@ -1050,10 +1112,16 @@ function __consultarTemporaldetalleFactura(that, def, index, pedidos, callback) 
         return;
     }
     index++;
-    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', {pedido_cliente_id: pedido, estado: 3}).then(function (resultado) {
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', {
+        pedido_cliente_id: pedido,
+        estado: 3
+    }).then(function (resultado) {
 
         if (resultado.length === 0) {
-            G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {pedido_cliente_id: pedido, estado_factura_fiscal: '0'}, {}).then(function (resultado) {
+            G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {
+                pedido_cliente_id: pedido,
+                estado_factura_fiscal: '0'
+            }, {}).then(function (resultado) {
 
             }).fail(function (err) {
                 console.log("err (/fail) [__actualizarEstadoFacturaPedidoDespacho]: ", err);
@@ -1129,7 +1197,7 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
                 pedido_cliente_id: resultado[0],
                 estado: 3
             };
-            return  G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', parametros);//return res.send(G.utils.r(req.url, "Se elimina el producto satisfactoriamente", 200, {eliminar_producto_tmp:resultado}));
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', parametros);//return res.send(G.utils.r(req.url, "Se elimina el producto satisfactoriamente", 200, {eliminar_producto_tmp:resultado}));
         } else {
             throw {msj: 'No se elimino ningun producto', status: 404};
         }
@@ -1137,7 +1205,10 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
     }).then(function (resultado) {
 
         if (resultado.length === 0) {
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {pedido_cliente_id: numeroPedido, estado_factura_fiscal: '0'}, {});
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {
+                pedido_cliente_id: numeroPedido,
+                estado_factura_fiscal: '0'
+            }, {});
         } else {
             def.resolve();
         }
@@ -1145,7 +1216,10 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
 
     }).then(function (resultado) {
 
-        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', {id_factura_xconsumo: args.eliminar_producto_tmp.id, estado: 5});
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', {
+            id_factura_xconsumo: args.eliminar_producto_tmp.id,
+            estado: 5
+        });
 
     }).then(function (resultado) {
 
@@ -1178,10 +1252,12 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
     }).fail(function (err) {
 
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.sincronizarFactura",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.sincronizarFactura",
             "usuario_id": usuario,
             "parametros: ": parametro,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -1265,12 +1341,16 @@ FacturacionClientes.prototype.subirArchivo = function (req, res) {
 
         if (_productosValidosExistentes.length === 0) {
 
-            throw {msj: 'Lista de Productos',
+            throw {
+                msj: 'Lista de Productos',
                 status: 200,
-                data: {pedidos_clientes: {
+                data: {
+                    pedidos_clientes: {
                         productos_validos: _productosValidosExistentes,
                         productos_invalidos: _productosInvalidosNoExistentes
-                    }}};
+                    }
+                }
+            };
             return;
         }
 
@@ -1298,11 +1378,15 @@ FacturacionClientes.prototype.subirArchivo = function (req, res) {
             productosInvalidosTodos = _productosInvalidosNoExistentes;
         }
 
-        throw {msj: 'Productos cargados correctamente', status: 200, data: {cargue_archivo: {
+        throw {
+            msj: 'Productos cargados correctamente', status: 200, data: {
+                cargue_archivo: {
                     productos_validos: _productosValidosExistentes,
                     productos_invalidos: productosInvalidosTodos
 
-                }}};
+                }
+            }
+        };
         return;
 
     }).fail(function (err) {
@@ -1365,10 +1449,12 @@ FacturacionClientes.prototype.eliminarCabeceraTemporalFacturaConsumo = function 
 
     }).catch(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.eliminarCabeceraTemporalFacturaConsumo",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.eliminarCabeceraTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -1386,7 +1472,6 @@ FacturacionClientes.prototype.eliminarCabeceraTemporalFacturaConsumo = function 
  * @fecha 2017-08-10 YYYY-MM-DD
  */
 FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function (req, res) {
-
 
 
     var that = this;
@@ -1434,10 +1519,12 @@ FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo = function 
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.consultarDetalleTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -1465,12 +1552,11 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
     var usuario = req.session.user.usuario_id;
     var def = G.Q.defer();
-
 
 
     if (args.facturas_consumo === undefined) {
@@ -1544,7 +1630,11 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         estado: 1
     };
 
-    var parametroBodegaDocId = {variable: "documento_factura_" + args.facturas_consumo.empresaId, tipoVariable: 1, modulo: 'FacturasDespacho'};
+    var parametroBodegaDocId = {
+        variable: "documento_factura_" + args.facturas_consumo.empresaId,
+        tipoVariable: 1,
+        modulo: 'FacturasDespacho'
+    };
     var totalValorProductos = 0;
     var subTotalValorProductos = 0;
     var totalValorIva = 0;
@@ -1639,18 +1729,28 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
                 parametros.direccion_ip = ip;
 
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo',
-                        {tipo_id_tercero: parametros.tipoIdTercero,
-                            tercero_id: parametros.terceroId,
+                    {
+                        tipo_id_tercero: parametros.tipoIdTercero,
+                        tercero_id: parametros.terceroId,
 
-                            paginaActual: 1, terminoBusqueda: '', filtro: '', empresa_id: args.facturas_consumo.documentos.empresa
-                        });
+                        paginaActual: 1,
+                        terminoBusqueda: '',
+                        filtro: '',
+                        empresa_id: args.facturas_consumo.documentos.empresa
+                    });
 
             } else {
-                throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+                throw {
+                    msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
+                    status: 409
+                };
             }
 
         } else {
-            throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+            throw {
+                msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
+                status: 409
+            };
         }
 
 
@@ -1667,11 +1767,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         } else {
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'generarTemporalFacturaConsumo',
-                    {documento_facturacion: documentoFacturacion,
-                        consultar_tercero_contrato: consultarTerceroContrato,
-                        consultar_parametros_retencion: consultarParametrosRetencion,
-                        parametros: parametros
-                    });
+                {
+                    documento_facturacion: documentoFacturacion,
+                    consultar_tercero_contrato: consultarTerceroContrato,
+                    consultar_parametros_retencion: consultarParametrosRetencion,
+                    parametros: parametros
+                });
         }
 
     }).then(function (resultado) {
@@ -1704,7 +1805,6 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarDetalleFacturaConsumo', parametrosDetalleFactura);
 
 
-
     }).then(function (resultado) {
 
 
@@ -1712,7 +1812,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
 
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo',
-                    {estado: 5, id_factura_xconsumo: parametros.id_factura_xconsumo, prefijo: parametros.pedidos.prefijo, factura_fiscal: parametros.pedidos.numero});
+                {
+                    estado: 5,
+                    id_factura_xconsumo: parametros.id_factura_xconsumo,
+                    prefijo: parametros.pedidos.prefijo,
+                    factura_fiscal: parametros.pedidos.numero
+                });
         } else {
             throw {msj: 'No se registro ninguna unidad', status: 404};
             return;
@@ -1751,7 +1856,10 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
     }).then(function (resultado) {
 
         if (resultado > 0) {
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {pedido_cliente_id: parametros.pedidos.pedido, estado_factura_fiscal: '2'}, {});
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {
+                pedido_cliente_id: parametros.pedidos.pedido,
+                estado_factura_fiscal: '2'
+            }, {});
         } else {
             throw {msj: 'No se actualizo el estado del pedido', status: 404};
             return;
@@ -1771,11 +1879,13 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
     }).fail(function (err) {
         console.log("Error", err);
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarTemporalFacturaConsumo",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarTemporalFacturaConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -1789,7 +1899,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
 
 
 /**
- * 
+ *
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de listar las facturas que se encuentran
  *              en la tabla de temporal
@@ -1809,13 +1919,15 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
     var filtro = args.listar_facturas_temporal.filtro;
     var paginaActual = args.listar_facturas_temporal.paginaActual;
 
-    var parametros = {tipo_id_tercero: '',
+    var parametros = {
+        tipo_id_tercero: '',
         empresa_id: empresa_id,
         tercero_id: '',
         sw_facturacion: '',
         paginaActual: paginaActual,
         terminoBusqueda: terminoBusqueda,
-        filtro: filtro};
+        filtro: filtro
+    };
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo', parametros).then(function (resultado) {
 
@@ -1828,10 +1940,12 @@ FacturacionClientes.prototype.listarFacturasTemporales = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.listarFacturasTemporales",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.listarFacturasTemporales",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -1855,16 +1969,14 @@ FacturacionClientes.prototype.buscarFarmacias = function (req, res) {
     var parametros = {
         empresa_id: args.empresa_id,
         centro: args.centro,
-        bodega: args.bodega};
+        bodega: args.bodega
+    };
 
-    G.Q.ninvoke(that.m_facturacion_clientes, 'buscarFarmacias', parametros).
-            then(function (resultado) {
-                res.send(G.utils.r(req.url, 'Consultar listado farmacias ok!!!!', 200, {listarBodegas: resultado}));
-            }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error al Consultar listado de farmacias', 500, {listarBodegas: {}}));
-            }).
-            done();
+    G.Q.ninvoke(that.m_facturacion_clientes, 'buscarFarmacias', parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Consultar listado farmacias ok!!!!', 200, {listarBodegas: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar listado de farmacias', 500, {listarBodegas: {}}));
+    }).done();
 };
 
 /**
@@ -1885,16 +1997,14 @@ FacturacionClientes.prototype.listarFacturasConsumoBarranquillaTemporales = func
         empresa_id: empresa_id,
         paginaActual: paginaActual,
         terminoBusqueda: terminoBusqueda,
-        filtro: filtro};
+        filtro: filtro
+    };
 
-    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumoBarranquilla', parametros).
-            then(function (resultado) {
-                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listar_facturas_consumo_temporal: resultado}));
-            }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listar_facturas_consumo_temporal: {}}));
-            }).
-            done();
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumoBarranquilla', parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listar_facturas_consumo_temporal: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listar_facturas_consumo_temporal: {}}));
+    }).done();
 };
 
 /**
@@ -1908,16 +2018,14 @@ FacturacionClientes.prototype.listarProductos = function (req, res) {
     var parametros = {
         empresa_id: args.empresa_id,
         grupo_id: args.grupo_id,
-        paginaActual: args.paginaActual};
+        paginaActual: args.paginaActual
+    };
 
-    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).
-            then(function (resultado) {
-                res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listarProductos: resultado}));
-            }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listarProductos: {}}));
-            }).
-            done();
+    G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {listarProductos: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {listarProductos: {}}));
+    }).done();
 };
 
 /**
@@ -1931,19 +2039,18 @@ FacturacionClientes.prototype.imprimirCsv = function (req, res) {
     var parametros = {
         empresa_id: args.empresa_id,
         grupo_id: args.grupo_id,
-        paginaActual: '-1'};
+        paginaActual: '-1'
+    };
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'listarProductos', parametros).then(function (resultado) {
 
         return G.Q.nfcall(__generarCsvBarranquilla, resultado);
     }).then(function (resultado) {
-        
+
         res.send(G.utils.r(req.url, 'Consultar listado productos ok!!!!', 200, {imprimirCsv: resultado}));
-    }).
-            fail(function (err) {
-                res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {imprimirCsv: {}}));
-            }).
-            done();
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar listado de productos', 500, {imprimirCsv: {}}));
+    }).done();
 };
 
 /**
@@ -1974,16 +2081,18 @@ FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla = funct
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'eliminarProductosTemporalBarranquilla', parametros)
 
-            .then(function () {
+        .then(function () {
 
-                return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
+            return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
 
-            }).catch(function (err) {
+        }).catch(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -2013,9 +2122,9 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
     var def = G.Q.defer();
 
     if (!args.generar_factura_consumo) {
@@ -2068,7 +2177,11 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     var documentoFacturacion = "";
     var consultarParametrosRetencion = "";
     var usuario = req.session.user.usuario_id;
-    var parametroBodegaDocId = {variable: "documento_factura_" + args.generar_factura_consumo.empresa_id, tipoVariable: 1, modulo: 'FacturasDespacho'};
+    var parametroBodegaDocId = {
+        variable: "documento_factura_" + args.generar_factura_consumo.empresa_id,
+        tipoVariable: 1,
+        modulo: 'FacturasDespacho'
+    };
 
     that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada({generar_factura_consumo: ''}, 'Facturando...', 200, usuario);
     res.send(G.utils.r(req.url, 'Generando facturacion X consumo...', 200, {generar_factura_consumo: ''}));
@@ -2088,7 +2201,11 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
             datosDocumentosXConsumo.detalle = resultado;
             datosDocumentosXConsumo.temporal = resultado;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo',
-                    {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo, estado: 1, sw_facturacion: 2});
+                {
+                    id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                    estado: 1,
+                    sw_facturacion: 2
+                });
 
         } else {
             throw {msj: 'No hay productos en temporal', status: 404};
@@ -2149,7 +2266,8 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
             datosDocumentosXConsumo.cabecera[0].prefijo = documentoFacturacion[0].id;
             datosDocumentosXConsumo.cabecera[0].documento_id = documentoFacturacion[0].documento_id;
 
-            var parametrosCabecera = {empresa_id: datosDocumentosXConsumo.cabecera[0].empresa,
+            var parametrosCabecera = {
+                empresa_id: datosDocumentosXConsumo.cabecera[0].empresa,
                 tipo_id_tercero: datosDocumentosXConsumo.cabecera[0].tipo_id_tercero,
                 tercero_id: datosDocumentosXConsumo.cabecera[0].tercero_id,
                 factura_fiscal: datosDocumentosXConsumo.cabecera[0].factura_fiscal,
@@ -2168,10 +2286,13 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
             };
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'generarFacturaXConsumo',
-                    {parametrosCabecera: parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
+                {parametrosCabecera: parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
 
         } else {
-            throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+            throw {
+                msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
+                status: 409
+            };
         }
 
     }).then(function (resultado) {
@@ -2213,13 +2334,14 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo',
-                {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
-                    estado: 2,
-                    sw_facturacion: 1,
-                    prefijo: documentoFacturacion[0].id,
-                    factura_fiscal: documentoFacturacion[0].numeracion,
-                    documento_id: documentoFacturacion[0].documento_id
-                });
+            {
+                id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                estado: 2,
+                sw_facturacion: 1,
+                prefijo: documentoFacturacion[0].id,
+                factura_fiscal: documentoFacturacion[0].numeracion,
+                documento_id: documentoFacturacion[0].documento_id
+            });
 
     }).then(function (resultado) {
 
@@ -2247,29 +2369,37 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada(
-                resultado.param,
-                resultado.resultado,
-                201,
-                usuario);
+            resultado.param,
+            resultado.resultado,
+            201,
+            usuario);
 
     }).fail(function (err) {
 
         G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo',
-                {id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo, estado: 1, sw_facturacion: 3}).then(function (resultado) {
+            {
+                id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                estado: 1,
+                sw_facturacion: 3
+            }).then(function (resultado) {
 
         }).fail(function (err) {
             logger.error("-----------------------------------");
-            logger.error({"metodo": "FacturacionClientes.prototype.generarFacturaXConsumo",
+            logger.error({
+                "metodo": "FacturacionClientes.prototype.generarFacturaXConsumo",
                 "usuario_id": usuario,
                 "parametros: ": parametros,
-                "resultado: ": err});
+                "resultado: ": err
+            });
             logger.error("-----------------------------------");
         });
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarFacturaXConsumo",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarFacturaXConsumo",
             "usuario_id": usuario,
             "parametros: ": parametros,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -2303,9 +2433,16 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback) {
 
     if (dato.estado_pedido === 1) {
 
-        G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {pedido_cliente_id: dato.pedido_cliente_id, estado_factura_fiscal: '1'}, {}).then(function (resultado) {
+        G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarEstadoFacturaPedido', {
+            pedido_cliente_id: dato.pedido_cliente_id,
+            estado_factura_fiscal: '1'
+        }, {}).then(function (resultado) {
 
-            return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarDespacho", {empresa_id: dato.empresa_id, prefijo: dato.prefijo, numero: dato.numeracion}, {});
+            return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarDespacho", {
+                empresa_id: dato.empresa_id,
+                prefijo: dato.prefijo,
+                numero: dato.numeracion
+            }, {});
 
         }).then(function (resultado) {
 
@@ -2346,8 +2483,17 @@ function __obtenerEstadoFacturaPedidoDespacho(that, index, datos, pedidosEstados
 
     index++;
 
-    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarEstadoPedido', {prefijo: dato.prefijo, numeracion: dato.factura_fiscal}).then(function (resultado) {
-        pedidosEstados.push({empresa_id: dato.empresa_id, prefijo: dato.prefijo, numeracion: dato.factura_fiscal, pedido_cliente_id: dato.pedido_cliente_id, estado_pedido: resultado[0].estado_pedido});
+    G.Q.ninvoke(that.m_facturacion_clientes, 'consultarEstadoPedido', {
+        prefijo: dato.prefijo,
+        numeracion: dato.factura_fiscal
+    }).then(function (resultado) {
+        pedidosEstados.push({
+            empresa_id: dato.empresa_id,
+            prefijo: dato.prefijo,
+            numeracion: dato.factura_fiscal,
+            pedido_cliente_id: dato.pedido_cliente_id,
+            estado_pedido: resultado[0].estado_pedido
+        });
 
         var timer = setTimeout(function () {
             clearTimeout(timer);
@@ -2366,7 +2512,7 @@ function __obtenerEstadoFacturaPedidoDespacho(that, index, datos, pedidosEstados
  * @author Cristian Ardila
  * +Descripcion funcion recursiva encargada de actualizar uno a uno cada producto
  *              segun la cantidad que se ha facturado
- * @fecha 2017-08-15             
+ * @fecha 2017-08-15
  */
 var productosActualizados = [];
 
@@ -2381,7 +2527,11 @@ function __obtenerDetallePorFacturar(that, index, datos, detallePorFacturar, cal
     index++;
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'obtenerDetallePorFacturar', {
-        empresa_id: dato.empresa_id, estado: 0, prefijo_documento: dato.prefijo_documento, numero_documento: dato.numeracion_documento}).then(function (resultado) {
+        empresa_id: dato.empresa_id,
+        estado: 0,
+        prefijo_documento: dato.prefijo_documento,
+        numero_documento: dato.numeracion_documento
+    }).then(function (resultado) {
 
         detallePorFacturar.push(resultado);
 
@@ -2420,16 +2570,16 @@ function __distribuirUnidadesFacturadas(that, index, index2, datos, productos, u
 
     producto.forEach(function (row) {
         if (dato.codigo_producto === row.codigo_producto
-                && dato.lote === row.lote
-                && dato.prefijo_documento === row.prefijo
-                && dato.numeracion_documento === row.numero) {
+            && dato.lote === row.lote
+            && dato.prefijo_documento === row.prefijo
+            && dato.numeracion_documento === row.numero) {
 
             if (productosActualizados.length > 0) {
 
                 if (dato.codigo_producto === productosActualizados[0].codigo_producto
-                        && dato.lote === productosActualizados[0].lote
-                        && dato.prefijo_documento === productosActualizados[0].prefijo
-                        && dato.numeracion_documento === productosActualizados[0].numero) {
+                    && dato.lote === productosActualizados[0].lote
+                    && dato.prefijo_documento === productosActualizados[0].prefijo
+                    && dato.numeracion_documento === productosActualizados[0].numero) {
 
                     if (dato.cantidad >= row.cantidad) {
                         despacho = parseInt(row.cantidad);
@@ -2477,7 +2627,8 @@ function __distribuirUnidadesFacturadas(that, index, index2, datos, productos, u
                 numero: row.numero,
                 codigo_producto: row.codigo_producto,
                 lote: row.lote,
-                numero_caja: row.numero_caja});
+                numero_caja: row.numero_caja
+            });
 
         }
     });
@@ -2508,7 +2659,8 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback) {
         numero: dato.numero,
         codigo_producto: dato.codigo_producto,
         lote: dato.lote,
-        numero_caja: dato.numero_caja}).then(function (resultado) {
+        numero_caja: dato.numero_caja
+    }).then(function (resultado) {
 
         var timer = setTimeout(function () {
             clearTimeout(timer);
@@ -2519,14 +2671,14 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback) {
     }).done();
 
 
-
 }
 ;
+
 /**
  * @author Cristian Ardila
- * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta 
+ * +Descripcion funcion recursiva encargada de almacenar en un arreglo la consulta
  *              del detalle de lo que se ha facturado por consumo hasta ahora
- * @fecha 2017-08-15             
+ * @fecha 2017-08-15
  */
 function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFacturados, callback) {
 
@@ -2558,24 +2710,24 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
 }
 ;
 
-function __verificarEFCFacturado(that, documentos,index,facturadas,callback){
+function __verificarEFCFacturado(that, documentos, index, facturadas, callback) {
     var documento = documentos[index];
-    if(!documento){
-     callback(false,facturadas);
-     return;
+    if (!documento) {
+        callback(false, facturadas);
+        return;
     }
     G.Q.ninvoke(that.m_facturacion_clientes, 'despachoClientes', documento).then(function (resultado) {
         index++;
-        if(resultado.length > 0 ){
-           __verificarEFCFacturado(that, documentos,index,facturadas,callback);
-        }else{
-           facturadas += " - # "+documento.prefijo+" - "+documento.numero;
-           __verificarEFCFacturado(that, documentos,index,facturadas,callback);
+        if (resultado.length > 0) {
+            __verificarEFCFacturado(that, documentos, index, facturadas, callback);
+        } else {
+            facturadas += " - # " + documento.prefijo + " - " + documento.numero;
+            __verificarEFCFacturado(that, documentos, index, facturadas, callback);
         }
-        
+
     }).fail(function (err) {
-       callback(err);
-       return;
+        callback(err);
+        return;
     }).done();
 }
 
@@ -2597,9 +2749,9 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
 
 
     if (args.generar_factura_individual === undefined) {
@@ -2632,23 +2784,27 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         documentos: args.generar_factura_individual.documentos,
         facturacionCosmitet: args.generar_factura_individual.facturacionCosmitet
     };
-    var parametroBodegaDocId = {variable: "documento_factura_" + parametros.empresaId, tipoVariable: 1, modulo: 'FacturasDespacho'};
+    var parametroBodegaDocId = {
+        variable: "documento_factura_" + parametros.empresaId,
+        tipoVariable: 1,
+        modulo: 'FacturasDespacho'
+    };
     var documentoFacturacion;
     var consultarTerceroContrato;
     var consultarParametrosRetencion;
     var def = G.Q.defer();
 
-    G.Q.nfcall(__verificarEFCFacturado,that, args.generar_factura_individual.documentos,0,"").then(function (resultado) {
+    G.Q.nfcall(__verificarEFCFacturado, that, args.generar_factura_individual.documentos, 0, "").then(function (resultado) {
 
         if (resultado.length === 0) {
-            
-        return G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId);
-        
+
+            return G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId);
+
         } else {
-            throw {msj: "Ya se encuentra facturado : \n"+resultado, status: 404};
+            throw {msj: "Ya se encuentra facturado : \n" + resultado, status: 404};
         }
     }).then(function (resultado) {
-        
+
         parametros.documentoId = resultado[0].valor;
 
         if (resultado.length > 0) {
@@ -2700,13 +2856,17 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         if (!resultado || resultado.length > 0) {
             parametros.direccion_ip = ip;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'transaccionGenerarFacturaIndividual',
-                    {documento_facturacion: documentoFacturacion,
-                        consultar_tercero_contrato: consultarTerceroContrato,
-                        consultar_parametros_retencion: consultarParametrosRetencion,
-                        parametros: parametros
-                    });
+                {
+                    documento_facturacion: documentoFacturacion,
+                    consultar_tercero_contrato: consultarTerceroContrato,
+                    consultar_parametros_retencion: consultarParametrosRetencion,
+                    parametros: parametros
+                });
         } else {
-            throw {msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion', status: 409};
+            throw {
+                msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
+                status: 409
+            };
         }
 
     }).then(function (resultado) {
@@ -2721,17 +2881,25 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
 //
 //    }).then(function (resultado) {
 
-        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {generar_factura_individual: documentoFacturacion,
-            resultado_sincronizacion_ws: {resultado: {mensaje_ws: 'No sincronizado', mensaje_bd: "Log Registrado Correctamente "}}// resultado
+        return res.send(G.utils.r(req.url, 'Se genera la factura satisfactoriamente', 200, {
+            generar_factura_individual: documentoFacturacion,
+            resultado_sincronizacion_ws: {
+                resultado: {
+                    mensaje_ws: 'No sincronizado',
+                    mensaje_bd: "Log Registrado Correctamente "
+                }
+            }// resultado
         }));
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarFacturaIndividual",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarFacturaIndividual",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -2753,9 +2921,9 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-            req.connection.remoteAddress ||
-            req.socket.remoteAddress ||
-            req.connection.socket.remoteAddress;
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
 
     if (args.sincronizar_factura === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {sincronizar_factura: []}));
@@ -2777,7 +2945,11 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
         documentoId: ''
     };
 
-    var parametroBodegaDocId = {variable: "documento_factura_" + args.sincronizar_factura.empresa_id, tipoVariable: 1, modulo: 'FacturasDespacho'};
+    var parametroBodegaDocId = {
+        variable: "documento_factura_" + args.sincronizar_factura.empresa_id,
+        tipoVariable: 1,
+        modulo: 'FacturasDespacho'
+    };
 
     G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId).then(function (resultado) {
 
@@ -2806,11 +2978,13 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.sincronizarFactura",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.sincronizarFactura",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametroBodegaDocId": parametroBodegaDocId,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -2867,28 +3041,6 @@ const __productos = function (productos, index, productosDian, callback) {
         descripcion: item.descripcion, //String OPCIONAL -
         identificador: item.codigo_producto, //String -
         imprimible: true, //boolean -
-        /*               impuestoAlConsumo: { //-
-         nombre: obj.x, //String -
-         porcentual: obj.x, //decimal -
-         valor: obj.x //decimal -
-         },
-         impuestoICA: { // -
-         nombre: obj.x, //String -
-         // porcentual: obj.x, //decimal *
-         valor: obj.x //decimal -
-         },
-         impuestoIVA: {
-         nombre: obj.x, //String -
-         porcentual: obj.x, //decimal -
-         valor: obj.x //decimal -
-         },*/
-
-//                listaImpuestosDeducciones: {// OPCIONAL -
-//                    nombre: "IVA19", //String -
-//                    //porcentual: obj.x, //decimal 
-//                    baseGravable: item.porc_iva, //decimal  -
-//                    valor: item.iva_total.replace(",", ".") //decimal -
-//                },
         pagable: true, //boolean -
         valorUnitario: item.valor_unitario //decimal -
     };
@@ -2933,7 +3085,7 @@ const __productos = function (productos, index, productosDian, callback) {
     }, 0);
 };
 
-    const __productosAdjunto = function (productos, index, productosDian, callback) {
+const __productosAdjunto = function (productos, index, productosDian, callback) {
     var item = productos[index];
     var formato = 'DD-MM-YYYY';
 
@@ -2991,17 +3143,63 @@ const __productos = function (productos, index, productosDian, callback) {
         clearTimeout(timer);
     }, 0);
 };
+const __productosAdjuntoOriginal = function (productos, index, productosDian, callback) {
+    var item = productos[index];
+    var formato = 'DD-MM-YYYY';
 
 
-FacturacionClientes.prototype._productos = () => {
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
 
-    let count = 0;
-    let cantidadFunciones = 2;
-    let facturas = this.m_facturas;
+    var prod = {
+        cantidad: item.cantidad, //decimal OPCIONAL -
+        descripcion: item.descripcion, //String OPCIONAL -
+        identificador: item.codigo_producto, //String -
+        imprimible: true, //boolean -
+        pagable: true, //boolean -
+        valorUnitario: item.valor_unitario //decimal -
+    };
+    var impuesto;
+    var ivaPorcentaje = parseInt(item.porc_iva);
+    if (ivaPorcentaje === 0) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA0", //String -
+            //porcentual: obj.x, //decimal
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
 
-    new Promise((resolve, reject) => {
-        facturas = __productosAdjunto();
-    });
+        };
+    }
+    ;
+    if (ivaPorcentaje === 19) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA19", //String -
+            //porcentual: obj.x, //decimal
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        }
+
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+        impuesto = {// OPCIONAL -
+            nombre: "IVA10", //String -
+            //porcentual: obj.x, //decimal
+            baseGravable: item.porc_iva, //decimal  -
+            valor: item.iva_total.replace(",", ".") //decimal -
+        };
+    }
+    ;
+    prod.listaImpuestosDeducciones = impuesto;
+    productosDian.push(prod);
+
+    var timer = setTimeout(function () {
+        index++;
+        __productosAdjunto(productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
 };
 
 FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
@@ -3010,23 +3208,51 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     var productos;
     var resultado;
     var data;
-    const factura = this.m_facturas;
-    // console.log("factura ",factura);
+    var Factura = this.m_facturas;
+    var Pago = this.m_pago;
+    var Producto = this.m_productos;
+    // console.log("Pago ",Pago);
     G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
         resultado = data;
-        console.log('Data: ', resultado);
+        // console.log('Data: ', resultado);
+        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, Producto);
 
-
+    }).then(function (productos) {
+        // console.log('productos: ', productos);
 
         var subTotal = resultado.valores.subTotal.replace(".", "");
         var total = resultado.valores.totalFactura.replace(".", "");
+        // console.log('factura: ', factura);
+        Factura.set_Tipodocumento('FE');
+        Factura.set_Versiondocumento('1.0');
+        Factura.set_Registrar(false);
+        // factura.set_Control(''); //falta que certicamara nos de el token
+        Factura.set_Codigotipodocumento('01');
+        Factura.set_Tipooperacion('10');
+        Factura.set_Prefijodocumento(resultado.cabecera.prefijo);
+        Factura.set_Numerodocumento(resultado.cabecera.factura_fiscal);
+        Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
+        // factura.set_Horaemision('10'); // todavia no sabemos si enviarla
+        // factura.set_Periodofacturacion('10'); // no se envia
+        Factura.set_Numerolineas(resultado.detalle.length);
+        Factura.set_Subtotal(subTotal);
+        Factura.set_Totalbaseimponible(subTotal); // falta validar
+        Factura.set_SubtotalMasTributos(total);
+        Factura.set_TotalDescuentos(0);
+        Factura.set_Totalcargos(0);
+        Factura.set_Totalanticipos(0);
+        Factura.set_Total(total);
+        Factura.set_Codigomoneda('COP');
+        // factura.set_Tasacambio('COP'); // no se envia
 
-        factura.set_Tipodocumento('FE');
-        factura.set_Versiondocumento('01');
-        factura.set_Registrar(false);
-        factura.set_Codigotipodocumento('01');
-        factura.set_Tipooperacion('10');
-        factura.set_Prefijodocumento(resultado.cabecera.prefijo);
+        /*-----Clase Pago------*/
+        Pago.setId(1); // 1 Contado, 2 Credito
+        Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
+        /*--------------------*/
+        Factura.set_Pago(Pago); // otra clase
+
+        Factura.set_Listaproductos(productos); // listado de otra clase
+
         // var json = {
         //     codigoMoneda: "COP",
         //     fechaExpedicion: resultado.cabecera.fecha_registro,
@@ -3060,43 +3286,43 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         //     coordYCufe: 256,
         //     pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
         // };
-        console.log("factura",factura);
+        console.log("factura", Factura);
         // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
-return false;
+        return false;
 
-    // }).then(function (respuesta) {
-    //
-    //     data = respuesta;
-    //     var parametros = {
-    //         empresa_id: args.empresaId,
-    //         prefijo: resultado.cabecera.prefijo,
-    //         factura_fiscal: resultado.cabecera.factura_fiscal,
-    //         sw_factura_dian: respuesta.sw_factura_dian,
-    //         json_envio: data.lastRequest,
-    //         respuesta_ws: data
-    //     };
-    //
-    //     if (respuesta.sw_factura_dian === '1') {
-    //
-    //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-    //
-    //     } else if (respuesta.sw_factura_dian === '0') {
-    //
-    //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-    //
-    //     }
-    //
-    // }).then(function (resultado) {
-    //
-    //     if (data.sw_factura_dian === '1') {
-    //
-    //         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
-    //
-    //     } else if (data.sw_factura_dian === '0') {
-    //
-    //         res.send(G.utils.r(req.url, data.msj, data.status, data));
-    //
-    //     }
+        // }).then(function (respuesta) {
+        //
+        //     data = respuesta;
+        //     var parametros = {
+        //         empresa_id: args.empresaId,
+        //         prefijo: resultado.cabecera.prefijo,
+        //         factura_fiscal: resultado.cabecera.factura_fiscal,
+        //         sw_factura_dian: respuesta.sw_factura_dian,
+        //         json_envio: data.lastRequest,
+        //         respuesta_ws: data
+        //     };
+        //
+        //     if (respuesta.sw_factura_dian === '1') {
+        //
+        //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+        //
+        //     } else if (respuesta.sw_factura_dian === '0') {
+        //
+        //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+        //
+        //     }
+        //
+        // }).then(function (resultado) {
+        //
+        //     if (data.sw_factura_dian === '1') {
+        //
+        //         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+        //
+        //     } else if (data.sw_factura_dian === '0') {
+        //
+        //         res.send(G.utils.r(req.url, data.msj, data.status, data));
+        //
+        //     }
 
     }).fail(function (err) {
 
@@ -3120,8 +3346,8 @@ FacturacionClientes.prototype.generarSincronizacionDian_original = function (req
         return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
 
     }).then(function (productos) {
-var subTotal = resultado.valores.subTotal.replace(".", "");
-var total = resultado.valores.totalFactura.replace(".", "");
+        var subTotal = resultado.valores.subTotal.replace(".", "");
+        var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             fechaExpedicion: resultado.cabecera.fecha_registro,
@@ -3203,7 +3429,7 @@ var total = resultado.valores.totalFactura.replace(".", "");
 
 /**
  * @author AMGT (duplica de generarReporteDespacho)
- * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura
  *              generada
  * @fecha 18/05/2017
  */
@@ -3218,7 +3444,8 @@ function __generarSincronizacionDian(that, req, callback) {
     var numero = args.imprimir_reporte_factura.numero;
     var usuario = req.session.user.usuario_id;
 
-    var parametros = {empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo, tipoIdTercero: '',
+    var parametros = {
+        empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo, tipoIdTercero: '',
         pedidoClienteId: '', terceroId: '', nombreTercero: '', paginaActual: paginaActual
     };
     var parametrosFacturaGenerada = {empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo};
@@ -3300,7 +3527,8 @@ function __generarSincronizacionDian(that, req, callback) {
 
     }).then(function (resultado) {
 
-        return G.Q.ninvoke(that.m_facturacion_clientes, 'procesosFacturacion', {filtro: '1',
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'procesosFacturacion', {
+            filtro: '1',
             factura_fiscal: parametros.factura_fiscal,
             prefijo: parametros.prefijo
         });
@@ -3400,7 +3628,12 @@ FacturacionClientes.prototype.generarReporteFacturaGeneradaDian = function (req,
 
     G.Q.ninvoke(that.c_sincronizacion, 'consultaFacturacionElectronica', json).then(function (resultado) {
 
-        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {consulta_factura_generada_detalle: {nombre_pdf: resultado, resultados: {}}}));
+        return res.send(G.utils.r(req.url, 'Factura generada satisfactoriamente', 200, {
+            consulta_factura_generada_detalle: {
+                nombre_pdf: resultado,
+                resultados: {}
+            }
+        }));
 
     }).fail(function (err) {
 
@@ -3440,7 +3673,8 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
     var numero = args.imprimir_reporte_factura.numero;
     var usuario = req.session.user.usuario_id;
 
-    var parametros = {empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo, tipoIdTercero: '',
+    var parametros = {
+        empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo, tipoIdTercero: '',
         pedidoClienteId: '', terceroId: '', nombreTercero: '', paginaActual: paginaActual
     };
     var parametrosFacturaGenerada = {empresa_id: empresaId, factura_fiscal: numero, prefijo: prefijo};
@@ -3522,7 +3756,8 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
 
     }).then(function (resultado) {
 
-        return G.Q.ninvoke(that.m_facturacion_clientes, 'procesosFacturacion', {filtro: '1',
+        return G.Q.ninvoke(that.m_facturacion_clientes, 'procesosFacturacion', {
+            filtro: '1',
             factura_fiscal: parametros.factura_fiscal,
             prefijo: parametros.prefijo
         });
@@ -3589,12 +3824,14 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarReporteFacturaGenerada",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarReporteFacturaGenerada",
             "usuario_id": usuario,
             "parametros: ": parametros,
             "parametrosReporte: ": parametrosReporte,
             "parametrosFacturaGenerada": parametrosFacturaGenerada,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -3606,7 +3843,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
 };
 /**
  * @author Cristian Ardila
- * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura
  *              generada
  * @fecha 18/05/2017
  */
@@ -3687,11 +3924,13 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarReportePedido",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarReportePedido",
             "usuario_id": usuario_id,
             "numeroPedido: ": numeroPedido,
             "parametrosReporte: ": parametrosReporte,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -3703,11 +3942,9 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
 };
 
 
-
-
 /**
  * @author Cristian Ardila
- * +Descripcion Metodo encargado de generar el informe detallado de la factura  
+ * +Descripcion Metodo encargado de generar el informe detallado de la factura
  *              generada
  * @fecha 18/05/2017
  */
@@ -3734,7 +3971,8 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
     var valorIvaTotal = 0;
     var usuario_id = req.session.user.usuario_id;
 
-    var parametrosDocumento = {empresa_id: args.imprimir_reporte_despacho.documento.empresa,
+    var parametrosDocumento = {
+        empresa_id: args.imprimir_reporte_despacho.documento.empresa,
         prefijo: args.imprimir_reporte_despacho.documento.prefijo,
         numero: args.imprimir_reporte_despacho.documento.numero
     };
@@ -3766,17 +4004,17 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
         }
 
     })
-            .then(function (resultado) {
+        .then(function (resultado) {
 
-                if (resultado.length > 0) {
-                    parametrosReporte.cabecera = resultado[0];
+            if (resultado.length > 0) {
+                parametrosReporte.cabecera = resultado[0];
 
-                    return G.Q.ninvoke(that.m_e008, 'consultarDatosAdicionales', parametrosDocumento);
-                } else {
-                    throw {msj: 'El documento no existe', state: 404};
-                }
+                return G.Q.ninvoke(that.m_e008, 'consultarDatosAdicionales', parametrosDocumento);
+            } else {
+                throw {msj: 'El documento no existe', state: 404};
+            }
 
-            }).then(function (resultado) {
+        }).then(function (resultado) {
 
         if (resultado.length > 0) {
             parametrosReporte.datos_adicionales = resultado[0];
@@ -3821,11 +4059,13 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
 
     }).fail(function (err) {
         logger.error("-----------------------------------");
-        logger.error({"metodo": "FacturacionClientes.prototype.generarReporteDespacho",
+        logger.error({
+            "metodo": "FacturacionClientes.prototype.generarReporteDespacho",
             "usuario_id": usuario_id,
             "parametrosDocumento: ": parametrosDocumento,
             "parametrosReporte: ": parametrosReporte,
-            "resultado: ": err});
+            "resultado: ": err
+        });
         logger.error("-----------------------------------");
         if (!err.status) {
             err = {};
@@ -3891,7 +4131,7 @@ function __generarPdf2(datos, callback) {
                 headerHeight: "290px", // .imagent{position: absolute;top: 10px;}
                 footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
                 header:
-                        `<style>
+                    `<style>
                             p {margin-top:0; margin-bottom:0;line-height: 75%; }
                             .letra_factura{font: 100% sans-serif;
                                            display: flex;
@@ -3968,10 +4208,9 @@ function __subir_archivo_plano(files, callback) {
 
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
-        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
-                then(function () {
-                    return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-                }).then(function () {
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).then(function () {
+            return G.Q.nfcall(G.fs.unlink, ruta_tmp);
+        }).then(function () {
             var parser = G.XlsParser;
             var workbook = parser.readFile(ruta_nueva);
             var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'lote', 'fecha_vencimiento', 'valor_unitario', 'iva']);
@@ -3983,12 +4222,10 @@ function __subir_archivo_plano(files, callback) {
                 G.fs.unlinkSync(ruta_nueva);
                 callback(false, filas);
             }
-        }).
-                fail(function (err) {
-                    G.fs.unlinkSync(ruta_nueva);
-                    callback(true);
-                }).
-                done();
+        }).fail(function (err) {
+            G.fs.unlinkSync(ruta_nueva);
+            callback(true);
+        }).done();
 
     } else {
         callback(true);
@@ -4063,7 +4300,7 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
  * @author German Galvis
  * +Descripcion Metodo encargado de insertar un arreglo de productos en la tabla
  *              productos_consumo
- * 
+ *
  */
 function __insertarProductosConsumo(that, index, parametros, _productos_validos, _productos_invalidos, callback) {
     var formato = 'YYYY-MM-DD';
@@ -4111,7 +4348,7 @@ function __insertarProductosConsumo(that, index, parametros, _productos_validos,
  * @author German Galvis
  * +Descripcion Metodo encargado generar un archivo xls
  *              productos_consumo
- * 
+ *
  */
 function __creaExcel(data, callback) {
 
@@ -4124,7 +4361,8 @@ function __creaExcel(data, callback) {
         top: {style: 'thin'},
         left: {style: 'thin'},
         bottom: {style: 'thin'},
-        right: {style: 'thin'}};
+        right: {style: 'thin'}
+    };
 
     var font = {name: 'Calibri', size: 9};
 
@@ -4238,6 +4476,7 @@ function __generarCsvBarranquilla(datos, callback) {
     });
 }
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes", "c_sincronizacion", "m_productos", "m_facturas"];
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes",
+    "m_pedidos_clientes", "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_productos"];
 
 module.exports = FacturacionClientes;

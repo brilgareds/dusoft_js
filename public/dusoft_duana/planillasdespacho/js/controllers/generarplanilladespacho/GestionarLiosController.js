@@ -18,7 +18,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     cantidadLios: 0,
                     cantidadNeveras: 0,
                     cantidadBolsas: 0,
-                    observacion: ""
+                    observacion: "",
+                    tipo: tipo
                 };
 
                 $scope.root.session = {

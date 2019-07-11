@@ -3086,23 +3086,33 @@ const __productos = function (productos, index, productosDian, callback) {
 };
 
 const __productosAdjunto = function (productos, index, productosDian, callback) {
+    console.log("productosDian",productosDian);
     var item = productos[index];
     var formato = 'DD-MM-YYYY';
+    var numeroLinea = index;
 
 
     if (!item) {
         callback(false, productosDian);
         return;
     }
-
-    var prod = {
-        cantidad: item.cantidad, //decimal OPCIONAL -
-        descripcion: item.descripcion, //String OPCIONAL -
-        identificador: item.codigo_producto, //String -
-        imprimible: true, //boolean -
-        pagable: true, //boolean -
-        valorUnitario: item.valor_unitario //decimal -
-    };
+    var prod = this.m_productos;
+     prod.setNumeroLinea(numeroLinea+1);
+//     prod.setInformacion(); //no se a que se refiere
+     prod.setCantidad(item.cantidad);
+     prod.setValorTotal(numeroLinea+1);
+     prod.setIdProducto(item.codigo_producto);
+//     prod.setCodigoPrecio(); // no se usa
+//     prod.setCodigoReferencia(); // no se usa
+//     prod.setValorReferencia(); // no se usa
+     prod.setValorUnitario(item.valor_unitario);
+     prod.setCantidadReal(item.cantidad);
+     prod.setCodigoUnidad('94'); // 94 - unidad
+     
+//        descripcion: item.descripcion, //String OPCIONAL -
+//        imprimible: true, //boolean -
+//        pagable: true, //boolean -
+    
     var impuesto;
     var ivaPorcentaje = parseInt(item.porc_iva);
     if (ivaPorcentaje === 0) {
@@ -3210,12 +3220,11 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     var data;
     var Factura = this.m_facturas;
     var Pago = this.m_pago;
-    var Producto = this.m_productos;
     // console.log("Pago ",Pago);
     G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
         resultado = data;
         // console.log('Data: ', resultado);
-        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, Producto);
+        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
 
     }).then(function (productos) {
         // console.log('productos: ', productos);

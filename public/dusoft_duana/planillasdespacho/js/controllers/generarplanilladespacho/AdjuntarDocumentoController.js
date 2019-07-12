@@ -1,54 +1,56 @@
 
-define(["angular", "js/controllers", "controllers/generarplanilladespacho/GestionarLiosController"], function (angular, controllers) {
+define(["angular", "js/controllers"], function (angular, controllers) {
 
-    controllers.controller('GestionarDocumentosBodegaController', [
+    controllers.controller('AdjuntarDocumentoController', [
         '$scope',
         '$rootScope',
         'Request',
         '$modal',
         'API',
-        "socket",
         "$timeout",
         "AlertService",
-        "localStorageService",
+        "$modalInstance",
         "$state",
-        "EmpresaPlanillaDespacho",
         "ClientePlanillaDespacho",
         "FarmaciaPlanillaDespacho",
         "Documento",
         "Usuario",
         "OtrasSalidasPlanillaDespacho",
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion, OtrasSalidasPlanillaDespacho) {
+        "documentoLio",
+        "numeroGuia",
+        function ($scope, $rootScope, Request, $modal, API, $timeout, AlertService, $modalInstance, $state, ClientePlanilla,
+                FarmaciaPlanilla, Documento, Sesion, OtrasSalidasPlanillaDespacho, documentoLio, numeroGuia) {
 
             var that = this;
 
 
 
-            $rootScope.$on('gestionar_documentos_bodegaCompleto', function (e, parametros) {
+//            $rootScope.$on('gestionar_documentos_bodegaCompleto', function (e, parametros) {
 
-                $scope.datos_view = {
-                    opcion_predeterminada: "0", // 0 = farmacias 1 = clientes 2 = Otras Empresas
-                    termino_busqueda: '',
-                    termino_busqueda_documentos: '',
-                    mostrarTercero: false,
-                    tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
-                    documento_seleccionado: Documento.get()
-                };
+            $scope.datos_view = {
+                opcion_predeterminada: documentoLio.tipo, // 0 = farmacias 1 = clientes 2 = Otras Empresas
+                termino_busqueda: documentoLio.tipo === '2' ? documentoLio.prefijo : documentoLio.tercero, //'',
+                termino_busqueda_documentos: '',
+                mostrarTercero: false,
+                despachoPorLios: true,
+                tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
+                documento_seleccionado: Documento.get()
+            };
 
-                $scope.datos_clientes_farmacias = [];
-                $scope.datos_view.documentosSeleccionados = [];
+            $scope.datos_clientes_farmacias = [];
+            $scope.datos_view.documentosSeleccionados = [];
 
-                $scope.seleccionar_cliente_farmacia();
 
-            });
 
-            $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function (e, parametros) {
-                that.onLiosRegistrados();
-                that.removerDocumentos();
-                $scope.datos_view = null;
-                $scope.$$watchers = null;
+//            });
 
-            });
+//            $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function (e, parametros) {
+//                that.onLiosRegistrados();
+//                that.removerDocumentos();
+//                $scope.datos_view = null;
+//                $scope.$$watchers = null;
+//
+//            });
 
 
             $scope.buscador_cliente_farmacia = function (ev) {
@@ -66,7 +68,6 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             };
 
             $scope.seleccionar_cliente_farmacia = function () {
-//                that.removerDocumentos();
 
                 $scope.datos_view.tercero_seleccionado.limpiar_documentos();
 
@@ -101,9 +102,6 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                             pais_id: 'CO',
                             departamento_id: '76',
                             ciudad_id: '001',
-//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             estado: 1,
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
@@ -139,9 +137,6 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     session: $scope.session,
                     data: {
                         centro_utilidad: {
-//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -357,120 +352,120 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             };
 
-            $scope.validar_ingreso_documento = function (documento) {
-
-                var disabled = false;
-
-                if ($scope.datos_view.despachoPorLios) {
-                    return true;
-                }
-
-                // Validar que el prefijo y el numero del documento esten presentes
-                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
-                    return true;
-                }
-
-                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
-                    return true;
-                }
-
-                // Validar que las cantidad de cajas no sean 0 o vacias                                
-                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
-                    disabled = true;
-                }
-
-                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
-                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
-                    disabled = false;
-//                    if (documento.get_temperatura_neveras() === '') {
-//                        disabled = true;
+//            $scope.validar_ingreso_documento = function (documento) {
+//
+//                var disabled = false;
+//
+//                if ($scope.datos_view.despachoPorLios) {
+//                    return true;
+//                }
+//
+//                // Validar que el prefijo y el numero del documento esten presentes
+//                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
+//                    return true;
+//                }
+//
+//                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
+//                    return true;
+//                }
+//
+//                // Validar que las cantidad de cajas no sean 0 o vacias                                
+//                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
+//                    disabled = true;
+//                }
+//
+//                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
+//                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
+//                    disabled = false;
+////                    if (documento.get_temperatura_neveras() === '') {
+////                        disabled = true;
+////                    }
+//                }
+//
+//                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
+//                    disabled = false;
+//                }
+//
+//                return disabled;
+//            };
+//
+//            $scope.validar_ingreso_documento_otros = function (documento) {
+//
+//                var disabled = false;
+//
+//                if ($scope.datos_view.despachoPorLios) {
+//                    return true;
+//                }
+//
+//                // Validar que el prefijo y el numero del documento esten presentes
+//                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
+//                    return true;
+//                }
+//
+//                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
+//                    return true;
+//                }
+//
+//                if (documento.tercero === undefined || documento.tercero === '') {
+//                    return true;
+//                }
+//
+//                // Validar que las cantidad de cajas no sean 0 o vacias                                
+//                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
+//                    disabled = true;
+//                }
+//
+//                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
+//                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
+//                    disabled = false;
+////                    if (documento.get_temperatura_neveras() === '') {
+////                        disabled = true;
+////                    }
+//                }
+//
+//                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
+//                    disabled = false;
+//                }
+//
+//                return disabled;
+//            };
+//
+//            $scope.seleccionar_documento_planilla = function (documento) {
+//
+//                var obj = {
+//                    session: $scope.session,
+//                    data: {
+//                        planillas_despachos: {
+//                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+//                            prefijo: documento.prefijo,
+//                            numero: documento.numero,
+//                            esPlanillas: true
+//
+//                        }
 //                    }
-                }
-
-                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
-                    disabled = false;
-                }
-
-                return disabled;
-            };
-
-            $scope.validar_ingreso_documento_otros = function (documento) {
-
-                var disabled = false;
-
-                if ($scope.datos_view.despachoPorLios) {
-                    return true;
-                }
-
-                // Validar que el prefijo y el numero del documento esten presentes
-                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
-                    return true;
-                }
-
-                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
-                    return true;
-                }
-
-                if (documento.tercero === undefined || documento.tercero === '') {
-                    return true;
-                }
-
-                // Validar que las cantidad de cajas no sean 0 o vacias                                
-                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
-                    disabled = true;
-                }
-
-                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
-                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
-                    disabled = false;
-//                    if (documento.get_temperatura_neveras() === '') {
-//                        disabled = true;
+//                };
+//
+//                Request.realizarRequest(API.PLANILLAS.CANTIDADES_CAJA_NEVERA, "POST", obj, function (data) {
+//
+//                    if (data.status === 200) {
+//
+//                        if (parseInt(documento.get_cantidad_cajas()) === data.obj.planillas_despachos.totalCajas &&
+//                                parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras &&
+//                                parseInt(documento.get_cantidad_bolsas()) === data.obj.planillas_despachos.totalBolsas) {
+//
+//                            $scope.datos_view.documento_seleccionado = documento;
+//
+//                            that.gestionar_planilla_despacho();
+//                        } else {
+//                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas,bolsas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ",\
+//                                                         Nro neveras Auditadas: " + data.obj.planillas_despachos.totalNeveras + ", Nro bolsas Auditadas: " + data.obj.planillas_despachos.totalBolsas);
+//                        }
+//
 //                    }
-                }
-
-                if (documento.get_cantidad_bolsas() !== '' && documento.get_cantidad_bolsas() !== 0) {
-                    disabled = false;
-                }
-
-                return disabled;
-            };
-
-            $scope.seleccionar_documento_planilla = function (documento) {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        planillas_despachos: {
-                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            prefijo: documento.prefijo,
-                            numero: documento.numero,
-                            esPlanillas: true
-
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PLANILLAS.CANTIDADES_CAJA_NEVERA, "POST", obj, function (data) {
-
-                    if (data.status === 200) {
-
-                        if (parseInt(documento.get_cantidad_cajas()) === data.obj.planillas_despachos.totalCajas &&
-                                parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras &&
-                                parseInt(documento.get_cantidad_bolsas()) === data.obj.planillas_despachos.totalBolsas) {
-
-                            $scope.datos_view.documento_seleccionado = documento;
-
-                            that.gestionar_planilla_despacho();
-                        } else {
-                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas,bolsas y/o neveras NO coinciden con las cantidades auditadas; Nro cajas Auditadas: " + data.obj.planillas_despachos.totalCajas + ",\
-                                                         Nro neveras Auditadas: " + data.obj.planillas_despachos.totalNeveras + ", Nro bolsas Auditadas: " + data.obj.planillas_despachos.totalBolsas);
-                        }
-
-                    }
-                });
-
-
-            };
+//                });
+//
+//
+//            };
 //
 //            $scope.seleccionar_documento_otras_empresas = function () {
 //
@@ -484,93 +479,135 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                 var documentos = $scope.datos_view.documentosSeleccionados;
 
-                //Valida el checkbox de lios para mostrar la ventana de lios
                 if ($scope.datos_view.despachoPorLios && documentos.length > 0) {
 
-                    that.gestionarPlanillaParaLios(function () {
-                        that.mostrarVentanaLios(documentos);
-                    });
+                    that.gestionarDocumentosParaLio(documentos);
 
                 } else if ($scope.datos_view.despachoPorLios && documentos.length === 0) {
 
-                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "Debe seleccionar por lo menos un documento para despachos en lios");
-                } else {
-                    $scope.cerrar_gestion_documentos_bodega();
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "Debe seleccionar por lo menos un documento para agregar al lio");
+//                } else {
+//                    $scope.cerrar_gestion_documentos_bodega();
                 }
 
             };
 
-            that.mostrarVentanaLios = function (documentos) {
-                $scope.opts = {
-                    backdrop: 'static',
-                    dialogClass: "editarproductomodal",
-                    templateUrl: 'views/generarplanilladespacho/gestionarLios.html',
-                    controller: "GestionarLiosController",
-                    resolve: {
-                        documentos: function () {
-                            return documentos;
-                        },
-                        tipo: function () {
-                            return $scope.datos_view.opcion_predeterminada;
-                        },
-                        numeroGuia: function () {
-                            return $scope.planilla.get_numero_guia();
+
+            /**
+             * +Descripcion Metodo encargado de invocar el servicio que modifica
+             *              los lios
+             * @author German Galvis
+             * @fecha 12/07/2019 DD/MM/YYYY
+             * @returns {undefined}
+             */
+            that.gestionarDocumentosParaLio = function (documentos) {
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        planillas_despachos: {
+                            documentos: documentos,
+                            totalCaja: 0,
+                            lio_id: documentoLio.lio_id,
+                            cantidadLios: 0,
+                            cantidadNeveras: 0,
+                            cantidadBolsas: 0,
+                            numeroGuia: numeroGuia,
+                            observacion: documentoLio.observacion
                         }
                     }
                 };
 
-                var modalInstance = $modal.open($scope.opts);
+                Request.realizarRequest(API.PLANILLAS.AGREGAR_DOCUMENTOS_LIOS, "POST", obj, function (data) {
 
+                    if (data.status === 200) {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
+                        $scope.cerrar();
+                    } else if (data.status === 403) {
+
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
+                    }
+
+                });
             };
+
+
+
+
+//
+//            that.mostrarVentanaLios = function (documentos) {
+//                $scope.opts = {
+//                    backdrop: 'static',
+//                    dialogClass: "editarproductomodal",
+//                    templateUrl: 'views/generarplanilladespacho/gestionarLios.html',
+//                    controller: "GestionarLiosController",
+//                    resolve: {
+//                        documentos: function () {
+//                            return documentos;
+//                        },
+//                        tipo: function () {
+//                            return $scope.datos_view.opcion_predeterminada;
+//                        },
+//                        numeroGuia: function () {
+//                            return $scope.planilla.get_numero_guia();
+//                        }
+//                    }
+//                };
+//
+//                var modalInstance = $modal.open($scope.opts);
+//
+//            };
 
             that.onLiosRegistrados = $rootScope.$on("onLiosRegistrados", function () {
                 $scope.buscar_documentos_bodega();
             });
 
 
-            //Verifica si la existe la planilla, y crea un solo documento
-            that.gestionar_planilla_despacho = function (callback) {
-
-                $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
-
-                if ($scope.planilla.get_numero_guia() === 0) {
-
-                    that.generar_planilla_despacho(function (continuar) {
-
-                        if (continuar) {
-
-                            that.ingresar_documentos_planilla(function (continuar) {
-
-                                if (callback)
-                                    callback(continuar);
-                            });
-                        } else {
-                            if (callback)
-                                callback(continuar);
-                        }
-                    });
-                } else {
-                    that.ingresar_documentos_planilla(function (continuar) {
-                        if (callback)
-                            callback(continuar);
-                    });
-                }
-            };
-
-            //Verifica si existe la planilla y la crea, funcion usada por el proceso de lios
-            that.gestionarPlanillaParaLios = function (callback) {
-                $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
-
-                if ($scope.planilla.get_numero_guia() === 0) {
-
-                    that.generar_planilla_despacho(function (continuar) {
-
-                        callback(continuar);
-                    });
-                } else {
-                    callback(true);
-                }
-            };
+//            //Verifica si la existe la planilla, y crea un solo documento
+//            that.gestionar_planilla_despacho = function (callback) {
+//
+//                $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
+//
+//                if ($scope.planilla.get_numero_guia() === 0) {
+//
+//                    that.generar_planilla_despacho(function (continuar) {
+//
+//                        if (continuar) {
+//
+//                            that.ingresar_documentos_planilla(function (continuar) {
+//
+//                                if (callback)
+//                                    callback(continuar);
+//                            });
+//                        } else {
+//                            if (callback)
+//                                callback(continuar);
+//                        }
+//                    });
+//                } else {
+//                    that.ingresar_documentos_planilla(function (continuar) {
+//                        if (callback)
+//                            callback(continuar);
+//                    });
+//                }
+//            };
+//
+//            //Verifica si existe la planilla y la crea, funcion usada por el proceso de lios
+//            that.gestionarPlanillaParaLios = function (callback) {
+//                $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
+//
+//                if ($scope.planilla.get_numero_guia() === 0) {
+//
+//                    that.generar_planilla_despacho(function (continuar) {
+//
+//                        callback(continuar);
+//                    });
+//                } else {
+//                    callback(true);
+//                }
+//            };
 
             $scope.lista_clientes_farmacias = {
                 data: 'datos_clientes_farmacias',
@@ -608,13 +645,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                      </div>'},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento_otros(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                            <button class="btn btn-default btn-xs" ng-click="onMostrarVentanaDescripcion(row.entity)" ng-show="datos_view.opcion_predeterminada == 2" ng-disabled="datos_view.despachoPorLios" ><span class="glyphicon glyphicon-pencil"></span></button>\
-                                        </div>'
-                    }
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "12%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'}
                 ]
             };
 
@@ -625,18 +656,12 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'lios', displayName: "", width: "40", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
+                    {field: 'lios', displayName: "", width: "5%", cellClass: "txt-center dropdown-button", cellTemplate: "<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
                     {field: 'get_id()', displayName: 'Grupo', width: "10%"},
-                    {field: 'get_descripcion()', displayName: 'Doc Bodega', width: "20%"},
+                    {field: 'get_descripcion()', displayName: 'Doc Bodega', width: "30%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                            <button class="btn btn-default btn-xs" ng-click="onMostrarVentanaDescripcion(row.entity)" ng-show="datos_view.opcion_predeterminada == 2" ng-disabled="datos_view.despachoPorLios" ><span class="glyphicon glyphicon-pencil"></span></button>\
-                                        </div>'
-                    }
+                    {field: 'cantidad_bolsas', displayName: 'Bolsa', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_bolsas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'}
                 ]
             };
 
@@ -659,45 +684,21 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             };
 
-            $scope.onMostrarVentanaDescripcion = function (documento) {
-                $scope.opts = {
-                    backdrop: 'static',
-                    dialogClass: "editarproductomodal",
-                    templateUrl: 'views/generarplanilladespacho/descripcionOtrasSalidas.html',
-                    scope: $scope,
-                    controller: ["$scope", "$modalInstance", function (documento, $modalInstance) {
-                            $scope.documento = documento;
+            $scope.onCerrar = function () {
 
-                            $scope.cerrar = function () {
-                                $modalInstance.close();
-                            };
-                        }],
-                    resolve: {
-                        documento: function () {
-                            return documento;
-                        }
-                    }
-                };
-
-                var modalInstance = $modal.open($scope.opts);
-
-                modalInstance.result.then(function () {
-
-                }, function () {
-
-                });
+                $modalInstance.close();
             };
 
-            /*
-             * @Author: Eduar
-             * +Descripcion: Handler del boton de lios
-             */
-            $scope.onDespachoPorLios = function () {
-                if (!$scope.datos_view.despachoPorLios) {
-                    that.removerDocumentos();
-                    $scope.datos_view.documentosSeleccionados = [];
-                }
-            };
+//            /*
+//             * @Author: Eduar
+//             * +Descripcion: Handler del boton de lios
+//             */
+//            $scope.onDespachoPorLios = function () {
+//                if (!$scope.datos_view.despachoPorLios) {
+//                    that.removerDocumentos();
+//                    $scope.datos_view.documentosSeleccionados = [];
+//                }
+//            };
 
             /*
              * @Author: Eduar
@@ -718,7 +719,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
              */
             that.removerDocumentos = function () {
                 var documentos = $scope.datos_view.documentosSeleccionados;
-                $scope.datos_view.despachoPorLios = false;
+//                $scope.datos_view.despachoPorLios = false;
                 for (var i in documentos) {
                     var _documento = documentos[i];
                     _documento.setSeleccionado(false);
@@ -870,9 +871,11 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             };
 
-            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-                $scope.$$watchers = null;
+            $scope.seleccionar_cliente_farmacia();
 
-            });
+//            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+//                $scope.$$watchers = null;
+//
+//            });
         }]);
 });

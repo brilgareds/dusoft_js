@@ -1,10 +1,10 @@
 define(["angular", "js/controllers"], function (angular, controllers) {
 
     var fo = controllers.controller('GestionarLiosController', [
-        '$scope', '$rootScope', 'Request',
+        '$scope', '$rootScope', 'Request', '$modal',
         '$modalInstance', 'API', "socket", "AlertService",
         "Usuario", "documentos", "tipo", "numeroGuia",
-        function ($scope, $rootScope, Request,
+        function ($scope, $rootScope, Request, $modal,
                 $modalInstance, API, socket, AlertService,
                 Usuario, documentos, tipo, numeroGuia) {
 
@@ -43,7 +43,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 } else if (!isNaN(cantidadCajas) && !isNaN(cantidadLios) &&
                         ((cantidadCajas > 0 && cantidadLios > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras) || (cantidadBolsas > 0 && cantidadLios > cantidadBolsas))) {
                     return false;
-                } 
+                }
 
 
                 return true;
@@ -94,6 +94,41 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 }
 
             };
+
+            //btn encargado de desplegar el modal de adicionar nuevos doc a un lio
+            $scope.btn_adicionar_documento_lio = function () {
+                self.mostrarVentanaAdjuntarDoc(documentos[0]);
+            };
+
+
+
+            self.mostrarVentanaAdjuntarDoc = function (documento) {
+                $scope.opts = {
+                    backdrop: 'static',
+                    windowClass: 'app-modal-window-xlg-xlg',
+                    templateUrl: 'views/generarplanilladespacho/AdjuntarDocumentoALio.html',
+//                    backdropClick: true,
+//                    dialogFade: true,
+//                    keyboard: true,
+                    scope: $scope,
+                    controller: "AdjuntarDocumentoController",
+                    resolve: {
+                        documentoLio: function () {
+                            return documento;
+                        },
+                        numeroGuia: function () {
+                            return numeroGuia;
+                        }
+                    }
+
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+                modalInstance.result.then(function () {
+                }, function () {});
+            };
+
+
 
             /**
              * +Descripcion Metodo encargado de invocar el servicio que creara

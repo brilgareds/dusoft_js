@@ -23,6 +23,7 @@ define(["angular"], function(angular) {
                 'MODIFICAR_DOCUMENTO_PLANILLA':BASE_URL + '/PlanillasDespachos/modificarDocumentoPlanilla',
                 'CANTIDADES_CAJA_NEVERA': BASE_URL + '/PlanillasDespachos/consultarCantidadCajaNevera',
                 'GESTIONAR_LIOS': BASE_URL + '/PlanillasDespachos/gestionarLios',
+                'AGREGAR_DOCUMENTOS_LIOS': BASE_URL + '/PlanillasDespachos/agregarDocumentosLios',
                 'MODIFICAR_LIOS': BASE_URL + '/PlanillasDespachos/modificarLios',
                 'LISTAR_DOCUMENTOS_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarDocumentosOtrasSalidas',
                 'LISTAR_NUMERO_PREFIJO_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarNumeroPrefijoOtrasSalidas'

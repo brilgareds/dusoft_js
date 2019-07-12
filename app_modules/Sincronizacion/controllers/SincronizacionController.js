@@ -355,7 +355,7 @@ function __FacturacionDian(obj, callback) {
 
     var password = G.constants.CREDENCIALESCERTICAMARA().CONTRASENA; // optional password
     var username = G.constants.CREDENCIALESCERTICAMARA().USUARIO; // optional password  
-    var tmp = {};
+    var tmp = { lastRequest: {} };
     //Se invoca el ws
 
     G.Q.nfcall(G.soap.createClient, url).then(function (client) {

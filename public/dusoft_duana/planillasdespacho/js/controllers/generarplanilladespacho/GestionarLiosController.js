@@ -78,6 +78,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 $modalInstance.close();
             };
 
+            $scope.cerrarLio = function () {
+                $scope.gestionar_consultas();
+                $scope.cerrar();
+            };
+
 
             $scope.onIngresarLios = function () {
 
@@ -105,11 +110,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             self.mostrarVentanaAdjuntarDoc = function (documento) {
                 $scope.opts = {
                     backdrop: 'static',
-                    windowClass: 'app-modal-window-xlg-xlg',
+                    windowClass: 'app-modal-window-xlg-ls',
                     templateUrl: 'views/generarplanilladespacho/AdjuntarDocumentoALio.html',
-//                    backdropClick: true,
-//                    dialogFade: true,
-//                    keyboard: true,
                     scope: $scope,
                     controller: "AdjuntarDocumentoController",
                     resolve: {
@@ -124,8 +126,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 };
                 var modalInstance = $modal.open($scope.opts);
 
-                modalInstance.result.then(function () {
-                }, function () {});
+                modalInstance.result.then(function (doc) {
+                    if (doc.length > 0) {
+                        doc.forEach(function (data) {
+                            $scope.root.documentos.push(data);
+                        });
+                    }
+                });
             };
 
 

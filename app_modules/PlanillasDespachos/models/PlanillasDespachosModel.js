@@ -260,7 +260,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
 
     var fecha = new Date();
     var formato = 'YYYY-MM-DD';
-    fecha.setMonth(fecha.getMonth() - 2);
+    fecha.setMonth(fecha.getMonth() - 1);
 
     var columnas = [
         G.knex.raw(" '1' as tipo"),

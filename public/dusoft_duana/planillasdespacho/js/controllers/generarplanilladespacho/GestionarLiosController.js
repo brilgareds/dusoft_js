@@ -110,7 +110,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             self.mostrarVentanaAdjuntarDoc = function (documento) {
                 $scope.opts = {
                     backdrop: 'static',
-                    windowClass: 'app-modal-window-xlg-ls',
+                    windowClass: 'app-modal-window-xlg-xlg',
                     templateUrl: 'views/generarplanilladespacho/AdjuntarDocumentoALio.html',
                     scope: $scope,
                     controller: "AdjuntarDocumentoController",

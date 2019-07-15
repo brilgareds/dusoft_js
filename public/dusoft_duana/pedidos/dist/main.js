@@ -63282,7 +63282,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
             $scope.mostrarAlertaProducto = function(data) {
                var mensaje="";
                 if(data.enFarmaciaSeleccionada===false)
-                    mensaje=" - El producto esta bloqueado <br>";
+                    mensaje=" - El producto no esta insertado en la bodega Actual<br>";
                 if(parseFloat(data.getCosto()) <= 0)
                     mensaje+=" - El producto tiene costo en cero";
                     

@@ -1274,7 +1274,8 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         to: to,
         cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
-        html: saludo(fecha.getHours())+"<br>"+message
+        html: saludo(fecha.getHours())+"<br>"+message+ '<br><br><p style="color: red;">Si desea contestar este correo escribir a:<br><a href="#">mauricio.barrios@duanaltda.com</a></p>'
+
     };
 
     if (ruta_archivo !== "") {

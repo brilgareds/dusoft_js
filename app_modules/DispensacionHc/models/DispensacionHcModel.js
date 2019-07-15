@@ -2263,8 +2263,12 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
                 console.log("consultarPendientesFormula resultado.length->>>",resultado.length);
                 if(resultado.rows.length > 0){
                     totalInsertadosPendientes = 1;
-                }
+                } else {
                     totalInsertadosPendientes = 0;
+                }
+            }).catch (function (err) {
+                totalInsertadosPendientes = 0;
+                console.log('err en pruebaaa: ', err);
             });
         }   
 

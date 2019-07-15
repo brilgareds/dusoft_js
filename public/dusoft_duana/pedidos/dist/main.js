@@ -60386,7 +60386,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController',[
                                                 <a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
                                             </li>\
                                             <li  ng-if="row.entity.estado_actual_pedido != 11 "><a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
-                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 8 || row.entity.estado_actual_pedido == 9 || row.entity.estado_actual_pedido == 10">\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 5  ||  row.entity.estado_actual_pedido == 8 || row.entity.estado_actual_pedido == 9 || row.entity.estado_actual_pedido == 10">\
                                                 <a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
@@ -62076,7 +62076,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoController',
                 
                 var mensaje;
                 
-                if($scope.root.pedido.getEstadoActualPedido() === '0' || 
+                if($scope.root.pedido.getEstadoActualPedido() === '0' || $scope.root.pedido.getEstadoActualPedido() === '5' ||
                    $scope.root.pedido.getEstadoActualPedido() === '8' || $scope.root.pedido.getEstadoActualPedido() === '9' || $scope.root.pedido.getEstadoActualPedido() === '10'){
                     
                     if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){

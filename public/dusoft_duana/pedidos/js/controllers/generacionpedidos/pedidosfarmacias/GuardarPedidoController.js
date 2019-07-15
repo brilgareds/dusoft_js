@@ -445,7 +445,7 @@ define(["angular", "js/controllers",
                 
                 var mensaje;
                 
-                if($scope.root.pedido.getEstadoActualPedido() === '0' || 
+                if($scope.root.pedido.getEstadoActualPedido() === '0' || $scope.root.pedido.getEstadoActualPedido() === '5' ||
                    $scope.root.pedido.getEstadoActualPedido() === '8' || $scope.root.pedido.getEstadoActualPedido() === '9' || $scope.root.pedido.getEstadoActualPedido() === '10'){
                     
                     if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){

@@ -9,7 +9,9 @@
         </div>
 
     </div>
-
+    <div class="contenedorBotones">
+<button class="btn btn-success ng-binding pull-left" ng-click="btn_adicionar_documento_lio()" ng-show="root.tipo == 4">Adjuntar Doc.</button>
+    </div>
 
    <div class="panel panel-info">
         <div class="panel-heading">
@@ -79,7 +81,8 @@
 
     <div class="contenedorBotones">
         <button class="btn btn-primary ng-binding pull-right" ng-click="onIngresarLios()" ng-disabled="root.observacion.length == 0">Aceptar</button>
-        <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrar()">Cancelar</button>
+        <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrar()" ng-hide="root.tipo == 4">Cancelar</button>
+        <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarLio()" ng-hide="root.tipo != 4">Cancelar</button>
     </div>
 
 

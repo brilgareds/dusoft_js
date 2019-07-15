@@ -15,8 +15,9 @@ function Facturas() {
         this.numeroLineas = 0;
         this.subtotal = 0;
         this.totalBaseImponible = 0;
+        this.subtotalMasTributos = 0;
+        this.totalDescuentos = 0;
         this.totalCargos = 0;
-        this.totalAnticipos = 0;
         this.totalAnticipos = 0;
         this.total = 0;
         this.codigoMoneda = '';
@@ -112,8 +113,12 @@ function Facturas() {
         return this.totalCargos;
     }
 
-    Facturas.prototype.get_Totalanticipos = function() {
-        return this.totalAnticipos;
+    Facturas.prototype.get_SubtotalMasTributos = function() {
+        return this.subtotalMasTributos;
+    }
+
+    Facturas.prototype.get_TotalDescuentos = function() {
+        return this.totalDescuentos;
     }
 
     Facturas.prototype.get_Totalanticipos = function() {
@@ -236,13 +241,13 @@ function Facturas() {
 
     Facturas.prototype.set_Tipodocumento = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -256,13 +261,13 @@ function Facturas() {
 
     Facturas.prototype.set_Versiondocumento = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -276,13 +281,13 @@ function Facturas() {
 
     Facturas.prototype.set_Registrar = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'boolean') {
+        if (typeof nuevoValor === 'boolean') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -296,13 +301,13 @@ function Facturas() {
 
     Facturas.prototype.set_Control = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -316,13 +321,13 @@ function Facturas() {
 
     Facturas.prototype.set_Codigotipodocumento = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -336,13 +341,13 @@ function Facturas() {
 
     Facturas.prototype.set_Tipooperacion = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -356,13 +361,13 @@ function Facturas() {
 
     Facturas.prototype.set_Prefijodocumento = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -376,13 +381,13 @@ function Facturas() {
 
     Facturas.prototype.set_Numerodocumento = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -396,13 +401,13 @@ function Facturas() {
 
     Facturas.prototype.set_Fechaemision = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -416,13 +421,13 @@ function Facturas() {
 
     Facturas.prototype.set_Horaemision = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -436,13 +441,13 @@ function Facturas() {
 
     Facturas.prototype.set_Periodofacturacion = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -456,13 +461,13 @@ function Facturas() {
 
     Facturas.prototype.set_Numerolineas = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -476,13 +481,13 @@ function Facturas() {
 
     Facturas.prototype.set_Subtotal = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -496,13 +501,13 @@ function Facturas() {
 
     Facturas.prototype.set_Totalbaseimponible = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -514,15 +519,55 @@ function Facturas() {
         return respuesta;
     }
 
+    Facturas.prototype.set_SubtotalMasTributos = function(nuevoValor) {
+        let respuesta = {status: false, msj: '', errorCount: 0};
+        if (nuevoValor.length > 20) {
+            respuesta.errorCount++;
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
+        }
+        if (typeof nuevoValor === 'Float') {
+            respuesta.errorCount++;
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
+        }
+        if (respuesta.errorCount_> 0) {
+            respuesta.msj.substring(0, respuesta.msj.length - 2);
+        } else {
+            respuesta.status = true;
+            respuesta.msj = 'ok';
+        }
+        this.subtotalMasTributos = nuevoValor;
+        return respuesta;
+    }
+
+    Facturas.prototype.set_TotalDescuentos = function(nuevoValor) {
+        let respuesta = {status: false, msj: '', errorCount: 0};
+        if (nuevoValor.length > 20) {
+            respuesta.errorCount++;
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
+        }
+        if (typeof nuevoValor === 'Float') {
+            respuesta.errorCount++;
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
+        }
+        if (respuesta.errorCount_> 0) {
+            respuesta.msj.substring(0, respuesta.msj.length - 2);
+        } else {
+            respuesta.status = true;
+            respuesta.msj = 'ok';
+        }
+        this.totalDescuentos = nuevoValor;
+        return respuesta;
+    }
+
     Facturas.prototype.set_Totalcargos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -536,33 +581,13 @@ function Facturas() {
 
     Facturas.prototype.set_Totalanticipos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
-        }
-        if (respuesta.errorCount_> 0) {
-            respuesta.msj.substring(0, respuesta.msj.length - 2);
-        } else {
-            respuesta.status = true;
-            respuesta.msj = 'ok';
-        }
-        this.totalAnticipos = nuevoValor;
-        return respuesta;
-    }
-
-    Facturas.prototype.set_Totalanticipos = function(nuevoValor) {
-        let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
-            respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
-        }
-        if (typeOf(nuevoValor) === 'Float') {
-            respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -576,13 +601,13 @@ function Facturas() {
 
     Facturas.prototype.set_Total = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Float') {
+        if (typeof nuevoValor === 'Float') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -596,13 +621,13 @@ function Facturas() {
 
     Facturas.prototype.set_Codigomoneda = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -616,13 +641,13 @@ function Facturas() {
 
     Facturas.prototype.set_Tasacambio = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -636,13 +661,13 @@ function Facturas() {
 
     Facturas.prototype.set_Pago = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -656,13 +681,13 @@ function Facturas() {
 
     Facturas.prototype.set_Listaproductos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -676,13 +701,13 @@ function Facturas() {
 
     Facturas.prototype.set_Listadescripciones = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -696,13 +721,13 @@ function Facturas() {
 
     Facturas.prototype.set_Listadocumentosreferenciados = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -716,13 +741,13 @@ function Facturas() {
 
     Facturas.prototype.set_Notasreferenciadas = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -736,13 +761,13 @@ function Facturas() {
 
     Facturas.prototype.set_Documentosanexos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -756,13 +781,13 @@ function Facturas() {
 
     Facturas.prototype.set_Listaanticipos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -776,13 +801,13 @@ function Facturas() {
 
     Facturas.prototype.set_Listacargosdescuentos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -796,13 +821,13 @@ function Facturas() {
 
     Facturas.prototype.set_Gruposimpuestos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -816,13 +841,13 @@ function Facturas() {
 
     Facturas.prototype.set_Gruposdeducciones = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Array') {
+        if (typeof nuevoValor === 'Array') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -836,13 +861,13 @@ function Facturas() {
 
     Facturas.prototype.set_Facturador = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -856,13 +881,13 @@ function Facturas() {
 
     Facturas.prototype.set_Adquiriente = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -876,13 +901,13 @@ function Facturas() {
 
     Facturas.prototype.set_Autorizado = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -896,13 +921,13 @@ function Facturas() {
 
     Facturas.prototype.set_Entrega = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -916,13 +941,13 @@ function Facturas() {
 
     Facturas.prototype.set_Urlanexos = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -936,13 +961,13 @@ function Facturas() {
 
     Facturas.prototype.set_Base64 = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -956,13 +981,13 @@ function Facturas() {
 
     Facturas.prototype.set_Posicionxcufe = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Integer') {
+        if (typeof nuevoValor === 'Integer') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -976,13 +1001,13 @@ function Facturas() {
 
     Facturas.prototype.set_Posicionycufe = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Integer') {
+        if (typeof nuevoValor === 'Integer') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -996,13 +1021,13 @@ function Facturas() {
 
     Facturas.prototype.set_Rotacioncufe = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Integer') {
+        if (typeof nuevoValor === 'Integer') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -1016,13 +1041,13 @@ function Facturas() {
 
     Facturas.prototype.set_Fuentecufe = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -1036,13 +1061,13 @@ function Facturas() {
 
     Facturas.prototype.set_Posicionxqr = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Integer') {
+        if (typeof nuevoValor === 'Integer') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -1056,13 +1081,13 @@ function Facturas() {
 
     Facturas.prototype.set_Posicionyqr = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Integer') {
+        if (typeof nuevoValor === 'Integer') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -1076,13 +1101,13 @@ function Facturas() {
 
     Facturas.prototype.set_Fechaenvio = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -1096,13 +1121,13 @@ function Facturas() {
 
     Facturas.prototype.set_Descripciongeneral = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'String') {
+        if (typeof nuevoValor === 'String') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);
@@ -1116,13 +1141,13 @@ function Facturas() {
 
     Facturas.prototype.set_Resolucion = function(nuevoValor) {
         let respuesta = {status: false, msj: '', errorCount: 0};
-        if (nuevoValor.length() > 20) {
+        if (nuevoValor.length > 20) {
             respuesta.errorCount++;
-            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length() + '), ';
+            respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
         }
-        if (typeOf(nuevoValor) === 'Object') {
+        if (typeof nuevoValor === 'Object') {
             respuesta.errorCount++;
-            respuesta.msj += 'tipo valor no permitido (' + typeOf(nuevoValor) + '), ';
+            respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
         }
         if (respuesta.errorCount_> 0) {
             respuesta.msj.substring(0, respuesta.msj.length - 2);

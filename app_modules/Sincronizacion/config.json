@@ -169,6 +169,11 @@
               "model": "Transportista.class",
               "alias": "m_transportista"
             },
+            "error": {
+              "module": "Classes",
+              "model": "Error.class",
+              "alias": "m_error"
+            },
             "sincronizacion_model": {
                 "module": "Sincronizacion",
                 "model": "SincronizacionModel",

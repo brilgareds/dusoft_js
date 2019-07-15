@@ -8,7 +8,7 @@ let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_co
     m_items, m_lista_anticipos, m_lista_caracteristicas, m_lista_cargos_descuentos, m_lista_correcciones,
     m_lista_deducciones, m_lista_documentos_referenciados, m_lista_impuestos, m_lista_participantes_consorcio,
     m_mandatorio, m_notas_referenciadas, m_numeracion, m_pago, m_periodo_facturacion, m_productos, m_resolucion,
-    m_sucursal, m_tasa_cambio, m_transportista, m_sincronizacion, m_clientes) {
+    m_sucursal, m_tasa_cambio, m_transportista, m_sincronizacion, m_clientes,m_error,emails) {
 
     this.m_adquiriente = m_adquiriente;
     this.m_autorizado = m_autorizado;
@@ -43,124 +43,18 @@ let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_co
     this.m_transportista = m_transportista;
     this.m_sincronizacion = m_sincronizacion;
     this.m_clientes = m_clientes;
+    this.m_error = m_error;
+    this.emails = emails;
     that = this;
-
-    that.test();
+    
+    //that.test();
 };
 
 Sincronizacion.prototype.test = function () {
-    console.log('Eyyyy', this.m_pago);
-    // console.log(JSON.parse(this.m_pago));
-    // console.log(this.m_pago.codigoMedioPago);
-    this.m_pago.set_id(7);
-    console.log('El valor final es: ', this.m_pago.get_id());
+    
 
-    //console.log('\nEooo', this.m_pago);
-
-    // Sincronizacion.codigoMedioPago('Easd');
-    // Sincronizacion.fechaVencimiento('asdasdasd');
 };
 
-
-
-/*
- //function __envioRequiriente() {
- //    var obj = {};
- //    obj.x = "prueba";
- //    obj.funcion = "crearAdquirienteConUsuarioACliente";
- //    __jsonFacturacionRequirientes(obj, function (respuesta) {
- //        obj.parametros = respuesta;
- //        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.ADQUIRIENTE;
- //        __FacturacionDian(obj, function (respuesta) {
- //            
- //        });
- //    });
- //} 
- //
- //function __jsonFacturacionRequirientes(obj, callback) {
- //
- //    var crearAdquirienteConUsuarioACliente = {
- //        attributes: {
- //            xmlns: 'http://contrato.adquiriente.cliente.webservices.servicios.certifactura.certicamara.com/'
- //        },
- //        adquiriente: {
- //            attributes: {
- //                xmlns: ''
- //            },
- //            acuerdoFisicoFacturacionElectronica: false, //boolean
- //            adjuntarPdfNotificaciones: true, //boolean
- //            adjuntarXmlNotificaciones: true, //boolean
- //            apellidos: 'GONZALEZ', //String - obligatorio si campo naturaleza = 'NATURAL'
- ////            camposDinamicosAdquirientes: {
- ////                nombreCampo: obj.x,
- ////                valor: obj.x
- ////            },
- //            cantidadDiasAceptacionAutomatica: 3, // int
- ////            ciudadExtranjera: obj.x, // opcional
- //            codigoCiudad: '11001', // string Dane
- //            codigoDepartamento: '11', // string Dane
- ////            codigoPais: obj.x, //string Dane Opcional,
- //            direccion: 'cra7 NO 9 - 9', // string obligatorio
- //            emailPrincipal: 'desarrollo2@duanaltda.com', // string
- ////            emailSecundarios: '', // string maximo 10 correos separados por coma Opcional
- //            enviarCorreoCertificado: true, //boolean
- //            enviarCorreoDeBienvenida: true, //boolean
- //            enviarFisico: true, //boolean Opcional
- //            enviarNotificaciones: true, //boolean
- //            enviarPlataformaFacturacion: true, //boolean
- //            fax: '', //string Opcional
- //            formatoFactura: 'ORIGINAL XML',
- ////            idClienteCreador: '',
- //            identificacionAdquirienteWS: {
- //                codigoDian: 13,
- ////                digitoDeVerificacion: ,
- //                numeroIdentificacion: 94151793
- //            },
- //            naturaleza: 'NATURAL', //[JURIDICA o NATURAL]
- //            nombre: 'consentimiento2128', //String - obligatorio si campo naturaleza = 'NATURAL'
- //            observaciones: '', // string opcinal
- ////            razonSocial: '',
- //            registradoEnCatalogo: true, //boolean
- //            telefono: 4321871,
- //            tipoEstablecimiento: 'E-99;E-11',
- //            tipoObligacion: 'O-99;O-11',
- //            tipoUsuarioAduanero: 'A-1;A-2',
- //            tiposRepresentacion: 'R-99-PN;R-12-PN'
- //        },
- //        usuario: {
- //            attributes: {
- //                xmlns: ''
- //            },
- //            contrasena: '',
- //            generarContrasena: true, //boolean
- //            nombreUsuario: 'consentimiento2128'
- //        }
- //    };
- //    callback(crearAdquirienteConUsuarioACliente);
- //}
- //
- //
- //function __envioFactura() {
- //    var obj = {};
- //    obj.x = '';
- //    obj.funcion = "crearFacturaElectronica";
- //    __jsonFactura(obj, function (respuesta) {
- //        obj.parametros = respuesta;
- //        obj.url =  G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
- //        __FacturacionDian(obj, function (respuesta) {
- //
- //            console.log("__FacturacionDian",respuesta);
- //        });
- //    });
- //}
- ////function __adquirientesMasivo(){
- //Sincronizacion.prototype.adquirientesMasivo = function (req, res) {
- //    var that = this;
- //    G.Q.ninvoke(that.m_clientes, 'listar_adquirientes').then(function (resultado) {
- //    }).fail(function (err) {
- //        console.log("Error adquirientesMasivo ", err);
- //    }).done();
- //};*/
 
 Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
     var that = this;
@@ -770,6 +664,6 @@ Sincronizacion.$inject = ['m_adquiriente', 'm_autorizado', 'm_centro_costo', 'm_
     'm_lista_correcciones', 'm_lista_deducciones', 'm_lista_documentos_referenciados', 'm_lista_impuestos',
     'm_lista_participantes_consorcio', 'm_mandatorio', 'm_notas_referenciadas', 'm_numeracion', 'm_pago',
     'm_periodo_facturacion', 'm_productos', 'm_resolucion', 'm_sucursal', 'm_tasa_cambio', 'm_transportista',
-    'm_sincronizacion', 'm_clientes'];
+    'm_sincronizacion', 'm_clientes','m_error','emails'];
 
 module.exports = Sincronizacion;

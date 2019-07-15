@@ -162,6 +162,11 @@
               "module": "Classes",
               "model": "Transportista.class",
               "alias": "m_transportista"
+            },
+            "error_model": {
+              "module": "Classes",
+              "model": "Error.class",
+              "alias": "m_error"
             }
         }],
         "events": [],

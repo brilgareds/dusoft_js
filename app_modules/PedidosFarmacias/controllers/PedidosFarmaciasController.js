@@ -3445,13 +3445,17 @@ function __consultarStockProducto(that, empresa_destino_id, bodega_destino_id,pr
  * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
  */
 function __consultarStockProductoFarmacia(that, empresa_destino_id, bodega_destino_id,producto, callback) {
-    that.m_productos.consultar_stock_producto_farmacia(empresa_destino_id, producto.codigo_producto, function(err, total_existencias_farmacias) {
-
+    that.m_productos.consultar_stock_producto_farmacia(empresa_destino_id, producto.codigo_producto,function(err, total_existencias_farmacias){
+        
+        that.m_productos.consultar_stock_producto(empresa_destino_id, bodega_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacia) {
+         
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
-        producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;
+        producto.en_farmacia_seleccionada = (total_existencias_farmacia.length > 0 && total_existencias_farmacia[0].existencia !== null) ? true : false;
 
         callback(err, producto);
-    });
+      }); 
+    })
+    
 }
 
 function __enviarCorreoElectronico(that, to, ruta_archivo, nombre_archivo, asunto, mensaje, callback) {

@@ -37,6 +37,7 @@ define([
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",
     "controllers/generarplanilladespacho/GestionarDocumentosBodegaController",
+    "controllers/generarplanilladespacho/AdjuntarDocumentoController",
     
     /**
      * 

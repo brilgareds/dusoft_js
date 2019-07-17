@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -52540,39 +52540,42 @@ define(
                 let that = this;
                 let modalInstance = {};
 
+                $scope.copyJson = obj => JSON.parse(JSON.stringify(obj));
+                $scope.abrirfechainicial = false;
+                $scope.abrirfechafinal = false;
+                $scope.abrirfechainicial2 = false;
+                $scope.abrirfechafinal2 = false;
+
                 that.init = () => {
+                    window.scrollTo(0, 0);
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
                     $scope.usuarioName = Usuario.UsuarioActual.usuario;
                     $scope.checkbox = '';
+                    $scope.abrirfechainicial = false;
+                    $scope.abrirfechafinal = false;
                     $scope.currentDocument = {};
                     $scope.opciones_archivo = new Flow();
                     $scope.opciones_archivo.target = API.PARAMETRIZACION_PRODUCTOS_CLIENTES.SUBIR_ARCHIVO;
                     $scope.opciones_archivo.testChunks = false;
                     $scope.opciones_archivo.singleFile = true;
-                    $scope.opciones_archivo.query = {
-                        session: JSON.stringify($scope.session)
-                    };
+                    $scope.opciones_archivo.query = { session: JSON.stringify($scope.session) };
+
                     $scope.root = {
                         init: {
                             contractTypes: [
-                                { cod: 1, name: 'Cliente Especifico' },
+                                { cod: 1,  name: 'Cliente Especifico' },
                                 { cod: 2, name: 'Unidad de Negocio' },
                                 { cod: 3, name: 'Contrato Generico' }],
                             docTypes: ['CC', 'NIT'],
-                            checkbox: true
-                        },
-                        form: {
+                            checkbox: true,
                             searchContract: {
                                 generic: false,
                                 numberContract: '',
                                 businessUnit: '',
                                 thirdPartyNames: ''
-                            },
-                            addProducts: {
-                                mode: false
                             },
                             newContract: {
                                 type: { name: '-Seleccione uno-' },
@@ -52581,25 +52584,34 @@ define(
                                 facturacionAgrupada: true,
                                 sincronizar: false,
                                 generic: false,
-                                seller: {
-                                    nombre: '-Seleccione uno-'
-                                },
-                                businessUnit: {
-                                    name: '-Seleccione una-'
-                                }
-                            }
-                        },
-                        data: {
-                            currentContract: {
-                                products: []
+                                authorizeWallet: true,
+                                seller: { nombre: '-Seleccione uno-' },
+                                businessUnit: { name: '-Seleccione una-' }
                             },
-                            contracts: [],
-                            contractProducts: [],
-                            searchProducts: [{}]
+                            addProducts: { mode: false }
                         },
-                        permits: {
-                            crearContrato: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_crear_contrato
-                        }
+                        form: {}
+                    };
+
+                    $scope.root.form.searchContract = $scope.root.init.searchContract;
+                    $scope.root.form.addProducts = $scope.root.init.addProducts;
+                    $scope.root.form.newContract = $scope.copyJson($scope.root.init.newContract);
+
+                    $scope.root.data = {
+                        currentContract: {
+                            products: []
+                        },
+                        contracts: [],
+                        contractProducts: [],
+                        searchProducts: [{}]
+                    };
+                    $scope.root.permits = {
+                        createContract: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_crear_contrato,
+                        updateContractProducts: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_modificar_productos_contratos,
+                        updateStatusContract: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_cambiar_estado_contrato,
+                        authorizeWallet: Usuario.getUsuarioActual().getModuloActual().opciones.sw_boton_autorizar_cartera,
+                        updateContract: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_actualizar_contrato,
+                        addProductsContract: Usuario.getUsuarioActual().getModuloActual().opciones.sw_permiso_agregar_productos_contrato
                     };
                     $scope.listContracts();
                     $scope.sellers();
@@ -52610,16 +52622,34 @@ define(
                     $scope.root.form.newContract.type = newType;
                     if (newType === '') { }
                 };
-                $scope.updateDocType = (newType) => { $scope.root.form.newContract.sellerDocType = newType; };
+                $scope.updateDocType = (newType) => { $scope.root.form.newContract.docType = newType; };
+                $scope.currentContract_updateDocType = (newType) => { $scope.root.data.currentContract.docType = newType; };
                 $scope.updateBusinessUnit = (newUnit) => { $scope.root.form.newContract.businessUnit = newUnit; };
                 $scope.updateSeller = (seller) => { $scope.root.form.newContract.seller = seller; };
+                $scope.currentContract_updateBusinessUnit = (newUnit) => { $scope.root.data.currentContract.businessUnit = newUnit; };
+                $scope.currentContract_updateSeller = (seller) => { $scope.root.data.currentContract.seller = seller; };
+                $scope.currentContract_updateType = (newType) => { $scope.root.data.currentContract.type = newType; };
 
                 $scope.abrirFechaInicial = function($event) {
                     $event.preventDefault();
                     $event.stopPropagation();
 
-                    $scope.abrirfechainicial = true;
                     $scope.abrirfechafinal = false;
+                    $scope.abrirfechainicial = true;
+                };
+                $scope.abrirFechaInicial2 = function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.abrirfechafinal2 = false;
+                    $scope.abrirfechainicial2 = true;
+                };
+
+                $scope.close = function () {
+                    $scope.abrirfechafinal = false;
+                    $scope.abrirfechainicial = false;
+                    $scope.abrirfechafinal2 = false;
+                    $scope.abrirfechainicial2 = false;
                 };
 
                 $scope.abrirFechaFinal = function($event) {
@@ -52628,6 +52658,23 @@ define(
 
                     $scope.abrirfechafinal = true;
                     $scope.abrirfechainicial = false;
+                };
+                $scope.abrirFechaFinal2 = function($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+
+                    $scope.abrirfechafinal2 = true;
+                    $scope.abrirfechainicial2 = false;
+                };
+
+                $scope.cerrar = function () {
+                    $scope.root.activarBoton=true;
+                    modalInstance.close();
+                    $scope.abrirfechainicial = false;
+                    $scope.abrirfechafinal = false;
+                    $scope.abrirfechainicial2 = false;
+                    $scope.abrirfechafinal2 = false;
+                    console.log("224");
                 };
 
                 /******* Format Functions ******/
@@ -52653,10 +52700,13 @@ define(
                 };
 
                 /******* Generals Functions ******/
-                $scope.listContracts = () => {
+                $scope.listContracts = (ordenar=true) => {
+                    window.scrollTo(0, 0);
+
                     let obj = {
                         session: $scope.session,
-                        data: $scope.root.form.searchContract
+                        data: $scope.root.form.searchContract,
+                        ordenar: ordenar
                     };
 
                     $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.LIST_CONTRACTS, obj, data => {
@@ -52737,6 +52787,7 @@ define(
                             // $scope.root.data.contractProducts = data.obj;
                             if (modal) {
                                 $scope.modal($scope.root.data.currentContract.products, 1);
+                                $scope.searchThird($scope.root.data.currentContract);
                             }
                         } else { console.log('Error: ', data.obj.err); }
                     });
@@ -52765,6 +52816,8 @@ define(
                     if ($scope.root.data.searchProducts !== undefined) {
                         $scope.root.data.searchProducts = [];
                     }
+                    $scope.abrirfechainicial = false;
+                    $scope.abrirfechafinal = false;
                     modalInstance.close();
                 };
 
@@ -52986,27 +53039,31 @@ define(
                         { field: 'contrato_vendedor', displayName: "Vendedor", width: "15%" },
                         { field: 'contrato_descripcion', displayName: "Descripcion - Contrato", width: "16%" },
                         { displayName: 'Mod.', width: "5%", cellTemplate: `
-                            <div style="text-align: center;">
+                            <div style="text-align: center;" ng-if="root.permits.updateContractProducts || root.permits.updateContract || root.permits.addProductsContract">
                                 <i ng-if='row.entity.check' ng-click="listContractProducts(row.entity, true)" class="glyphicon glyphicon-list-alt" style="color: #0c99d0; font-size: 20px;"></i>
                                 <i ng-if='!row.entity.check' class="glyphicon glyphicon-list-alt" style="cursor:initial; color: #a9a9a9; font-size: 20px;"></i>
-                            </div>` },
+                            </div>
+                            <div style="text-align: center;" ng-if="(!root.permits.updateContractProducts && !root.permits.updateContract && !root.permits.addProductsContract)">
+                                <i ng-if='row.entity.check' ng-click="permitInvalid('sw_permiso_modificar_productos_contratos')" class="glyphicon glyphicon-list-alt" style="color: #0c99d0; font-size: 20px;"></i>
+                                <i ng-if='!row.entity.check' class="glyphicon glyphicon-list-alt" style="cursor:initial; color: #a9a9a9; font-size: 20px;"></i>
+                            </div>
+                        ` },
                         { displayName: 'Estado', width: "9%", cellTemplate: `
-                            <div class="switch1" ng-if="root.permits.crearContrato">
+                            <div class="switch1" ng-if="root.permits.updateStatusContract">
                                 <input type="checkbox" ng-model='row.entity.check' ng-change="updateStatusContract(row.rowIndex, row.entity, row.entity.check)" ng-checked="{{row.entity.check}}" name="switch1" class="switch1-checkbox" id="{{row.entity.contrato_numero}}">
                                 <label class="switch1-label" for="{{row.entity.contrato_numero}}">
                                     <span class="switch1-inner"></span>
                                     <span class="switch1-switch"></span>
                                 </label>
                             </div>
-                            <div class="switch1" ng-if="!root.permits.crearContrato">
+                            <div class="switch1" ng-if="!root.permits.updateStatusContract">
                                 <input type="checkbox" ng-model='row.entity.check' name="switch1" class="switch1-checkbox" id="{{row.entity.contrato_numero}}" disabled>
-                                <label class="switch1-label" for="{{row.entity.contrato_numero}}" ng-click="permitInvalid('sw_permiso_crear_contrato')">
+                                <label class="switch1-label" for="{{row.entity.contrato_numero}}" ng-click="permitInvalid('sw_permiso_cambiar_estado_contrato')">
                                     <span class="switch1-inner"></span>
                                     <span class="switch1-switch"></span>
                                 </label>
                             </div>
-
-` }
+                        ` }
                         // { field: 'contrato_op', displayName: "Op", width: "10%" },
                         // { field: 'contrato_prod', displayName: "Prod", width: "10%" },
                         // { field: 'contrato_est', displayName: "Est", width: "10%" }
@@ -53017,20 +53074,20 @@ define(
                 const validCreateContract = obj => {
                     let error = {count: 0, msg: 'Formato incorrecto en los campos:\n'};
 
-                    $scope.root.form.newContract.sellerDocType = $scope.root.form.newContract.seller.sellerDocType;
-                    $scope.root.form.newContract.sellerDocNum = $scope.root.form.newContract.seller.sellerDocNum;
-                    $scope.root.form.newContract.businessUnitCod = $scope.root.form.newContract.businessUnit.codigo_unidad_negocio;
+                    obj.sellerDocType = obj.seller.sellerDocType;
+                    obj.sellerDocNum = obj.seller.sellerDocNum;
+                    obj.businessUnitCod = obj.businessUnit.codigo_unidad_negocio;
 
-                    if (!$scope.root.form.newContract.type.cod) {
+                    if (!obj.type.cod) {
                         error.count++; error.msg += '"Tipo Contrato", ';
                     }
-                    if ($scope.root.form.newContract.type.cod === 1 && !$scope.root.form.newContract.docType) {
+                    if (obj.type.cod === 1 && !obj.docType) {
                         error.count++; error.msg += '"Tipo Documento Cliente", ';
                     }
-                    if ($scope.root.form.newContract.type.cod === 1 && !$scope.root.form.newContract.docNum) {
+                    if (obj.type.cod === 1 && !obj.docNum) {
                         error.count++; error.msg += '"Numero Documento Cliente", ';
                     }
-                    if ($scope.root.form.newContract.type.cod === 2 && !obj.businessUnit.codigo_unidad_negocio && obj.businessUnit.codigo_unidad_negocio !== 0) {
+                    if (obj.type.cod === 2 && !obj.businessUnit.cod && obj.businessUnit.cod !== 0) {
                         error.count++; error.msg += '"Unidad de Negocio", ';
                     }
                     if (!obj.description) {
@@ -53068,70 +53125,75 @@ define(
                     return error;
                 };
 
-                $scope.searchThird = () => {
-                    console.log('Helloo!! Is my!!');
-                    if ($scope.root.form.newContract.docNum) {
+                $scope.searchThird = (Contract) => {
+                    // console.log('Helloo!! Is my!!');
+                    if (Contract.docNum) {
                         const obj = {
                             session: $scope.session,
                             data: {
-                                docType: $scope.root.form.newContract.docType,
-                                docNum: $scope.root.form.newContract.docNum
+                                docType: Contract.docType,
+                                docNum: Contract.docNum
                             }
                         };
+                        console.log('Contract is: ', Contract);
+                        console.log('obj is: ', obj.data);
 
                         $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.SEARCH_THIRD, obj, data => {
                             if (data.status === 200) {
-                                $scope.root.form.newContract.name = data.obj.nombre_tercero;
-                                $scope.root.form.newContract.address = data.obj.direccion;
-                                $scope.root.form.newContract.phone = data.obj.telefono;
-                                $scope.root.form.newContract.email = data.obj.email;
+                                Contract.name = data.obj.nombre_tercero;
+                                Contract.address = data.obj.direccion;
+                                Contract.phone = data.obj.telefono;
+                                Contract.email = data.obj.email;
 
-                                console.log('The Third parties is: ', data.obj);
+                                // console.log('The Third parties is: ', data.obj);
                             } else { console.log(data.obj); AlertService.mostrarMensaje('danger', data.msj); }
                         });
                     }
                 };
 
-                $scope.createContract = () => {
-                    let error = validCreateContract($scope.root.form.newContract);
+                $scope.createContract = (Contract, update=false) => {
+                    let error = validCreateContract(Contract);
 
                     if (error.count > 0) {
                         AlertService.mostrarMensaje('danger', error.msg);
                         return false;
                     } else {
-                        $scope.root.form.newContract.generic = ($scope.root.form.newContract.type === 'Contrato Generico');
-                        $scope.root.form.newContract.sellerDocType = $scope.root.form.newContract.seller.sellerDocType;
-                        $scope.root.form.newContract.sellerDocNum = $scope.root.form.newContract.seller.sellerDocNum;
-                        $scope.root.form.newContract.businessUnitCod = $scope.root.form.newContract.businessUnit.codigo_unidad_negocio;
-                        $scope.root.form.newContract.typeCod = $scope.root.form.newContract.type.cod;
+                        Contract.generic = (Contract.type === 'Contrato Generico');
+                        Contract.sellerDocType = Contract.seller.sellerDocType;
+                        Contract.sellerDocNum = Contract.seller.sellerDocNum;
+                        Contract.businessUnitCod = Contract.businessUnit.cod;
+                        Contract.typeCod = Contract.type.cod;
 
                         let obj = {
                             session: $scope.session,
                             data: {
-                                contract: $scope.root.form.newContract
+                                contract: Contract,
+                                update: update
                             }
                         };
 
                         $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.CREATE_CONTRACT, obj, data => {
-                            if (data.status === 200) {
-                                AlertService.mostrarMensaje('success', data.msj);
-                                $scope.root.form.searchContract = {
-                                    generic: false,
-                                    numberContract: '',
-                                    businessUnit: '',
-                                    thirdPartyNames: ''
-                                };
+                            if (data.status !== 500) {
+                                if (data.status === 200) { AlertService.mostrarMensaje('success', data.msj); }
+                                else { AlertService.mostrarMensaje('warning', data.msj); }
+                                $scope.root.form.searchContract = $scope.root.init.searchContract;
 
-                                if ($scope.root.form.newContract.type.cod === 1) {
+                                if (Contract.type.cod === 1) {
                                     $scope.root.form.searchContract.thirdPartyNames = $scope.root.form.newContract.name;
-                                } else if ($scope.root.form.newContract.type.cod === 2) {
+                                } else if (Contract.type.cod === 2) {
                                     $scope.root.form.searchContract.businessUnit = $scope.root.form.newContract.businessUnit.descripcion;
-                                } else if ($scope.root.form.newContract.type.cod === 3) {
+                                } else if (Contract.type.cod === 3) {
                                     $scope.root.form.searchContract.generic = true;
                                 }
-                                $scope.listContracts();
+                                if (!update) {
+                                    $scope.root.data.currentContract = $scope.copyJson($scope.root.init.newContract);
+                                }
+                                $scope.root.form.newContract = $scope.copyJson($scope.root.init.newContract);
+                                $scope.listContracts(false); $scope.listContracts(false);
+                            } else {
+                                console.log('Error:', data.obj);
+                                AlertService.mostrarMensaje('danger', data.msj);
                             }
-                            else { console.log('Error:', data.obj); AlertService.mostrarMensaje('warning', data.msj); }
                         });
                     }
                 };

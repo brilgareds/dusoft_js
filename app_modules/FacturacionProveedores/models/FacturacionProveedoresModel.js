@@ -384,6 +384,8 @@ FacturacionProveedoresModel.prototype.listarParametrosRetencion = function(param
             .andWhere('a.empresa_id', parametros.empresa_id)
             .andWhere('a.anio', anio);
 
+    console.log(G.sqlformatter.format(query.toString()));
+
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {

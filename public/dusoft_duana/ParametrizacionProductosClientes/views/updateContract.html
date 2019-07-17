@@ -1,0 +1,234 @@
+
+
+<form class="row" ng-submit="createContract(root.data.currentContract, true)" style="width: 98%; border: 1px solid #337ab8; padding: 15px 0px 20px 0px; min-height: 400px; margin: 0px auto;">
+    <div class="col-sm-12">
+        <h4 style="color: #3b7fb9; text-align: center; margin-top: 0;">Información del cliente</h4>
+    </div>
+
+    <div class="col-sm-12" style="display: flex; justify-content: center;">
+        <div class="col-sm-2" style="padding: 0px 1px 0px 15px;">
+            <div class="form-group" style="margin-bottom: 0px;">
+                <div class="input-group col-sm-12"><div class="input-group-addon" style="border: 1px solid #ccc;">Tipo Contrato</div></div>
+                <div class="input-group col-sm-12">
+                    <button type="button" class="form-control btn btn-default" data-toggle="dropdown">{{root.data.currentContract.type.name}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="contractTipe in root.init.contractTypes">
+                            <a ng-click="currentContract_updateType(contractTipe)">{{contractTipe.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2" style="padding: 0px 1px 0px 0px;">
+            <div class="form-group" style="width: auto; margin-bottom: 0px;">
+                <div class="input-group col-sm-12">
+                    <div class="input-group-addon" style="border: 1px solid #ccc;">Documento</div>
+                </div>
+                <div class="input-group col-sm-12">
+                    <button type="button" ng-disabled="root.data.currentContract.type.cod !== 1" style="width: 40%;" class="form-control btn btn-default col-sm-4" data-toggle="dropdown">{{root.data.currentContract.docType}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu col-sm-8">
+                        <li ng-repeat="docType in root.init.docTypes">
+                            <a ng-click="currentContract_updateDocType(docType)">{{docType}}</a>
+                        </li>
+                    </ul>
+                    <input type="text" ng-disabled="root.data.currentContract.type.cod !== 1" ng-model="root.data.currentContract.docNum" ng-blur="searchThird(root.data.currentContract)" style="width: 60%;" class="form-control" placeholder="Ingrese su documento">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2" style="padding: 0px 1px 0px 0px; margin-bottom: 0px;">
+            <div class="form-group" style="width: auto;">
+                <div class="input-group col-sm-12">
+                    <div class="input-group-addon" style="border: 1px solid #ccc;">Nombre</div>
+                </div>
+                <div class="input-group col-sm-12">
+                    <label type="text" class="form-control" placeholder="Ingrese su Nombre" title="{{root.data.currentContract.name}}" style="white-space: nowrap;" disabled>{{root.data.currentContract.name}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2" style="padding: 0px 1px 0px 0px;">
+            <div class="form-group" style="width: auto; margin-bottom: 0px;">
+                <div class="input-group col-sm-12">
+                    <div class="input-group-addon" style="border: 1px solid #ccc;">Dirección</div>
+                </div>
+                <div class="input-group col-sm-12">
+                    <label class="form-control" title="{{root.data.currentContract.address}}" style="white-space: nowrap;" disabled>{{root.data.currentContract.address}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2" style="padding: 0px 1px 0px 0px;">
+            <div class="form-group" style="width: auto; margin-bottom: 0px;">
+                <div class="input-group col-sm-12">
+                    <div class="input-group-addon" style="border: 1px solid #ccc;">Teléfono</div>
+                </div>
+                <div class="input-group col-sm-12">
+                    <label class="form-control" title="{{root.data.currentContract.phone}}" style="white-space: nowrap;" disabled>{{root.data.currentContract.phone}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2" style="padding: 0px 15px 0px 0px;">
+            <div class="form-group" style="width: auto; margin-bottom: 0px; overflow: hidden;">
+                <div class="input-group col-sm-12">
+                    <div class="input-group-addon" style="border: 1px solid #ccc;">Email</div>
+                </div>
+                <div class="input-group col-sm-12">
+                    <label class="form-control" title="{{root.data.currentContract.email}}" style="white-space: nowrap;" disabled>{{root.data.currentContract.email}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <h4 style="color: #3b7fb9; text-align: center; margin-bottom: 10px;">Detalle del contrato</h4>
+    </div>
+    <div class="col-sm-12" style="display: flex; justify-content: center;">
+        <div>
+            <div class="col-sm-12" style="display: flex; justify-content: space-between;">
+                <div class="col-sm-4 col-lg-3" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 0px;">
+                        <div class="input-group col-sm-12" style="padding: 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc; ">Unid. Negocio</div>
+                            <button ng-disabled="root.data.currentContract.type.cod !== 2" type="button" class="form-control btn btn-default col-sm-4" data-toggle="dropdown">{{root.data.currentContract.businessUnit.name}} <span class="caret"></span></button>
+                            <ul class="dropdown-menu col-sm-8">
+                                <li ng-repeat="businessUnit in root.init.businessUnits">
+                                    <a ng-click="currentContract_updateBusinessUnit(businessUnit)">{{businessUnit.name}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-lg-3" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 0px;">
+                        <div class="input-group col-sm-12" style="padding: 0px 0px 0px 1px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Vendedor</div>
+                            <button type="button" class="form-control btn btn-default col-sm-4" data-toggle="dropdown">{{root.data.currentContract.seller.name}} <span class="caret"></span></button>
+                            <ul class="dropdown-menu col-sm-8">
+                                <li ng-repeat="seller in root.init.sellers">
+                                    <a ng-click="currentContract_updateSeller(seller)">{{seller.name}}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2" style="padding: 0px;">
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" ng-model="root.data.currentContract.dateInit" value="{{producto_fecha1 | date:'dd-MM-yyyy'}}" datepicker-popup="{{format}}" ng-model="producto_fecha1" ng-change="buscarProductos()" ng-keyup="buscarProductos()" is-open="abrirfechainicial2" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
+                        <!--input type="text" ng-datepickerange /-->
+                        <span class="input-group-btn">
+                            <button style="color:#093d69;" class="btn btn-default" ng-click="abrirFechaInicial2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-2" style="padding: 0px;">
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" ng-model="root.data.currentContract.dateExpired" value="{{producto_fecha2 | date:'dd-MM-yyyy'}}" name="fechain" datepicker-popup="{{format}}" ng-model="producto_fecha2" ng-change="buscarProductos()" ng-keyup="buscarProductos()" is-open="abrirfechafinal2" min="fechainicial" readonly close-text="Cerrar"
+                               clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                        <span class="input-group-btn">
+                            <button style="color:#093d69;" class="btn btn-default"  ng-click="abrirFechaFinal2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div class="col-sm-12" style="display: flex; justify-content: start;">
+                <div class="col-sm-3" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 0px;">
+                        <div class="input-group col-sm-12" style="padding: 0px 5px 0px 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Valor Contrato</div>
+                            <input type="text" ng-model="root.data.currentContract.value" placeholder="Ingrese valor del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-3 col-lg-3" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 12px;">
+                        <div class="input-group col-sm-12" style="padding: 0px 5px 0px 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Porc. Genericos</div>
+                            <input type="text" ng-model="root.data.currentContract.percGeneric" placeholder="Ingrese valor del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-3 col-lg-3" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 12px;">
+                        <div class="input-group col-sm-12" style="padding: 0px 5px 0px 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Porc. Marca</div>
+                            <input type="text" ng-model="root.data.currentContract.percBrand" placeholder="Ingrese valor del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-3 col-lg-3" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 12px;">
+                        <div class="input-group col-sm-12" style="padding: 0px">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Porc. Insumos</div>
+                            <input type="text" ng-model="root.data.currentContract.percSupplies" placeholder="Ingrese valor del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" style="display: flex; justify-content: start;">
+                <div class="col-sm-6 col-lg-4" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 12px;">
+                        <div class="input-group col-sm-12" style="padding: 0px 5px 0px 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Descripcion contrato</div>
+                            <input type="text" ng-model="root.data.currentContract.description" placeholder="Ingrese la descripcion del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-4" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 12px;">
+                        <div class="input-group col-sm-12" style="padding: 0px 5px 0px 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Condiciones cliente</div>
+                            <input type="text" ng-model="root.data.currentContract.terms" placeholder="Ingrese la descripcion del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-4" style="padding: 0px;">
+                    <div class="form-group" style="width: auto; margin-bottom: 12px;">
+                        <div class="input-group col-sm-12" style="padding: 0px;">
+                            <div class="input-group-addon" style="border: 1px solid #ccc;">Observaciones</div>
+                            <input type="text" ng-model="root.data.currentContract.observations" placeholder="Ingrese la descripcion del contrato" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" style="display: flex; justify-content: center; text-align: center;">
+                <div class="col-sm-4">
+                    <label>Facturar Iva</label>
+                    <div class="switch3">
+                        <input type="checkbox" ng-model="root.data.currentContract.checkInIva" id="facturar_iva2" name="switch1" class="switch1-checkbox">
+                        <label class="switch1-label" for="facturar_iva2">
+                            <span class="switch1-inner"></span>
+                            <span class="switch1-switch"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div ng-if="root.permits.authorizeWallet" class="col-sm-4">
+                    <label>Solicitar Autorización</label>
+                    <div class="switch3">
+                        <input type="checkbox" ng-model="root.data.currentContract.authorizeWallet" id="autorizarCartera2" name="switch1" class="switch1-checkbox">
+                        <label class="switch1-label" for="autorizarCartera2">
+                            <span class="switch1-inner"></span>
+                            <span class="switch1-switch"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <label for="">Sincronizar</label>       <!-- Sincronizar con Dumian -->
+                    <div class="switch3">
+                        <input type="checkbox" ng-model="root.data.currentContract.sw_sync" id="sincronizar3" name="switch1" class="switch1-checkbox">
+                        <label class="switch1-label" for="sincronizar3">
+                            <span class="switch1-inner"></span>
+                            <span class="switch1-switch"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12" style="margin-top: 20px; display: flex; justify-content: center;">
+                <button class="col-sm-4 col-lg-2 btn btn-primary" type="submit"><span class="glyphicon glyphicon-floppy-disk"></span> Actualizar</button>
+            </div>
+        </div>
+    </div>
+</form>

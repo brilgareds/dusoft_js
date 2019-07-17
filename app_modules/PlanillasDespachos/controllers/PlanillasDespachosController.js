@@ -1048,6 +1048,45 @@ PlanillasDespachos.prototype.gestionarLios = function (req, res) {
 };
 
 /**
+ *@author German Galvis
+ *@fecha  12/07/2019
+ *+Descripcion Controlador encargado de consultar el total de cajas de un conjunto
+ *             de documentos 
+ **/
+PlanillasDespachos.prototype.agregarDocumentosLios = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+
+    if (args.planillas_despachos === undefined) {
+        res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.documentos === undefined) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+
+    args.planillas_despachos.usuario_id = req.session.user.usuario_id;
+    args.planillas_despachos.temperatura = 0;
+    args.planillas_despachos.consecutivoLio = args.planillas_despachos.lio_id;
+
+    G.Q.ninvoke(that.m_planillas_despachos, 'insertarLioDocumento', args.planillas_despachos).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Se insertan satisfactoriamente los lios', 200, {planillas_despachos: resultado}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
+
+    }).done();
+
+};
+
+/**
  * @author German Galvis
  * @fecha 29/04/2019
  *+Descripcion Controlador encargado de actualizar la cantidad de cajas,bolsas o neveras de un lio

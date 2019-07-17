@@ -2259,7 +2259,7 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
             cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' ||
-            cabecera_pedido[0].estado_actual_pedido === '10') {
+            cabecera_pedido[0].estado_actual_pedido === '10' || cabecera_pedido[0].estado_actual_pedido === '5') {
 
 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,

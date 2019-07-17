@@ -10,6 +10,7 @@ const promesa = new Promise((resolve, reject) => { resolve(true); });
 ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callback) => {
     let offset = 0;
     let limit = 30;
+    const typeOrder = filtros.ordenar ? 'asc':'desc';
     filtros.generic = filtros.generic ? 1:0;
 
     promesa
@@ -21,6 +22,8 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                     'a.descripcion as contrato_descripcion',
                     G.knex.raw("TO_CHAR(a.fecha_inicio,'DD-MM-YYYY') as contrato_fecha_i"),
                     G.knex.raw("TO_CHAR(a.fecha_final,'DD-MM-YYYY') as contrato_fecha_f"),
+                    G.knex.raw("a.fecha_inicio as contrato_fecha_i2"),
+                    G.knex.raw("a.fecha_final as contrato_fecha_f2"),
                     'a.tipo_id_tercero',
                     'a.tercero_id',
                     'c.nombre_tercero',
@@ -31,10 +34,17 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                     'a.observaciones',
                     'a.tipo_id_vendedor',
                     'a.vendedor_id',
-                    'e.nombre as contrato_vendedor',
+                    'e.nombre as vendedor_nombre',
                     'a.valor_contrato as contrato_valor',
                     'a.saldo',
                     'a.estado',
+                    'a.porcentaje_genericos',
+                    'a.porcentaje_marcas',
+                    'a.porcentajes_insumos',
+                    'a.facturar_iva',
+                    'a.sw_sincroniza',
+                    'a.sw_autorizacion',
+                    'a.sw_facturacion_agrupada',
                     G.knex.raw(`
                         CASE
                             WHEN a.contrato_generico = '1'
@@ -80,15 +90,46 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
 
                     this.where(G.knex.raw(where))
                 })
-                .orderBy('a.contrato_cliente_id')
+                .orderBy('a.contrato_cliente_id', typeOrder)
                 .limit(limit)
                 .offset(offset);
 
-                console.log('Query is: ', G.sqlformatter.format(query.toString()));
             return query;
         }).then(contratos => {
             if (contratos.length > 0) {
+
                 for (let contrato of contratos) {
+                    contrato.type = { cod: parseFloat(contrato.tipo_contrato) };
+                    contrato.seller = {
+                        cod: parseFloat(contrato.vendedor_id),
+                        name: contrato.vendedor_nombre,
+                        sellerDocType: contrato.tipo_id_vendedor,
+                        sellerDocNum: contrato.vendedor_id
+                    };
+                    contrato.businessUnit = {
+                        cod: parseFloat(contrato.codigo_unidad_negocio),
+                        name: parseFloat(contrato.codigo_unidad_negocio) + ' - ' + contrato.descripcion
+                    };
+                    contrato.docType = contrato.tipo_id_tercero;
+                    contrato.docNum = contrato.tercero_id;
+                    contrato.dateInit = contrato.contrato_fecha_i2;
+                    contrato.dateExpired = contrato.contrato_fecha_f2;
+                    contrato.description = contrato.contrato_descripcion;
+                    contrato.terms = contrato.condiciones_cliente;
+                    contrato.observations = contrato.observaciones;
+                    contrato.value = parseFloat(contrato.contrato_valor);
+                    contrato.percBrand = parseFloat(contrato.porcentaje_marcas);
+                    contrato.percGeneric = parseFloat(contrato.porcentaje_genericos);
+                    contrato.percSupplies = parseFloat(contrato.porcentajes_insumos);
+                    contrato.checkInIva = (contrato.facturar_iva === '1');
+                    contrato.authorizeWallet = (contrato.sw_autorizacion === '1');
+                    contrato.sw_sync = (contrato.sw_sincroniza === '1');
+
+                    if (contrato.type.cod === 1) { contrato.type.name = 'Cliente Especifico'; }
+                    else if (contrato.type.cod === 2) { contrato.type.name = 'Unidad de Negocio'; }
+                    else if (contrato.type.cod === 3) { contrato.type.name = 'Contrato Generico'; }
+                    else { contrato.type.name = 'Ninguno'; }
+
                     contrato.contrato_valor = filtros.number_money(contrato.contrato_valor);
                     contrato.check = contrato.estado === '1';
                 }
@@ -104,22 +145,23 @@ const validCreateContract = obj => {
     let error = { count: 0, msg: 'Formato incorrecto en los campos:\n' };
     let response = {};
 
-    if (!obj.typeCod)       { error.count++; error.msg += '"typeCod", '; }
-    if (!obj.empresaId)     { error.count++; error.msg += '"empresaId", '; }
-    if (!obj.description)   { error.count++; error.msg += '"description", '; }
-    if (!obj.dateInit)      { error.count++; error.msg += '"dateInit", '; }
-    if (!obj.dateExpired)   { error.count++; error.msg += '"dateExpired", '; }
-    if (!obj.terms)         { error.count++; error.msg += '"terms", '; }
-    if (!obj.observations)  { error.count++; error.msg += '"observations", '; }
-    if (!obj.percGeneric)   { error.count++; error.msg += '"percGeneric", '; }
-    if (!obj.percBrand)     { error.count++; error.msg += '"percBrand", '; }
-    if (!obj.percSupplies)  { error.count++; error.msg += '"percSupplies", '; }
-    if (!obj.value)         { error.count++; error.msg += '"value", '; }
-    if (!obj.userId)        { error.count++; error.msg += '"userId", '; }
-    if (!obj.sellerDocType) { error.count++; error.msg += '"sellerDocType", '; }
-    if (!obj.sellerDocNum)  { error.count++; error.msg += '"sellerDocNum", '; }
-    if (!obj.dateNow)       { error.count++; error.msg += '"dateNow", '; }
-    if (!obj.typeCod)       { error.count++; error.msg += '"type", '; }
+    if (!obj.typeCod)        { error.count++; error.msg += '"typeCod", '; }
+    if (!obj.empresaId)      { error.count++; error.msg += '"empresaId", '; }
+    if (!obj.description)    { error.count++; error.msg += '"description", '; }
+    if (!obj.dateInit)       { error.count++; error.msg += '"dateInit", '; }
+    if (!obj.dateExpired)    { error.count++; error.msg += '"dateExpired", '; }
+    if (!obj.terms)          { error.count++; error.msg += '"terms", '; }
+    if (!obj.observations)   { error.count++; error.msg += '"observations", '; }
+    if (!obj.percGeneric)    { error.count++; error.msg += '"percGeneric", '; }
+    if (!obj.percBrand)      { error.count++; error.msg += '"percBrand", '; }
+    if (!obj.percSupplies)   { error.count++; error.msg += '"percSupplies", '; }
+    if (!obj.value)          { error.count++; error.msg += '"value", '; }
+    if (!obj.userId)         { error.count++; error.msg += '"userId", '; }
+    if (!obj.sellerDocType)  { error.count++; error.msg += '"sellerDocType", '; }
+    if (!obj.sellerDocNum)   { error.count++; error.msg += '"sellerDocNum", '; }
+    if (!obj.dateNow)        { error.count++; error.msg += '"dateNow", '; }
+    if (!obj.typeCod)        { error.count++; error.msg += '"type", '; }
+    if (obj.update && !obj.contrato_numero) { error.count++; error.msg += '"contrato_numero", '; }
     if (obj.typeCod === 1 && !obj.docType) { error.count++; error.msg += '"docType", '; }
     if (obj.typeCod === 1 && !obj.docNum) { error.count++; error.msg += '"docNum", '; }
     if (obj.typeCod === 2 && !obj.businessUnitCod && obj.businessUnitCod !== 0)  { error.count++; error.msg += '"businessUnitCod", '; }
@@ -128,7 +170,7 @@ const validCreateContract = obj => {
     if (error.count > 0) { response.error = error; }
     else {
         obj.sw_sync = (!obj.sw_sync) ? '0':'1';
-        obj.sw_autorizacion = (!obj.sw_autorizacion) ? '0':'1';
+        obj.authorizeWallet = (!obj.authorizeWallet) ? '0':'1';
         obj.sw_bundled_billing = (!obj.sw_bundled_billing) ? '0':'1';
         obj.checkInIva = (!obj.checkInIva) ? '0':'1';
 
@@ -143,7 +185,7 @@ ParametrizacionProductosClientesModel.prototype.sellers = (obj, callback) => {
     promesa
         .then(respoinse => {
             const query = G.knex.column([
-                G.knex.raw('upper(a.nombre) as nombre'),
+                G.knex.raw('upper(a.nombre) as name'),
                 'a.tipo_id_vendedor as sellerDocType',
                 'a.vendedor_id as sellerDocNum',
                 'a.telefono'])
@@ -225,55 +267,90 @@ ParametrizacionProductosClientesModel.prototype.searchThird = (obj, callback) =>
         });
 };
 
-ParametrizacionProductosClientesModel.prototype.createContract = (obj, callback) => {
-    console.log('In model "createContract"');
-    console.log('obj: ', obj);
+const fieldsContract = obj => {
+    let fields = {
+        empresa_id: obj.empresaId,
+        descripcion: obj.description,
+        fecha_inicio: obj.dateInit,
+        fecha_final: obj.dateExpired,
+        condiciones_cliente: obj.terms,
+        observaciones: obj.observations,
+        porcentaje_genericos: obj.percGeneric,
+        porcentaje_marcas: obj.percBrand,
+        porcentajes_insumos: obj.percSupplies,
+        valor_contrato: obj.value,
+        saldo: obj.value,
+        usuario_id: obj.userId,
+        tipo_id_vendedor: obj.sellerDocType,
+        vendedor_id: obj.sellerDocNum,
+        facturar_iva: obj.checkInIva,
+        sw_sincroniza: obj.sw_sync,
+        sw_autorizacion: obj.authorizeWallet,
+        sw_facturacion_agrupada: obj.sw_bundled_billing,
+        fecha_registro: obj.dateNow
+    };
+
+    if (!obj.update) { fields.estado = '0'; }
+    if (obj.typeCod === 1) { fields.tipo_id_tercero = obj.docType; fields.tercero_id = obj.docNum; }
+    else if (obj.typeCod === 2) { fields.codigo_unidad_negocio = obj.businessUnitCod; }
+    else if (obj.typeCod === 3) { fields.contrato_generico = '1'; }
+
+    return fields;
+};
+
+ParametrizacionProductosClientesModel.prototype.createOrUpdateContract = (obj, callback) => {
+    console.log('In model "createOrUpdateContract"');
+    // console.log('obj: ', obj);
+    let errCount = 0;
+    obj.check = true;
+    obj.tipo_id_tercero = obj.docType;
+    obj.tercero_id = obj.docNum;
+    obj.contrato_numero = (!obj.contrato_numero) ? '0':obj.contrato_numero;
+    let query = {};
 
     promesa
         .then(response => {
             obj = validCreateContract(obj);
             if (!obj.error) {
-                let fields = {
-                    empresa_id: obj.empresaId,
-                    descripcion: obj.description,
-                    fecha_inicio: obj.dateInit,
-                    fecha_final: obj.dateExpired,
-                    condiciones_cliente: obj.terms,
-                    observaciones: obj.observations,
-                    porcentaje_genericos: obj.percGeneric,
-                    porcentaje_marcas: obj.percBrand,
-                    porcentajes_insumos: obj.percSupplies,
-                    valor_contrato: obj.value,
-                    saldo: obj.value,
-                    usuario_id: obj.userId,
-                    tipo_id_vendedor: obj.sellerDocType,
-                    vendedor_id: obj.sellerDocNum,
-                    facturar_iva: obj.checkInIva,
-                    sw_sincroniza: obj.sw_sync,
-                    sw_autorizacion: obj.sw_autorizacion,
-                    sw_facturacion_agrupada: obj.sw_bundled_billing,
-                    fecha_registro: obj.dateNow,
-                    estado: '0'
-                };
-                if (obj.typeCod === 1) { fields.tipo_id_tercero = obj.docType; fields.tercero_id = obj.docNum; }
-                else if (obj.typeCod === 2) { fields.codigo_unidad_negocio = obj.businessUnitCod; }
-                else if (obj.typeCod === 3) { fields.contrato_generico = '1'; }
-
-                let query = G.knex('vnts_contratos_clientes').insert(fields);
-
-                return query;
+                return G.Q.nfcall(that.existContractActive, obj);
             } else {
-                let err = { msg : 'Campos invalidos para crear contrato!!' };
-                if (obj.error.msg) { err.msg = obj.error.msg; }
+                let err = {
+                    msg: (obj.error.msg) ? obj.error.msg: (!obj.update) ? 'Campos invalidos para crear contrato!!':'Campos invalidos para actualizar contrato!'
+                };
                 throw err;
             }
-        }).then(response => {
-            callback(false, response);
-        }).catch(err => {
-            if (obj.typeCod === 1) {
-                err.msg = `No fue posible crear contrato con empresa "${obj.empresaId}" y tercero "${obj.docType} - ${obj.docNum}"!!`;
+        }).then(contracts => {
+            let fields = fieldsContract(obj);
+            if (!contracts.length) { fields.estado = '1'; }
+            else { errCount++; }
+
+            if (!obj.update) {
+                query = G.knex('vnts_contratos_clientes').insert(fields);
+            } else {
+                const filter = {contrato_cliente_id: obj.contrato_numero};
+                query = G.knex('vnts_contratos_clientes').where(filter).update(fields);
             }
-            if (err.msg === undefined) { err.msg = 'Error al crear nuevo contrato!'; }
+            console.log('query: ', G.sqlformatter.format(query.toString()));
+
+            return query;
+        }).then(response => {
+            if (errCount === 0) {
+                callback(false, {});
+            } else {
+                const msgUpdate = 'Contrato actualizado con estado INACTIVO! Cliente ya tenia un contrato activo!';
+                const msgCreate = 'Contrato creado con estado INACTIVO! Cliente ya tenia un contrato activo!';
+                let err = {
+                    status: 300,
+                    msg: (!obj.update) ? msgCreate:msgUpdate
+                };
+                throw err;
+            }
+        }).catch(err => {
+            if (!err.msg) {
+                const msgUpdate = `No fue posible actualizar contrato #${obj.contrato_numero}!!`;
+                const msgCreate = `No fue posible crear contrato con empresa "${obj.empresaId}" y tercero "${obj.docType} - ${obj.docNum}"!!`;
+                err.msg = (obj.update === undefined) ? msgCreate:msgUpdate;
+            }
             callback(err);
         });
 };
@@ -310,109 +387,130 @@ ParametrizacionProductosClientesModel.prototype.businessUnits = (obj, callback) 
         });
 };
 
+ParametrizacionProductosClientesModel.prototype.existContractActive = (obj, callback) => {
+    let response = {};
+    let filtro = 'true';
+    if (obj.tipo_id_tercero) { filtro += ` AND a.tipo_id_tercero = '${obj.tipo_id_tercero}'`; }
+    if (obj.tercero_id) { filtro += ` AND a.tercero_id = '${obj.tercero_id}'`; }
+
+    promesa
+        .then(response => {
+            const countContractsActives = `(
+                SELECT
+                    count(sub.contrato_cliente_id)
+                FROM
+                    vnts_contratos_clientes as sub
+                GROUP BY
+                    sub.tipo_id_tercero,
+                    sub.tercero_id,
+                    sub.estado
+                HAVING
+                    sub.tipo_id_tercero = a.tipo_id_tercero
+                    AND
+                    sub.tercero_id = a.tercero_id
+                    AND
+                    sub.estado != '0'
+                ) as contratos_activos`;
+
+
+            const selectColumns = [
+                G.knex.raw(countContractsActives),
+                    'a.contrato_cliente_id as contrato_numero',
+                    'a.empresa_id',
+                    'a.descripcion as contrato_descripcion',
+                    G.knex.raw("TO_CHAR(a.fecha_inicio,'DD-MM-YYYY') as contrato_fecha_i"),
+                    G.knex.raw("TO_CHAR(a.fecha_final,'DD-MM-YYYY') as contrato_fecha_f"),
+                    'a.tipo_id_tercero',
+                    'a.tercero_id',
+                    'c.nombre_tercero',
+                    'a.codigo_unidad_negocio',
+                    'd.descripcion',
+                    'a.contrato_generico',
+                    'a.condiciones_cliente',
+                    'a.observaciones',
+                    'a.tipo_id_vendedor',
+                    'a.vendedor_id',
+                    'e.nombre as contrato_vendedor',
+                    'a.valor_contrato as contrato_valor',
+                    'a.saldo',
+                    'a.estado',
+                    G.knex.raw(`
+                CASE
+                    WHEN a.contrato_generico = '1'
+                        THEN 'CONTRATO GENERICO'
+                    WHEN a.tipo_id_tercero IS NOT NULL
+                        THEN a.tipo_id_tercero||'-'||a.tercero_id||' ' ||c.nombre_tercero
+                    WHEN a.codigo_unidad_negocio IS NOT NULL
+                        THEN d.codigo_unidad_negocio||' - '||d.descripcion
+                    END as contrato_tipo`),
+                    G.knex.raw(`
+                CASE
+                    WHEN a.contrato_generico = '1'
+                        THEN '3'
+                    WHEN a.tipo_id_tercero IS NOT NULL
+                        THEN '1'
+                    WHEN a.codigo_unidad_negocio IS NOT NULL
+                        THEN '2'
+                    END as tipo_contrato`)];
+
+            const query = G.knex.column(G.knex.raw(selectColumns))
+                .from('vnts_contratos_clientes as a')
+                .leftJoin('terceros_clientes as b', function () {
+                    this.on('a.tipo_id_tercero', 'b.tipo_id_tercero')
+                        .on('a.tercero_id', 'b.tercero_id')
+                        .on('a.empresa_id', 'b.empresa_id')
+                })
+                .leftJoin('terceros as c', function () {
+                    this.on('b.tipo_id_tercero', 'c.tipo_id_tercero')
+                        .on('b.tercero_id', 'c.tercero_id')
+                        .on('b.empresa_id', 'c.empresa_id')
+                })
+                .leftJoin('unidades_negocio as d', 'a.codigo_unidad_negocio', 'd.codigo_unidad_negocio')
+                .innerJoin('vnts_vendedores as e', function () {
+                    this.on('a.tipo_id_vendedor', 'e.tipo_id_vendedor')
+                        .on('a.vendedor_id', 'e.vendedor_id')
+                })
+                .where(G.knex.raw(filtro))
+                .orderBy('contrato_numero');
+
+            console.log('Last Query: ', G.sqlformatter.format(query.toString()));
+
+            return query;
+        }).then(contractsActives => {
+            if (contractsActives.length > 0 && contractsActives[0].contratos_activos > 0) {
+                for (let contract of contractsActives) {
+                    contract.check = contract.estado === '1';
+                    contract.contrato_valor = obj.number_money(String(parseFloat(String(contract.contrato_valor))));
+                }
+                response = contractsActives;
+            } else { response = []; }
+
+            callback(false, response);
+        }).catch(err => {
+            if (err.msg === undefined) { err.msg = 'Error al consultar contratos activos!!'; }
+            console.log('Err: ', err);
+            callback(err);
+        });
+};
+
 ParametrizacionProductosClientesModel.prototype.updateStatusContract = (obj, callback) => {
     console.log('In model "updateStatusContract"');
     let err = {};
-    let selectColumns = [
-        G.knex.raw(`(
-            SELECT
-                count(sub.contrato_cliente_id)
-            FROM
-                vnts_contratos_clientes as sub
-            GROUP BY
-                sub.tipo_id_tercero,
-                sub.tercero_id,
-                sub.estado
-            HAVING
-                sub.tipo_id_tercero = a.tipo_id_tercero
-                AND
-                sub.tercero_id = a.tercero_id
-                AND
-                sub.estado = '1'
-            ) as contratos_activos`),
-        'a.contrato_cliente_id as contrato_numero',
-        'a.empresa_id',
-        'a.descripcion as contrato_descripcion',
-        G.knex.raw("TO_CHAR(a.fecha_inicio,'DD-MM-YYYY') as contrato_fecha_i"),
-        G.knex.raw("TO_CHAR(a.fecha_final,'DD-MM-YYYY') as contrato_fecha_f"),
-        'a.tipo_id_tercero',
-        'a.tercero_id',
-        'c.nombre_tercero',
-        'a.codigo_unidad_negocio',
-        'd.descripcion',
-        'a.contrato_generico',
-        'a.condiciones_cliente',
-        'a.observaciones',
-        'a.tipo_id_vendedor',
-        'a.vendedor_id',
-        'e.nombre as contrato_vendedor',
-        'a.valor_contrato as contrato_valor',
-        'a.saldo',
-        'a.estado',
-        G.knex.raw(`
-            CASE
-                WHEN a.contrato_generico = '1'
-                    THEN 'CONTRATO GENERICO'
-                WHEN a.tipo_id_tercero IS NOT NULL
-                    THEN a.tipo_id_tercero||'-'||a.tercero_id||' ' ||c.nombre_tercero
-                WHEN a.codigo_unidad_negocio IS NOT NULL
-                    THEN d.codigo_unidad_negocio||' - '||d.descripcion
-                END as contrato_tipo`),
-        G.knex.raw(`
-            CASE
-                WHEN a.contrato_generico = '1'
-                    THEN '3'
-                WHEN a.tipo_id_tercero IS NOT NULL
-                    THEN '1'
-                WHEN a.codigo_unidad_negocio IS NOT NULL
-                    THEN '2'
-                END as tipo_contrato`)
-    ];
 
     promesa
         .then(response => {
             if (obj.check) {
-                let existContractActive = G.knex.column([
-                    G.knex.raw(selectColumns)])
-                    .from('vnts_contratos_clientes as a')
-                    .leftJoin('terceros_clientes as b', function () {
-                        this.on('a.tipo_id_tercero', 'b.tipo_id_tercero')
-                            .on('a.tercero_id', 'b.tercero_id')
-                            .on('a.empresa_id', 'b.empresa_id')
-                    })
-                    .leftJoin('terceros as c', function () {
-                        this.on('b.tipo_id_tercero', 'c.tipo_id_tercero')
-                            .on('b.tercero_id', 'c.tercero_id')
-                            .on('b.empresa_id', 'c.empresa_id')
-                    })
-                    .leftJoin('unidades_negocio as d', 'a.codigo_unidad_negocio', 'd.codigo_unidad_negocio')
-                    .innerJoin('vnts_vendedores as e', function () {
-                        this.on('a.tipo_id_vendedor', 'e.tipo_id_vendedor')
-                            .on('a.vendedor_id', 'e.vendedor_id')
-                    })
-                    .where('a.tipo_id_tercero', obj.tipo_id_tercero)
-                    .andWhere('a.tercero_id', obj.tercero_id)
-                    .orderBy('contrato_numero');
-                console.log(G.sqlformatter.format(existContractActive.toString()));
-
-                return existContractActive;
-            }else { return true; }
-        }).then(productos => {
-            if (productos.length > 0 && productos[0].contratos_activos > 0) {
-                for (let producto of productos) {
-                    producto.check = producto.estado === '1';
-                    producto.contrato_valor = obj.number_money(String(parseFloat(String(producto.contrato_valor))));
-                }
-
+                return G.Q.nfcall(that.existContractActive, obj);
+            } else { return true; }
+        }).then(contractsActives => {
+            if (contractsActives.length > 0 && contractsActives[0].contratos_activos > 0) {
                 err.msg = 'El cliente ya tiene un contrato activo!!';
-                err.contracts = productos;
+                err.contracts = contractsActives;
                 err.status = 300;
                 throw err;
+            } else {
+                return G.knex('vnts_contratos_clientes').where('contrato_cliente_id', obj.contrato_numero).update('estado', obj.check);
             }
-            let query = G.knex('vnts_contratos_clientes')
-                .where('contrato_cliente_id', obj.contrato_numero)
-                .update('estado', obj.check);
-            return query;
         }).then(response => {
             callback(false, response);
         }).catch(err => {

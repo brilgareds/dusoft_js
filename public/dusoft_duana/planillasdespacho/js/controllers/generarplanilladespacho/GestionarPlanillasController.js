@@ -611,9 +611,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     session: $scope.session,
                     data: {
                         planillas_despachos: {
-//                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-//                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-//                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             transportador_id: $scope.planilla.get_transportadora().get_id(),
                             nombre_conductor: $scope.planilla.get_nombre_conductor(),
                             observacion: $scope.planilla.get_observacion(),
@@ -629,11 +626,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
-                    /*if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }*/
                 });
             };
 

@@ -254,7 +254,9 @@ function __codificarFormulasDispensadas(productos, index, resultado, callback){
                 "cantidad_despachada":  String(parseInt(producto.cantidad)),
                 "numero_entrega":  String(producto.numero_entega),
                 "fecha_dispensacion":  String(producto.fecha_dispensacion),
-                "fecha_vencimiento":  String(producto.fecha_vencimiento)
+                "fecha_vencimiento":  String(producto.fecha_vencimiento),
+                "costo" : producto.costo,
+                "precio_venta" : producto.precio_venta,
                };
                
      resultado.push(detalle);

@@ -2,12 +2,12 @@ var DispensacionHcJobs = function(c_dispensacion_hc) {
     var that = this;
     /*this.cronJob = require('cron').CronJob;  */
     this.c_dispensacion_hc = c_dispensacion_hc;
-    if(!G.program.prod){
+//    if(!G.program.prod){
        
-        that.ejecutarJobEliminarFormulasSinMovimiento();
+       // that.ejecutarJobEliminarFormulasSinMovimiento();
         that.ejecutarJobSincronizarFormulasDispensadas();
-        
-    }
+//        
+//    }
    
 };
 
@@ -31,9 +31,11 @@ DispensacionHcJobs.prototype.ejecutarJobSincronizarFormulasDispensadas = functio
 
     var that = this;
     var ip = require('ip');
-    if (ip.address() === '10.0.2.216') {
+    console.log("ip::",ip.address());
+    if (ip.address() === '10.0.2.158') {
         var job = new G.cronJob('00 30 00 * * *', function () {
 //        var job = new G.cronJob('10 * * * * *', function () {
+console.log("Envio ok")
             that.c_dispensacion_hc.sincronizacionFormulasDispensadas();
         });
             

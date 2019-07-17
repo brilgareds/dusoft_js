@@ -1,39 +1,39 @@
 function Pago () {
-    this._id = 0;
-    this._codigoMedioPago = "";
-    this._fechaVencimiento = "";
-    this._listaIdentificadoesPago = [];
+    this.id = 0;
+    this.codigoMedioPago = "";
+    this.fechaVencimiento = "";
+    this.listaIdentificadoesPago = [];
 
     Pago.prototype.getId = function () {
-        return this._id;
+        return this.id;
     };
 
-    Pago.prototype.setId = function (_id) {
-        this._id = _id;
+    Pago.prototype.setId = function (id) {
+        this.id = id;
     };
 
     Pago.prototype.getCodigoMedioPago = function () {
-        return this._codigoMedioPago;
+        return this.codigoMedioPago;
     };
 
-    Pago.prototype.setCodigoMedioPago = function (_codigoMedioPago) {
-        this._codigoMedioPago = _codigoMedioPago;
+    Pago.prototype.setCodigoMedioPago = function (codigoMedioPago) {
+        this.codigoMedioPago = codigoMedioPago;
     };
 
     Pago.prototype.getFechaVencimiento = function () {
-        return this._fechaVencimiento;
+        return this.fechaVencimiento;
     };
 
-    Pago.prototype.setFechaVencimiento = function (_fechaVencimiento) {
-        this._fechaVencimiento = _fechaVencimiento;
+    Pago.prototype.setFechaVencimiento = function (fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     };
 
     Pago.prototype.getListaIdentificadoesPago = function () {
-        return this._listaIdentificadoesPago;
+        return this.listaIdentificadoesPago;
     };
 
-    Pago.prototype.setListaIdentificadoesPago = function (_listaIdentificadoesPago) {
-        this._listaIdentificadoesPago = _listaIdentificadoesPago;
+    Pago.prototype.setListaIdentificadoesPago = function (listaIdentificadoesPago) {
+        this.listaIdentificadoesPago = listaIdentificadoesPago;
     };
 }
 

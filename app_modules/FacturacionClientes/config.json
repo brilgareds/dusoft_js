@@ -1,86 +1,121 @@
 {
-  "module": "FacturacionClientes",
-  "dependency": {
-    "controllers": [
-      {
-        "facturacion_cliente_controller": {
-          "module": "FacturacionClientes",
-          "controller": "FacturacionClientesController",
-          "alias": "c_facturacion_clientes"
-        }
-      }
-    ],
-    "models": [
-      {
-        "facturacion_cliente_model": {
-          "module": "FacturacionClientes",
-          "model": "FacturacionClientesModel",
-          "alias": "m_facturacion_clientes"
-        },
-        "dispensacion_hc_model": {
-          "module": "DispensacionHc",
-          "model": "DispensacionHcModel",
-          "alias": "m_dispensacion_hc"
-        },
-        "E008_model": {
-          "module": "MovimientosBodega/E008",
-          "model": "DocBodegaE008",
-          "alias": "m_e008"
-        },
-        "m_usuarios": {
-          "module": "Usuarios",
-          "model": "UsuariosModel",
-          "alias": "m_usuarios"
-        },
-        "sincronizacion_model": {
-          "module": "Sincronizacion",
-          "model": "SincronizacionModel",
-          "alias": "m_sincronizacion"
-        },
-        "productos_model": {
-          "module": "Productos",
-          "model": "ProductosModel",
-          "alias": "m_productos"
-        },
-        "pedidos_clientes_model": {
-          "module": "PedidosClientes",
-          "model": "PedidosClienteModel",
-          "alias": "m_pedidos_clientes"
-        },
-        "factura_clase_model": {
-          "module": "Classes",
-          "model": "Facturas.class",
-          "alias": "m_facturas"
-        },
-        "pago_clase_model": {
-          "module": "Classes",
-          "model": "Pago.class",
-          "alias": "m_pago"
-        },
-        "productos_clase_model": {
-          "module": "Classes",
-          "model": "Productos.class",
-          "alias": "m_productos"
-        }
-      }
-    ],
-    "events": [
-      {
-        "facturacion_cliente_events": {
-          "module": "FacturacionClientes",
-          "event": "FacturacionClientesEvents",
-          "alias": "e_facturacion_clientes"
-        }
-      }
-    ],
-    "cronJobs": [
-      {
-        "facturacion_cliente_crontab": {
-          "module": "FacturacionClientes",
-          "cronjob": "FacturacionClientesJobs",
-          "alias": "j_facturacion_clientes"
-        }
-      }
-    ]
-  }
+    "module": "FacturacionClientes",
+    "dependency": {
+        "controllers": [
+            {
+                "facturacion_cliente_controller": {
+                    "module": "FacturacionClientes",
+                    "controller": "FacturacionClientesController",
+                    "alias": "c_facturacion_clientes"
+                }
+            }
+        ],
+        "models": [
+            {
+                "facturacion_cliente_model": {
+                    "module": "FacturacionClientes",
+                    "model": "FacturacionClientesModel",
+                    "alias": "m_facturacion_clientes"
+                },
+                "dispensacion_hc_model": {
+                    "module": "DispensacionHc",
+                    "model": "DispensacionHcModel",
+                    "alias": "m_dispensacion_hc"
+                },
+                "E008_model": {
+                    "module": "MovimientosBodega/E008",
+                    "model": "DocBodegaE008",
+                    "alias": "m_e008"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                },
+                "sincronizacion_model": {
+                    "module": "Sincronizacion",
+                    "model": "SincronizacionModel",
+                    "alias": "m_sincronizacion"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "factura_clase_model": {
+                    "module": "Classes",
+                    "model": "Facturas.class",
+                    "alias": "m_facturas"
+                },
+                "documentosAnexos_clase_model": {
+                    "module": "Classes",
+                    "model": "DocumentosAnexos.class",
+                    "alias": "m_documentos_anexos"
+                },
+                "pago_clase_model": {
+                    "module": "Classes",
+                    "model": "Pago.class",
+                    "alias": "m_pago"
+                },
+                "productos_clase_model": {
+                    "module": "Classes",
+                    "model": "Productos.class",
+                    "alias": "m_productos"
+                },
+                "lista_impuestos_clases_model": {
+                    "module": "Classes",
+                    "model": "ListaImpuestos.class",
+                    "alias": "m_lista_impuestos"
+                },
+                "numeracion_clase_model": {
+                    "module": "Classes",
+                    "model": "Numeracion.class",
+                    "alias": "m_numeracion"
+                },
+                "items_clase_model": {
+                    "module": "Classes",
+                    "model": "Items.class",
+                    "alias": "m_items"
+                },
+                "facturador_clase_model": {
+                    "module": "Classes",
+                    "model": "Facturador.class",
+                    "alias": "m_facturador"
+                },
+                "adquiriente_clase_model": {
+                    "module": "Classes",
+                    "model": "Adquiriente.class",
+                    "alias": "m_adquiriente"
+                },
+                "resolucion_clase_model": {
+                    "module": "Classes",
+                    "model": "Resolucion.class",
+                    "alias": "m_resolucion"
+                }
+            }
+        ],
+        "events": [
+            {
+                "facturacion_cliente_events": {
+                    "module": "FacturacionClientes",
+                    "event": "FacturacionClientesEvents",
+                    "alias": "e_facturacion_clientes"
+                }
+            }
+        ],
+        "cronJobs": [
+            {
+                "facturacion_cliente_crontab": {
+                    "module": "FacturacionClientes",
+                    "cronjob": "FacturacionClientesJobs",
+                    "alias": "j_facturacion_clientes"
+                }
+            }
+        ]
+    }
 }

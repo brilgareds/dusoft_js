@@ -281,10 +281,15 @@ FacturacionClientesModel.prototype.listarTiposTerceros = function (callback) {
  */
 FacturacionClientesModel.prototype.consultarPedidosFacturaAgrupada = function (parametros, callback) {
 
-    var query = G.knex.distinct('pedido_cliente_id')
-            .select()
-            .from('inv_facturas_agrupadas_despacho_d')
-            .where(parametros);
+    var query = G.knex.distinct('a.pedido_cliente_id')
+            .select('b.fecha_registro')
+            .from('inv_facturas_agrupadas_despacho_d as a')
+            .innerJoin("ventas_ordenes_pedidos as b", "b.pedido_cliente_id", "a.pedido_cliente_id ")
+            .where(function () {
+                this.andWhere("a.empresa_id",parametros.empresa_id);
+                    this.andWhere("a.factura_fiscal", parametros.factura_fiscal);
+                    this.andWhere("a.prefijo", parametros.prefijo);
+            });
 
     query.then(function (resultado) {
         callback(false, resultado);
@@ -427,6 +432,8 @@ function __camposListaFacturasGeneradas() {
         "c.nombre_tercero",
         "c.direccion",
         "c.telefono",
+        "c.dv",
+        "c.sw_persona_juridica",
         G.knex.raw("h.pais||'-'||g.departamento ||'-'||f.municipio as ubicacion"),
         G.knex.raw("TO_CHAR(a.fecha_registro,'yyyy-mm-dd hh:mm:ss') AS fecha_registro"),
         "a.usuario_id",
@@ -569,6 +576,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
                                     where factura_fiscal = a.factura_fiscal \
                                     and empresa_id=a.empresa_id and prefijo=a.prefijo limit 1) else '' end)) as observacion"));
     colSubQuery2.push("a.pedido_cliente_id");
+    colSubQuery2.push("a.fecha_registro as fecha_registro_pedido");
     colSubQuery2.push("a.tipo_pago_id");
 
     var colSubQuery2B = __camposListaFacturasGeneradas();
@@ -588,6 +596,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
         WHERE dd.empresa_id = a.empresa_id and dd.prefijo = a.prefijo and dd.factura_fiscal = a.factura_fiscal limit 1 ) as nombre"));
     colSubQuery2B.push(G.knex.raw("'' as observacion"));
     colSubQuery2B.push(G.knex.raw("0 as pedido_cliente_id"));
+    colSubQuery2B.push(G.knex.raw("'0001-01-01' as fecha_registro_pedido"));
     colSubQuery2B.push("a.tipo_pago_id");
 
     var colSubQuery1 = ["a.empresa_id",

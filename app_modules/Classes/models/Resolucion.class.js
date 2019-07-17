@@ -1,42 +1,42 @@
 
 function Resolucion() {
 
-        this._numero = '';
-        this._horaInicio = '';
-        this._fechaFin = '';
-        this._numeracion = [];
+        this.numero = '';
+        this.fechaInicio = '';
+        this.fechaFin = '';
+        this.numeracion = [];
     
 
     Resolucion.prototype.getNumero = function () {
-        return this._numero;
+        return this.numero;
     };
 
     Resolucion.prototype.setNumero = function (value) {
-        this._numero = value;
+        this.numero = value;
     };
 
-    Resolucion.prototype.getHoraInicio = function () {
-        return this._horaInicio;
+    Resolucion.prototype.getFechaInicio = function () {
+        return this.fechaInicio;
     };
 
-    Resolucion.prototype.setHoraInicio = function (value) {
-        this._horaInicio = value;
+    Resolucion.prototype.setFechaInicio = function (value) {
+        this.fechaInicio = value;
     };
 
     Resolucion.prototype.getFechaFin = function () {
-        return this._fechaFin;
+        return this.fechaFin;
     };
 
     Resolucion.prototype.setFechaFin = function (value) {
-        this._fechaFin = value;
+        this.fechaFin = value;
     };
 
     Resolucion.prototype.getNumeracion = function () {
-        return this._numeracion;
+        return this.numeracion;
     };
 
     Resolucion.prototype.setNumeracion = function (value) {
-        this._numeracion = value;
+        this.numeracion = value;
     };
 };
 

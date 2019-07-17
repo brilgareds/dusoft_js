@@ -1,7 +1,8 @@
-/* global G */
+/* global G, parseFloat */
 
 var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion,
-                                    e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas, m_pago, m_productos) {
+        e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas, m_pago, m_productos,
+        m_lista_impuestos, m_items, m_facturador, m_adquiriente, m_documentos_anexos, m_resolucion, m_numeracion) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
@@ -14,6 +15,13 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
     this.m_facturas = m_facturas;
     this.m_pago = m_pago;
     this.m_productos = m_productos;
+    this.m_lista_impuestos = m_lista_impuestos;
+    this.m_items = m_items;
+    this.m_facturador = m_facturador;
+    this.m_adquiriente = m_adquiriente;
+    this.m_documentos_anexos = m_documentos_anexos;
+    this.m_resolucion = m_resolucion;
+    this.m_numeracion = m_numeracion;
 
     G.log.configure({
         appenders: [
@@ -182,9 +190,9 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function (req, res) {
     }
 
     if (args.listar_facturas_generadas.numero === "" &&
-        args.listar_facturas_generadas.pedidoClienteId === "" &&
-        args.listar_facturas_generadas.terminoBusqueda === "" &&
-        args.listar_facturas_generadas.nombreTercero === "") {
+            args.listar_facturas_generadas.pedidoClienteId === "" &&
+            args.listar_facturas_generadas.terminoBusqueda === "" &&
+            args.listar_facturas_generadas.nombreTercero === "") {
 
         res.send(G.utils.r(req.url, 'Debe diligenciar un criterio de busqueda', 404, {listar_facturas_generadas: []}));
         return;
@@ -310,7 +318,7 @@ FacturacionClientes.prototype.listarDocumentosPorFacturar = function (req, res) 
     }
 
     if (args.facturas_consumo.numeroDocumento === undefined || !args.facturas_consumo.tipoTerceroId ||
-        !args.facturas_consumo.terceroId) {
+            !args.facturas_consumo.terceroId) {
         res.send(G.utils.r(req.url, 'Se requiere el numero documento, documento y tipo de tercero', 404, {facturas_consumo: []}));
         return;
     }
@@ -565,9 +573,9 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
 
     if (args.procesar_factura_cosmitet === undefined) {
@@ -623,7 +631,7 @@ FacturacionClientes.prototype.procesarDespachos = function (req, res) {
             parametros.terceroId = '';
             parametros.estadoProcesoPedido = 0;
             parametros.procesoFacturacion = 0;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPedidosClientes', parametros)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPedidosClientes', parametros);
 
         } else {
             throw {
@@ -700,7 +708,7 @@ function __insertarFacturaEnProcesoDetalle(that, index, datos, procesoId, callba
     }).done();
 
     setTimeout(function () {
-        __insertarFacturaEnProcesoDetalle(that, index, datos, procesoId, callback)
+        __insertarFacturaEnProcesoDetalle(that, index, datos, procesoId, callback);
     }, 300);
 }
 ;
@@ -767,21 +775,21 @@ FacturacionClientes.prototype.generarFacturasAgrupadasEnProceso = function () {
 
         resultadoFacturacionAgrupada = resultado;
         return G.Q.ninvoke(that.m_facturacion_clientes, "actualizarEstadoProcesoFacturacion",
-            {
-                id: idProceso.id,
-                estado: '3',
-                factura_fiscal: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].numeracion,
-                prefijo: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].id
-            });
+                {
+                    id: idProceso.id,
+                    estado: '3',
+                    factura_fiscal: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].numeracion,
+                    prefijo: resultadoFacturacionAgrupada.data.generar_factura_agrupada[0].id
+                });
 
     }).then(function (resultado) {
 
         that.e_facturacion_clientes.onNotificarFacturacionTerminada(
-            resultadoFacturacionAgrupada.data,
-            resultadoFacturacionAgrupada.msj,
-            200,
-            parametros.usuario
-        );
+                resultadoFacturacionAgrupada.data,
+                resultadoFacturacionAgrupada.msj,
+                200,
+                parametros.usuario
+                );
     }).fail(function (err) {
         if (!idProceso) {
             console.log('(crontab) Sin facturas en proceso!');
@@ -839,9 +847,9 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function (req, res) {
      */
 //    var ip ='::ffff:10.0.2.158';
     var ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
     if (args.generar_factura_agrupada === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_agrupada: []}));
@@ -915,7 +923,7 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
 
         if (resultado.length > 0) {
             parametros.documentoId = resultado[0].valor;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros);
         } else {
             throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
         }
@@ -974,12 +982,12 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
         if (!resultado || resultado.length > 0) {
             parametros.direccion_ip = ip;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'transaccionGenerarFacturasAgrupadas',
-                {
-                    documento_facturacion: documentoFacturacion,
-                    consultar_tercero_contrato: consultarTerceroContrato,
-                    consultar_parametros_retencion: consultarParametrosRetencion,
-                    parametros: parametros
-                });
+                    {
+                        documento_facturacion: documentoFacturacion,
+                        consultar_tercero_contrato: consultarTerceroContrato,
+                        consultar_parametros_retencion: consultarParametrosRetencion,
+                        parametros: parametros
+                    });
         } else {
             throw {
                 msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
@@ -1001,18 +1009,18 @@ FacturacionClientes.prototype.__generarFacturasAgrupadas = function (parametros,
 //    }).then(function (resultado) {
 
         callback(false, {
-                status: 200,
-                msj: 'Se genera la factura satisfactoriamente',
-                data: {
-                    generar_factura_agrupada: documentoFacturacion,
-                    resultado_sincronizacion_ws: {
-                        resultado: {
-                            mensaje_ws: 'No sincronizado',
-                            mensaje_bd: "Log Registrado Correctamente "
-                        }
-                    }// resultado
-                }
+            status: 200,
+            msj: 'Se genera la factura satisfactoriamente',
+            data: {
+                generar_factura_agrupada: documentoFacturacion,
+                resultado_sincronizacion_ws: {
+                    resultado: {
+                        mensaje_ws: 'No sincronizado',
+                        mensaje_bd: "Log Registrado Correctamente "
+                    }
+                }// resultado
             }
+        }
         );
 
 
@@ -1136,7 +1144,7 @@ function __consultarTemporaldetalleFactura(that, def, index, pedidos, callback) 
 
     var timer = setTimeout(function () {
         clearTimeout(timer);
-        __consultarTemporaldetalleFactura(that, def, index, pedidos, callback)
+        __consultarTemporaldetalleFactura(that, def, index, pedidos, callback);
     }, 0);
 }
 
@@ -1226,7 +1234,7 @@ FacturacionClientes.prototype.eliminarProductoTemporalFacturaConsumo = function 
         if (resultado.length > 0) {
             resultado.forEach(function (row) {
 
-                subTotalValorProductos += parseFloat(row.cantidad_despachada * (parseFloat(row.valor_unitario)))
+                subTotalValorProductos += parseFloat(row.cantidad_despachada * (parseFloat(row.valor_unitario)));
                 totalValorIva += parseFloat((parseFloat(parseFloat(row.valor_unitario)) * parseFloat(row.porc_iva)) / 100);
                 totalValorProductos += parseFloat(parseFloat(row.cantidad_despachada * (parseFloat(parseFloat(row.valor_unitario)) + parseFloat((parseFloat(parseFloat(row.valor_unitario)) * parseFloat(row.porc_iva)) / 100))).toFixed(2));
 
@@ -1552,9 +1560,9 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
     var usuario = req.session.user.usuario_id;
     var def = G.Q.defer();
 
@@ -1669,7 +1677,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
                 throw {msj: 'La nueva cantidad no debe superar a la cantidad a facturar', status: 404};
                 return;
             } else {
-                return G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId)
+                return G.Q.ninvoke(that.m_dispensacion_hc, 'estadoParametrizacionReformular', parametroBodegaDocId);
             }
         }
 
@@ -1677,7 +1685,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
 
         if (resultado.length > 0) {
             parametros.documentoId = resultado[0].valor;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros);
         } else {
             throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
         }
@@ -1729,15 +1737,15 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
                 parametros.direccion_ip = ip;
 
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarTemporalFacturaConsumo',
-                    {
-                        tipo_id_tercero: parametros.tipoIdTercero,
-                        tercero_id: parametros.terceroId,
+                        {
+                            tipo_id_tercero: parametros.tipoIdTercero,
+                            tercero_id: parametros.terceroId,
 
-                        paginaActual: 1,
-                        terminoBusqueda: '',
-                        filtro: '',
-                        empresa_id: args.facturas_consumo.documentos.empresa
-                    });
+                            paginaActual: 1,
+                            terminoBusqueda: '',
+                            filtro: '',
+                            empresa_id: args.facturas_consumo.documentos.empresa
+                        });
 
             } else {
                 throw {
@@ -1767,12 +1775,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
         } else {
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'generarTemporalFacturaConsumo',
-                {
-                    documento_facturacion: documentoFacturacion,
-                    consultar_tercero_contrato: consultarTerceroContrato,
-                    consultar_parametros_retencion: consultarParametrosRetencion,
-                    parametros: parametros
-                });
+                    {
+                        documento_facturacion: documentoFacturacion,
+                        consultar_tercero_contrato: consultarTerceroContrato,
+                        consultar_parametros_retencion: consultarParametrosRetencion,
+                        parametros: parametros
+                    });
         }
 
     }).then(function (resultado) {
@@ -1812,12 +1820,12 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
 
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo',
-                {
-                    estado: 5,
-                    id_factura_xconsumo: parametros.id_factura_xconsumo,
-                    prefijo: parametros.pedidos.prefijo,
-                    factura_fiscal: parametros.pedidos.numero
-                });
+                    {
+                        estado: 5,
+                        id_factura_xconsumo: parametros.id_factura_xconsumo,
+                        prefijo: parametros.pedidos.prefijo,
+                        factura_fiscal: parametros.pedidos.numero
+                    });
         } else {
             throw {msj: 'No se registro ninguna unidad', status: 404};
             return;
@@ -1829,7 +1837,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
 
             resultado.forEach(function (row) {
 
-                subTotalValorProductos += parseFloat(row.cantidad_despachada * (parseFloat(row.valor_unitario)))
+                subTotalValorProductos += parseFloat(row.cantidad_despachada * (parseFloat(row.valor_unitario)));
                 totalValorIva += parseFloat((parseFloat(parseFloat(row.valor_unitario)) * parseFloat(row.porc_iva)) / 100);
                 totalValorProductos += parseFloat(parseFloat(row.cantidad_despachada * (parseFloat(parseFloat(row.valor_unitario)) + parseFloat((parseFloat(parseFloat(row.valor_unitario)) * parseFloat(row.porc_iva)) / 100))).toFixed(2));
 
@@ -1843,7 +1851,7 @@ FacturacionClientes.prototype.generarTemporalFacturaConsumo = function (req, res
                 valor_total: totalValorProductos.toFixed(2),
                 valor_total_iva: totalValorIva,
                 estado: 0
-            }
+            };
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo', parametrosTotalValor);
 
@@ -2081,11 +2089,11 @@ FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla = funct
 
     G.Q.ninvoke(that.m_facturacion_clientes, 'eliminarProductosTemporalBarranquilla', parametros)
 
-        .then(function () {
+            .then(function () {
 
-            return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
+                return res.send(G.utils.r(req.url, "Se elimina el temporal satisfactoriamente", 200, {eliminar_tmp: ''}));
 
-        }).catch(function (err) {
+            }).catch(function (err) {
         logger.error("-----------------------------------");
         logger.error({
             "metodo": "FacturacionClientes.prototype.eliminarTemporalFacturaConsumoBarranquilla",
@@ -2122,9 +2130,9 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
     var def = G.Q.defer();
 
     if (!args.generar_factura_consumo) {
@@ -2190,7 +2198,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
 
         if (resultado.length > 0) {
             datosDocumentosXConsumo.cabecera = resultado;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', parametrosDetalle)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarDetalleTemporalFacturaConsumo', parametrosDetalle);
         } else {
             throw {msj: '[consultarTemporalFacturaConsumo]: Consulta sin resultados', status: 404};
         }
@@ -2201,11 +2209,11 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
             datosDocumentosXConsumo.detalle = resultado;
             datosDocumentosXConsumo.temporal = resultado;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo',
-                {
-                    id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
-                    estado: 1,
-                    sw_facturacion: 2
-                });
+                    {
+                        id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                        estado: 1,
+                        sw_facturacion: 2
+                    });
 
         } else {
             throw {msj: 'No hay productos en temporal', status: 404};
@@ -2224,7 +2232,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
 
         if (resultado.length > 0) {
             parametros.documentoId = resultado[0].valor;
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros);
         } else {
             throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
         }
@@ -2286,7 +2294,7 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
             };
 
             return G.Q.ninvoke(that.m_facturacion_clientes, 'generarFacturaXConsumo',
-                {parametrosCabecera: parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
+                    {parametrosCabecera: parametrosCabecera, datosDocumentosXConsumo: datosDocumentosXConsumo});
 
         } else {
             throw {
@@ -2334,14 +2342,14 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         return G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo',
-            {
-                id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
-                estado: 2,
-                sw_facturacion: 1,
-                prefijo: documentoFacturacion[0].id,
-                factura_fiscal: documentoFacturacion[0].numeracion,
-                documento_id: documentoFacturacion[0].documento_id
-            });
+                {
+                    id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                    estado: 2,
+                    sw_facturacion: 1,
+                    prefijo: documentoFacturacion[0].id,
+                    factura_fiscal: documentoFacturacion[0].numeracion,
+                    documento_id: documentoFacturacion[0].documento_id
+                });
 
     }).then(function (resultado) {
 
@@ -2369,19 +2377,19 @@ FacturacionClientes.prototype.generarFacturaXConsumo = function (req, res) {
     }).then(function (resultado) {
 
         that.e_facturacion_clientes.onNotificarFacturacionXConsumoTerminada(
-            resultado.param,
-            resultado.resultado,
-            201,
-            usuario);
+                resultado.param,
+                resultado.resultado,
+                201,
+                usuario);
 
     }).fail(function (err) {
 
         G.Q.ninvoke(that.m_facturacion_clientes, 'actualizarValorTotalTemporalFacturaConsumo',
-            {
-                id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
-                estado: 1,
-                sw_facturacion: 3
-            }).then(function (resultado) {
+                {
+                    id_factura_xconsumo: datosDocumentosXConsumo.cabecera[0].id_factura_xconsumo,
+                    estado: 1,
+                    sw_facturacion: 3
+                }).then(function (resultado) {
 
         }).fail(function (err) {
             logger.error("-----------------------------------");
@@ -2448,7 +2456,7 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback) {
 
             var timer = setTimeout(function () {
                 clearTimeout(timer);
-                __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback)
+                __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback);
             }, 0);
 
         }).fail(function (err) {
@@ -2458,7 +2466,7 @@ function __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback) {
 
     var timer = setTimeout(function () {
         clearTimeout(timer);
-        __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback)
+        __actualizarEstadoFacturaPedidoDespacho(that, index, datos, callback);
     }, 0);
 
 }
@@ -2540,7 +2548,7 @@ function __obtenerDetallePorFacturar(that, index, datos, detallePorFacturar, cal
     }).done();
 
     setTimeout(function () {
-        __obtenerDetallePorFacturar(that, index, datos, detallePorFacturar, callback)
+        __obtenerDetallePorFacturar(that, index, datos, detallePorFacturar, callback);
     }, 300);
 }
 ;
@@ -2570,16 +2578,16 @@ function __distribuirUnidadesFacturadas(that, index, index2, datos, productos, u
 
     producto.forEach(function (row) {
         if (dato.codigo_producto === row.codigo_producto
-            && dato.lote === row.lote
-            && dato.prefijo_documento === row.prefijo
-            && dato.numeracion_documento === row.numero) {
+                && dato.lote === row.lote
+                && dato.prefijo_documento === row.prefijo
+                && dato.numeracion_documento === row.numero) {
 
             if (productosActualizados.length > 0) {
 
                 if (dato.codigo_producto === productosActualizados[0].codigo_producto
-                    && dato.lote === productosActualizados[0].lote
-                    && dato.prefijo_documento === productosActualizados[0].prefijo
-                    && dato.numeracion_documento === productosActualizados[0].numero) {
+                        && dato.lote === productosActualizados[0].lote
+                        && dato.prefijo_documento === productosActualizados[0].prefijo
+                        && dato.numeracion_documento === productosActualizados[0].numero) {
 
                     if (dato.cantidad >= row.cantidad) {
                         despacho = parseInt(row.cantidad);
@@ -2634,7 +2642,7 @@ function __distribuirUnidadesFacturadas(that, index, index2, datos, productos, u
     });
 
     setTimeout(function () {
-        __distribuirUnidadesFacturadas(that, index, index2, datos, productos, unidadesDistribuidas, callback)
+        __distribuirUnidadesFacturadas(that, index, index2, datos, productos, unidadesDistribuidas, callback);
     }, 0);
 }
 
@@ -2664,7 +2672,7 @@ function __actualizarCantidadFacturadaXConsumo(that, index, datos, callback) {
 
         var timer = setTimeout(function () {
             clearTimeout(timer);
-            __actualizarCantidadFacturadaXConsumo(that, index, datos, callback)
+            __actualizarCantidadFacturadaXConsumo(that, index, datos, callback);
         }, 0);
     }).fail(function (err) {
         console.log("err (/fail) [actualizarCantidadFacturadaXConsumo]: ", err);
@@ -2705,7 +2713,7 @@ function __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFa
     }).done();
 
     setTimeout(function () {
-        __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFacturados, callback)
+        __consultarCantidadesFacturadasXConsumo(that, index, datos, productosFacturados, callback);
     }, 300);
 }
 ;
@@ -2749,9 +2757,9 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
 
     if (args.generar_factura_individual === undefined) {
@@ -2808,7 +2816,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         parametros.documentoId = resultado[0].valor;
 
         if (resultado.length > 0) {
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros);
         } else {
             throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
         }
@@ -2856,12 +2864,12 @@ FacturacionClientes.prototype.generarFacturaIndividual = function (req, res) {
         if (!resultado || resultado.length > 0) {
             parametros.direccion_ip = ip;
             return G.Q.ninvoke(that.m_facturacion_clientes, 'transaccionGenerarFacturaIndividual',
-                {
-                    documento_facturacion: documentoFacturacion,
-                    consultar_tercero_contrato: consultarTerceroContrato,
-                    consultar_parametros_retencion: consultarParametrosRetencion,
-                    parametros: parametros
-                });
+                    {
+                        documento_facturacion: documentoFacturacion,
+                        consultar_tercero_contrato: consultarTerceroContrato,
+                        consultar_parametros_retencion: consultarParametrosRetencion,
+                        parametros: parametros
+                    });
         } else {
             throw {
                 msj: 'La Ip #' + ip.substr(7, ip.length) + ' No tiene permisos para realizar la peticion',
@@ -2921,9 +2929,9 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
      * @example '::ffff:10.0.2.158'
      */
     var ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress;
 
     if (args.sincronizar_factura === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {sincronizar_factura: []}));
@@ -2956,7 +2964,7 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
         parametros.documentoId = resultado[0].valor;
 
         if (resultado.length > 0) {
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros)
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'listarPrefijosFacturas', parametros);
         } else {
             throw {msj: '[estadoParametrizacionReformular]: Consulta sin resultados', status: 404};
         }
@@ -2994,7 +3002,7 @@ FacturacionClientes.prototype.sincronizarFactura = function (req, res) {
         res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 
-}
+};
 
 const __productos = function (productos, index, productosDian, callback) {
     var item = productos[index];
@@ -3062,7 +3070,7 @@ const __productos = function (productos, index, productosDian, callback) {
             //porcentual: obj.x, //decimal 
             baseGravable: item.porc_iva, //decimal  -
             valor: item.iva_total.replace(",", ".") //decimal -
-        }
+        };
 
     }
     ;
@@ -3085,10 +3093,8 @@ const __productos = function (productos, index, productosDian, callback) {
     }, 0);
 };
 
-const __productosAdjunto = function (productos, index, productosDian, callback) {
-    console.log("productosDian",productosDian);
+const __productosAdjunto = function (that, productos, index, productosDian, callback) {
     var item = productos[index];
-    var formato = 'DD-MM-YYYY';
     var numeroLinea = index;
 
 
@@ -3096,60 +3102,76 @@ const __productosAdjunto = function (productos, index, productosDian, callback) 
         callback(false, productosDian);
         return;
     }
-    var prod = this.m_productos;
-     prod.setNumeroLinea(numeroLinea+1);
+    var prod = that.m_productos;
+    prod.setNumeroLinea(index + 1);
 //     prod.setInformacion(); //no se a que se refiere
-     prod.setCantidad(item.cantidad);
-     prod.setValorTotal(numeroLinea+1);
-     prod.setIdProducto(item.codigo_producto);
+    prod.setCantidad(item.cantidad);
+    prod.setValorTotal(numeroLinea + 1);
+    prod.setIdProducto(item.codigo_producto);
 //     prod.setCodigoPrecio(); // no se usa
 //     prod.setCodigoReferencia(); // no se usa
 //     prod.setValorReferencia(); // no se usa
-     prod.setValorUnitario(item.valor_unitario);
-     prod.setCantidadReal(item.cantidad);
-     prod.setCodigoUnidad('94'); // 94 - unidad
-     
-//        descripcion: item.descripcion, //String OPCIONAL -
-//        imprimible: true, //boolean -
-//        pagable: true, //boolean -
-    
-    var impuesto;
+    prod.setValorUnitario(item.valor_unitario);
+    prod.setCantidadReal(item.cantidad);
+    prod.setCodigoUnidad('94'); // 94 - unidad
+    prod.setEsMuestraComercial(false); // es gratis o no
+//     prod.setListaCargosDescuentos(false); // otra clase no se usa
+//     prod.setListaDeducciones(false); // otra clase no se usa
+//     prod.setListaCorrecciones(false); // otra clase no se usa
+
+    var itemDatos = that.m_items;
+
+//    itemDatos.setMarca();// no se usa
+//    itemDatos.setModelo();// no se usa
+    itemDatos.setCodigoArticuloVendedor(item.codigo_producto);
+//    itemDatos.setCodigoExtendidoVendedor();// no se usa
+    itemDatos.setCodigoEstandar('999');
+    itemDatos.setNombreEstandar('Estándar de adopción del contribuyente');
+    itemDatos.setDescripcion(item.descripcion + ", codigo_invima: " + item.codigo_invima + ", Fecha Vencimiento: " + item.fecha_vencimiento + ", lote: " + item.lote);
+//    itemDatos.setDatosTecnicos(); // pendiente
+//    itemDatos.setCantidadPaquetes();// pendiente
+//    itemDatos.setCodigoPais();// pendiente
+//    itemDatos.setNombrePais();// pendiente
+//    itemDatos.setCodigoLenguajePais();// pendiente
+//    itemDatos.setListaCaracteristicas();// no se usa
+//    itemDatos.setMandatorio();// no se usa
+
+    prod.setItem(itemDatos); // otra clase
+
+
     var ivaPorcentaje = parseInt(item.porc_iva);
-    if (ivaPorcentaje === 0) {
-        impuesto = {// OPCIONAL -
-            nombre: "IVA0", //String -
-            //porcentual: obj.x, //decimal 
-            baseGravable: item.porc_iva, //decimal  -
-            valor: item.iva_total.replace(",", ".") //decimal -
 
-        };
-    }
-    ;
     if (ivaPorcentaje === 19) {
-        impuesto = {// OPCIONAL -
-            nombre: "IVA19", //String -
-            //porcentual: obj.x, //decimal 
-            baseGravable: item.porc_iva, //decimal  -
-            valor: item.iva_total.replace(",", ".") //decimal -
-        }
-
+        var impuesto = that.m_lista_impuestos;
+        impuesto.set_codigo('01'); // 01 IVA
+        impuesto.set_nombre('IVA');
+        impuesto.set_baseGravable(item.subtotal);
+        impuesto.set_porcentaje(item.porc_iva);
+        impuesto.set_valor(item.iva_total);
+        impuesto.set_codigoUnidad('94'); // 94 - unidad
+        // impuesto.set_unidad(); // no se usa
+        prod.setListaImpuestos(impuesto); // otra clase
     }
     ;
     if (ivaPorcentaje === 10) {
-        impuesto = {// OPCIONAL -
-            nombre: "IVA10", //String -
-            //porcentual: obj.x, //decimal 
-            baseGravable: item.porc_iva, //decimal  -
-            valor: item.iva_total.replace(",", ".") //decimal -
-        };
+
+        var impuesto = that.m_lista_impuestos;
+        impuesto.set_codigo('01'); // 01 IVA
+        impuesto.set_nombre('IVA');
+        impuesto.set_baseGravable(item.subtotal);
+        impuesto.set_porcentaje(item.porc_iva);
+        impuesto.set_valor(item.iva_total);
+        impuesto.set_codigoUnidad('94'); // 94 - unidad
+        // impuesto.set_unidad(); // no se usa
+        prod.setListaImpuestos(impuesto);
     }
     ;
-    prod.listaImpuestosDeducciones = impuesto;
+
     productosDian.push(prod);
 
     var timer = setTimeout(function () {
         index++;
-        __productosAdjunto(productos, index, productosDian, callback);
+        __productosAdjunto(that, productos, index, productosDian, callback);
         clearTimeout(timer);
     }, 0);
 };
@@ -3189,7 +3211,7 @@ const __productosAdjuntoOriginal = function (productos, index, productosDian, ca
             //porcentual: obj.x, //decimal
             baseGravable: item.porc_iva, //decimal  -
             valor: item.iva_total.replace(",", ".") //decimal -
-        }
+        };
 
     }
     ;
@@ -3220,18 +3242,20 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     var data;
     var Factura = this.m_facturas;
     var Pago = this.m_pago;
-    // console.log("Pago ",Pago);
+    var Facturador = this.m_facturador;
+    var Adquiriente = this.m_adquiriente;
+    var Resolucion = this.m_resolucion;
+    var Numeracion = this.m_numeracion;
+
     G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
         resultado = data;
-        // console.log('Data: ', resultado);
-        return G.Q.nfcall(__productosAdjunto, resultado.detalle, 0, []);
+//        console.log('Data: ', resultado);
+        return G.Q.nfcall(__productosAdjunto, that, resultado.detalle, 0, []);
 
     }).then(function (productos) {
-        // console.log('productos: ', productos);
 
         var subTotal = resultado.valores.subTotal.replace(".", "");
         var total = resultado.valores.totalFactura.replace(".", "");
-        // console.log('factura: ', factura);
         Factura.set_Tipodocumento('FE');
         Factura.set_Versiondocumento('1.0');
         Factura.set_Registrar(false);
@@ -3252,7 +3276,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Factura.set_Totalanticipos(0);
         Factura.set_Total(total);
         Factura.set_Codigomoneda('COP');
-        // factura.set_Tasacambio('COP'); // no se envia
+        // factura.set_Tasacambio(); // no se envia
 
         /*-----Clase Pago------*/
         Pago.setId(1); // 1 Contado, 2 Credito
@@ -3261,41 +3285,118 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Factura.set_Pago(Pago); // otra clase
 
         Factura.set_Listaproductos(productos); // listado de otra clase
+//        Factura.set_Listadescripciones(); // por validar
+//        Factura.set_Listadocumentosreferenciados();
+////        Factura.set_Notasreferenciadas(); // no se usa
 
-        // var json = {
-        //     codigoMoneda: "COP",
-        //     fechaExpedicion: resultado.cabecera.fecha_registro,
-        //     fechaVencimiento: resultado.cabecera.fecha_vencimiento_factura,
-        //     codigoDocumentoDian: resultado.cabecera.tipo_id_tercero,
-        //     numeroIdentificacion: resultado.cabecera.tercero_id,
-        //     identificadorConsecutivo: resultado.cabecera.factura_fiscal,
-        //     identificadorResolucion: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ,
-        //     mediosPago: resultado.cabecera.tipo_pago_id,
-        //     desde: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ, //long -
-        //     hasta: resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ, //long -
-        //     prefijo: resultado.cabecera.prefijo,
-        //     perfilEmision: "CLIENTE",
-        //     perfilUsuario: "CLIENTE",
-        //     productos: productos,
-        //     subtotalFactura: resultado.cabecera.subtotal,
-        //     ReteFuente: resultado.valores.retencionFuenteSf,
-        //     baseGravableReteFuente: resultado.valores.baseRetencionFuente,
-        //     IVA: resultado.valores.Iva,
-        //     baseGravableIVA: resultado.cabecera.subtotal,
-        //     ReteICA: resultado.valores.retencionIcaSf,
-        //     baseGravableReteICA: resultado.valores.baseRetencionIca,
-        //     ReteIVA: resultado.valores.retencionIvaSf,
-        //     baseGravableReteIVA: resultado.valores.baseRetencionIva,
-        //     tipoFactura: 1,
-        //     totalFactura: total.replace(".", ""),
-        //
-        //     coordXQr: 164,
-        //     coordYQr: 260,
-        //     coordXCufe: 110,
-        //     coordYCufe: 256,
-        //     pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
-        // };
-        console.log("factura", Factura);
+        const p1 = new Promise((resolve, reject) => {
+            documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], function (err, resul) {
+                resolve(resul);
+            });
+        });
+//        const p2 = new Promise((resolve, reject) => {
+//            gruposImpuestos(that, resultado.cabecera.pedido_array, 0, [], function (err, resul) {
+//                resolve(resul);
+//            });
+//        });
+//        documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], function (err,resul) {
+//            console.log("retorno",resul);
+//            Factura.set_Documentosanexos(resul);
+//        });
+////        Factura.set_Listaanticipos(); // no se usa
+////        Factura.set_Listacargosdescuentos(); // no se usa
+////        Factura.set_Gruposdeducciones(); // no se usa
+
+        /*-----Clase Facturador------*/
+        Facturador.setRazonSocial(resultado.cabecera.razon_social);
+        Facturador.setNombreRegistrado(resultado.cabecera.razon_social);
+        Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_empresa));
+        Facturador.setIdentificacion(resultado.cabecera.id);
+        Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
+        Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
+//        Facturador.setCodigoRegimen();
+//        Facturador.setResponsabilidadFiscal(); // por validar
+//        Facturador.setCodigoImpuesto(); // por validar
+//        Facturador.setNombreImpuesto(); // por validar
+        Facturador.setTelefono(resultado.cabecera.telefono_empresa);
+//        Facturador.setEmail(); // no se usa
+//        Facturador.setContacto(); // no se usa
+        Facturador.setDireccion(resultado.cabecera.direccion_empresa);
+        Facturador.setDireccionFiscal(resultado.cabecera.direccion_empresa);
+//        Facturador.setListaResponsabilidadesTributarias();
+//        Facturador.setCodigoCIUU(); // no se usa
+//        Facturador.setSucursal(); // no se usa
+//        Facturador.setListaParticipantesConsorcio(); // no se usa
+        /*--------------------*/
+        Factura.set_Facturador(Facturador); // otra clase
+
+        /*-----Clase Adquiriente------*/
+        Adquiriente.setRazonSocial(resultado.cabecera.nombre_tercero);
+        Adquiriente.setNombreRegistrado(resultado.cabecera.nombre_tercero);
+        Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_tercero));
+        Adquiriente.setIdentificacion(resultado.cabecera.tercero_id);
+        Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
+        Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
+//        Adquiriente.setCodigoRegimen();
+//        Adquiriente.setResponsabilidadFiscal(); // por validar
+//        Adquiriente.setCodigoImpuesto(); // por validar
+//        Adquiriente.setNombreImpuesto(); // por validar
+        Adquiriente.setTelefono(resultado.cabecera.telefono);
+//        Adquiriente.setEmail(); // no se usa
+//        Adquiriente.setContacto(); // no se usa
+        Adquiriente.setDireccion(resultado.cabecera.direccion);
+        Adquiriente.setDireccionFiscal(resultado.cabecera.direccion);
+//        Adquiriente.setListaResponsabilidadesTributarias(); // otra clase  por validar
+//        Adquiriente.setCodigoCIUU(); // no se usa
+        Adquiriente.setSucursal('Principal');
+//        Adquiriente.setCentroCosto(); // no se usa
+        /*--------------------*/
+        Factura.set_Adquiriente(Adquiriente); // otra clase
+
+//        Factura.set_Autorizado(); // no se usa
+//        Factura.set_Entrega(); // no se usa
+//        Factura.set_Urlanexos(); // no se usa
+//        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
+        Factura.set_Posicionxcufe(110);
+        Factura.set_Posicionycufe(256);
+//        Factura.set_Rotacioncufe(0); // no se usa
+//        Factura.set_Fuentecufe(); // no se usa
+        Factura.set_Posicionxqr(164);
+        Factura.set_Posicionyqr(260);
+//        Factura.Factura.set_Fechaenvio(); // por validar
+//        Factura.set_Descripciongeneral();
+
+        /*-----Clase Resolucion------*/
+        Resolucion.setNumero(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ);
+        Resolucion.setFechaInicio('2018-08-30');
+        Resolucion.setFechaFin('2020-08-30');
+        /*-----Clase Resolucion------*/
+        Numeracion.setPrefijo(resultado.cabecera.prefijo);
+        Numeracion.setDesde(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ);
+        Numeracion.setHasta(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ);
+        Numeracion.setFechaInicio('2018-08-30');
+        Numeracion.setFechaFin('2020-08-30');
+        /*----------------------------*/
+        Resolucion.setNumeracion(Numeracion);
+        /*----------------------------*/
+        Factura.set_Resolucion(Resolucion);
+//        
+//        Factura.set_ListaCorrecciones();
+
+        Promise.all([p1])
+                .then(values => {
+//                    console.log("values",values);
+                    Factura.set_Documentosanexos(values[0]);
+//                    Factura.set_Gruposimpuestos(values[1]);
+                    console.log("factura", Factura);
+                }, reason => {
+                    console.log("reason", reason);
+                });
+
+                
+
+
+//        console.log("factura", Factura);
         // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
         return false;
 
@@ -3461,6 +3562,7 @@ function __generarSincronizacionDian(that, req, callback) {
     var usuario_id = req.session.user.usuario_id;
     var today = new Date();
     var formato = 'YYYY-MM-DD hh:mm';
+    var format2 = 'DD-MM-YYYY';
     var fechaToday = G.moment(today).format(formato);
     var parametrosReporte = {
         cabecera: '',
@@ -3484,8 +3586,12 @@ function __generarSincronizacionDian(that, req, callback) {
 
         if (resultado) {
             parametrosReporte.cabecera = resultado[0];
+//            parametrosReporte.cabecera.fecha_registro_pedido_array = [];
+            parametrosReporte.cabecera.pedido_array = [];
+//            parametrosReporte.cabecera.fecha_registro_pedido_array.push(G.moment(parametrosReporte.cabecera.fecha_registro_pedido).format(format2));
+            parametrosReporte.cabecera.pedido_array.push({pedido: parametrosReporte.cabecera.pedido_cliente_id, fecha: G.moment(parametrosReporte.cabecera.fecha_registro_pedido).format(format2)});
 
-            return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id)
+            return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id);
         } else {
             throw {msj: '[listarFacturasGeneradas]: Consulta sin resultados', status: 404};
         }
@@ -3506,6 +3612,8 @@ function __generarSincronizacionDian(that, req, callback) {
             parametrosReporte.productos = resultado;
             if (parametrosReporte.cabecera.factura_agrupada === '1') {
                 parametrosReporte.cabecera.pedido_cliente_id = '';
+                parametrosReporte.cabecera.pedido_array = [];
+//                parametrosReporte.cabecera.fecha_registro_pedido_array = [];
                 return G.Q.ninvoke(that.m_facturacion_clientes, 'consultarPedidosFacturaAgrupada', parametrosFacturaGenerada);
             } else {
                 def.resolve();
@@ -3525,6 +3633,9 @@ function __generarSincronizacionDian(that, req, callback) {
                         coma = "";
                     }
                     parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id + coma;
+                    parametrosReporte.cabecera.pedido_array.push({pedido: row.pedido_cliente_id, fecha: G.moment(row.fecha_registro).format(format2)});
+//                    parametrosReporte.cabecera.pedido_array.push(row.pedido_cliente_id);
+//                    parametrosReporte.cabecera.fecha_registro_pedido_array.push(G.moment(row.fecha_registro).format(format2));
                 });
 
             } else {
@@ -3714,7 +3825,7 @@ FacturacionClientes.prototype.generarReporteFacturaGenerada = function (req, res
         if (resultado) {
             parametrosReporte.cabecera = resultado[0];
 
-            return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id)
+            return G.Q.ninvoke(that.m_usuarios, 'obtenerUsuarioPorId', usuario_id);
         } else {
             throw {msj: '[listarFacturasGeneradas]: Consulta sin resultados', status: 404};
         }
@@ -3903,7 +4014,7 @@ FacturacionClientes.prototype.generarReportePedido = function (req, res) {
 
         if (resultado) {
             parametrosReporte.imprimio.usuario = resultado.nombre;
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_detalle_pedido', numeroPedido)
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultar_detalle_pedido', numeroPedido);
         } else {
             throw {msj: '[obtenerUsuarioPorId]: Consulta sin resultados', status: 404};
         }
@@ -4007,23 +4118,23 @@ FacturacionClientes.prototype.generarReporteDespacho = function (req, res) {
 
         if (resultado) {
             parametrosReporte.imprimio.usuario = resultado.nombre;
-            return G.Q.ninvoke(that.m_e008, 'obtenerDocumentoBodega', parametrosDocumento)
+            return G.Q.ninvoke(that.m_e008, 'obtenerDocumentoBodega', parametrosDocumento);
         } else {
             throw {msj: '[obtenerUsuarioPorId]: Consulta sin resultados', status: 404};
         }
 
     })
-        .then(function (resultado) {
+            .then(function (resultado) {
 
-            if (resultado.length > 0) {
-                parametrosReporte.cabecera = resultado[0];
+                if (resultado.length > 0) {
+                    parametrosReporte.cabecera = resultado[0];
 
-                return G.Q.ninvoke(that.m_e008, 'consultarDatosAdicionales', parametrosDocumento);
-            } else {
-                throw {msj: 'El documento no existe', state: 404};
-            }
+                    return G.Q.ninvoke(that.m_e008, 'consultarDatosAdicionales', parametrosDocumento);
+                } else {
+                    throw {msj: 'El documento no existe', state: 404};
+                }
 
-        }).then(function (resultado) {
+            }).then(function (resultado) {
 
         if (resultado.length > 0) {
             parametrosReporte.datos_adicionales = resultado[0];
@@ -4112,7 +4223,7 @@ function __generarPdf(datos, callback) {
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
-                    console.log("err [__generarPdf]: ", err)
+                    console.log("err [__generarPdf]: ", err);
                 } else {
                     callback(false, nombreTmp);
                 }
@@ -4140,7 +4251,7 @@ function __generarPdf2(datos, callback) {
                 headerHeight: "290px", // .imagent{position: absolute;top: 10px;}
                 footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
                 header:
-                    `<style>
+                        `<style>
                             p {margin-top:0; margin-bottom:0;line-height: 75%; }
                             .letra_factura{font: 100% sans-serif;
                                            display: flex;
@@ -4195,7 +4306,7 @@ function __generarPdf2(datos, callback) {
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                 if (err) {
-                    console.log("err [__generarPdf]: ", err)
+                    console.log("err [__generarPdf]: ", err);
                 } else {
                     callback(false, nombreTmp);
                 }
@@ -4485,7 +4596,59 @@ function __generarCsvBarranquilla(datos, callback) {
     });
 }
 
-FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes",
-    "m_pedidos_clientes", "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_productos"];
+
+function codigoDocumentoDian(codigoDocumentoDian) {
+    switch (codigoDocumentoDian) {
+        case 'CE':
+            return 22;
+            break;
+        case 'NIT':
+            return 31;
+            break;
+        case 'RC':
+            return 11;
+            break;
+        case 'PA':
+            return 41;
+            break;
+        case 'TI':
+            return 12;
+            break;
+        case 'CC':
+            return 13;
+            break;
+    }
+}
+
+function documentosAnexos(that, pedidos, index, resultado, callback) {
+    var item = pedidos[index];
+
+    if (!item) {
+        callback(false, resultado);
+        return;
+    }
+    var docAnexo = that.m_documentos_anexos;
+
+    docAnexo.setId(item.pedido);
+    docAnexo.setTipo('OR');
+    docAnexo.setFechaEmision(item.fecha);
+
+    resultado.push(docAnexo);
+
+    var timer = setTimeout(function () {
+        index++;
+        documentosAnexos(that, pedidos, index, resultado, callback);
+        clearTimeout(timer);
+    }, 0);
+};
+
+function gruposImpuestos(that, productos, index, productosDian, callback) {
+   
+}
+;
+
+FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes",
+    "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_productos", "m_lista_impuestos", "m_items", "m_facturador", "m_adquiriente", "m_documentos_anexos",
+    "m_resolucion", "m_numeracion"];
 
 module.exports = FacturacionClientes;

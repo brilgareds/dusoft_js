@@ -1,157 +1,157 @@
 function Productos() {
 
-        this._numeroLinea = 0;
-        this._informacion = '';
-        this._cantidad = 0;
-        this._valorTotal = 0.0;
-        this._idProducto = '';
-        this._codigoPrecio = '';
-        this._codigoReferencia = '';
-        this._valorReferencia = 0;
-        this._valorUnitario = 0.0;
-        this._cantidadReal = 0.0;
-        this._codigoUnidad = '';
-        this._esMuestraComercial = false;
-        this._item = {};
-        this._listaCargosDescuentos = [];
-        this._listaImpuestos = [];
-        this._listaDeducciones = [];
-        this._listaCorrecciones = [];
+        this.numeroLinea = 0;
+        this.informacion = '';
+        this.cantidad = 0;
+        this.valorTotal = 0.0;
+        this.idProducto = '';
+        this.codigoPrecio = '';
+        this.codigoReferencia = '';
+        this.valorReferencia = 0;
+        this.valorUnitario = 0.0;
+        this.cantidadReal = 0.0;
+        this.codigoUnidad = '';
+        this.esMuestraComercial = false;
+        this.item = {};
+        this.listaCargosDescuentos = [];
+        this.listaImpuestos = [];
+        this.listaDeducciones = [];
+        this.listaCorrecciones = [];
     
     Productos.prototype.getNumeroLinea = function () {
-        return this._numeroLinea;
+        return this.numeroLinea;
     };
 
     Productos.prototype.setNumeroLinea = function (value) {
-        this._numeroLinea = value;
+        this.numeroLinea = value;
     };
 
     Productos.prototype.getInformacion = function () {
-        return this._informacion;
+        return this.informacion;
     };
 
     Productos.prototype.setInformacion = function (value) {
-        this._informacion = value;
+        this.informacion = value;
     };
 
     Productos.prototype.getCantidad = function () {
-        return this._cantidad;
+        return this.cantidad;
     };
 
     Productos.prototype.setCantidad = function (value) {
-        this._cantidad = value;
+        this.cantidad = value;
     };
 
     Productos.prototype.getValorTotal = function () {
-        return this._valorTotal;
+        return this.valorTotal;
     };
 
     Productos.prototype.setValorTotal = function (value) {
-        this._valorTotal = value;
+        this.valorTotal = value;
     };
 
     Productos.prototype.getIdProducto = function () {
-        return this._idProducto;
+        return this.idProducto;
     };
 
     Productos.prototype.setIdProducto = function (value) {
-        this._idProducto = value;
+        this.idProducto = value;
     };
 
     Productos.prototype.getCodigoPrecio = function () {
-        return this._codigoPrecio;
+        return this.codigoPrecio;
     };
 
     Productos.prototype.setCodigoPrecio = function (value) {
-        this._codigoPrecio = value;
+        this.codigoPrecio = value;
     };
 
     Productos.prototype.getCodigoReferencia = function () {
-        return this._codigoReferencia;
+        return this.codigoReferencia;
     };
 
     Productos.prototype.setCodigoReferencia = function (value) {
-        this._codigoReferencia = value;
+        this.codigoReferencia = value;
     };
 
     Productos.prototype.getValorReferencia = function () {
-        return this._valorReferencia;
+        return this.valorReferencia;
     };
 
     Productos.prototype.setValorReferencia = function (value) {
-        this._valorReferencia = value;
+        this.valorReferencia = value;
     };
 
     Productos.prototype.getValorUnitario = function () {
-        return this._valorUnitario;
+        return this.valorUnitario;
     };
 
     Productos.prototype.setValorUnitario = function (value) {
-        this._valorUnitario = value;
+        this.valorUnitario = value;
     };
 
     Productos.prototype.getCantidadReal = function () {
-        return this._cantidadReal;
+        return this.cantidadReal;
     };
 
     Productos.prototype.setCantidadReal = function (value) {
-        this._cantidadReal = value;
+        this.cantidadReal = value;
     };
 
     Productos.prototype.getCodigoUnidad = function () {
-        return this._codigoUnidad;
+        return this.codigoUnidad;
     };
 
     Productos.prototype.setCodigoUnidad = function (value) {
-        this._codigoUnidad = value;
+        this.codigoUnidad = value;
     };
 
     Productos.prototype.getEsMuestraComercial = function () {
-        return this._esMuestraComercial;
+        return this.esMuestraComercial;
     };
 
     Productos.prototype.setEsMuestraComercial = function (value) {
-        this._esMuestraComercial = value;
+        this.esMuestraComercial = value;
     };
 
     Productos.prototype.getItem = function () {
-        return this._item;
+        return this.item;
     };
 
     Productos.prototype.setItem = function (value) {
-        this._item = value;
+        this.item = value;
     };
 
     Productos.prototype.getListaCargosDescuentos = function () {
-        return this._listaCargosDescuentos;
+        return this.listaCargosDescuentos;
     };
 
     Productos.prototype.setListaCargosDescuentos = function (value) {
-        this._listaCargosDescuentos = value;
+        this.listaCargosDescuentos = value;
     };
 
     Productos.prototype.getListaImpuestos = function () {
-        return this._listaImpuestos;
+        return this.listaImpuestos;
     };
 
     Productos.prototype.setListaImpuestos = function (value) {
-        this._listaImpuestos = value;
+        this.listaImpuestos = value;
     };
 
     Productos.prototype.getListaDeducciones = function () {
-        return this._listaDeducciones;
+        return this.listaDeducciones;
     };
 
     Productos.prototype.setListaDeducciones = function (value) {
-        this._listaDeducciones = value;
+        this.listaDeducciones = value;
     };
 
     Productos.prototype.getListaCorrecciones = function () {
-        return this._listaCorrecciones;
+        return this.listaCorrecciones;
     };
 
     Productos.prototype.setListaCorrecciones = function (value) {
-        this._listaCorrecciones = value;
+        this.listaCorrecciones = value;
     };
 };
 

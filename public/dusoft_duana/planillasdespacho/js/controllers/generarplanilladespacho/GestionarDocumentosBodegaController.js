@@ -471,14 +471,14 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
 
             };
-
-            $scope.seleccionar_documento_otras_empresas = function () {
-
-                $scope.datos_view.documento_seleccionado.set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
-
-                that.gestionar_planilla_despacho();
-
-            };
+//
+//            $scope.seleccionar_documento_otras_empresas = function () {
+//
+//                $scope.datos_view.documento_seleccionado.set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
+//
+//                that.gestionar_planilla_despacho();
+//
+//            };
 
             $scope.aceptar_documentos_bodegas = function () {
 

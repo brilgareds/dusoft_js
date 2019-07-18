@@ -309,6 +309,29 @@ Productos.prototype.listarHomologacionProductos = function(req, res){
        res.send(G.utils.r(req.url, 'Error consultando los productos', 500, {lista_productos: {}}));
     });
 };
+/*
+* @Author: Andres Mauricio G
+* @param {Object} req
+* @param {Object} res
+* +Descripcion: Permite consultar los productos por descripcion molecula y codigo de determinadas empresa 
+*/
+Productos.prototype.buscarProductosPorEmpresas = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.empresa.length > 0 && args.centroUtilidad.length > 0 && args.bodega.length > 0) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+       
+    G.Q.ninvoke(that.m_productos,"buscarProductosPorEmpresas", args).then(function(productos){
+        res.send(G.utils.r(req.url, 'Lista Productos', 200, {lista_productos: productos}));
+    }).fail(function(err){
+        console.log("buscarProductosPorEmpresas ", err);
+       res.send(G.utils.r(req.url, 'Error consultando los productos', 500, {lista_productos: {}}));
+    });
+};
 
 
 /*

@@ -2259,7 +2259,7 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
             cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' ||
-            cabecera_pedido[0].estado_actual_pedido === '10') {
+            cabecera_pedido[0].estado_actual_pedido === '10' || cabecera_pedido[0].estado_actual_pedido === '5') {
 
 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,
@@ -3445,13 +3445,17 @@ function __consultarStockProducto(that, empresa_destino_id, bodega_destino_id,pr
  * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
  */
 function __consultarStockProductoFarmacia(that, empresa_destino_id, bodega_destino_id,producto, callback) {
-    that.m_productos.consultar_stock_producto_farmacia(empresa_destino_id, producto.codigo_producto, function(err, total_existencias_farmacias) {
-
+    that.m_productos.consultar_stock_producto_farmacia(empresa_destino_id, producto.codigo_producto,function(err, total_existencias_farmacias){
+        
+        that.m_productos.consultar_stock_producto(empresa_destino_id, bodega_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacia) {
+         
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
-        producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;
+        producto.en_farmacia_seleccionada = (total_existencias_farmacia.length > 0 && total_existencias_farmacia[0].existencia !== null) ? true : false;
 
         callback(err, producto);
-    });
+      }); 
+    })
+    
 }
 
 function __enviarCorreoElectronico(that, to, ruta_archivo, nombre_archivo, asunto, mensaje, callback) {

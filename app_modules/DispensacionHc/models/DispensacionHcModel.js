@@ -91,7 +91,8 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                     cantidad,\
                     numero_entrega_actual as numero_entega,\
                     to_char(fecha,'YYYY-MM-DD')  as fecha_dispensacion, \
-                    to_char(fecha_vencimiento,'YYYY-MM-DD')  as fecha_vencimiento \
+                    to_char(fecha_vencimiento,'YYYY-MM-DD')  as fecha_vencimiento,\
+                    costo,precio_venta \
                     from (\
                             select  \
                             distinct d.evolucion_id as formula_id,\
@@ -104,7 +105,9 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                             c.codigo_formulado as codigo_medicamento,\
                             c.fecha_vencimiento,\
                             c.cantidad,\
-                            dit.numero_entrega_actual\
+                            dit.numero_entrega_actual,\
+                            j.costo,\
+                            (case when w.sw_generico = '1' then (j.costo *1.35) else (j.costo*1.25) end) as precio_venta\
                             from bodegas_doc_numeraciones as a  \
                             inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id \
                             inner JOIN bodegas_documentos_d c on b.bodegas_doc_id = c.bodegas_doc_id and b.numeracion =c.numeracion  \
@@ -112,19 +115,22 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                             inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id \
                             inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
                             inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto \
+                            inner Join inventarios as j on j.codigo_producto = c.codigo_producto and j.empresa_id=a.empresa_id\
                             inner JOIN inv_grupos_inventarios e ON w.grupo_id = e.grupo_id \
                             inner join dispensacion_estados as dit on (d.evolucion_id = dit.evolucion_id)\
                             where \
                             a.empresa_id= 'FD' and e.sw_medicamento = '1' and c.codigo_formulado != '' \
                             and c.total_costo >0\
-                            and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
+                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
 		) as a \
 		order by a.formula_id  asc;";
+    
+                           // and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
 //    where tipo_formula='1'
   //(current_date - interval '1 day') and (current_date - interval '1 sec')   
 //                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
     var query=G.knex.raw(sql);
-//    console.log(G.sqlformatter.format(query.toString()));
+   // console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
@@ -2263,8 +2269,12 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
                 console.log("consultarPendientesFormula resultado.length->>>",resultado.length);
                 if(resultado.rows.length > 0){
                     totalInsertadosPendientes = 1;
-                }
+                } else {
                     totalInsertadosPendientes = 0;
+                }
+            }).catch (function (err) {
+                totalInsertadosPendientes = 0;
+                console.log('err en pruebaaa: ', err);
             });
         }   
 

@@ -46,11 +46,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
-                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity))  ">\
-                                                    <span class="glyphicon glyphicon-ok"></span>\
+                                                <button ng-if="row.entity.getCosto() > 0 && row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity,row.entity.getEnFarmaciaSeleccionada()))  ">\
+                                                    <span class="glyphicon glyphicon-ok">{{parseFloat(row.entity.getCosto())}}</span>\
                                                 </button>\
-                                                <button ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto()" class="btn btn-default btn-xs" >\
+                                                <button ng-if="row.entity.getCosto() <= 0 || !row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto(row.entity)" class="btn btn-default btn-xs" >\
                                                     <span class="glyphicon glyphicon-lock"></span>\
                                                 </button>\
                                             </div>'
@@ -58,11 +58,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 ]
             };
             
-            $scope.valida_existencia_codigo=function(data){
+            $scope.valida_existencia_codigo=function(data,dt){
               var disable=true;
+             if(data.costo > 0){  
               if( data.bodegaOrigenProducto!==Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual===0){
                   data.cantidadSolicitada="NE";//no existe en bodega
                   return false;
+               }   
+              }else{
+                return false;
               }
               return disable;
             };
@@ -109,6 +113,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                             setEmpresaOrigenProducto(_producto.empresa_id).
                             setCentroUtilidadOrigenProducto(_producto.centro_utilidad).
                             setBodegaOrigenProducto(_producto.bodega).
+                            setCosto(_producto.costo).
                             setExisteProductoBodegaActual(_producto.existe_producto_bodega_actual);
                     $scope.root.pedido.agregarProducto(producto);
 
@@ -291,8 +296,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 $scope.rootSeleccionProductoFarmacia.filtro = filtro;
             };
 
-            $scope.mostrarAlertaProducto = function() {
-                self.mostrarAlertaSeleccionProducto("Error agregando producto", "El producto esta bloqueado o no se encuentra en la farmacia destino");
+            $scope.mostrarAlertaProducto = function(data) {
+               var mensaje="";
+                if(data.enFarmaciaSeleccionada===false)
+                    mensaje=" - El producto no esta insertado en la bodega Actual<br>";
+                if(parseFloat(data.getCosto()) <= 0)
+                    mensaje+=" - El producto tiene costo en cero";
+                    
+                self.mostrarAlertaSeleccionProducto("Error agregando producto", mensaje);
             };
 
             /*

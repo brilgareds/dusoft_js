@@ -158,14 +158,11 @@ Reportes.prototype.listarPlanes = function (req, res) {
 
     G.Q.ninvoke(that.m_drArias, 'listarPlanes').then(function (listarPlanes) {
         res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));
-    }).
-            fail(function (err) {
+    }).fail(function (err) {
                 console.log("Error controller listarPlanes ", err);
                 res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
-            }).
-            done();
+    }).done();
 };
-
 
 Reportes.prototype.rotacionZonas = function (req, res) {
     var that = this;
@@ -1246,9 +1243,22 @@ function sortJSON(data, key, orden) {
     });
 }
 
+function saludo(hora){
+    var saludo = "";
+    if(hora >= 0 && hora < 12){
+       saludo = "Buen Dia," 
+    }else if(hora >= 12 && hora < 18){
+       saludo = "Buena Tarde,"  
+    }else if(hora >= 18 && hora < 0){
+       saludo = "Buena Noche,"  
+    }
+    return saludo;
+}
+
 // Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
-
+    var fecha = new Date();
+    
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
@@ -1264,7 +1274,8 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         to: to,
         cc: G.settings.email_mauricio_barrios + "," + G.settings.email_pedro_meneses,
         subject: subject,
-        html: message
+        html: saludo(fecha.getHours())+"<br>"+message+ '<br><br><h3><p style="color: red;">Si desea contestar este correo escribir a:<br><a href="#">mauricio.barrios@duanaltda.com</a></p></h3>'
+
     };
 
     if (ruta_archivo !== "") {

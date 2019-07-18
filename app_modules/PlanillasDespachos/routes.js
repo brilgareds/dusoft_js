@@ -71,6 +71,10 @@ module.exports = function (app, di_container) {
         c_planillas_despachos.modificarLios(req, res);
     });
 
+    app.post('/api/PlanillasDespachos/agregarDocumentosLios', function (req, res) {
+        c_planillas_despachos.agregarDocumentosLios(req, res);
+    });
+
 
     /**
      * @author Cristian Ardila

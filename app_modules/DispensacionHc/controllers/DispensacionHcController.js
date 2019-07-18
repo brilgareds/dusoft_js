@@ -203,7 +203,7 @@ function __sincronizacionFormulasDispensadas(that,callback){
         return G.Q.nfcall(__codificarFormulasDispensadas,resultado,0,[]);
      
     }).then(function(resultado){  
-
+console.log(":::::::::::::::::::::",resultado);
         if(resultado.length >0){
             return G.Q.nfcall(__wsSincronizarFormulasDispensadas,resultado); 
         }else{
@@ -211,7 +211,7 @@ function __sincronizacionFormulasDispensadas(that,callback){
         }
         
     }).then(function(resultado){
- 
+ console.log("resultado",resultado);
      if(resultado.isProducto){
      
        return G.Q.nfcall(__sincronizacionProductos,that,resultado,0);
@@ -233,7 +233,7 @@ function __sincronizacionFormulasDispensadas(that,callback){
          }
         
     }).fail(function(err){      
-        console.log(" err ", err); 
+        console.log("Error __sincronizacionFormulasDispensadas ", err); 
         callback(err);
     }).done();
 }
@@ -254,7 +254,9 @@ function __codificarFormulasDispensadas(productos, index, resultado, callback){
                 "cantidad_despachada":  String(parseInt(producto.cantidad)),
                 "numero_entrega":  String(producto.numero_entega),
                 "fecha_dispensacion":  String(producto.fecha_dispensacion),
-                "fecha_vencimiento":  String(producto.fecha_vencimiento)
+                "fecha_vencimiento":  String(producto.fecha_vencimiento),
+                "costo" : producto.costo,
+                "precio_venta" : producto.precio_venta,
                };
                
      resultado.push(detalle);
@@ -268,7 +270,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
     var datos2;
     var client;
     var url =  G.constants.WS().DISPENSACION_HC.FORMULAS_DISPENSADAS;
-   
+
    var credentials = [];           
     var ws_dispensation1 = {
         login :'duana_dispensacion'
@@ -294,6 +296,8 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
   };
   
     G.Q.nfcall(G.soap.createClient, url).then(function(client) {
+        
+        console.log("client",client)
  
       client.addSoapHeader(ws_dispensation);
 
@@ -306,12 +310,15 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
 
         
 
-     G.logError(result.return.message["$value"]);          
+
+   //  G.logError(result.return.message["$value"]);          
      
         if(!result.return){
+            console.log("Se ha generado un error",result.return);
             throw {msj:"Se ha generado un error", status:403, obj:{}}; 
-        } else {            
-            obj.mensaje = result.return.message["$value"];
+        } else {    
+            console.log(":::::::::::::::::::",result.return);
+         //   obj.mensaje = result.return.message["$value"];
             obj.isProducto = false;
             if(result.return.productsWithoutExistence !== undefined){
                

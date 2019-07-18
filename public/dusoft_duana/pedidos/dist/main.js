@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-'use strict';
+
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -60386,7 +60386,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController',[
                                                 <a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
                                             </li>\
                                             <li  ng-if="row.entity.estado_actual_pedido != 11 "><a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
-                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 8 || row.entity.estado_actual_pedido == 9 || row.entity.estado_actual_pedido == 10">\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 5  ||  row.entity.estado_actual_pedido == 8 || row.entity.estado_actual_pedido == 9 || row.entity.estado_actual_pedido == 10">\
                                                 <a href="javascripts:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
@@ -62076,7 +62076,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoController',
                 
                 var mensaje;
                 
-                if($scope.root.pedido.getEstadoActualPedido() === '0' || 
+                if($scope.root.pedido.getEstadoActualPedido() === '0' || $scope.root.pedido.getEstadoActualPedido() === '5' ||
                    $scope.root.pedido.getEstadoActualPedido() === '8' || $scope.root.pedido.getEstadoActualPedido() === '9' || $scope.root.pedido.getEstadoActualPedido() === '10'){
                     
                     if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){
@@ -63029,11 +63029,11 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
-                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity))  ">\
-                                                    <span class="glyphicon glyphicon-ok"></span>\
+                                                <button ng-if="row.entity.getCosto() > 0 && row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity,row.entity.getEnFarmaciaSeleccionada()))  ">\
+                                                    <span class="glyphicon glyphicon-ok">{{parseFloat(row.entity.getCosto())}}</span>\
                                                 </button>\
-                                                <button ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto()" class="btn btn-default btn-xs" >\
+                                                <button ng-if="row.entity.getCosto() <= 0 || !row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto(row.entity)" class="btn btn-default btn-xs" >\
                                                     <span class="glyphicon glyphicon-lock"></span>\
                                                 </button>\
                                             </div>'
@@ -63041,11 +63041,15 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                 ]
             };
             
-            $scope.valida_existencia_codigo=function(data){
+            $scope.valida_existencia_codigo=function(data,dt){
               var disable=true;
+             if(data.costo > 0){  
               if( data.bodegaOrigenProducto!==Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual===0){
                   data.cantidadSolicitada="NE";//no existe en bodega
                   return false;
+               }   
+              }else{
+                return false;
               }
               return disable;
             };
@@ -63092,6 +63096,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                             setEmpresaOrigenProducto(_producto.empresa_id).
                             setCentroUtilidadOrigenProducto(_producto.centro_utilidad).
                             setBodegaOrigenProducto(_producto.bodega).
+                            setCosto(_producto.costo).
                             setExisteProductoBodegaActual(_producto.existe_producto_bodega_actual);
                     $scope.root.pedido.agregarProducto(producto);
 
@@ -63274,8 +63279,14 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                 $scope.rootSeleccionProductoFarmacia.filtro = filtro;
             };
 
-            $scope.mostrarAlertaProducto = function() {
-                self.mostrarAlertaSeleccionProducto("Error agregando producto", "El producto esta bloqueado o no se encuentra en la farmacia destino");
+            $scope.mostrarAlertaProducto = function(data) {
+               var mensaje="";
+                if(data.enFarmaciaSeleccionada===false)
+                    mensaje=" - El producto no esta insertado en la bodega Actual<br>";
+                if(parseFloat(data.getCosto()) <= 0)
+                    mensaje+=" - El producto tiene costo en cero";
+                    
+                self.mostrarAlertaSeleccionProducto("Error agregando producto", mensaje);
             };
 
             /*

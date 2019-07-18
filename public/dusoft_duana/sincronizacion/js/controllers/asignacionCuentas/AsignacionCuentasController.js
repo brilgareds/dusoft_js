@@ -237,8 +237,8 @@ define(["angular", "js/controllers"
                 };
                 ServerServiceDoc.listarTiposCuentas(obj, data => {
                     if (data.status === 200) {
-                        console.log("data: ",data.obj.listarTiposCuentas);
-                        var resultado = data.obj.listarTiposCuentas;
+                        console.log("data: ", data.obj);
+                        var resultado = data.obj.entries;
                         var tipo_cuenta = '';
                         var datos_cuenta = {};
                         var datos_cuenta_vacio = {};
@@ -256,8 +256,6 @@ define(["angular", "js/controllers"
 
                             console.log('cuenta es: ', entries);
 
-
-
                             tipo_cuenta = (entry.sw_cuenta === '0') ? 'debito':'credito';
 
                             if($scope.documentosCuentas.categorias[entries.categoria_descripcion] === undefined) {
@@ -266,19 +264,19 @@ define(["angular", "js/controllers"
                             if($scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta] === undefined) {
                                 $scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta] = [];
                             }
-                            if($scope.root.listarTiposCuentas['debito'] === undefined){
-                                $scope.root.listarTiposCuentas['debito'] = [];
+                            if($scope.root.tipesEntries['debito'] === undefined){
+                                $scope.root.tipesEntries['debito'] = [];
                             }
-                            if($scope.root.listarTiposCuentas['credito'] === undefined){
-                                $scope.root.listarTiposCuentas['credito'] = [];
+                            if($scope.root.tipesEntries['credito'] === undefined){
+                                $scope.root.tipesEntries['credito'] = [];
                             }
 
-                            $scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta].push(datos_cuenta);
-                            $scope.root.tipesEntries[tipo_cuenta].push(datos_cuenta);
+                            $scope.documentosCuentas.categorias[entries.categoria_descripcion][tipo_cuenta].push(entries);
+                            $scope.root.tipesEntries[tipo_cuenta].push(entries);
                             //console.log('Array en ciclo: ', $scope.documentosCuentas);
                         };
                         //$scope.root.listarTiposCuentas = $scope.documentosCuentas;
-                        console.log('Cuentas1 es: ', $scope.root.listarTiposCuentas);
+                        console.log('Cuentas1 es: ', $scope.root.tipesEntries);
                         console.log('Cuentas2 es: ', $scope.documentosCuentas);
                     } else {
                         AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);

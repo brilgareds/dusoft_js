@@ -90,8 +90,10 @@ SincronizacionDocumentos.prototype.listarTiposCuentas = (req, res) => {
         .then(entries => {
             res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {entries: entries}));
         }).fail(err => {
-            if (err.msg === undefined) { err.msg =) Error Listado de TiposCuentas }
-            res.send(G.utils.r(req.url, '', 500, err));
+            if (!err.status) { err.status = 500; }
+            if (!err.msg) { err.msg = 'Error Listado de TiposCuentas'; }
+
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
         }).done();
 };
 

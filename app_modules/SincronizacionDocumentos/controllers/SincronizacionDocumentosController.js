@@ -121,14 +121,18 @@ SincronizacionDocumentos.prototype.listarTiposServicios = (req, res) => {
 
 SincronizacionDocumentos.prototype.guardarCuentas = (req, res) => {
     let args = req.body;
-    var categorias = args.data;
+    var categorias = args.data.tipesEntries;
+    categorias.debito = args.data.debito;
+    categorias.credito = args.data.credito;
+    console.log('categorias: ', categorias);
+
     var cuentas = {};
     var error_count = 0;
     var sw_cuenta = 0;
 
     for (var tipo_cuenta in categorias) {
         for (var index in categorias[tipo_cuenta]) {
-            if (categorias[tipo_cuenta][index] !== undefined) {
+            if (categorias[tipo_cuenta][index] && typeof categorias[tipo_cuenta][index] === 'object') {
                 if (tipo_cuenta === 'debito') {
                     sw_cuenta = 0;
                 } else if (tipo_cuenta === 'credito') {
@@ -140,12 +144,15 @@ SincronizacionDocumentos.prototype.guardarCuentas = (req, res) => {
                 cuentas.empresa_id = args.session.empresaId;
                 cuentas.centro_id = args.session.centroUtilidad;
                 cuentas.bodega_id = args.session.bodega;
-                cuentas.prefijo_id = categorias.prefijo_id;
+                // cuentas.prefijo_id = categorias.prefijo_id;
 
-                G.Q.ninvoke(that.m_SincronizacionDoc, 'guardarCuentas', cuentas).then(function (resultado) {
-                }).fail(function (err) {
-                    error_count++;
-                });
+                G.Q.ninvoke(that.m_SincronizacionDoc, 'guardarCuentas', cuentas)
+                    .then(function (resultado) {
+
+                    }).fail(function (err) {
+                        console.log(err);
+                        error_count++;
+                    });
             }
         }
     }

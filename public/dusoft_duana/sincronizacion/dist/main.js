@@ -52204,7 +52204,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                     };
                     
                     self.listarTiposServicios = function (obj, callback) {
-                        console.log('objeto enviado al ajax: ',obj);
+                        //console.log('objeto enviado al ajax: ',obj);
                         Request.realizarRequest(
                                 API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS,
                                 "POST",

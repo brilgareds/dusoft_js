@@ -14,6 +14,8 @@ var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 var multipart = require('connect-multiparty');
 
+var minimumTLSVersion = require('minimum-tls-version');
+
 var jsreport = require("jsreport");
 
 var accounting = require("accounting");
@@ -216,9 +218,15 @@ if (cluster.isMaster) {
     //crea servidor http
     var app = express();
     var server = app.listen(G.settings.server_port);
+
+
+    var server2 = https.createServer({secureOptions: minimumTLSVersion('tlsv11')}, app);
+    // var io = require('socket.io').listen(server2, { log: false });
+
+
     //console.log('Server en el Socket es: ',server);
     var container = intravenous.create();
-    var io = require('socket.io').listen(server);
+    var io = require('socket.io').listen(server.concat(server2));
 
     //crea servidor https
     //var server_https = https.createServer(options, app).listen(G.settings.https_server_port);

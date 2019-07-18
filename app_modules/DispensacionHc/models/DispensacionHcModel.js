@@ -122,14 +122,15 @@ DispensacionHcModel.prototype.formulasDispensadas = function(parametros, callbac
                             a.empresa_id= 'FD' and e.sw_medicamento = '1' and c.codigo_formulado != '' \
                             and c.total_costo >0\
                             and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
-                           -- and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
 		) as a \
 		order by a.formula_id  asc;";
+    
+                           // and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '1 sec')\
 //    where tipo_formula='1'
   //(current_date - interval '1 day') and (current_date - interval '1 sec')   
 //                            and cast(b.fecha_registro as date) between '2018-07-13' and '2018-07-13'\
     var query=G.knex.raw(sql);
-    console.log(G.sqlformatter.format(query.toString()));
+   // console.log(G.sqlformatter.format(query.toString()));
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){

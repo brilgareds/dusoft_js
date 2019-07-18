@@ -1,6 +1,6 @@
 let that;
 
-var SincronizacionDocumentos = function (sincronizacion, m_notas, m_facturacion_clientes, m_facturacion_proveedores, m_caja_general, m_movimientos_bodegas) {
+let SincronizacionDocumentos = function (sincronizacion, m_notas, m_facturacion_clientes, m_facturacion_proveedores, m_caja_general, m_movimientos_bodegas) {
     this.m_SincronizacionDoc = sincronizacion;
     this.m_notas = m_notas;
     this.m_facturacion_clientes = m_facturacion_clientes;
@@ -10,125 +10,129 @@ var SincronizacionDocumentos = function (sincronizacion, m_notas, m_facturacion_
     that = this;
 };
 
-SincronizacionDocumentos.prototype.buscarServicio = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.buscarServicio = (req, res) => {
+    let args = req.body.data;
     args.empresaId = req.body.session.empresaId;
     args.centroId = req.body.session.centroUtilidad;
     args.bodegaId = req.body.session.bodega;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'buscarServicio', args).then(function (servicio) {
-        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {servicio: servicio}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, {servicio: false}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'buscarServicio', args)
+        .then(servicio => {
+            res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {servicio: servicio}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, {servicio: false}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.listarPrefijos = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.listarPrefijos = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'listarPrefijos', args.data).then(function (prefijos) {
-        res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, {listarPrefijos: {}}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarPrefijos', args.data)
+        .then(prefijos => {
+            res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, {listarPrefijos: {}}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.listarPrefijosEspecial = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.listarPrefijosEspecial = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarPrefijosEspecial', args.data).then(function (prefijos) {
-        res.send(G.utils.r(req.url, 'Listado de Prefijos Especiales!!!!', 200, {listarPrefijos: prefijos}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error Listando Prefijos Especiales', 500, {listarPrefijos: {}}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarPrefijosEspecial', args.data)
+        .then(prefijos => {
+            res.send(G.utils.r(req.url, 'Listado de Prefijos Especiales!!!!', 200, {listarPrefijos: prefijos}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error Listando Prefijos Especiales', 500, {listarPrefijos: {}}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.listarTipoCuentaCategoria = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarTipoCuentaCategoria', args).then(function (tipoCuentascategoria) {
-        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTipoCuentaCategoria: tipoCuentascategoria}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error Listado de TiposCuentas', 500, {listarTipoCuentaCategoria: {}}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarTipoCuentaCategoria', args)
+        .then(tipoCuentascategoria => {
+            res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTipoCuentaCategoria: tipoCuentascategoria}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error Listado de TiposCuentas', 500, {listarTipoCuentaCategoria: {}}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.listarDocumentosCuentas = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.listarDocumentosCuentas = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarDocumentosCuentas', args).then(function (listarDocumentosCuentas) {
-
-        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarDocumentosCuentas: listarDocumentosCuentas}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error Listado de listarDocumentosCuentas', 500, {listarDocumentosCuentas: {}}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarDocumentosCuentas', args)
+        .then(listarDocumentosCuentas => {
+            res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarDocumentosCuentas: listarDocumentosCuentas}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error Listado de listarDocumentosCuentas', 500, {listarDocumentosCuentas: {}}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.insertTiposCuentas = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.insertTiposCuentas = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentas', args).then(function (tiposCuentas) {
-        if (tiposCuentas[0] === 'repetido') {
-            res.send(G.utils.r(req.url, 'Error: esos valores ya existen en la base de datos!!"', 500, {}));
-        } else {
-            res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
-        }
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'insertTiposCuentas', args)
+        .then(tiposCuentas => {
+            if (tiposCuentas[0] === 'repetido') {
+                res.send(G.utils.r(req.url, 'Error: esos valores ya existen en la base de datos!!"', 500, {}));
+            } else {
+                res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
+            }
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.listarTiposCuentas = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.listarTiposCuentas = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'listarTiposCuentas', args).then(function (tiposCuentas) {
-        res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {listarTiposCuentas: tiposCuentas}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error Listado de TiposCuentas', 500, {listarTiposCuentas: {}}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarTiposCuentas', args)
+        .then(entries => {
+            res.send(G.utils.r(req.url, 'Listado de TiposCuentas!!!!', 200, {entries: entries}));
+        }).fail(err => {
+            if (!err.status) { err.status = 500; }
+            if (!err.msg) { err.msg = 'Error Listado de TiposCuentas'; }
+
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.insertDocumentosCuentas = function (req, res) {
+SincronizacionDocumentos.prototype.insertDocumentosCuentas = (req, res) => {
+    let args = req.body.data;
 
-    var that = this;
-    var args = req.body.data;
-
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'insertDocumentosCuentas', args).then(function (tiposCuentas) {
-        res.send(G.utils.r(req.url, 'insertDocumentosCuentas!!!!', 200, {insertTiposCuentas: true}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error insertDocumentosCuentas', 500, {insertTiposCuentas: false}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'insertDocumentosCuentas', args)
+        .then(tiposCuentas => {
+            res.send(G.utils.r(req.url, 'insertDocumentosCuentas!!!!', 200, {insertTiposCuentas: true}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error insertDocumentosCuentas', 500, {insertTiposCuentas: false}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.listarTiposServicios = function (req, res) {
-    var that = this;
-    var args = req.body.data;
+SincronizacionDocumentos.prototype.listarTiposServicios = (req, res) => {
+    let args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'listarTiposServicios', args).then(function (listarTiposServicios) {
-        res.send(G.utils.r(req.url, 'listarTiposServicios!', 200, {listarTiposServicios: listarTiposServicios}));
-    }).fail(function (err) {
-        res.send(G.utils.r(req.url, 'Error listarTiposServicios', 500, {listarTiposServicios: false}));
-    }).done();
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarTiposServicios', args)
+        .then(listarTiposServicios => {
+            res.send(G.utils.r(req.url, 'listarTiposServicios!', 200, {listarTiposServicios: listarTiposServicios}));
+        }).fail(err => {
+            res.send(G.utils.r(req.url, 'Error listarTiposServicios', 500, {listarTiposServicios: false}));
+        }).done();
 };
 
-SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
-    var that = this;
-    var args = req.body;
-    var categorias = args.data;
+SincronizacionDocumentos.prototype.guardarCuentas = (req, res) => {
+    let args = req.body;
+    var categorias = args.data.tipesEntries;
+    categorias.debito = args.data.debito;
+    categorias.credito = args.data.credito;
+    console.log('categorias: ', categorias);
+
     var cuentas = {};
     var error_count = 0;
     var sw_cuenta = 0;
 
     for (var tipo_cuenta in categorias) {
         for (var index in categorias[tipo_cuenta]) {
-            if (categorias[tipo_cuenta][index] !== undefined) {
+            if (categorias[tipo_cuenta][index] && typeof categorias[tipo_cuenta][index] === 'object') {
                 if (tipo_cuenta === 'debito') {
                     sw_cuenta = 0;
                 } else if (tipo_cuenta === 'credito') {
@@ -140,12 +144,15 @@ SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
                 cuentas.empresa_id = args.session.empresaId;
                 cuentas.centro_id = args.session.centroUtilidad;
                 cuentas.bodega_id = args.session.bodega;
-                cuentas.prefijo_id = categorias.prefijo_id;
+                // cuentas.prefijo_id = categorias.prefijo_id;
 
-                G.Q.ninvoke(that.m_SincronizacionDoc, 'guardarCuentas', cuentas).then(function (resultado) {
-                }).fail(function (err) {
-                    error_count++;
-                });
+                G.Q.ninvoke(that.m_SincronizacionDoc, 'guardarCuentas', cuentas)
+                    .then(function (resultado) {
+
+                    }).fail(function (err) {
+                        console.log(err);
+                        error_count++;
+                    });
             }
         }
     }
@@ -156,11 +163,12 @@ SincronizacionDocumentos.prototype.guardarCuentas = function (req, res) {
     }
 };
 
-SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = function (req, res) {
-    var that = this;
+SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = (req, res) => {
+    
     var args = req.body.data;
 
-    G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentasCategorias', args).then(function (tiposCuentasCategorias) {
+    G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentasCategorias', args)
+        .then(function (tiposCuentasCategorias) {
         res.send(G.utils.r(req.url, 'insertTiposCuentasCategorias!!!!', 200, {insertTiposCuentasCategorias: true}));
     }).fail(function (err) {
         res.send(G.utils.r(req.url, 'Error insertTiposCuentasCategorias', 500, {insertTiposCuentasCategorias: false}));
@@ -269,9 +277,10 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
     G.Q.nfcall(funcion_ws, obj, that)
         .then(result => {
             param = result;
-            console.log('URL: ', url);
+            // console.log('URL: ', url);
             //console.log('Sincronizar es: ', sincronizar);
-            if (sincronizar === 1) {
+            if (false) {
+            //if (sincronizar === 1) {
                 let objSincronizar = {
                     url: url,
                     funcion: funcionServicio,
@@ -282,7 +291,8 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
             } else {
                 return true;
             }
-        }).then(result => {
+        })
+        .then(result => {
             if (sincronizar === 1) {
                 obj.result = result;
                 obj.mensaje = result.descripcion;
@@ -295,7 +305,8 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
             } else {
                 return true;
             }
-        }).then(result => {
+        })
+        .then(result => {
             res.send(G.utils.r(req.url,
                 'sincronizacionDocumentos!!!!',
                 200,
@@ -1928,8 +1939,16 @@ function __JsonFacturaDetalle(obj, callback) {
     callback(detalle);
 }
 
-function __JsonFacturaEncabezado(obj, callback) {
-    var encabezado = {
+const __JsonFacturaEncabezado = (obj, callback) => {
+
+    /*
+        Facturas Ventas FI,
+        Facturas Talonario,
+        Notas Debito Cliente,
+        Notas Credito Cliente
+    */
+
+    let encabezado = {
         codempresa: obj.codempresa, //fijo
         coddocumentoencabezado: obj.prefijo.trim(),
         numerodocumentoencabezado: obj.facturaFiscal,
@@ -1940,21 +1959,9 @@ function __JsonFacturaEncabezado(obj, callback) {
         usuariocreacion: 0, //obj.usuarioId,
         tipotercero: obj.tipotercero //ventas - talonario -     2 //notas credito debito   //notas proveedor(N/A)
     }; //cabecera notas proveedor aplica mas campos y se quita el campo tipotercero - cuentas_x_pagar_fi igual que anterior
-    callback(false, encabezado);
-}
 
-function __JsonNotaEncabezado(obj, callback) {
-    var encabezado = {
-        estadoencabezado: obj.estadoencabezado,
-        fecharegistro: obj.fecharegistro,
-        fecharadicacion: obj.fecharadicacion,
-        numeroradicacion: obj.numeroradicacion,
-        plazotercero: obj.plazotercero,
-        usuariocreacion: obj.usuariocreacion,
-        numerodocumentoencabezado: obj.numerodocumentoencabezado
-    };
     callback(false, encabezado);
-}
+};
 
 function __JsonFacturaEncabezadoCliente(obj, callback) {
     var encabezado = {

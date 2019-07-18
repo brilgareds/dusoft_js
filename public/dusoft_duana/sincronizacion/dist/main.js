@@ -34483,12 +34483,12 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                 });
             };
             
-           that.insertarTipoCuenta = function (obj) {
-                var obj = {
+           that.insertarTipoCuenta = obj => {
+                const obj = {
                     session: $scope.session,
                     data: obj
                 };
-                ServerServiceDoc.insertarTipoCuenta(obj, function (data) {
+                ServerServiceDoc.insertarTipoCuenta(obj, data => {
                     //console.log('Respuesta del insert desde el controlador Frontend!!: ', data);
                     if (data.status === 200) {
                        AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", "Se Almacenó Correctamente");
@@ -34496,10 +34496,9 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                        that.listarTiposCuentas();
                        that.listarPrefijos(obj.data.empresaId);
                        that.listarTiposServicios(obj.data.prefijoId);
-                    } else if(data.obj.insertTiposCuentas !== undefined && data.obj.insertTiposCuentas.length > 0){
-                        AlertService.mostrarVentanaAlerta(data.obj.insertTiposCuentas);
                     } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
+                        AlertService.mostrarVentanaAlerta(data.obj.insertTiposCuentas);
+                        // AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
                     }
                 });
             };
@@ -34598,23 +34597,32 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                             $scope.cuentaCategoriaId={categoria_id:0,categoria_descripcion:"------"};
                             
-                            that.listarTipoCuentaCategoria(function (data) {
+                            that.listarTipoCuentaCategoria(data => {
                                 $scope.root.listarTipoCuentaCategoria = data;
                             });
 
+                            $scope.validaterFieldsInsert = campos => {
+                                let response = false;
 
-                            $scope.guardar = function () {                          
-                                if($scope.documentosCuentas.prefijo_id === undefined || !$scope.documentosCuentas.prefijo_id.length > 0,
-                                    $scope.documentosCuentas.empresa_id === undefined || !$scope.documentosCuentas.empresa_id.length > 0,
-                                    $scope.documentosCuentas.centro_id === undefined || !$scope.documentosCuentas.centro_id.length > 0,
-                                    $scope.documentosCuentas.bodega_id === undefined || !$scope.documentosCuentas.bodega_id.length > 0,
-                                    $scope.documentosCuentas.cuenta === undefined || !$scope.documentosCuentas.cuenta.length > 0,
-                                    $scope.documentosCuentas.categoriaId === undefined || !$scope.documentosCuentas.categoriaId.length > 0,
-                                    $scope.documentosCuentas.categoriaDescripcion === undefined || !$scope.documentosCuentas.categoriaDescripcion.length > 0,
-                                    $scope.documentosCuentas.servicio === undefined || !$scope.documentosCuentas.servicio.length > 0,
-                                    $scope.documentosCuentas.tipo_cuenta === undefined || !$scope.documentosCuentas.tipo_cuenta === ''){
-                                    return false;
+                                if (campos.prefijo_id   && (campos.prefijo_id.length > 0) &&
+                                    campos.empresa_id   && (campos.empresa_id.length > 0) &&
+                                    campos.centro_id    && (campos.centro_id.length  > 0) &&
+                                    campos.bodega_id    && (campos.bodega_id.length  > 0) &&
+                                    campos.cuenta       && (campos.cuenta.length     > 0) &&
+                                    campos.servicio     && (campos.servicio.length   > 0) &&
+                                    campos.categoriaId  && (campos.categoriaId.length > 0) &&
+                                    campos.tipo_cuenta  && (campos.tipo_cuenta === '') &&
+                                    campos.categoriaDescripcion && (campos.categoriaDescripcion.length > 0)) {
+
+                                    response = true;
                                 }
+
+                                return response;
+                            };
+
+                            $scope.guardar = function () {
+                                if (!$scope.validaterFieldsInsert($scope.documentosCuentas)) { return false; }
+
                                 var obj = {
                                     prefijoId: $scope.documentosCuentas.prefijo_id,
                                     empresaId: $scope.documentosCuentas.empresa_id,

@@ -76,10 +76,13 @@ SincronizacionDocumentos.prototype.insertTiposCuentas = (req, res) => {
             if (tiposCuentas[0] === 'repetido') {
                 res.send(G.utils.r(req.url, 'Error: esos valores ya existen en la base de datos!!"', 500, {}));
             } else {
-                res.send(G.utils.r(req.url, 'insertTiposCuentas!!!!', 200, {insertTiposCuentas: true}));
+                res.send(G.utils.r(req.url, 'Cuenta creada satisfactoriamente!', 200, tiposCuentas));
             }
         }).fail(err => {
-            res.send(G.utils.r(req.url, 'Error insertTiposCuentas', 500, {insertTiposCuentas: false}));
+            if (!err.status) { err.status = 500; }
+            if (!err.msg) { err.msg = 'Error antes de crear la cuenta!!'; }
+
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
         }).done();
 };
 

@@ -950,56 +950,54 @@ SincronizacionDocumentosModel.prototype.listarDocumentosCuentas = function (obj,
     });
 };
 
+const promesa = new Promise((resolve, reject) => { resolve(true); });
+
 SincronizacionDocumentosModel.prototype.insertTiposCuentas = function (obj, callback) {
     console.log('entro en el modelo de "insertTiposCuentas"!', obj);
-    var observacion_asiento = 'No Aplica Observacion Asiento - ' + obj.cuentaCategoriaDescripcion;
+    let observacion_asiento = 'No Aplica Observacion Asiento - ' + obj.cuentaCategoriaDescripcion;
 
-    var select = G.knex('documentos_cuentas')
-        .select('documentos_cuentas_id')
-        .where({
-            prefijo: obj.prefijo,
-            empresa_id: obj.empresaId,
-            centro_id: obj.centroId,
-            bodega_id: obj.bodegaId,
-            cuenta: obj.cuentaId,
-            sw_cuenta: obj.cuentaTipo,
-            cuenta_categoria: obj.cuentaCategoriaId,
-            parametrizacion_ws_fi: obj.cuentaServicio
-        });
-//    console.log('Select en insertTiposCuentas ', G.sqlformatter.format(select.toString()));
-
-    select.then(function (resultado) {
-        console.log('Resultado en modelo es: ', resultado);
-        if (resultado === undefined || resultado[0] === undefined) {
-            //console.log('Entro en el if!!!');
-            var query = G.knex('documentos_cuentas')
-                .insert({
-                    prefijo: obj.prefijo,
+    promesa
+        .then(response => {
+            const select = G.knex('documentos_cuentas')
+                .select('documentos_cuentas_id')
+                .where({
+                    prefijo: obj.prefijoId,
                     empresa_id: obj.empresaId,
                     centro_id: obj.centroId,
                     bodega_id: obj.bodegaId,
                     cuenta: obj.cuentaId,
                     sw_cuenta: obj.cuentaTipo,
-                    observacion_asiento: observacion_asiento,
-                    parametrizacion_ws_fi: obj.cuentaServicio,
-                    cuenta_categoria: obj.cuentaCategoriaId
+                    cuenta_categoria: obj.cuentaCategoriaId,
+                    parametrizacion_ws_fi: obj.cuentaServicio
                 });
-            query.then(function (resultado) {
-                console.log('Insert fine!!!');
-                callback(false, resultado);
-            }).catch(function (err) {
-                console.log("error sql", err);
-                callback(err);
-            });
-        } else {
-            console.log('Entro en el else!!!');
-            var response = ['repetido'];
-            callback(false, response);
-        }
-    }).catch(function (err) {
-        console.log("error sql", err);
-        callback(err);
-    });
+
+            return select;
+        }).then(resultado => {
+            let insert = {};
+
+            if (!resultado || !resultado[0]) {
+                insert = G.knex('documentos_cuentas')
+                    .insert({
+                        prefijo: obj.prefijoId,
+                        empresa_id: obj.empresaId,
+                        centro_id: obj.centroId,
+                        bodega_id: obj.bodegaId,
+                        cuenta: obj.cuentaId,
+                        sw_cuenta: obj.cuentaTipo,
+                        observacion_asiento: observacion_asiento,
+                        parametrizacion_ws_fi: obj.cuentaServicio,
+                        cuenta_categoria: obj.cuentaCategoriaId
+                    });
+            } else { insert = ['repetido']; }
+
+            return insert;
+        }).then(resultado => {
+            console.log('Insert fine!!!');
+            callback(false, resultado);
+        }).catch(err => {
+            if (!err.msg) { err.msg = 'Error al realizar el insert de la cuenta!!'; }
+            callback(err);
+        });
 };
 
 SincronizacionDocumentosModel.prototype.insertDocumentosCuentas = function (obj, callback) {

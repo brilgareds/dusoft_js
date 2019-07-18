@@ -41,7 +41,11 @@
                 <div ng-include="'views/updateContract.html'"></div>
             </div>
             <div class="container-table" ng-if="root.permits.updateContractProducts" style="width: 98%; padding: 0px 0px 0px 0px; margin: 0px auto 0px auto;">
-                <h4 style="text-align: center; color: #1c59b5; margin: 19px 0px 15px 0px;">Productos & Medicamentos del contrato</h4>
+                <div class="col-sm-12" style="position: relative; padding: 0px;">
+                    <h4 style="text-align: center; color: #1c59b5; margin: 19px 0px 15px 0px;">Productos & Medicamentos del contrato</h4>
+                    <span ng-show="root.data.currentContract.products.length" ng-click="deleteAllProductsContract(root.data.currentContract.contrato_numero)" style="position: absolute; right: 0px; bottom: 4px;" class="btn btn-danger">¡Eliminar todos los productos!</span>
+                </div>
+
                 <div class="table-responsive contractProducts" style="margin-bottom: 15px;">
                     <div ng-style="{ display: (root.data.currentContract.products.length)?'block':'none' }" ng-grid="contractProducts" style="width: 100%;"></div>
                     <h4 ng-show="!root.data.currentContract.products.length" style="text-align: center; margin: 0px; background: #eaeaea; padding: 10px; font-size: 20px;">

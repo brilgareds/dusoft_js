@@ -677,6 +677,30 @@ define(
                     console.log('Product: ', Product);
                 };
 
+                $scope.deleteAllProductsContract = Contract => {
+                    const confirmDeleteAll = confirm('¿Esta seguro de eliminar TODOS los productos del Contrato #' + Contract + '?');
+
+                    if (confirmDeleteAll) {
+                        const obj = {
+                            session: $scope.session,
+                            data: {
+                                contract: Contract
+                            }
+                        };
+
+                        $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.DELETE_ALL_PRODUCTS_CONTRACT, obj, data => {
+                            if (data.status === 200) {
+                                $scope.listContractProducts($scope.root.data.currentContract, false);
+                                AlertService.mostrarMensaje('success', data.msj);
+                            } else {
+                                AlertService.mostrarMensaje('warning', data.msj);
+                            }
+                        });
+                    } else {
+                        AlertService.mostrarMensaje('success', 'Accion cancelada con exito!');
+                    }
+                };
+
                 $scope.contractProducts = {
                     data: 'root.data.currentContract.products',
                     multiSelect: false,
@@ -689,7 +713,10 @@ define(
                         { field: 'producto_descripcion', displayName: 'Descripcion', width: '30%' },
                         { field: 'requiere_autorizacion', displayName: 'Autorización', width: '8%' },
                         { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%' },
-                        { field: 'producto_precio_pactado', displayName: 'Precio Venta', enableCellEdit: true, width: '11%' },
+                        { field: 'producto_precio_pactado', displayName: 'Precio Venta', enableCellEdit: true, width: '11%', cellTemplate: `
+                            <span>{{row.entity.producto_precio_pactado}}  
+                                <span class="glyphicon glyphicon-warning-sign" style="color: #d64f30; font-size: 17px; position: absolute; right: 10px;"></span>
+                            </span>` },
                         { field: 'justificacion', displayName: 'Justificación', enableCellEdit: true, width: '19%' },
                         { displayName: 'Actualizar', width: '5%', cellTemplate: `
                             <div style="text-align: center; height: 36px;">
@@ -700,7 +727,7 @@ define(
                                 <i ng-click="deleteProductContract(root.data.currentContract.contrato_numero, row.entity.producto_codigo)" class="glyphicon glyphicon-trash" style="color: #bd3838; font-size: 20px;"></i>
                             </div>` }
                             /*
-                                { displayName: 'Precio Venta', enableCellEdit: true, width: '10%', cellTemplate: `
+                             { displayName: 'Precio Venta', enableCellEdit: true, width: '10%', cellTemplate: `
                                     <div class="email" ng-edit-cell-if="isFocused && row.entity.canEdit" style="height: 31px;">
                                         <input ng-class={{row.entity.producto_codigo}} ng-model="row.entity.producto_precio_pactado" style="height: 32px;"/>
                                     </div>

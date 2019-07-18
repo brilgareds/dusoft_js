@@ -776,5 +776,23 @@ ParametrizacionProductosClientesModel.prototype.searchInventaryProducts = (obj, 
         });
 };
 
+ParametrizacionProductosClientesModel.prototype.deleteAllProductsContract = (obj, callback) => {
+    console.log('In model "deleteAllProductsContract"');
+
+    new Promise((resolve, reject) => {
+        const query = G.knex('vnts_contratos_clientes_productos')
+            .where('contrato_cliente_id', obj.contract)
+            .del();
+
+        resolve(query);
+    }).then(response => {
+        callback(false, response);
+    }).catch(err => {
+        if (!err.status) { err.status = 500; }
+        if (!err.msg) { err.msg = `Error al borrar todos los productos del contrato #${obj.contract}!`; }
+        callback(err);
+    });
+};
+
 ParametrizacionProductosClientesModel.$inject = [];
 module.exports = ParametrizacionProductosClientesModel;

@@ -38,4 +38,7 @@ module.exports = function(app, di_container) {
     app.post(base + '/parametrizacionProductosClientes/searchThird', (req, res) => {
         c_parametrizacionProductosClientes.searchThird(req, res);
     });
+    app.post(base + '/parametrizacionProductosClientes/deleteAllProductsContract', (req, res) => {
+        c_parametrizacionProductosClientes.deleteAllProductsContract(req, res);
+    });
 };

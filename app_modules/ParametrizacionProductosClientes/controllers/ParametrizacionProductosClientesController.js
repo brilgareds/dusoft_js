@@ -386,5 +386,19 @@ ParametrizacionProductosClientes.prototype.createContract = (req, res) => {
         });
 };
 
+ParametrizacionProductosClientes.prototype.deleteAllProductsContract = (req, res) => {
+    console.log('In controller "deleteAllProductsContract"');
+    let obj = req.body.data;
+
+    G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'deleteAllProductsContract', obj)
+        .then(response => {
+            return res.send(G.utils.r(req.url, 'Todos los Productos se borraron del contrato: #' + obj.contract, 200, {}));
+        }).catch(err => {
+            if (!err.msg) { err.msg = 'Error al intentar borrar todos los productos del contrato!'; }
+            if (!err.status) { err }
+            return res.send(G.utils.r(req.url, err.msg, 500, {}));
+        }).done();
+};
+
 ParametrizacionProductosClientes.$inject = ["m_parametrizacionProductosClientes", "m_productos"];
 module.exports = ParametrizacionProductosClientes;

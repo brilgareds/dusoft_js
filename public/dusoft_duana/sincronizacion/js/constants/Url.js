@@ -16,6 +16,7 @@ define(["angular"], function(angular) {
                 "SINCRONIZACION_DOCUMENTOS": BASE_URL + "/SincronizacionDocumentos/sincronizarDocumentos",
                 "LISTAR_TIPOS_FACTURAS": BASE_URL + "/SincronizacionDocumentos/listarTiposFacturas",
                 "GUARDAR_CUENTAS": BASE_URL + "/SincronizacionDocumentos/guardarCuentas",
+                "DELETE_ACCOUNTS": BASE_URL + "/SincronizacionDocumentos/deleteAccounts",
                 "BUSCAR_SERVICIO": BASE_URL + "/SincronizacionDocumentos/buscarServicio"
             },
             'PROVEEDORES':{

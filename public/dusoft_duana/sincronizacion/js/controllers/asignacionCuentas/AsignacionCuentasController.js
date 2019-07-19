@@ -133,6 +133,23 @@ define(["angular", "js/controllers"
 
                 return cuentas_actualizadas;
             };
+
+            $scope.deleteAccounts = () => {
+                let cuentas_borradas = $scope.cleanNoSelected();
+                const obj = {
+                    session: $scope.session,
+                    data: {
+                        entries: cuentas_borradas
+                    }
+                };
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.DELETE_ACCOUNTS, obj, data => {
+                    if (data.status === 200) {
+                        that.listarTiposCuentas();
+                        AlertService.mostrarVentanaAlerta("Eliminación de cuentas", data.msj);
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
+                });
+            };
                                     
             $scope.guardar_cuentas = () => {
                 let cuentas_actualizadas = $scope.cleanNoSelected();

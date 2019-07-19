@@ -2095,6 +2095,58 @@ function __SeparacionMedicamentosInsumos(detalleFactura, index, separacion, call
     }, 0);
 }
 
+SincronizacionDocumentos.prototype.deleteAccounts = (req, res) => {
+    console.log('In controller "deleteAccounts"');
+
+    let args = req.body;
+    var categorias = args.data.entries;
+
+    // categorias.debito = args.data.debito;
+    // categorias.credito = args.data.credito;
+    console.log('categorias: ', categorias);
+
+    var cuentas = {};
+    var tipos_cuenta = [];
+    var tipo_cuenta = '';
+    var error_count = 0;
+    var sw_cuenta = 0;
+
+    for (tipos_cuenta of categorias.types) {
+        tipo_cuenta = tipos_cuenta.name;
+        console.log('loop A');
+        for (var index in categorias.rows[tipo_cuenta]) {
+            console.log('loop B');
+            if (categorias.rows[tipo_cuenta][index] && typeof categorias.rows[tipo_cuenta][index] === 'object') {
+                if (tipo_cuenta === 'debito') {
+                    sw_cuenta = 0;
+                } else if (tipo_cuenta === 'credito') {
+                    sw_cuenta = 1;
+                }
+                cuentas = categorias.rows[tipo_cuenta][index];
+                cuentas.sw_cuenta = sw_cuenta;
+                cuentas.tipo_cuenta = tipo_cuenta;
+                cuentas.empresa_id = args.session.empresaId;
+                cuentas.centro_id = args.session.centroUtilidad;
+                cuentas.bodega_id = args.session.bodega;
+                // cuentas.prefijo_id = categorias.prefijo_id;
+
+                G.Q.ninvoke(that.m_SincronizacionDoc, 'deleteAccounts', cuentas)
+                    .then(resultado => {
+
+                    }).fail(err => {
+                        console.log(err);
+                        error_count++;
+                    });
+            }
+        }
+    }
+    if (error_count > 0) {
+        res.send(G.utils.r(req.url, 'Error borrando cuentas', 500, {status: false}));
+    } else {
+        res.send(G.utils.r(req.url, 'Cuentas borradas con exito!', 200, {status: true}));
+    }
+};
+
 SincronizacionDocumentos.$inject = [
     "m_SincronizacionDoc",
     "m_notas",

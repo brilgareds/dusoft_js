@@ -1074,6 +1074,33 @@ SincronizacionDocumentosModel.prototype.sincronizarFinaciero = function (obj, ca
     }).done();
 };
 
+SincronizacionDocumentosModel.prototype.deleteAccounts = (obj, callback) => {
+
+    promesa
+        .then(response => {
+            const deleteAccount = G.knex('documentos_cuentas')
+                .where({
+                    prefijo: obj.prefijo_id,
+                    empresa_id: obj.empresa_id,
+                    centro_id: obj.centro_id,
+                    bodega_id: obj.bodega_id,
+                    cuenta: obj.cuenta_id,
+                    sw_cuenta: obj.sw_cuenta,
+                    parametrizacion_ws_fi: obj.parametrizacion_ws_fi,
+                    cuenta_categoria: obj.categoria_id
+                }).del();
+
+            return deleteAccount;
+        }).then(resultado => {
+            callback(false, resultado);
+        }).catch(err => {
+            if (!err.status) { err.status = 500; }
+            if (!err.msg) { err.msg = 'Error al borrar la cuenta: ' + obj; }
+
+            callback(err);
+        });
+};
+
 SincronizacionDocumentosModel.$inject = [];
 
 module.exports = SincronizacionDocumentosModel;

@@ -167,7 +167,7 @@ SincronizacionDocumentos.prototype.guardarCuentas = (req, res) => {
 };
 
 SincronizacionDocumentos.prototype.insertTiposCuentasCategorias = (req, res) => {
-    
+
     var args = req.body.data;
 
     G.Q.ninvoke(this.m_SincronizacionDoc, 'insertTiposCuentasCategorias', args)
@@ -183,8 +183,8 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
     let args = req.body.data;
     let param = [];
     let url;
-    let sincronizar = args.data.sincronizar;
-    let servicio = args.data.servicio;
+    let sincronizar = args.sincronizar;
+    let servicio = args.servicio;
     let funcion_ws = '';
     let funcionServicio = '';
     let servicioContable = 'crearInformacionContable';
@@ -194,21 +194,21 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
     let obj = {
         wsFi: servicio,
         parametrizacion: servicio,
-        facturaFiscal: args.data.facturaFiscal,
-        factura_fiscal: args.data.facturaFiscal,
+        facturaFiscal: args.facturaFiscal,
+        factura_fiscal: args.facturaFiscal,
         empresaId: req.session.user.empresa,
         empresa_id: req.session.user.empresa,
         centro: req.session.user.centro_utilidad,
         centroId: req.session.user.centro_utilidad,
         bodega: req.session.user.bodega,
         bodegaId: req.session.user.bodega,
-        prefijo: args.data.prefijo,
+        prefijo: args.prefijo,
         prefijoFI: '',
         tipoLogsWs: '',
-        prefijoId: args.data.prefijo,
+        prefijoId: args.prefijo,
         usuarioId: req.session.user.usuario_id,
         fechaActual: fechaActual(),
-        codigoProveedor: args.data.codigoProveedor
+        codigoProveedor: args.codigoProveedor
     };
 
     if (req.session.user.bodega === '03') {
@@ -2049,7 +2049,7 @@ function validacionEncabezadoBonificacion(encabezado) {
 }
 
 /*
- * Metodo que recibe un arreglo del detalle de la factura 
+ * Metodo que recibe un arreglo del detalle de la factura
  * y separa los medicamentos e insumos con sus respetivos impuestos
  */
 function __SeparacionMedicamentosInsumos(detalleFactura, index, separacion, callback) {

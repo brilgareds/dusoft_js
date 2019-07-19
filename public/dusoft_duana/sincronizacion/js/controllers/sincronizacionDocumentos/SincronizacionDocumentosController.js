@@ -35,6 +35,10 @@ define(["angular", "js/controllers"
                 that.listarPrefijos();
             };
 
+            $scope.post = (url, obj, callback) => {
+                Request.realizarRequest(url, "POST", obj, data => { callback(data) });
+            };
+
             that.listarPrefijos = () => {
                 const obj = {
                     session: $scope.session,
@@ -43,7 +47,7 @@ define(["angular", "js/controllers"
                     }
                 };
 //              console.log("ServerService",ServerServiceDoc);
-                ServerServiceDoc.listarPrefijos(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, obj, data => {
                     if (data.status === 200) {
                         console.log('Prefijos Array: ', data);
                         $scope.root.listarPrefijos = data.obj.listarPrefijos.prefijos;
@@ -100,7 +104,8 @@ define(["angular", "js/controllers"
                     session: $scope.session,
                     data: {}
                 };
-                ServerServiceDoc.listarTiposServicios(obj, data =>{
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS, obj, data => {
                     console.log('Servicios: ', data);
                     $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
                 });
@@ -124,7 +129,7 @@ define(["angular", "js/controllers"
                 };
                 console.log('Objeto antes de Ajax: ', obj);
 
-                ServerServiceDoc.sincronizacionDocumentos(obj, data => {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.SINCRONIZACION_DOCUMENTOS, obj, data => {
                     if (data.status === 200) {
                         $scope.root.estado = true;
                         $scope.root.asientosContables = data.obj.asientosContables;
@@ -248,9 +253,7 @@ define(["angular", "js/controllers"
             };
 
             $scope.listar_proveedores = termino_busqueda => {
-                if (termino_busqueda.length < 3) {
-                    return;
-                }
+                if (termino_busqueda.length < 3) { return; }
                 $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
 
                 that.buscar_proveedores(proveedores => {
@@ -268,10 +271,8 @@ define(["angular", "js/controllers"
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, data => {
-                    if (data.status === 200) {
-                        callback(data.obj.proveedores);
-                    }
+                $scope.post(API.PROVEEDORES.LISTAR_PROVEEDORES, obj, data => {
+                    if (data.status === 200) { callback(data.obj.proveedores); }
                 });
             };
 
@@ -286,7 +287,6 @@ define(["angular", "js/controllers"
             $scope.seleccionar_proveedor = recepcion => {
                 $scope.cod_proveedor = recepcion.proveedor.codigo_proveedor_id;
             };
-
             that.init();
         }]);
 });

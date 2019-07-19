@@ -16,41 +16,48 @@ define(["angular", "js/controllers"
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            $scope.credito_debito=false;
-            $scope.debito_credito=false;
+            $scope.root = {
+                prefijo: {},
+                init: {
+                    entries: {
+                        types: [
+                            {
+                                title: 'Debito',
+                                name: 'debito',
+                                entries: {}
+                            },
+                            {
+                                title: 'Credito',
+                                name: 'credito',
+                                entries: {}
+                            }
+                        ],
+                        rows: {}
+                    }
+                },
+                listarTiposServicios: [],
+                entries: {},
+                tipos_categorias: [
+                    { 'descripcion': 'Debito',  'id': 0 },
+                    { 'descripcion': 'Credito', 'id': 1 }
+                ]
+            };
+            $scope.credito_debito = false;
+            $scope.debito_credito = false;
 
-            that.init = callback => {
-                $scope.root = {
-                    prefijo: {},
-                    listarTiposServicios: [],
-                    tipesEntries: [
-                        {
-                            title: 'Debito',
-                            name: 'debito',
-                            entries: {}
-                        },
-                        {
-                            title: 'Credito',
-                            name: 'credito',
-                            entries: {}
-                        }
-                    ],
-                    tipos_categorias: [
-                        { 'descripcion': 'Debito',  'id': 0 },
-                        { 'descripcion': 'Credito', 'id': 1 }
-                    ]
-                };
-
+            that.init = () => {
+                // Inicialización de variables
+                $scope.root.entries = JSON.parse(JSON.stringify($scope.root.init.entries));
                 $scope.contador_checked = 0;
                 $scope.seccion_1 = false;
                 $scope.seccion_2 = false;
                 $scope.servicios = false;
                 $scope.boton = false;
+                $scope.root.listarTiposCuentas = {};
                 $scope.root.tipos_categorias = [
                     { 'descripcion': 'Debito',  'id': 0 },
                     { 'descripcion': 'Credito', 'id': 1 }
                 ];
-                $scope.root.listarTiposCuentas = {};
                 $scope.documentosCuentas = {
                     empresa_id: Usuario.getUsuarioActual().getEmpresa().codigo,
                     centro_id: Usuario.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
@@ -60,9 +67,16 @@ define(["angular", "js/controllers"
                     cuentas: [],
                     categorias: {}
                 };
-                callback();
+
+                // Funciones a ejecutar al iniciar
+                that.listarPrefijos();
+                that.listarTiposServicios();
             };
-            
+
+
+            $scope.post = (url, obj, callback) => {
+                Request.realizarRequest(url, "POST", obj, data => { callback(data) });
+            };
 
             $scope.prefijo_actualizado = function(prefijo){
                 console.log('prefijo es:', prefijo);                
@@ -88,63 +102,54 @@ define(["angular", "js/controllers"
 
             $scope.servicio_actualizado = function(servicio) {
                 console.log('Servicio es: ', servicio);
-                if (servicio != undefined && servicio != '' && servicio != ' ') {
+                if (servicio && servicio != '' && servicio != ' ') {
                     $scope.seccion_1 = true;
                     $scope.seccion_2 = true;
                     $scope.boton = true;
                     $scope.documentosCuentas.servicio = servicio;
                     that.listarTiposCuentas();
                 }
-            }; 
-                                    
-            $scope.guardar_cuentas = function() {
-                //var respuestaUsuario = confirm('¿Esta seguro de actualizar los valores de esas cuentas?');
-                var cuentas_actualizadas = JSON.parse(JSON.stringify($scope.root.tipesEntries));
-                cuentas_actualizadas.credito = JSON.parse(JSON.stringify($scope.root.tipesEntries.credito));
-                cuentas_actualizadas.debito = JSON.parse(JSON.stringify($scope.root.tipesEntries.debito));
-                // console.log('before, creditos: ', cuentas_actualizadas.credito);
+            };
 
-                //  $scope.root.tipesEntries
+            $scope.cleanNoSelected = () => {
+                let entry = {};
+                let entries = {};
+                let index = 0;
+                let countEntries = 0;
+                let tipos_cuenta = {};
+                let cuentas_actualizadas = JSON.parse(JSON.stringify($scope.root.entries));
 
-                // smb://10.0.2.224/discos/<d>/<GSI7>
-
-                // smb://NASUPV    /discos/<letra>/<usuario>
-
-                for (tipo_cuenta in cuentas_actualizadas) {
-                    if (Array.isArray(cuentas_actualizadas[tipo_cuenta]) && cuentas_actualizadas[tipo_cuenta].length > 0){
-
-                        for (index in cuentas_actualizadas[tipo_cuenta]){
-
-                            if (cuentas_actualizadas[tipo_cuenta][index] && !cuentas_actualizadas[tipo_cuenta][index].check) {
-                                // cuentas_actualizadas[tipo_cuenta].splice(index, 1);
-                                delete cuentas_actualizadas[tipo_cuenta][index];
-                                console.log('Un elemento borrado!! index: ', index);
-                            }
+                for (tipos_cuenta of cuentas_actualizadas.types) {
+                    index = 0;
+                    entries = cuentas_actualizadas.rows[tipos_cuenta.name];
+                    countEntries = cuentas_actualizadas.rows[tipos_cuenta.name].length;
+                    if (Array.isArray(entries) && entries.length > 0) {
+                        while (index <= countEntries) {
+                            if (entries[index] && !entries[index].check) { entries.splice(index, 1); index = 0; }
+                            else { index++; }
                         }
                     }
                 }
 
-                //console.log('after, creditos: ', cuentas_actualizadas.credito);
+                return cuentas_actualizadas;
+            };
+                                    
+            $scope.guardar_cuentas = () => {
+                let cuentas_actualizadas = $scope.cleanNoSelected();
+                console.log('Cuentas_actualizadas: ', cuentas_actualizadas);
 
-                var obj = {
+                const obj = {
                     session: $scope.session,
                     data: {
-                        tipesEntries: cuentas_actualizadas,
-                        debito: cuentas_actualizadas.debito,
-                        credito: cuentas_actualizadas.credito
+                        tipesEntries: cuentas_actualizadas.types,
+                        debito: cuentas_actualizadas.rows.debito,
+                        credito: cuentas_actualizadas.rows.credito
                     }
-                };
-                // console.log('El objeto enviado es ', obj.data);
-                ServerServiceDoc.guardarCuentas(obj, function (data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarVentanaAlerta("Actualizacion de cuentas", data.msj);
-                        //$scope.root.listarTiposCuentas = data.obj.listarTiposCuentas;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                }; // console.log('El objeto enviado es ', obj.data);
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.GUARDAR_CUENTAS, obj, data => {
+                    if (data.status === 200) { AlertService.mostrarVentanaAlerta("Actualizacion de cuentas", data.msj);}
+                    else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
-                //console.log('Funcion del submit!!');
-                console.log('Cuentas son: ',$scope.documentosCuentas);
             };
             /*
             $scope.validarDebito=function(cuenta, checked, seccion, origen){      
@@ -194,55 +199,48 @@ define(["angular", "js/controllers"
             */
 
             that.listarPrefijos = function () {
-                var obj = {
+                const obj = {
                     session: $scope.session,
                     data: {
                         empresaId: Usuario.getUsuarioActual().getEmpresa().codigo
                     }
                 };
-//                console.log("ServerService",ServerServiceDoc);
-                ServerServiceDoc.listarPrefijos(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, obj, data => {
+                    console.log('Ajax!!, url: ', API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, 'obj: ', obj);
+
                     if (data.status === 200) {
-                        // console.log('Prefijos Array: ', data);
                         $scope.root.listarPrefijos = data.obj.listarPrefijos.prefijos;
                         $scope.root.listarPrefijosFiltrados = data.obj.listarPrefijos.prefijosFiltrados;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { console.log('data: ', data); AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
-            that.listarTipoCuentaCategoria = function (callback) {
-                console.log("listarTipoCuentaCategoria");
-                var obj = {
-                    session: $scope.session
+            that.listarTipoCuentaCategoria = callback => {
+                const obj = {
+                    session: $scope.session,
+                    data: {}
                 };
-                ServerServiceDoc.listarTipoCuentaCategoria(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPO_CUENTA_CATEGORIA, obj, data => {
                     if (data.status === 200) {
                         console.log("data: ", data.obj.listarTipoCuentaCategoria);
                         callback(data.obj.listarTipoCuentaCategoria);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
-            that.listarDocumentosCuentas = function () {
-                console.log("listarDocumentosCuentas");
-                var obj = {
-                    session: $scope.session
+            that.listarDocumentosCuentas = () => {
+                const obj = {
+                    session: $scope.session,
+                    data: {}
                 };
-                ServerServiceDoc.listarDocumentosCuentas(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_DOCUMENTOS_CUENTAS, obj, data => {
                     if (data.status === 200) {
                         console.log("data",data.obj);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
             that.listarTiposCuentas = () => {
-                //console.log("listarTiposCuentas");
 
                 const obj = {
                     session: $scope.session,
@@ -254,87 +252,74 @@ define(["angular", "js/controllers"
                         servicio: $scope.documentosCuentas.servicio
                     }
                 };
-                ServerServiceDoc.listarTiposCuentas(obj, data => {
-                    $scope.root.tipesEntries = {};
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_CUENTAS, obj, data => {
+                    $scope.root.entries = JSON.parse(JSON.stringify($scope.root.init.entries));
                     $scope.documentosCuentas.categorias = {};
 
                     if (data.status === 200) {
-                        // console.log("data inicial: ", data.obj);
-                        var resultado = data.obj.entries;
-                        var tipo_cuenta = '';
-                        var datos_cuenta = {};
-                        var datos_cuenta_vacio = {};
-                        var categoria_nueva = '';
-                        var categoria_vieja = '';
-                        var cuentas_count = 0;
-                        var cuentas_total = resultado.length;
+                        let resultado = data.obj.entries;
+                        let tipo_cuenta = '';
+                        let categoria_nueva = '';
+                        let cuentas_count = 0;
+                        let cuentas_total = resultado.length;
                         let entry = {};
 
                         for (let key in resultado) {
                             cuentas_count++;
                             entry = resultado[key];
-                            categoria_nueva = entry.categoria_descripcion;
-
-                            console.log('cuenta es: ', entry);
+                            categoria_nueva = entry.categoria_descripcion; // console.log('cuenta es: ', entry);
 
                             tipo_cuenta = (entry.sw_cuenta === '0') ? 'debito':'credito';
 
-                            if($scope.documentosCuentas.categorias[categoria_nueva] === undefined) {
+                            if ($scope.documentosCuentas.categorias[categoria_nueva] === undefined) {
                                 $scope.documentosCuentas.categorias[categoria_nueva] = {};
                             }
-                            if($scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta] === undefined) {
+                            if ($scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta] === undefined) {
                                 $scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta] = [];
                             }
-                            if($scope.root.tipesEntries['debito'] === undefined){
-                                $scope.root.tipesEntries['debito'] = [];
+                            if ($scope.root.entries.rows.debito === undefined) {
+                                $scope.root.entries.rows.debito = [];
                             }
-                            if($scope.root.tipesEntries['credito'] === undefined){
-                                $scope.root.tipesEntries['credito'] = [];
+                            if ($scope.root.entries.rows.credito === undefined) {
+                                $scope.root.entries.rows.credito = [];
                             }
 
                             $scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta].push(entry);
-                            $scope.root.tipesEntries[tipo_cuenta].push(entry);
-                            //console.log('Array en ciclo: ', $scope.documentosCuentas);
-                        };
-                        //$scope.root.listarTiposCuentas = $scope.documentosCuentas;
-                        console.log('Cuentas1 es: ', $scope.root.tipesEntries);
-                        // console.log('Cuentas2 es: ', $scope.documentosCuentas);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                            $scope.root.entries.rows[tipo_cuenta].push(entry);
+                        }; // console.log('Cuentas son: ', $scope.root.entries);
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
-           that.insertarTipoCuenta = obj => {
+           $scope.insertarTipoCuenta = cuenta => {
+               console.log('Eyyyyy');
                 const obj = {
                     session: $scope.session,
-                    data: obj
+                    data: cuenta
                 };
-                ServerServiceDoc.insertarTipoCuenta(obj, data => {
-                    //console.log('Respuesta del insert desde el controlador Frontend!!: ', data);
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA, obj, data => {
                     if (data.status === 200) {
                        AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", "Se Almacenó Correctamente");
                        $scope.documentosCuentas.cuenta = '';
                        that.listarTiposCuentas();
                        that.listarPrefijos(obj.data.empresaId);
                        that.listarTiposServicios(obj.data.prefijoId);
-                    } else {
-                        AlertService.mostrarVentanaAlerta(data.obj.insertTiposCuentas);
-                        // AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { AlertService.mostrarVentanaAlerta(data.msj); }
                 });
-            };
+           };
             
             $scope.validarCuenta=function(data, tipo){
                 //console.log('Data en validacion: ', data);
-                if(tipo === 'debito'){
+                if (tipo === 'debito') {
 
-                }else if(tipo === 'credito'){
+                } else if (tipo === 'credito') {
 
                 }
-                var response = false;
-                for(cuenta in data){
-                    if((data.cuenta_id+"").slice(0, 2) === compara){
+                let response = false;
+                for (cuenta in data) {
+                    if ((data.cuenta_id+"").slice(0, 2) === compara){
                         response = true;
                     }
                 }
@@ -418,7 +403,7 @@ define(["angular", "js/controllers"
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                             $scope.cuentaCategoriaId={categoria_id:0,categoria_descripcion:"------"};
-                            
+
                             that.listarTipoCuentaCategoria(data => {
                                 $scope.root.listarTipoCuentaCategoria = data;
                             });
@@ -431,10 +416,10 @@ define(["angular", "js/controllers"
                                     campos.centro_id    && (campos.centro_id.length  > 0) &&
                                     campos.bodega_id    && (campos.bodega_id.length  > 0) &&
                                     campos.cuenta       && (campos.cuenta.length     > 0) &&
-                                    campos.servicio     && (campos.servicio.length   > 0) &&
-                                    campos.categoriaId  && (campos.categoriaId.length > 0) &&
-                                    campos.tipo_cuenta  && (campos.tipo_cuenta === '') &&
-                                    campos.categoriaDescripcion && (campos.categoriaDescripcion.length > 0)) {
+                                    campos.servicio     && (campos.servicio          > 0) &&
+                                    campos.categoriaId  && (campos.categoriaId       > 0) &&
+                                    campos.tipo_cuenta !== undefined  && (campos.tipo_cuenta !== '') &&
+                                    campos.categoriaDescripcion && (campos.categoriaDescripcion.length > 0) ) {
 
                                     response = true;
                                 }
@@ -443,9 +428,10 @@ define(["angular", "js/controllers"
                             };
 
                             $scope.guardar = function () {
-                                if (!$scope.validaterFieldsInsert($scope.documentosCuentas)) { return false; }
+                                console.log('Eooooooooooooo');
+                                if (!$scope.validaterFieldsInsert($scope.documentosCuentas)) { console.log('Errorrrr'); return false; }
 
-                                var obj = {
+                                const obj = {
                                     prefijoId: $scope.documentosCuentas.prefijo_id,
                                     empresaId: $scope.documentosCuentas.empresa_id,
                                     centroId: $scope.documentosCuentas.centro_id,
@@ -457,7 +443,7 @@ define(["angular", "js/controllers"
                                     cuentaTipo: $scope.documentosCuentas.tipo_cuenta
                                 };
                                 //console.log('objeto en insert Cuenta - Frontend: ', obj);
-                                that.insertarTipoCuenta(obj);
+                                $scope.insertarTipoCuenta(obj);
                                 $modalInstance.close();
                             };
 
@@ -475,17 +461,13 @@ define(["angular", "js/controllers"
                         prefijo: prefijo
                     }
                 };
-                ServerServiceDoc.listarTiposServicios(obj, function(data){
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS, obj, data => {
                     $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
-                    $scope.root.listarTiposServiciosFiltrados = data.obj.listarTiposServicios.serviciosFiltrados;
-                    // console.log('Servicios: ', $scope.root.listarTiposServicios);
-                    //console.log('Ajax init!! data: ', data.obj.listarTiposServicios);
+                    $scope.root.listarTiposServiciosFiltrados = data.obj.listarTiposServicios.serviciosFiltrados;;
                 });
             };
                         
-            that.init(function () {
-                that.listarPrefijos();
-                that.listarTiposServicios();
-            });
+            that.init();
         }]);
 });

@@ -1,0 +1,35 @@
+<div class="col-sm-12 panel panel-default" style="padding: 8px; margin-bottom: 15px;">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="col-form-label">Prefijo</label>
+                    <ui-select ng-model="root.prefijo2"
+                               theme="select2"
+                               class="form-control selectgeneral pull-left col-md-4"
+                               ng-change="prefijo_actualizado($select.selected.prefijo)">
+                        <ui-select-match placeholder="Seleccionar Prefijo">{{$select.selected.prefijo}}</ui-select-match>
+                        <ui-select-choices repeat="filtro in root.listarPrefijosFiltrados | filter:$select.search">
+                            {{ filtro.prefijo }}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="col-form-label">Servicios (Funciones)</label>
+                    <ui-select ng-model="root.listarTiposServicios2"
+                               theme="select2"
+                               class="form-control selectgeneral pull-left col-md-4"
+                               ng-disabled="!servicios"
+                               ng-change="servicio_actualizado($select.selected.id)">
+                        <ui-select-match placeholder="Seleccionar Servicio">{{ $select.selected.descripcion}}</ui-select-match>
+                        <ui-select-choices repeat="filtro in root.listarTiposServiciosFiltrados | filter:$select.search">
+                            {{ filtro.descripcion }}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

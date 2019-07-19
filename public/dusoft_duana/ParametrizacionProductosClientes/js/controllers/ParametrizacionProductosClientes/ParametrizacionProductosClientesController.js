@@ -712,6 +712,10 @@ define(
                             */
                     ]
                 };
+
+                $scope.deleteAccount = () => {
+
+                };
                 that.init();
             }
         ]);

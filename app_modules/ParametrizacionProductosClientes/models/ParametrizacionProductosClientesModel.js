@@ -330,7 +330,7 @@ ParametrizacionProductosClientesModel.prototype.createOrUpdateContract = (obj, c
                 const filter = {contrato_cliente_id: obj.contrato_numero};
                 query = G.knex('vnts_contratos_clientes').where(filter).update(fields);
             }
-            console.log('query: ', G.sqlformatter.format(query.toString()));
+            //console.log('query: ', G.sqlformatter.format(query.toString()));
 
             return query;
         }).then(response => {
@@ -472,8 +472,7 @@ ParametrizacionProductosClientesModel.prototype.existContractActive = (obj, call
                 })
                 .where(G.knex.raw(filtro))
                 .orderBy('contrato_numero');
-
-            console.log('Last Query: ', G.sqlformatter.format(query.toString()));
+            //console.log('Last Query: ', G.sqlformatter.format(query.toString()));
 
             return query;
         }).then(contractsActives => {

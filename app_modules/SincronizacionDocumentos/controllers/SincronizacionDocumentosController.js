@@ -25,13 +25,13 @@ SincronizacionDocumentos.prototype.buscarServicio = (req, res) => {
 };
 
 SincronizacionDocumentos.prototype.listarPrefijos = (req, res) => {
-    let args = req.body.data;
+    let obj = req.body.data;
 
-    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarPrefijos', args.data)
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'listarPrefijos', obj)
         .then(prefijos => {
-            res.send(G.utils.r(req.url, 'Listado de Prefijos!!!!', 200, {listarPrefijos: prefijos}));
+            res.send(G.utils.r(req.url, 'Listado de Prefijos!', 200, {listarPrefijos: prefijos}));
         }).fail(err => {
-            res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, {listarPrefijos: {}}));
+            res.send(G.utils.r(req.url, 'Error Listando Prefijos', 500, err));
         }).done();
 };
 
@@ -69,9 +69,9 @@ SincronizacionDocumentos.prototype.listarDocumentosCuentas = (req, res) => {
 };
 
 SincronizacionDocumentos.prototype.insertTiposCuentas = (req, res) => {
-    let args = req.body.data;
+    let obj = req.body.data;
 
-    G.Q.ninvoke(that.m_SincronizacionDoc, 'insertTiposCuentas', args)
+    G.Q.ninvoke(that.m_SincronizacionDoc, 'insertTiposCuentas', obj)
         .then(tiposCuentas => {
             if (tiposCuentas[0] === 'repetido') {
                 res.send(G.utils.r(req.url, 'Error: esos valores ya existen en la base de datos!!"', 500, {}));

@@ -428,7 +428,6 @@ define(["angular", "js/controllers"
                             };
 
                             $scope.guardar = function () {
-                                console.log('Eooooooooooooo');
                                 if (!$scope.validaterFieldsInsert($scope.documentosCuentas)) { console.log('Errorrrr'); return false; }
 
                                 const obj = {

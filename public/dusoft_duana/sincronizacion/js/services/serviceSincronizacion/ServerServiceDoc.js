@@ -95,7 +95,7 @@ define(["angular", "js/services"], function(angular, services) {
                     };
                     
                     self.listarTiposServicios = function (obj, callback) {
-                        console.log('objeto enviado al ajax: ',obj);
+                        //console.log('objeto enviado al ajax: ',obj);
                         Request.realizarRequest(
                                 API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS,
                                 "POST",

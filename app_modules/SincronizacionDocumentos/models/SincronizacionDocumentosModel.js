@@ -352,17 +352,16 @@ SincronizacionDocumentosModel.prototype.insertLogsWs = function(obj, callback){
 };
 
 SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function (obj, callback) {
-    
     var response = {};
 
     var query = G.knex.column(
-        'a.numero',
-        'a.tercero_id',
-        'observacion'
-    )
+            'a.numero',
+            'a.tercero_id',
+            'observacion',
+            'e.*'
+        )
         .select()
         .from('inv_bodegas_movimiento_prestamos as a')
-
         .innerJoin('terceros as b', function () {
             this.on('a.tipo_id_tercero', 'b.tipo_id_tercero')
                 .on('a.tercero_id', 'b.tercero_id')
@@ -372,15 +371,15 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
             this.on('a.prefijo', 'd.prefijo')
                 .on('a.numero', 'd.numero')
         })
+        .innerJoin('parametrizacion_ws_fi as e', 'e.parametrizacion_ws_fi_id', obj.wsFi)
         .where('a.empresa_id', obj.empresa_id)
         .andWhere('a.prefijo', obj.prefijo)
         .andWhere('a.numero', obj.factura_fiscal);
-
-//    console.log('SQL en obtenerEncabezadoBonificacion ', G.sqlformatter.format(query.toString()));
+    // console.log('SQL en obtenerEncabezadoBonificacion ', G.sqlformatter.format(query.toString()));
 
     query.then(function (resultado) {
         response = resultado;
-        console.log('First function in "obtenerEncabezadoBonificacion" is fine');
+        // console.log('First function in "obtenerEncabezadoBonificacion" is fine');
 
         var query2 = G.knex.column(G.knex.raw("COALESCE(b.prefijo, '') as prefijo_fi"))
             .from('documentos as a')
@@ -392,7 +391,7 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
 
         return query2;
     }).then(function (resultado2) {
-        console.log('Second function in "obtenerEncabezadoBonificacion" is fine');
+        // console.log('Second function in "obtenerEncabezadoBonificacion" is fine');
 
         if (resultado2.length > 0 && resultado2[0].prefijo_fi !== undefined) {
             response[0].coddocumentoencabezado = resultado2[0].prefijo_fi.trim();
@@ -407,123 +406,159 @@ SincronizacionDocumentosModel.prototype.obtenerEncabezadoBonificacion = function
 };
 
 
-SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = function (obj, callback) {
+SincronizacionDocumentosModel.prototype.obtenerDetalleBonificacion = (obj, callback) => {
     console.log('In Model "obtenerDetalleBonificacion": ', obj);
 
-    let response = {
-        asientos: [],
+    let asientos = {
         medicamentos_gravados: 0,
         medicamentos_no_gravados: 0,
-        insumos_gravados: 0,
-        insumos_no_gravados: 0,
-        iva: 0,
-        subtotal: 0,
-        total: 0
+
     };
 
-    const asientoDefault = {
-        codcentrocostoasiento: '0',
-        codcentroutilidadasiento: '0',
-        codconcepto: '',
-        codcuentaasiento: '14352010',
-        codlineacostoasiento: '0',
-        identerceroasiento: obj.tercero_id,
-        observacionasiento: 'No Aplica Observacion Asiento',
-        valorbaseasiento: '0',
-        valorcreditoasiento: '0',
-        valordebitoasiento: '0',
-        valortasaasiento: '0'
-    };
+    // let response = {
+    //     asientos: [],
+    //     medicamentos_gravados: 0,
+    //     medicamentos_no_gravados: 0,
+    //     insumos_gravados: 0,
+    //     insumos_no_gravados: 0,
+    //     iva: 0,
+    //     subtotal: 0,
+    //     total: 0
+    // };
 
-    let asientoMedicamentosGravados = JSON.parse(JSON.stringify(asientoDefault));
-    let asientoMedicamentosNoGravados = JSON.parse(JSON.stringify(asientoDefault));
-    let asientoInsumosGravados = JSON.parse(JSON.stringify(asientoDefault));
-    let asientoInsumosNoGravados = JSON.parse(JSON.stringify(asientoDefault));
-    let asientoIva = JSON.parse(JSON.stringify(asientoDefault));
-    let asientoTotal = JSON.parse(JSON.stringify(asientoDefault));
+    // let asientoMedicamentosGravados = {};
+    // let asientoMedicamentosNoGravados = {};
+    // let asientoInsumosGravados = {};
+    // let asientoInsumosNoGravados = {};
+    // let asientoIva = {};
+    // let asientoTotal = {};
 
-    let query = G.knex.column(
-        'a.*',
-        'b.descripcion',
-        'b.unidad_id',
-        'b.contenido_unidad_venta',
-        'c.descripcion as descripcion_unidad',
-        G.knex.raw('fc_descripcion_producto(b.codigo_producto) as nombre'),
-        G.knex.raw('(a.valor_unitario * a.cantidad) as subtotal'),
-        G.knex.raw('(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva'),
-        G.knex.raw('((a.valor_unitario * a.cantidad) * (a.porcentaje_gravamen/100)) as iva_total'),
-        G.knex.raw('((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as total'),
-        'd.sw_insumos',
-        'd.sw_medicamento')
-        .from('inv_bodegas_movimiento_d as a')
-        .innerJoin('inventarios_productos as b', 'a.codigo_producto', 'b.codigo_producto')
-        .innerJoin('unidades as c', 'b.unidad_id', 'c.unidad_id')
-        .innerJoin('inv_grupos_inventarios as d', 'b.grupo_id', 'd.grupo_id')
-        .where('a.empresa_id', obj.empresa_id)
-        .andWhere('a.prefijo', obj.prefijo)
-        .andWhere('a.numero', obj.factura_fiscal)
-        .orderBy('a.codigo_producto');
+    console.log('7');
+
+    promesa
+        .then(nothing => {
+            console.log('7.1');
+            const asientosContablesBonificacion = G.knex('documentos_cuentas')
+                .select()
+                .where({
+                    prefijo: obj.prefijo,
+                    empresa_id: obj.empresa_id,
+                    centro_id: obj.centroId,
+                    bodega_id: obj.bodegaId,
+                    parametrizacion_ws_fi: obj.wsFi
+                });
+            console.log('7.2');
+            return asientosContablesBonificacion;
+        }).then(response => {
+            asientos = response;
+            console.log('Asientos: ', asientos);
+            console.log('7.5');
+
+            let query = G.knex.column(
+                'a.*',
+                'b.descripcion',
+                'b.unidad_id',
+                'b.contenido_unidad_venta',
+                'c.descripcion as descripcion_unidad',
+                G.knex.raw('fc_descripcion_producto(b.codigo_producto) as nombre'),
+                G.knex.raw('(a.valor_unitario * a.cantidad) as subtotal'),
+                G.knex.raw('(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva'),
+                G.knex.raw('((a.valor_unitario * a.cantidad) * (a.porcentaje_gravamen/100)) as iva_total'),
+                G.knex.raw('((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as total'),
+                'd.sw_insumos',
+                'd.sw_medicamento')
+                .from('inv_bodegas_movimiento_d as a')
+                .innerJoin('inventarios_productos as b', 'a.codigo_producto', 'b.codigo_producto')
+                .innerJoin('unidades as c', 'b.unidad_id', 'c.unidad_id')
+                .innerJoin('inv_grupos_inventarios as d', 'b.grupo_id', 'd.grupo_id')
+                .where('a.empresa_id', obj.empresa_id)
+                .andWhere('a.prefijo', obj.prefijo)
+                .andWhere('a.numero', obj.factura_fiscal)
+                .orderBy('a.codigo_producto');
+            console.log('7.6');
+            return query
+        }).then(facturas => {
+            console.log('7.7');
+            if (facturas && facturas.length > 0) {
+                console.log('7.8');
+                for (let factura of facturas) {
+                    console.log('7.9');
+                    if (factura.sw_medicamento === "1") {
+                        console.log('7.10');
+                        if (factura.iva > 0) {
+                            // asientos.cuenta_categoria
 
 
-    query.then(function (facturas) {
-        if (facturas && facturas.length > 0) {
 
-            for (let factura of facturas) {
-                if (factura.sw_medicamento == "1") {
-                    if (factura.iva > 0) {
-                        response.medicamentos_gravados += factura.subtotal;
-                    } else {
-                        response.medicamentos_no_gravados += factura.subtotal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            asientos.medicamentos_gravados += factura.subtotal;
+                        } else {
+                            asientos.medicamentos_no_gravados += factura.subtotal;
+                        }
+                        console.log('7.11');
+                    } else if (factura.sw_insumos === "1") {
+                        console.log('7.12');
+                        if (factura.iva > 0) { response.insumos_gravados += factura.subtotal; }
+                        else { response.insumos_no_gravados += factura.subtotal; }
+                        console.log('7.13');
                     }
-                } else if (factura.sw_insumos == "1") {
-                    if (factura.iva > 0) {
-                        response.insumos_gravados += factura.subtotal;
-                    } else {
-                        response.insumos_no_gravados += factura.subtotal;
-                    }
+                    console.log('7.14');
+                    response.subtotal += factura.subtotal;
+                    response.iva += factura.iva_total;
+                    response.total += factura.total;
+                    console.log('7.15');
                 }
+                console.log('7.16');
+                if (response.medicamentos_gravados > 0) {
+                    asientoMedicamentosGravados.valordebitoasiento = response.medicamentos_gravados;
+                    response.asientos.push(asientoMedicamentosGravados);
+                }
+                console.log('7.17');
+                if (response.medicamentos_no_gravados > 0) {
+                    asientoMedicamentosNoGravados.valordebitoasiento = response.medicamentos_no_gravados;
+                    response.asientos.push(asientoMedicamentosNoGravados);
+                }
+                console.log('7.18');
+                if (response.insumos_gravados > 0) {
+                    asientoInsumosGravados.valordebitoasiento = response.insumos_gravados;
+                    response.asientos.push(asientoInsumosGravados);
+                }
+                console.log('7.19');
+                if (response.insumos_no_gravados > 0) {
+                    asientoInsumosNoGravados.valordebitoasiento = response.insumos_no_gravados;
+                    response.asientos.push(asientoInsumosNoGravados);
+                }
+                console.log('7.20');
+                if (response.iva > 0) {
+                    asientoIva.valordebitoasiento = response.iva;
+                    asientoIva.valorbaseasiento = response.medicamentos_gravados + response.insumos_gravados;
+                    response.asientos.push(asientoIva);
+                }
+                console.log('7.21');
+                // Total
+                asientoTotal.codcuentaasiento = '42950505';
+                asientoTotal.valorcreditoasiento = response.total;
+                response.asientos.push(asientoTotal);
 
-                response.subtotal += factura.subtotal;
-                response.iva += factura.iva_total;
-                response.total += factura.total;
-            }
-
-            if (response.medicamentos_gravados > 0) {
-                asientoMedicamentosGravados.valordebitoasiento = response.medicamentos_gravados;
-                response.asientos.push(asientoMedicamentosGravados);
-            }
-            if (response.medicamentos_no_gravados > 0) {
-                asientoMedicamentosNoGravados.valordebitoasiento = response.medicamentos_no_gravados;
-                response.asientos.push(asientoMedicamentosNoGravados);
-            }
-            if (response.insumos_gravados > 0) {
-                asientoInsumosGravados.valordebitoasiento = response.insumos_gravados;
-                response.asientos.push(asientoInsumosGravados);
-            }
-            if (response.insumos_no_gravados > 0) {
-                asientoInsumosNoGravados.valordebitoasiento = response.insumos_no_gravados;
-                response.asientos.push(asientoInsumosNoGravados);
-            }
-
-            if (response.iva > 0) {
-                asientoIva.valordebitoasiento = response.iva;
-                asientoIva.valorbaseasiento = response.medicamentos_gravados + response.insumos_gravados;
-                response.asientos.push(asientoIva);
-            }
-
-            // Total
-            asientoTotal.codcuentaasiento = '42950505';
-            asientoTotal.valorcreditoasiento = response.total;
-            response.asientos.push(asientoTotal);
-
-            callback(false, response);
-        } else {
-            throw {error: 1, status: 500, mensaje: 'Result empty in "obtenerDetalleBonificacion"'};
-        }
-    }).catch(function (err) {
-        console.log('Error in query!!!', err);
-        callback(err);
-    });
+                console.log('Finished!!!');
+                callback(false, response);
+            } else { throw { error: 1, status: 500, msg: 'Result empty in "obtenerDetalleBonificacion"' }; }
+        }).catch(err => {
+            if (!err.msg) { err.msg = 'Error al obtener detalle de la bonificacion!'; }
+            callback(err);
+        });
 };
 
 SincronizacionDocumentosModel.prototype.listarDetalleRCWSFI = function (obj, callback) {

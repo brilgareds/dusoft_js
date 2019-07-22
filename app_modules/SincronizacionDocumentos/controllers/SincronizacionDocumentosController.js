@@ -323,7 +323,10 @@ SincronizacionDocumentos.prototype.sincronizarDocumentos = (req, res) => {
              res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
              }
              */
-            res.send(G.utils.r(req.url, err.mensaje, err.status, {sincronizacionDocumentos: false, error: err.err}));
+            if (!err.status) { err.status = 500; }
+            if (!err.msg) { err.msg = 'Error interno!!'; }
+
+            res.send(G.utils.r(req.url, err.msg, err.status, err));
         }).done();
 };
 
@@ -1464,27 +1467,20 @@ const __ingresoBonificaciones = (obj, that, callback) => {
             if (result.length > 0) {
                 documento.encabezado = jsonIngresoBonificaciones(result[0], obj);
                 obj.tercero_id = result[0].tercero_id;
-                let errorValidacion = validacionEncabezadoBonificacion(documento.encabezadofactura);
-
+                let errorValidacion = validacionEncabezadoBonificacion(documento.encabezado);
                 if (errorValidacion.contador === 0) {
                     resultado_sincronizacion = true;
-
                     return G.Q.ninvoke(that.m_SincronizacionDoc, 'obtenerDetalleBonificacion', obj);
-                } else {
-                    throw {error: 1, status: 404, mensaje: 'error en validacion: "' + errorValidacion.msj + '" '};
-                }
-            } else {
-                throw {error: 1, status: 404, mensaje: 'No se encontro el Encabezado!!'};
-            }
+                } else { console.log('Errorrr'); throw { error: 1, status: 404, msg: 'Error en validacion: "' + errorValidacion.msg + '" ' }; }
+            } else { throw {error: 1, status: 404, msg: 'No se encontro el Encabezado!!'}; }
         }).then(result => {
             if (result.asientos !== undefined && result.asientos.length > 0) {
                 documento.detalle = result.asientos;
-
                 callback(false, documento);
-            } else {
-                throw {error: 1, status: 404, mensaje: 'No se encontro el detalle de la bonificacion!!'};
-            }
+            } else { throw {error: 1, status: 404, msg: 'No se encontro el detalle de la bonificacion!!'}; }
         }).fail(err => {
+            if (!err.status) { err.status = 500; }
+            if (!err.msg) { err.msg = 'Error obteniendo información sobre la bonificacion: '+ obj.facturaFiscal; }
             callback(err);
         }).done();
 };
@@ -1985,19 +1981,19 @@ function __JsonFacturaEncabezadoCliente(obj, callback) {
 }
 
 function jsonIngresoBonificaciones(encabezado, obj) {
-    let encabezadoFormatiado = {
-        codempresa: 'DUA',
+    let encabezadoFormateado = {
+        codempresa: encabezado.codempresa,
         coddocumentoencabezado: encabezado.coddocumentoencabezado,
         numerodocumentoencabezado: String(encabezado.numero),
         identerceroencabezado: encabezado.tercero_id,
         observacionencabezado: encabezado.observacion,
-        estadoencabezado: '3',
+        estadoencabezado: encabezado.estadoencabezado,
         fecharegistroencabezado: obj.fechaActual,
         usuariocreacion: obj.usuarioId,
-        tipotercero: 3
+        tipotercero: encabezado.tipotercero
     };
 
-    return encabezadoFormatiado;
+    return encabezadoFormateado;
 }
 
 function fechaActual() {
@@ -2016,33 +2012,34 @@ function fechaActual() {
 }
 
 function validacionEncabezadoBonificacion(encabezado) {
+    //console.log('Init validation!!', 'encabezado: ', encabezado);
 
-    let error = {contador: 0, msj: ''};
+    let error = {contador: 0, msg: ''};
 
 
     if (!encabezado.codempresa) {
         error.contador++;
-        error.msj += 'El Codigo de la Empresa no esta definido';
+        error.msg += 'El Codigo de la Empresa no esta definido';
     }
 
     if (!encabezado.coddocumentoencabezado) {
         error.contador++;
-        error.msj += 'El Prefijo FI no esta parametrizado para ese documento';
+        error.msg += 'El Prefijo FI no esta parametrizado para ese documento';
     }
 
     if (!encabezado.numerodocumentoencabezado) {
         error.contador++;
-        error.msj = 'El numero de factura es obligatorio';
+        error.msg = 'El numero de factura es obligatorio';
     }
 
     if (!encabezado.identerceroencabezado) {
         error.contador++;
-        error.msj = 'El proveedor no posee una identificacion valid';
+        error.msg = 'El proveedor no posee una identificacion valid';
     }
 
     if (!encabezado.observacionencabezado) {
         error.contador++;
-        error.msj = 'Debe Ingresar una observacion';
+        error.msg = 'Debe Ingresar una observacion';
     }
 
     return error;

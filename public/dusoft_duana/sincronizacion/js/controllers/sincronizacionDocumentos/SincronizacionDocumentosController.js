@@ -58,7 +58,6 @@ define(["angular", "js/controllers"
                 });
             };
 
-
             $scope.prefijo_actualizado = prefijo => {
                 console.log('prefijo es:', prefijo);
                 $scope.root.prefijo = prefijo;

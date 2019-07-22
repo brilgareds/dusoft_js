@@ -59,7 +59,23 @@
                     <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                 </div>
                 <div ng-hide="$flow.files.length">
-                    Arrastrar y Soltar el archivo <b>AQUI</b>!!
+                    <div class="row">
+                        <div class="col-sm-4 col-sm-offset-4">
+                            <label>Arrastrar y Soltar el archivo <b>AQUI</b>!!</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <table style="margin-top: 10px; border: 1px solid #dedede;" class="col-sm-4 col-sm-offset-4">
+                            <tr>
+                                <td colspan="3" style="padding: 10px; border: 1px solid #dedede;"><b>Estructura de columnas</b></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #dedede;">codigo</td>
+                                <td style="padding: 10px; border: 1px solid #dedede;">precio_venta</td>
+                                <td style="padding: 10px; border: 1px solid #dedede;">justificacion</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
                 <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
                     Nombre Archivo : <label>{{file.name}}</label>

@@ -23,6 +23,9 @@ module.exports = function(app, di_container) {
     app.post(base + '/parametrizacionProductosClientes/deleteProductContract', (req, res) => {
         c_parametrizacionProductosClientes.deleteProductContract(req, res);
     });
+    app.post(base + '/parametrizacionProductosClientes/deleteProductsContract', (req, res) => {
+        c_parametrizacionProductosClientes.deleteProductsContract(req, res);
+    });
     app.post(base + '/parametrizacionProductosClientes/updateProductContract', (req, res) => {
         c_parametrizacionProductosClientes.updateProductContract(req, res);
     });

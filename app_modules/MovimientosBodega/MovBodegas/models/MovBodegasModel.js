@@ -594,7 +594,7 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                             JOIN centros_utilidad as d ON (c.centro_utilidad = d.centro_utilidad)\
                             AND (c.empresa_id = d.empresa_id)\
                             JOIN empresas as e ON (d.empresa_id = e.empresa_id)\
-                            JOIN tipo_dptos as f on f.tipo_pais_id=d.tipo_pais_id and f.tipo_dpto_id =d.tipo_dpto_id\
+                            left JOIN tipo_dptos as f on f.tipo_pais_id=d.tipo_pais_id and f.tipo_dpto_id =d.tipo_dpto_id\
                             WHERE   a.empresa_id = :3\
                             AND a.prefijo = :2\
                             AND a.numero = :1\

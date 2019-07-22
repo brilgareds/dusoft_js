@@ -398,7 +398,7 @@ ProductosModel.prototype.buscarProductosPorEmpresas = function(obj, callback) {
        this.orWhere("e.descripcion", G.constants.db().LIKE, "%" + termino + "%");
         
     });
-    console.log("list", G.sqlformatter.format(query.toString()));
+  
     query.then(function(rows){
         callback(false, rows);
     }).catch(function(err){
@@ -474,7 +474,6 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, bodega_
                 where a.empresa_id = :1  and a.codigo_producto = :2 and a.bodega = :3 and a.estado = '1'" +sqlAux +" group by 2";
     
    var query =  G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 : bodega_id});
-    //G.logError(G.sqlformatter.format(query.toString()));
    query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
@@ -493,7 +492,7 @@ ProductosModel.prototype.consultar_stock_producto_farmacia = function(empresa_id
                 codigo_producto = :1 and empresa_id = :2";
     
    var query =  G.knex.raw(sql, {2 : empresa_id, 1 : codigo_producto});
-    
+
    query.then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){

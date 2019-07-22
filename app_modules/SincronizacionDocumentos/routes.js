@@ -37,6 +37,10 @@ module.exports = function(app, di_container) {
         c_SincronizacionDoc.guardarCuentas(req, res);
     });
 
+    app.post('/api/SincronizacionDocumentos/deleteAccounts', function(req, res) {
+        c_SincronizacionDoc.deleteAccounts(req, res);
+    });
+
     app.post('/api/SincronizacionDocumentos/buscarServicio', function(req, res) {
         c_SincronizacionDoc.buscarServicio(req, res);
     });

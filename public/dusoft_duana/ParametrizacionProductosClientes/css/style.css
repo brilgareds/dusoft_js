@@ -9,6 +9,9 @@
 .modal-body {
     padding: 20px;
 }
+.modal-content {
+    margin-bottom: 20px;
+}
 
 .cyan {
     color: #fff;

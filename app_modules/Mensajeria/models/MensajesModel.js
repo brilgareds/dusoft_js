@@ -113,4 +113,71 @@ Mensajeria.prototype.ConsultarRolesMensajes = function (obj, callback) {
     });
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion consulta todos los mensajes que van dirigidos al usuario en sesion
+ * @params parametro: usuario_id 
+ * @params callback: listado
+ * @fecha 2019-07-17
+ */
+Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
+
+    var columnas = [
+        G.knex.raw("DISTINCT a.actualizacion_id"),
+        "a.asunto",
+        "a.descripcion",
+        "a.fecha_fin",
+        "cl.fecha_lectura",
+        "cl.sw",
+        "cx.obligatorio",
+        G.knex.raw("(select nombre from system_usuarios where usuario_id=a.usuario_id) as nombre")
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('system_usuarios_perfiles as sup')
+            .innerJoin("controlar_x_perfil as cx ", "sup.perfil_id", "cx.perfil_id")
+            .innerJoin("actualizaciones as a ", "cx.actualizacion_id", "a.actualizacion_id")
+            .innerJoin("system_usuarios as su ", "sup.usuario_id", "su.usuario_id")
+            .leftJoin('controlar_lectura as cl', function () {
+
+                this.on("a.actualizacion_id", "cl.actualizacion_id")
+                        .on("cl.usuario_id", obj.usuario_id);
+
+            })
+            .where(G.knex.raw("a.fecha_fin >=now()"))
+            .andWhere('sup.usuario_id', obj.usuario_id)
+            .orderBy('cx.obligatorio', 'desc');
+
+//                inner join controlar_x_perfil as c on (c.perfil_id = s.perfil_id or c.perfil_id=-1)
+//                order  by c.obligatorio desc,cl.sw asc,a.fecha_fin asc;
+
+//console.log(G.sqlformatter.format(query.toString()));
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [ConsultarRolesMensajes]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion registra la lectura de un mensaje
+ * @params parametro: usuario_id, mensaje_id 
+ * @params callback: listado
+ * @fecha 2019-07-19
+ */
+Mensajeria.prototype.IngresarLectura = function (obj, callback) {
+
+    var query = G.knex('controlar_lectura').
+            insert({actualizacion_id: obj.mensaje_id, usuario_id: obj.usuario_id, sw: 1,fecha_lectura:'now()'});
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [IngresarLectura]:", err);
+        callback(err);
+    });
+};
+
 module.exports = Mensajeria;

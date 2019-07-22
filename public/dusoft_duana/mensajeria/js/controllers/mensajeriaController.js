@@ -1,6 +1,6 @@
 
-define(["angular", "js/controllers","dist/textAngular",
-], function (angular, controllers, textAngular) {
+define(["angular", "js/controllers",
+], function (angular, controllers) {
 
     controllers.controller('mensajeriaController', [
         '$scope', '$rootScope', 'Request',
@@ -8,11 +8,10 @@ define(["angular", "js/controllers","dist/textAngular",
         "AlertService", "localStorageService", "$state", "$filter",
         "Mensaje",
         "Usuario",
-        'textAngularManager',
-        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Mensaje, Sesion,textAngularManager) {
+        function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Mensaje, Sesion) {
 
             var that = this;
-$scope.version = textAngularManager.getVersion();
+//$scope.version = textAngularManager.getVersion();
             // Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),

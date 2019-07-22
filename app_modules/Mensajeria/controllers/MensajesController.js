@@ -74,6 +74,49 @@ Mensajeria.prototype.ConsultarRolesMensajes = function (req, res) {
 
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion lista los mensajes dirigidos al usuario en sesion
+ * @fecha 2019-07-17
+ */
+Mensajeria.prototype.ConsultarMensajesUsuario = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        usuario_id: args.mensaje.usuario_id
+    };
+
+    G.Q.ninvoke(that.m_mensajes, 'ConsultarMensajesUsuario', parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Consultar mensajes del usuario ok!!!!', 200, {mensajes: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar los mensajes del usuario', 500, {mensajes: {}}));
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion registra la lectura de un mensaje
+ * @fecha 2019-07-19
+ */
+Mensajeria.prototype.IngresarLectura = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        usuario_id: args.mensaje.usuario_id,
+        mensaje_id: args.mensaje.mensaje_id
+    };
+
+    G.Q.ninvoke(that.m_mensajes, 'IngresarLectura', parametros).then(function (resultado) {
+        res.send(G.utils.r(req.url, 'registro lectura ok!!!!', 200, {mensajes: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al registrar la lectura del mensaje', 500, {mensajes: {}}));
+    }).done();
+
+};
+
 Mensajeria.$inject = ["m_mensajes"];
 
 module.exports = Mensajeria;

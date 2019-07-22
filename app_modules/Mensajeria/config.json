@@ -15,7 +15,13 @@
                     "alias": "m_mensajes"
                 }
             }],
-        "events": [],
+        "events": [{
+                "mensajes_events": {
+                    "module": "Mensajeria",
+                    "event": "MensajesEvents",
+                    "alias": "e_mensajes"
+                }
+            }],
         "cronJobs": []
     }
 }

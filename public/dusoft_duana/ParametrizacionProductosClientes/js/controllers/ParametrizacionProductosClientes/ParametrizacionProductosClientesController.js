@@ -318,7 +318,7 @@ define(
                         AlertService.mostrarMensaje("success", data.msj);
                         $scope.root.data.searchProducts = data.obj.productos.validos;
                         for (let producto_invalido of data.obj.productos.invalidos) {
-                            err += `${producto_invalido.mensajeError}, `;
+                            err += `${producto_invalido.mensajeError}, <br>`;
                         }
                         if (err.length > 0) {
                             //err = err.slice(0, -2);
@@ -349,6 +349,7 @@ define(
                             keyboard: true,
                             templateUrl: template,
                             scope: $scope,
+                            windowClass: 'app-modal-window-xlg-ls',
                             // controller: "VentanaMensajeSincronizacionController",
                             resolve: {
                                 mensaje: function() {

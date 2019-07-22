@@ -47,10 +47,7 @@ const __subir_archivo_plano = (files, callback) => {
         }).then(function () {
             parser = G.XlsParser;
             workbook = parser.readFile(ruta_nueva);
-            filas = G.XlsParser.serializar(workbook, [
-                'codigo',
-                'precio_venta',
-                'justificacion']);
+            filas = G.XlsParser.serializar(workbook, ['codigo', 'precio_venta']);
 
             if (!filas) {
                 callback(true);

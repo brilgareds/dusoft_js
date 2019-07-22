@@ -52837,6 +52837,7 @@ define(
 
                 $scope.respuesta_archivo_plano = function (file, message) {
                     $scope.root.progresoArchivo = 60;
+                    let err = ``;
                     let data = (message !== undefined) ? JSON.parse(message) : {};
 
                     if (data.status === 200) {
@@ -52844,13 +52845,17 @@ define(
                         AlertService.mostrarMensaje("success", data.msj);
                         $scope.root.data.searchProducts = data.obj.productos.validos;
                         for (let producto_invalido of data.obj.productos.invalidos) {
-                            AlertService.mostrarMensaje("danger", producto_invalido.mensajeError);
+                            err += `${producto_invalido.mensajeError}, `;
+                        }
+                        if (err.length > 0) {
+                            //err = err.slice(0, -2);
+                            AlertService.mostrarVentanaAlerta("Error al subir archivo plano", err);
                         }
                         $scope.opciones_archivo.cancel();
                         $scope.root.progresoArchivo = 0;
                     } else {
                         console.log('Error: ', data.obj);
-                        AlertService.mostrarMensaje("danger", data.msj);
+                        if (err.length > 0) { AlertService.mostrarVentanaAlerta("Error al subir archivo plano", data.msj); }
                     }
                 };
 

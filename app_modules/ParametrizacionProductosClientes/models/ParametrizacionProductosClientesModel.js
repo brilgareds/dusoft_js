@@ -700,6 +700,23 @@ ParametrizacionProductosClientesModel.prototype.deleteProductContract = (obj, ca
             callback(err);
         });
 };
+ ParametrizacionProductosClientesModel.prototype.deleteProductsContract = (obj, callback) => {
+     promesa
+         .then(response => {
+             const query = G.knex('vnts_contratos_clientes_productos')
+                 .where('contrato_cliente_id', obj.contratoId)
+                 .del();
+
+             console.log('Query is: ', G.sqlformatter.format(query.toString()));
+             return query;
+         })
+         .then(response => {
+             callback(false, true);
+         }).catch(err => {
+         err.msg = `Error al intentar los productos del contrato #${obj.contratoId}`;
+         callback(err);
+     });
+ };
 
 ParametrizacionProductosClientesModel.prototype.searchInventaryProducts = (obj, callback) => {
     const offset = 0;

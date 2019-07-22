@@ -45303,6 +45303,7 @@ define('url',["angular"], function(angular) {
                 'SEARCH_INVENTARY_PRODUCTS': BASE_URL + '/parametrizacionProductosClientes/searchInventaryProducts',
                 'ADD_PRODUCTS_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/addProductsContract',
                 'DELETE_PRODUCT_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/deleteProductContract',
+                'DELETE_PRODUCTS_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/deleteProductsContract',
                 'UPDATE_PRODUCT_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/updateProductContract',
                 'CREATE_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/createContract',
                 'SELLERS': BASE_URL + '/parametrizacionProductosClientes/sellers',
@@ -52956,6 +52957,25 @@ define(
                     } else { AlertService.mostrarMensaje('warning', 'El producto no fue eliminado'); }
                 };
 
+                $scope.deleteProductsContract = (contratoId) => {
+                    let responseUser = confirm('¿Esta seguro de eliminar TODOS los productos del contrato #' + contratoId + '?');
+                    if (responseUser) {
+                        const obj = {
+                            session: $scope.session,
+                            data: {
+                                contratoId: contratoId
+                            }
+                        };
+
+                        $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.DELETE_PRODUCTS_CONTRACT, obj, data => {
+                            if (data.status === 200) {
+                                $scope.listContractProducts($scope.root.data.currentContract, false);
+                                AlertService.mostrarMensaje('success', data.msj);
+                            } else { AlertService.mostrarMensaje('danger', data.msj); }
+                        });
+                    } else { AlertService.mostrarMensaje('warning', 'Los productos no fueron eliminados!'); }
+                };
+
                 $scope.updateProductContract = (Contract, Product) => {
                     Product.producto_precio_pactado = parseFloat(Product.producto_precio_pactado.toString());
                     console.log('Updating....');
@@ -53237,6 +53257,10 @@ define(
                                     </div>` },
                             */
                     ]
+                };
+
+                $scope.deleteAccount = () => {
+
                 };
                 that.init();
             }

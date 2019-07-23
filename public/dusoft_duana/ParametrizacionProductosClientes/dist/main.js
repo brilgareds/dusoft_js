@@ -52850,8 +52850,15 @@ define(
                         $scope.root.progresoArchivo = 100;
                         AlertService.mostrarMensaje("success", data.msj);
                         $scope.root.data.searchProducts = data.obj.productos.validos;
+                        console.log('data.obj.productos.validos: ', data.obj.productos.validos);
                         for (let producto_invalido of data.obj.productos.invalidos) {
-                            err += `${producto_invalido.mensajeError}, <br>`;
+                            err += `${producto_invalido.mensajeError}<br>`;
+                        }
+
+                        for (let producto_valido of data.obj.productos.validos) {
+                            if (producto_valido.precio_venta < producto_valido.costo_ultima_compra && producto_valido.justificacion.length < 20) {
+                                err += `El producto "${producto_valido.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
+                            }
                         }
                         if (err.length > 0) {
                             //err = err.slice(0, -2);
@@ -52906,6 +52913,7 @@ define(
                     let countChecks = 0;
                     let errJustify = 0;
                     let errPrice = 0;
+                    let errMsg = ``;
                     let requireJustify = false;
                     let justifyValid = false;
 
@@ -52915,18 +52923,22 @@ define(
                             productosChecks.push(producto);
                             requireJustify = producto.precio_venta < producto.costo_ultima_compra;
                             justifyValid = producto.justificacion !== undefined && producto.justificacion.length > 20;
-                            if (producto.precio_venta === undefined) { errPrice++; }
-                            if (requireJustify && !justifyValid) { errJustify++; }
+                            if (producto.precio_venta === undefined) {
+                                errMsg += `El producto "${producto.codigo}" debe tener un precio de venta<br>`;
+                                errPrice++;
+                            }
+                            if (requireJustify && !justifyValid) {
+                                errMsg += `El producto "${producto.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
+                                errJustify++;
+                            }
                         }
                     }
                     if (countChecks === 0) {
-                        AlertService.mostrarMensaje('danger', 'Debe seleccionar al menos un producto!!');
+                        AlertService.mostrarVentanaAlerta('Error en la validación de los productos', `<b>¡Debe seleccionar al menos un producto!</b>`);
                     } else {
                         $scope.root.data.searchProducts = productosChecks;
-                        if (errJustify > 0) {
-                            AlertService.mostrarMensaje('danger', 'La justificación debe contener al menos 20 caracteres!!');
-                        } else if (errPrice > 0) {
-                            AlertService.mostrarMensaje('danger', 'Hay productos sin precio venta!!');
+                        if (errJustify > 0 || errPrice > 0) {
+                            AlertService.mostrarVentanaAlerta('Error en la validación de los productos', errMsg);
                         } else {
                             const obj = {
                                 session: $scope.session,

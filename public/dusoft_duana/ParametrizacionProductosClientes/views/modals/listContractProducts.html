@@ -1,69 +1,72 @@
-<div class="modal-header">
-    <button type="button" class="close" style="opacity: 0.5;" ng-click="cerrar()">&times;</button>
-    <h4 class="modal-title" style="color: #1c59b5;">Actualización del contrato</h4>
-</div>
-<div class="modal-body">
-    <div class="panel panel-primary">
-        <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">
-            Información del Contrato
-        </div>
-        <div class="panel-body">
-            <div class="col-sm-12 container-factura-info">
-                <div class="col-sm-12">
-                    <span>Contrato: <label class="ng-binding">#{{root.data.currentContract.contrato_numero}}</label></span>
-                    <span>Tercero: <label class="ng-binding">{{root.data.currentContract.nombre_tercero || 'Sin Tercero'}}</label></span>
-                    <span>Usuario: <label class="ng-binding">{{usuarioName}}</label></span>
-                </div>
-                <div class="col-sm-12">
-                    <span>Fecha Inicio: <label class="ng-binding">{{root.data.currentContract.contrato_fecha_i}}</label></span>
-                    <span>Fecha Fin: <label class="ng-binding">{{root.data.currentContract.contrato_fecha_f}}</label></span>
-                    <span>Vendedor: <label class="ng-binding">{{root.data.currentContract.vendedor_nombre}}</label></span>
-                    <span>Observaciones: <label class="ng-binding">{{root.data.currentContract.observaciones || 'Sin Observacion.'}}</label></span>
-                    <span>Estado: <label class="ng-binding">{{root.data.currentContract.check ? 'Activo':'Inactivo'}}</label></span>
-                </div>
-                <div class="col-sm-12" style="padding: 0px;">
-                    <span class="col-sm-offset-9 col-sm-3 total-saldo" style="font-size: 14px; font-weight: bolder; margin-bottom: 15px;">
-                        Contrato Valor:
-                        <label style="font-size: 16px;" class="ng-binding">
-                            {{root.data.currentContract.contrato_valor}}
-                        </label>
-                    </span>
-                </div>
-            </div>
-        </div>
+<div ng-click="modal_close()" style="background: rgba(72, 69, 69, 0.55); display: block; position: fixed; top:0; right: 0; bottom: 0; left: 0; z-index: 1030; transition: opacity .15s linear;"></div>
+
+<div style="background: #FFF; display: block; z-index: 1040; position: absolute; top:0; left: 0; width: 95%; margin: 0 0 30px 1.8%;">
+    <div style="text-align: right;">
+        <span class="btn" style="opacity: 0.5; padding: 0 4px 0 0; font-size: 20px;" ng-click="modal_close()">&times;</span>
     </div>
-    <div class="panel panel-primary" ng-if="root.permits.updateContract || root.permits.updateContractProducts">
-        <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">
-            Actualización del contrato
-        </div>
-        <div class="panel-body" style="padding: 25px 35px 30px 35px;">
-            <div class="container-table" ng-if="root.permits.updateContract" style="margin-bottom: 35px;">
-                <div ng-include="'views/updateContract.html'"></div>
+    <div class="modal-body" style="padding-top: 0;">
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">
+                Información del Contrato
             </div>
-            <div class="container-table" ng-if="root.permits.updateContractProducts" style="width: 98%; padding: 0px 0px 0px 0px; margin: 0px auto 0px auto;">
-                <h4 style="text-align: center; color: #1c59b5; margin: 19px 0px 15px 0px; position: relative;">Productos & Medicamentos del contrato
-                    <span class="btn btn-danger" ng-show="root.data.currentContract.products.length" ng-click="deleteProductsContract(root.data.currentContract.contrato_numero)" style="position: absolute; right: 0; top: -3px;">Borrar <b>TODOS</b> los productos!</span>
-                </h4>
-                <div class="table-responsive contractProducts" style="margin-bottom: 15px;">
-                    <div ng-style="{ display: (root.data.currentContract.products.length)?'block':'none' }" ng-grid="contractProducts" style="width: 100%;"></div>
-                    <h4 ng-show="!root.data.currentContract.products.length" style="text-align: center; margin: 0px; background: #eaeaea; padding: 10px; font-size: 20px;">
-                        <i>Sin productos agregados!</i>
+            <div class="panel-body">
+                <div class="col-sm-12 container-factura-info">
+                    <div class="col-sm-12">
+                        <span>Contrato: <label class="ng-binding">#{{root.data.currentContract.contrato_numero}}</label></span>
+                        <span>Tercero: <label class="ng-binding">{{root.data.currentContract.nombre_tercero || 'Sin Tercero'}}</label></span>
+                        <span>Usuario: <label class="ng-binding">{{usuarioName}}</label></span>
+                    </div>
+                    <div class="col-sm-12">
+                        <span>Fecha Inicio: <label class="ng-binding">{{root.data.currentContract.contrato_fecha_i}}</label></span>
+                        <span>Fecha Fin: <label class="ng-binding">{{root.data.currentContract.contrato_fecha_f}}</label></span>
+                        <span>Vendedor: <label class="ng-binding">{{root.data.currentContract.vendedor_nombre}}</label></span>
+                        <span>Observaciones: <label class="ng-binding">{{root.data.currentContract.observaciones || 'Sin Observacion.'}}</label></span>
+                        <span>Estado: <label class="ng-binding">{{root.data.currentContract.check ? 'Activo':'Inactivo'}}</label></span>
+                    </div>
+                    <div class="col-sm-12" style="padding: 0px;">
+                        <span class="col-sm-offset-9 col-sm-3 total-saldo" style="font-size: 14px; font-weight: bolder; margin-bottom: 15px;">
+                            Contrato Valor:
+                            <label style="font-size: 16px;" class="ng-binding">
+                                {{root.data.currentContract.contrato_valor}}
+                            </label>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary" ng-if="root.permits.updateContract || root.permits.updateContractProducts">
+            <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">
+                Actualización del contrato
+            </div>
+            <div class="panel-body" style="padding: 25px 35px 30px 35px;">
+                <div class="container-table" ng-if="root.permits.updateContract" style="margin-bottom: 35px;">
+                    <div ng-include="'views/updateContract.html'"></div>
+                </div>
+                <div class="container-table" ng-if="root.permits.updateContractProducts" style="width: 98%; padding: 0px 0px 0px 0px; margin: 0px auto 0px auto;">
+                    <h4 style="text-align: center; color: #1c59b5; margin: 19px 0px 15px 0px; position: relative;">Productos & Medicamentos del contrato
+                        <span class="btn btn-danger" ng-show="root.data.currentContract.products.length" ng-click="deleteProductsContract(root.data.currentContract.contrato_numero)" style="position: absolute; right: 0; top: -3px;">Borrar <b>TODOS</b> los productos!</span>
                     </h4>
+                    <div class="table-responsive contractProducts" style="margin-bottom: 15px;">
+                        <div ng-style="{ display: (root.data.currentContract.products.length)?'block':'none' }" ng-grid="contractProducts" style="width: 100%;"></div>
+                        <h4 ng-show="!root.data.currentContract.products.length" style="text-align: center; margin: 0px; background: #eaeaea; padding: 10px; font-size: 20px;">
+                            <i>Sin productos agregados!</i>
+                        </h4>
+                    </div>
                 </div>
             </div>
+        </div><br>
+        <div class="panel panel-primary" ng-if="root.permits.addProductsContract">
+            <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">Agregar Productos Al Contrato</div>
+            <div class="panel-body" ng-include="'views/addProductsContract.html'"></div>
         </div>
-    </div><br>
-    <div class="panel panel-primary" ng-if="root.permits.addProductsContract">
-        <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">Agregar Productos Al Contrato</div>
-        <div class="panel-body" ng-include="'views/addProductsContract.html'"></div>
+        <div class="panel panel-primary" ng-show="root.data.searchProducts.length">
+            <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">
+                Validacion de Productos
+            </div>
+            <div class="panel-body" ng-include="'views/validationProducts.html'"><br></div>
+        </div><br>
     </div>
-    <div class="panel panel-primary" ng-show="root.data.searchProducts.length">
-        <div class="panel-heading" style="text-transform: uppercase; text-align: center; margin: 0px; font-weight: 700;">
-            Validacion de Productos
-        </div>
-        <div class="panel-body" ng-include="'views/validationProducts.html'"><br></div>
-    </div><br>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-primary" ng-click="cerrar()">Cerrar</button>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="modal_close()">Cerrar</button>
+    </div>
 </div>

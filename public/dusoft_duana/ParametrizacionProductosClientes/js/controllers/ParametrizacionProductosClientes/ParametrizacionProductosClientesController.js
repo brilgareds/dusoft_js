@@ -13,6 +13,7 @@ define(
                 /******* Initialize *****/
                 let that = this;
                 let modalInstance = {};
+                $scope.modal_updateContract = false;
 
                 $scope.copyJson = obj => JSON.parse(JSON.stringify(obj));
                 $scope.abrirfechainicial = false;
@@ -103,6 +104,10 @@ define(
                 $scope.currentContract_updateBusinessUnit = (newUnit) => { $scope.root.data.currentContract.businessUnit = newUnit; };
                 $scope.currentContract_updateSeller = (seller) => { $scope.root.data.currentContract.seller = seller; };
                 $scope.currentContract_updateType = (newType) => { $scope.root.data.currentContract.type = newType; };
+
+                $scope.modal_close = () => {
+                    $scope.modal_updateContract = false;
+                };
 
                 $scope.abrirFechaInicial = function($event) {
                     $event.preventDefault();
@@ -243,6 +248,7 @@ define(
 
                 $scope.listContractProducts = (Contract, modal=true) => {
                     $scope.root.data.currentContract = Contract;
+                    $scope.modal_updateContract = true;
                     const contratoId = $scope.root.data.currentContract.contrato_numero;
                     $scope.root.form.addProducts.contratoClienteId = contratoId;
                     $scope.root.data.searchProducts = [];
@@ -322,6 +328,7 @@ define(
                         }
                         if (err.length > 0) {
                             //err = err.slice(0, -2);
+                            // window.alert(err);
                             AlertService.mostrarVentanaAlerta("Error al subir archivo plano", err);
                         }
                         $scope.opciones_archivo.cancel();
@@ -335,34 +342,34 @@ define(
                 /****************************/
                 /*** FUNCTIONS FOR MODAL ***/
                 /**************************/
-                $scope.modal = function (obj, templateId) {
-                    if (obj || templateId) {
-                        let template = '';
-                        if(templateId === 1){
-                            template = 'views/modals/listContractProducts.html';
-                        }
-
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: true,
-                            keyboard: true,
-                            templateUrl: template,
-                            scope: $scope,
-                            windowClass: 'app-modal-window-xlg-ls',
-                            // controller: "VentanaMensajeSincronizacionController",
-                            resolve: {
-                                mensaje: function() {
-                                    return obj;
-                                }
-                            }
-                        };
-                        modalInstance = $modal.open($scope.opts);
-                        modalInstance.result.then(function(){},function(){});
-                    } else {
-                        alert('Error: Formato incorrecto para modal!!');
-                    }
-                };
+                // $scope.modal = function (obj, templateId) {
+                //     if (obj || templateId) {
+                //         let template = '';
+                //         if(templateId === 1){
+                //             template = 'views/modals/listContractProducts.html';
+                //         }
+                //
+                //         $scope.opts = {
+                //             backdrop: true,
+                //             backdropClick: true,
+                //             dialogFade: true,
+                //             keyboard: true,
+                //             templateUrl: template,
+                //             scope: $scope,
+                //             windowClass: 'app-modal-window-xlg-ls',
+                //             // controller: "VentanaMensajeSincronizacionController",
+                //             resolve: {
+                //                 mensaje: function() {
+                //                     return obj;
+                //                 }
+                //             }
+                //         };
+                //         modalInstance = $modal.open($scope.opts);
+                //         modalInstance.result.then(function(){},function(){});
+                //     } else {
+                //         alert('Error: Formato incorrecto para modal!!');
+                //     }
+                // };
                 $scope.test = () => {
 
                 };

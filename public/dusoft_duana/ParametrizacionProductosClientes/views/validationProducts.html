@@ -1,15 +1,15 @@
 
-<div class="container-table" style="height: 234px; overflow-y: scroll;">
+<div class="container-table" style="height: 234px; overflow-y: auto;">
     <table class="table-responsive contractProducts">
         <tbody>
         <tr style="background: #337ab7; color: #FFF; font-weight: 600;">
             <td width="12%">Codigo</td>
-            <td width="30%">Descripcion</td>
-            <td width="8%">Autorizacion</td>
-            <td width="12%">Costo ultima compra</td>
+            <td width="27%">Descripcion</td>
+            <td width="9%">Autorizacion</td>
+            <td width="13%">Costo ultima compra</td>
             <td width="13%">Precio venta</td>
             <td width="20%">Justificación</td>
-            <td width="5%">Agregar</td>
+            <td width="6%">Agregar</td>
         </tr>
         <tr ng-repeat="producto in root.data.searchProducts track by $index">
             <td>{{producto.codigo}}</td>
@@ -41,8 +41,8 @@
         </tbody>
     </table>
 </div>
-<span ng-show="root.data.searchProducts.length" ng-click="addProductsContract()" class="col-sm-12" style="display: flex; justify-content: center; align-content: center; margin-bottom: 4px; margin-top: 20px;">
-    <label class="col-sm-3 btn" style="text-align: center; background: #399039; color: #FFF;">
+<span ng-show="root.data.searchProducts.length" class="col-sm-12" style="display: flex; justify-content: center; align-content: center; margin-bottom: 4px; margin-top: 20px;">
+    <label class="col-sm-3 btn" ng-click="addProductsContract()" style="text-align: center; background: #399039; color: #FFF;">
         <i class="glyphicon glyphicon-plus" style="margin-right: 3px; top: 3px;"></i>
         <span>Agregar Productos al Contrato</span>
     </label>

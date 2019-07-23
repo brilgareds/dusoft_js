@@ -263,14 +263,14 @@ define(
                     $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.LIST_CONTRACTS_PRODUCTS, obj, data => {
                         if (data.status === 200) {
                             $scope.root.data.currentContract.products = data.obj;
+                            $scope.searchThird($scope.root.data.currentContract);
                             console.log('Contrato is: ', $scope.root.data.currentContract);
-                            // $scope.root.data.contractProducts = data.obj;
-                            if (modal) {
-                                $scope.modal($scope.root.data.currentContract.products, 1);
-                                $scope.searchThird($scope.root.data.currentContract);
-                            }
                         } else { console.log('Error: ', data.obj.err); }
                     });
+                };
+
+                $scope.abrirFiltro = () => {
+                    $scope.filtroValidacion = !$scope.filtroValidacion;
                 };
 
                 $scope.searchInventaryProducts = () => {
@@ -720,7 +720,11 @@ define(
                         { field: 'producto_codigo', displayName: 'Codigo', width: '12%' },
                         { field: 'producto_descripcion', displayName: 'Descripcion', width: '30%' },
                         { field: 'requiere_autorizacion', displayName: 'Autorización', width: '8%' },
-                        { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%' },
+                        { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%', cellTemplate: `
+                            <div style="line-height: 30px; margin-left: 5px;">{{row.entity.costo_ultima_compraString}}
+                                <span class="glyphicon glyphicon-warning-sign" title='"Precio venta" es mas bajo que "Costo ultima compra"' ng-style="{ display: (row.entity.producto_precio_pactado < row.entity.costo_ultima_compra) ? 'block' : 'none', top: '8px',  color: 'darkred', position: 'absolute', right: '5%' }"></span>
+                            </div>                        
+                        ` },
                         { field: 'producto_precio_pactado', displayName: 'Precio Venta', enableCellEdit: true, width: '11%' },
                         { field: 'justificacion', displayName: 'Justificación', enableCellEdit: true, width: '19%' },
                         { displayName: 'Actualizar', width: '5%', cellTemplate: `

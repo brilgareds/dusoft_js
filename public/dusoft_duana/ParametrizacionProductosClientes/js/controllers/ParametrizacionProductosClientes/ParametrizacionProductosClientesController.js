@@ -13,6 +13,7 @@ define(
                 /******* Initialize *****/
                 let that = this;
                 let modalInstance = {};
+                $scope.modal_updateContract = false;
 
                 $scope.copyJson = obj => JSON.parse(JSON.stringify(obj));
                 $scope.abrirfechainicial = false;
@@ -103,6 +104,10 @@ define(
                 $scope.currentContract_updateBusinessUnit = (newUnit) => { $scope.root.data.currentContract.businessUnit = newUnit; };
                 $scope.currentContract_updateSeller = (seller) => { $scope.root.data.currentContract.seller = seller; };
                 $scope.currentContract_updateType = (newType) => { $scope.root.data.currentContract.type = newType; };
+
+                $scope.modal_close = () => {
+                    $scope.modal_updateContract = false;
+                };
 
                 $scope.abrirFechaInicial = function($event) {
                     $event.preventDefault();
@@ -243,6 +248,7 @@ define(
 
                 $scope.listContractProducts = (Contract, modal=true) => {
                     $scope.root.data.currentContract = Contract;
+                    $scope.modal_updateContract = true;
                     const contratoId = $scope.root.data.currentContract.contrato_numero;
                     $scope.root.form.addProducts.contratoClienteId = contratoId;
                     $scope.root.data.searchProducts = [];
@@ -257,14 +263,14 @@ define(
                     $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.LIST_CONTRACTS_PRODUCTS, obj, data => {
                         if (data.status === 200) {
                             $scope.root.data.currentContract.products = data.obj;
+                            $scope.searchThird($scope.root.data.currentContract);
                             console.log('Contrato is: ', $scope.root.data.currentContract);
-                            // $scope.root.data.contractProducts = data.obj;
-                            if (modal) {
-                                $scope.modal($scope.root.data.currentContract.products, 1);
-                                $scope.searchThird($scope.root.data.currentContract);
-                            }
                         } else { console.log('Error: ', data.obj.err); }
                     });
+                };
+
+                $scope.abrirFiltro = () => {
+                    $scope.filtroValidacion = !$scope.filtroValidacion;
                 };
 
                 $scope.searchInventaryProducts = () => {
@@ -310,53 +316,67 @@ define(
 
                 $scope.respuesta_archivo_plano = function (file, message) {
                     $scope.root.progresoArchivo = 60;
+                    let err = ``;
                     let data = (message !== undefined) ? JSON.parse(message) : {};
 
                     if (data.status === 200) {
                         $scope.root.progresoArchivo = 100;
                         AlertService.mostrarMensaje("success", data.msj);
                         $scope.root.data.searchProducts = data.obj.productos.validos;
+                        console.log('data.obj.productos.validos: ', data.obj.productos.validos);
                         for (let producto_invalido of data.obj.productos.invalidos) {
-                            AlertService.mostrarMensaje("danger", producto_invalido.mensajeError);
+                            err += `${producto_invalido.mensajeError}<br>`;
+                        }
+
+                        for (let producto_valido of data.obj.productos.validos) {
+                            if (producto_valido.precio_venta < producto_valido.costo_ultima_compra && producto_valido.justificacion.length < 20) {
+                                err += `El producto "${producto_valido.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
+                            }
+                        }
+                        if (err.length > 0) {
+                            //err = err.slice(0, -2);
+                            // window.alert(err);
+                            AlertService.mostrarVentanaAlerta("Error al subir archivo plano", err);
                         }
                         $scope.opciones_archivo.cancel();
                         $scope.root.progresoArchivo = 0;
                     } else {
                         console.log('Error: ', data.obj);
-                        AlertService.mostrarMensaje("danger", data.msj);
+                        if (err.length > 0) { AlertService.mostrarVentanaAlerta("Error al subir archivo plano", data.msj); }
                     }
                 };
 
                 /****************************/
                 /*** FUNCTIONS FOR MODAL ***/
                 /**************************/
-                $scope.modal = function (obj, templateId) {
-                    if (obj || templateId) {
-                        let template = '';
-                        if(templateId === 1){
-                            template = 'views/modals/listContractProducts.html';
-                        }
-
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: true,
-                            keyboard: true,
-                            templateUrl: template,
-                            scope: $scope,
-                            // controller: "VentanaMensajeSincronizacionController",
-                            resolve: {
-                                mensaje: function() {
-                                    return obj;
-                                }
-                            }
-                        };
-                        modalInstance = $modal.open($scope.opts);
-                        modalInstance.result.then(function(){},function(){});
-                    } else {
-                        alert('Error: Formato incorrecto para modal!!');
-                    }
-                };
+                // $scope.modal = function (obj, templateId) {
+                //     if (obj || templateId) {
+                //         let template = '';
+                //         if(templateId === 1){
+                //             template = 'views/modals/listContractProducts.html';
+                //         }
+                //
+                //         $scope.opts = {
+                //             backdrop: true,
+                //             backdropClick: true,
+                //             dialogFade: true,
+                //             keyboard: true,
+                //             templateUrl: template,
+                //             scope: $scope,
+                //             windowClass: 'app-modal-window-xlg-ls',
+                //             // controller: "VentanaMensajeSincronizacionController",
+                //             resolve: {
+                //                 mensaje: function() {
+                //                     return obj;
+                //                 }
+                //             }
+                //         };
+                //         modalInstance = $modal.open($scope.opts);
+                //         modalInstance.result.then(function(){},function(){});
+                //     } else {
+                //         alert('Error: Formato incorrecto para modal!!');
+                //     }
+                // };
                 $scope.test = () => {
 
                 };
@@ -366,6 +386,7 @@ define(
                     let countChecks = 0;
                     let errJustify = 0;
                     let errPrice = 0;
+                    let errMsg = ``;
                     let requireJustify = false;
                     let justifyValid = false;
 
@@ -375,18 +396,22 @@ define(
                             productosChecks.push(producto);
                             requireJustify = producto.precio_venta < producto.costo_ultima_compra;
                             justifyValid = producto.justificacion !== undefined && producto.justificacion.length > 20;
-                            if (producto.precio_venta === undefined) { errPrice++; }
-                            if (requireJustify && !justifyValid) { errJustify++; }
+                            if (producto.precio_venta === undefined) {
+                                errMsg += `El producto "${producto.codigo}" debe tener un precio de venta<br>`;
+                                errPrice++;
+                            }
+                            if (requireJustify && !justifyValid) {
+                                errMsg += `El producto "${producto.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
+                                errJustify++;
+                            }
                         }
                     }
                     if (countChecks === 0) {
-                        AlertService.mostrarMensaje('danger', 'Debe seleccionar al menos un producto!!');
+                        AlertService.mostrarVentanaAlerta('Error en la validación de los productos', `<b>¡Debe seleccionar al menos un producto!</b>`);
                     } else {
                         $scope.root.data.searchProducts = productosChecks;
-                        if (errJustify > 0) {
-                            AlertService.mostrarMensaje('danger', 'La justificación debe contener al menos 20 caracteres!!');
-                        } else if (errPrice > 0) {
-                            AlertService.mostrarMensaje('danger', 'Hay productos sin precio venta!!');
+                        if (errJustify > 0 || errPrice > 0) {
+                            AlertService.mostrarVentanaAlerta('Error en la validación de los productos', errMsg);
                         } else {
                             const obj = {
                                 session: $scope.session,
@@ -707,7 +732,11 @@ define(
                         { field: 'producto_codigo', displayName: 'Codigo', width: '12%' },
                         { field: 'producto_descripcion', displayName: 'Descripcion', width: '30%' },
                         { field: 'requiere_autorizacion', displayName: 'Autorización', width: '8%' },
-                        { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%' },
+                        { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%', cellTemplate: `
+                            <div style="line-height: 30px; margin-left: 5px;">{{row.entity.costo_ultima_compraString}}
+                                <span class="glyphicon glyphicon-warning-sign" title='"Precio venta" es mas bajo que "Costo ultima compra"' ng-style="{ display: (row.entity.producto_precio_pactado < row.entity.costo_ultima_compra) ? 'block' : 'none', top: '8px',  color: 'darkred', position: 'absolute', right: '5%' }"></span>
+                            </div>                        
+                        ` },
                         { field: 'producto_precio_pactado', displayName: 'Precio Venta', enableCellEdit: true, width: '11%' },
                         { field: 'justificacion', displayName: 'Justificación', enableCellEdit: true, width: '19%' },
                         { displayName: 'Actualizar', width: '5%', cellTemplate: `

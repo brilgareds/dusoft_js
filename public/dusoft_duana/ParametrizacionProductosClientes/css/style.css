@@ -1,6 +1,18 @@
 #search_provider div {
     display: inline-block;
 }
+
+.panel {
+    margin-bottom: 25px;
+}
+
+.modal-body {
+    padding: 20px;
+}
+.modal-content {
+    margin-bottom: 20px;
+}
+
 .cyan {
     color: #fff;
     background-color: #28a3c7;
@@ -18,10 +30,6 @@
 
 .cyan:focus {
     color: #fff;
-}
-
-.modal-dialog {
-    width: 90%;
 }
 
 .material-switch > input[type="checkbox"] {

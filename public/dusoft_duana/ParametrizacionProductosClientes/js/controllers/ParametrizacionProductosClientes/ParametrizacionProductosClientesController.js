@@ -329,7 +329,7 @@ define(
                         }
 
                         for (let producto_valido of data.obj.productos.validos) {
-                            if (producto_valido.precio_venta < producto_valido.costo_ultima_compra && producto_valido.justificacion.length < 20) {
+                            if (producto_valido.precio_venta < producto_valido.costo_ultima_compra && (!producto_valido.justificacion || producto_valido.justificacion.length < 20)) {
                                 err += `El producto "${producto_valido.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
                             }
                         }
@@ -395,12 +395,11 @@ define(
                             countChecks++;
                             productosChecks.push(producto);
                             requireJustify = producto.precio_venta < producto.costo_ultima_compra;
-                            justifyValid = producto.justificacion !== undefined && producto.justificacion.length > 20;
                             if (producto.precio_venta === undefined) {
                                 errMsg += `El producto "${producto.codigo}" debe tener un precio de venta<br>`;
                                 errPrice++;
                             }
-                            if (requireJustify && !justifyValid) {
+                            if (requireJustify && (!producto.justificacion || producto.justificacion.length < 20)) {
                                 errMsg += `El producto "${producto.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
                                 errJustify++;
                             }

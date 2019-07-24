@@ -1,62 +1,49 @@
-<textarea ui-tinymce="tinymceOptions" ng-model="tinymceModel"></textarea>
-    <button ng-click="getContent()">Get content</button>
-    <button ng-click="setContent()">Set content</button>
+<div>
 
-    <div>
-        <div class="row">
-            <div class="col-md-3">
-                <p class="input-group">
+    <div class="col-md-4">
+        <fieldset>
+            <legend>Asunto</legend>   
+            <div class="row">
+                <div class="col-md-7">  
+                    <input type="text" 
+                           ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
+                           class="form-control"  
+                           ng-model="documentoDespachoAprobado.prefijo" 
+                           placeholder="Prefijo" 
+                           name="" id=""
+                           ng-show ="datos_view.seleccionarOtros" maxlength="4"/>
 
-                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="volver()">
-                        <span class="glyphicon glyphicon-share-alt"></span> Volver
-                    </button>
-                </p>
-            </div> 
+                    <ui-select  ng-model="datos_view.prefijoList"
+                                theme="select2" 
+                                class="form-control selectgeneral pull-left" 
+                                ng-change="valorSeleccionado(true)"
+                                ng-show ="!datos_view.seleccionarOtros">
+                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.prefijo}}-{{$select.selected.descripcion}}</ui-select-match>
+                        <ui-select-choices repeat="documento_usuario in  documentos_usuarios| filter:$select.search">
+                            {{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}
+                        </ui-select-choices>
+                    </ui-select>
+
+                </div></div>
+        </fieldset>
+    </div>
+
+
+
+
+    <textarea ui-tinymce="tinymceOptions" ng-model="tinymceModel"></textarea>
+    <button type="button" class="btn btn-warning btn-medium" ng-click="setContent()">
+        <span class="glyphicon glyphicon-trash"></span>Limpiar
+    </button>
+
+    </br>
+
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-click="volver()">
+            <span class="glyphicon glyphicon-share-alt"></span> Volver
+        </button>
+        <button type="button" class="btn btn-primary btn-medium" ng-disabled="validacionCrearMensaje()" ng-click="getContent()">
+            <span class="glyphicon glyphicon-ok"></span> Guardar
+        </button>
+    </div>
 </div>
-
-<!--
-<textarea id="full-featured"><p style="text-align: center; font-size: 15px;"><img title="TinyMCE Logo" src="//www.tiny.cloud/images/glyph-tinymce@2x.png" alt="TinyMCE Logo" width="110" height="97" />
-  </p>
-  <h2 style="text-align: center;">Welcome to the TinyMCE Cloud demo!</h2>
-  <h5 style="text-align: center;">Note, this includes some "enterprise/premium" features.<br>Visit the <a href="https://www.tiny.cloud/pricing/#demo-enterprise">pricing page</a> to learn more about our premium plugins.</h5>
-  <p>Please try out the features provided in this full featured example.</p>
-
-  <h2>Got questions or need help?</h2>
-  <ul>
-    <li>Our <a href="//www.tiny.cloud/docs/">documentation</a> is a great resource for learning how to configure TinyMCE.</li>
-    <li>Have a specific question? Visit the <a href="https://community.tiny.cloud/forum/">Community Forum</a>.</li>
-    <li>We also offer enterprise grade support as part of <a href="https://www.tiny.cloud/pricing">TinyMCE premium subscriptions</a>.</li>
-  </ul>
-
-  <h2>A simple table to play with</h2>
-  <table style="text-align: center;border-collapse: collapse; width: 100%;">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Cost</th>
-        <th>Really?</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>TinyMCE Cloud</td>
-        <td>Get started for free</td>
-        <td>YES!</td>
-      </tr>
-      <tr>
-        <td>Plupload</td>
-        <td>Free</td>
-        <td>YES!</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2>Found a bug?</h2>
-  <p>If you think you have found a bug please create an issue on the <a href="https://github.com/tinymce/tinymce/issues">GitHub repo</a> to report it to the developers.</p>
-
-  <h2>Finally ...</h2>
-  <p>Don't forget to check out our other product <a href="http://www.plupload.com" target="_blank">Plupload</a>, your ultimate upload solution featuring HTML5 upload support.</p>
-  <p>Thanks for supporting TinyMCE! We hope it helps you and your users create great content.<br>All the best from the TinyMCE team.</p>
-</textarea>-->
-
-

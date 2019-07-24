@@ -30,14 +30,14 @@
                 <br> 
                 <div ng-include="'views/facturacionClientes/listarFacturasEnProceso.html'"></div>  
             </tab> 
-            <tab ng-click="limpiarLocalStorageNotificacion()" ng-controller="FacturacionConsumoBarranquillaController">
+            <tab ng-click="limpiarLocalStorageNotificacion()">
                 <tab-heading >
                     <i class=""></i>  Fact. Peñitas
                 </tab-heading>
                 <br> 
                 <div ng-include="'views/facturacionClientes/listarFacturasConsumoBarranquilla.html'"></div>  
             </tab> 
-            <tab active="activarTabFacturasConsumo" class="dropdown" ng-controller="FacturacionConsumoController" ng-click="buscarClienteFacturaTemporal($event)">
+            <tab active="activarTabFacturasConsumo" class="dropdown" ng-click="buscarClienteFacturaTemporal($event)">
                 <tab-heading>
                     <tab-heading >
                         <i class=""></i>  Fact. Consumo

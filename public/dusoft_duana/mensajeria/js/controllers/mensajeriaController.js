@@ -26,7 +26,8 @@ define(["angular", "js/controllers",
             };
 
             $scope.setContent = function () {
-                $scope.tinymceModel = 'Time: ' + (new Date());
+                $scope.tinymceModel = '';
+//                $scope.tinymceModel = 'Time: ' + (new Date());
             };
 
             $scope.tinymceOptions = {
@@ -42,12 +43,26 @@ define(["angular", "js/controllers",
                 ]
             };
 
+            $scope.validacionCrearMensaje = function () {
+                var disabled = true;
+
+                if ($scope.tinymceModel.length > 0) {
+                    disabled = false;
+                }
+                return disabled;
+            };
+
+
+
+
+//-------------------------------FIN VISTA CREACION MENSAJES-----------------------------------------//
+
             $scope.tinymceOptionsTabla = {
-                    menubar: false,
-                    toolbar: 'code',
+                menubar: false,
+                toolbar: 'code',
 //                height: 300,
 //                plugins: 'preview'
-                
+
             };
             //no esta el plugin : powerpaste, advcode, tinymcespellchecker, a11ychecker, mediaembed, linkchecker, help 
 

@@ -9,6 +9,9 @@ var https = require('https');
 var path = require('path');
 var intravenous = require('intravenous');
 var Measured = require('measured');
+//var angular_ui_tinymce = require('angular-ui-tinymce');
+//var angular = require('angular');
+//var tinymce = require('tinymce');
 
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
@@ -37,6 +40,7 @@ G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
+//G.tinymce = require('angular_ui_tinymce');
 //G.Excel = require('exceljs');;
 //G.pdfBase64 = require('pdf-to-base64');
 G.base64 = require('base64topdf');

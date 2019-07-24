@@ -816,6 +816,14 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
 
 
+            $scope.tinymceOptionsTabla = {
+                menubar: false,
+                toolbar: 'code',
+//                height: 300,
+//                plugins: 'preview'
+
+            };
+
             self.verMensaje = function (mensaje) {
                 $scope.opts = {
                     backdrop: true,
@@ -827,7 +835,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                     <h4 class="modal-title">Aviso</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h5 >{{mensaje.descripcion}}</h5>\
+                                    <!--h5 >{{mensaje.descripcion}}</h5-->\
+                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje.descripcion"></textarea>\
                                 </div>\
                                 <div class="modal-footer">\
                                     <button class="btn btn-success" ng-click="aceptar()">Aceptar</button>\

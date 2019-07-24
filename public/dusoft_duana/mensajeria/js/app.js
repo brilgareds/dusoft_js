@@ -39,6 +39,7 @@ define([
 
     var mensajeria = angular.module('mensajeria', [
         'ui.router',
+        'ui.tinymce',
         'controllers',
         'models',
         'ui.bootstrap',

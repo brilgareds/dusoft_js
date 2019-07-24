@@ -1,0 +1,70 @@
+
+<script>
+var editor = new wysihtml5.Editor("wysihtml5-textarea", { // id of textarea element
+  toolbar:      'toolbar', // id of toolbar element
+  parserRules:  wysihtml5ParserRules // defined in parser rules set 
+});
+</script>
+<div>
+    <div>
+        <div class="row">
+            <div class="col-md-3">
+                <p class="input-group">
+
+                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="volver()">
+                        <span class="glyphicon glyphicon-share-alt"></span> Volver
+                    </button>
+                </p>
+            </div> 
+</div>
+<form  >
+          <div id="toolbar" style="display: none;">
+    <button data-wysihtml5-command="bold" title="CTRL+B">bold</button> 
+    <button data-wysihtml5-command="italic" title="CTRL+I">italic</button> 
+    <button data-wysihtml5-command="createLink">insert link</button> 
+    <button data-wysihtml5-command="insertImage">insert image</button> 
+    <button data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1">h1</button> 
+    <button data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2">h2</button> 
+    <button data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p">P</button> 
+    <button data-wysihtml5-command="insertUnorderedList">insertUnorderedList</button> 
+    <button data-wysihtml5-command="insertOrderedList">insertOrderedList</button> 
+    <button data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red">red</button> 
+    <button data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green">green</button> 
+    <button data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue">blue</button> 
+    <button data-wysihtml5-command="undo">undo</button> 
+    <button data-wysihtml5-command="redo">redo</button> 
+    <button data-wysihtml5-command="insertSpeech">speech</button>
+    <button data-wysihtml5-action="change_view">switch to html view</button>
+    
+    <div data-wysihtml5-dialog="createLink" style="display: none;">
+      <label>
+        Link:
+        <input data-wysihtml5-dialog-field="href" value="http://">
+      </label>
+      <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+    </div>
+    
+    <div data-wysihtml5-dialog="insertImage" style="display: none;">
+      <label>
+        Image:
+        <input data-wysihtml5-dialog-field="src" value="http://">
+      </label>
+      <label>
+        Align:
+        <select data-wysihtml5-dialog-field="className">
+          <option value="">default</option>
+          <option value="wysiwyg-float-left">left</option>
+          <option value="wysiwyg-float-right">right</option>
+        </select>
+      </label>
+      <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+    </div>
+    
+  </div>
+        <textarea id="wysihtml5-textarea" placeholder="Enter your text ..." autofocus="" style="width: 60%; height: 50%;"></textarea>
+
+    </form>
+
+        </div>
+
+    </div>

@@ -11,8 +11,46 @@ define(["angular", "js/controllers",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Mensaje, Sesion) {
 
             var that = this;
-//$scope.version = textAngularManager.getVersion();
-            // Variables de Sesion
+
+            $scope.tinymceModel = '<!DOCTYPE html>\
+<html>\
+<head>\
+</head>\
+<body>\
+<p>Buen dia.&nbsp;</p> <p>&nbsp;</p> <p>Actualmente no todas las farmacias estan cumpliento con la revision diaria de los pendientes para establecer cuales son reales y cuales no, por tal motivo a partir del dia lunes 4 de Diciembre quienes no cumplan con esta actividad se empezara a realizar el proceso disciplinario pertinente, es de total obligatoriedad cumplir con las actividades del <span style="background-color: #ff00ff;"><strong>Instructivo GCM-IT-20 revision de pendientes</strong></span>, el cual ya ha sido previamente socializado con ustedes.&nbsp;</p> <p>&nbsp;</p> <p>Cordialmente,&nbsp;</p> <p>&nbsp;</p> <p>Kelly Tatiana Rodriguez</p>\
+</body>\
+</html>';
+
+            $scope.getContent = function () {
+                console.log('Editor content:', $scope.tinymceModel);
+            };
+
+            $scope.setContent = function () {
+                $scope.tinymceModel = 'Time: ' + (new Date());
+            };
+
+            $scope.tinymceOptions = {
+                selector: "textarea",
+                height: 300,
+                theme: 'modern',
+                plugins: 'print preview fullpage searchreplace autolink directionality  visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists textcolor wordcount imagetools contextmenu colorpicker textpattern',
+                toolbar: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent  | removeformat',
+                image_advtab: true,
+                templates: [
+                    {title: 'Test template 1', content: 'Test 1'},
+                    {title: 'Test template 2', content: 'Test 2'}
+                ]
+            };
+
+            $scope.tinymceOptionsTabla = {
+                    menubar: false,
+                    toolbar: 'code',
+//                height: 300,
+//                plugins: 'preview'
+                
+            };
+            //no esta el plugin : powerpaste, advcode, tinymcespellchecker, a11ychecker, mediaembed, linkchecker, help 
+
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
@@ -109,7 +147,10 @@ define(["angular", "js/controllers",
                     {field: 'getAsunto()', displayName: 'Asunto', width: "13%"},
                     {field: 'getFechaRegistro()', displayName: 'Fecha Registro', width: "8%"},
                     {field: 'getFechaValidez()', displayName: "Fecha Validez", width: "8%"},
-                    {field: 'getDescripcion()', displayName: 'Detalle', width: "48%"},
+//                    {field: 'getDescripcion()', displayName: 'Detalle', width: "48%"},
+                    {field: 'getDescripcion()', displayName: 'Detalle', width: "48%",
+                        cellTemplate: '<textarea ui-tinymce="tinymceOptionsTabla" ng-model="row.entity.descripcion"></textarea>'
+                    },
                     {field: 'getPerfiles()', displayName: 'Perfiles', width: "12%"},
                     {displayName: 'Leido', width: "4%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\

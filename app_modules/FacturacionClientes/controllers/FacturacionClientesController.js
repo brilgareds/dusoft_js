@@ -3399,6 +3399,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 //        console.log("factura", Factura);
         // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
         return false;
+        
 
         // }).then(function (respuesta) {
         //

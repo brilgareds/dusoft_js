@@ -11,23 +11,21 @@ define(["angular", "js/controllers",
         function ($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Mensaje, Sesion) {
 
             var that = this;
+            var fechaActual = new Date();
 
-            $scope.tinymceModel = '<!DOCTYPE html>\
-<html>\
-<head>\
-</head>\
-<body>\
-<p>Buen dia.&nbsp;</p> <p>&nbsp;</p> <p>Actualmente no todas las farmacias estan cumpliento con la revision diaria de los pendientes para establecer cuales son reales y cuales no, por tal motivo a partir del dia lunes 4 de Diciembre quienes no cumplan con esta actividad se empezara a realizar el proceso disciplinario pertinente, es de total obligatoriedad cumplir con las actividades del <span style="background-color: #ff00ff;"><strong>Instructivo GCM-IT-20 revision de pendientes</strong></span>, el cual ya ha sido previamente socializado con ustedes.&nbsp;</p> <p>&nbsp;</p> <p>Cordialmente,&nbsp;</p> <p>&nbsp;</p> <p>Kelly Tatiana Rodriguez</p>\
-</body>\
-</html>';
+            $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
 
-            $scope.getContent = function () {
-                console.log('Editor content:', $scope.tinymceModel);
+            $scope.abrirFechaFinal = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.abrirfechafinal = true;
             };
+
+            $scope.tinymceModel = '';
 
             $scope.setContent = function () {
                 $scope.tinymceModel = '';
-//                $scope.tinymceModel = 'Time: ' + (new Date());
             };
 
             $scope.tinymceOptions = {
@@ -52,48 +50,81 @@ define(["angular", "js/controllers",
                 return disabled;
             };
 
-
-
-
-//-------------------------------FIN VISTA CREACION MENSAJES-----------------------------------------//
-
             $scope.tinymceOptionsTabla = {
                 menubar: false,
                 toolbar: 'code',
-//                height: 300,
-//                plugins: 'preview'
-
-            };
-            //no esta el plugin : powerpaste, advcode, tinymcespellchecker, a11ychecker, mediaembed, linkchecker, help 
-
-            $scope.session = {
-                usuario_id: Sesion.getUsuarioActual().getId(),
-                auth_token: Sesion.getUsuarioActual().getToken()
-            };
-
-            $scope.datos_view = {
-                termino_busqueda: ''
-            };
-
-            $scope.filtros = [
-                {nombre: "Asunto", id: 1},
-                {nombre: "Descripcion", id: 2}
-
-            ];
-            $scope.filtro = $scope.filtros[0];
-
-            $scope.onSeleccionFiltro = function (filtro) {
-
-                $scope.filtro = filtro;
-                $scope.datos_view.termino_busqueda = '';
+                height: 250
 
             };
 
-            // Variable para paginacion
-            $scope.paginas = 0;
-            $scope.cantidad_items = 0;
-            $scope.termino_busqueda = "";
-            $scope.pagina_actual = 1;
+            that.init = function (callback) {
+
+                $scope.session = {
+                    usuario_id: Sesion.getUsuarioActual().getId(),
+                    auth_token: Sesion.getUsuarioActual().getToken()
+                };
+                $scope.datos_view = {
+                    termino_busqueda: '',
+                    perfil: '',
+                    perfilesSeleccionados: [],
+                    perfilesSeleccionadosLetras: ""
+                };
+
+                $scope.filtros = [
+                    {nombre: "Asunto", id: 1},
+                    {nombre: "Descripcion", id: 2}
+
+                ];
+                $scope.filtro = $scope.filtros[0];
+                $scope.onSeleccionFiltro = function (filtro) {
+
+                    $scope.filtro = filtro;
+                    $scope.datos_view.termino_busqueda = '';
+
+                };
+
+                // Variable para paginacion
+                $scope.paginas = 0;
+                $scope.cantidad_items = 0;
+                $scope.termino_busqueda = "";
+                $scope.pagina_actual = 1;
+                $scope.abrirfechafinal = false;
+                $scope.asunto = '';
+
+
+                $scope.buscar_mensajes_usuario();
+                callback();
+            };
+
+
+            /*          $scope.session = {
+             usuario_id: Sesion.getUsuarioActual().getId(),
+             auth_token: Sesion.getUsuarioActual().getToken()
+             };
+             
+             $scope.datos_view = {
+             termino_busqueda: ''
+             };
+             
+             $scope.filtros = [
+             {nombre: "Asunto", id: 1},
+             {nombre: "Descripcion", id: 2}
+             
+             ];
+             $scope.filtro = $scope.filtros[0];
+             
+             $scope.onSeleccionFiltro = function (filtro) {
+             
+             $scope.filtro = filtro;
+             $scope.datos_view.termino_busqueda = '';
+             
+             };
+             
+             // Variable para paginacion
+             $scope.paginas = 0;
+             $scope.cantidad_items = 0;
+             $scope.termino_busqueda = "";
+             $scope.pagina_actual = 1;*/
 
 
             $scope.crear_mensaje = function () {
@@ -109,11 +140,44 @@ define(["angular", "js/controllers",
 
 
 
+            that.buscarPerfiles = function (callback) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+
+                    }
+                };
+                Request.realizarRequest(API.MENSAJES.CONSULTAR_PERFILES, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        callback(data.obj.perfiles);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
+
             $scope.buscador_mensajes = function (ev) {
 
                 if (ev.which == 13) {
                     $scope.buscar_mensajes_usuario();
                 }
+            };
+
+            $scope.boton_agregar_perfil = function () {
+
+                if ($scope.datos_view.perfil) {
+                    $scope.datos_view.perfilesSeleccionados.push($scope.datos_view.perfil);
+
+                    if ($scope.datos_view.perfilesSeleccionadosLetras !== '') {
+                        $scope.datos_view.perfilesSeleccionadosLetras += ", " + $scope.datos_view.perfil.descripcion;
+                    } else {
+                        $scope.datos_view.perfilesSeleccionadosLetras = $scope.datos_view.perfil.descripcion;
+                    }
+
+
+                }
+
             };
 
             $scope.buscar_mensajes_usuario = function () {
@@ -147,6 +211,7 @@ define(["angular", "js/controllers",
                     var mensaje = Mensaje.get(data.actualizacion_id, data.usuario_id, data.asunto, data.descripcion, data.fecha_registro, data.fecha_validez);
                     mensaje.setCantidadLectores(data.cantidad_lectores);
                     mensaje.setPerfiles(data.perfiles);
+                    mensaje.setNombreUsuario(data.nombre);
                     $scope.datos_view.listado_mensajes.push(mensaje);
                 });
             };
@@ -157,16 +222,20 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
-                rowHeight: 80,
+                rowHeight: 50,
                 columnDefs: [
-                    {field: 'getAsunto()', displayName: 'Asunto', width: "13%"},
+                    {field: 'getAsunto()', displayName: 'Asunto', width: "18%"},
                     {field: 'getFechaRegistro()', displayName: 'Fecha Registro', width: "8%"},
                     {field: 'getFechaValidez()', displayName: "Fecha Validez", width: "8%"},
-//                    {field: 'getDescripcion()', displayName: 'Detalle', width: "48%"},
-                    {field: 'getDescripcion()', displayName: 'Detalle', width: "48%",
-                        cellTemplate: '<textarea ui-tinymce="tinymceOptionsTabla" ng-model="row.entity.descripcion"></textarea>'
+                    {field: 'getNombreUsuario()', displayName: 'Creador', width: "18%"},
+                    {field: 'getDescripcion()', displayName: 'Detalle', width: "12%",
+                        cellClass: "txt-center dropdown-button", cellTemplate: '<div class="btn-group">\
+                     <button class="btn btn-default btn-xs" ng-click="verMensaje(row.entity.descripcion)">Vista Previa <span class="glyphicon glyphicon-edit"></span></button>\
+                 </div>'
+//                        {field: 'getDescripcion()', displayName: 'Detalle', width: "48%",
+//                        cellTemplate: '<textarea ui-tinymce="tinymceOptionsTabla" ng-model="row.entity.descripcion"></textarea>'
                     },
-                    {field: 'getPerfiles()', displayName: 'Perfiles', width: "12%"},
+                    {field: 'getPerfiles()', displayName: 'Perfiles', width: "18%"},
                     {displayName: 'Leido', width: "4%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                      <p ng-hide="!validacionLectores(row.entity)">No<span></span></p>\
@@ -189,6 +258,41 @@ define(["angular", "js/controllers",
                 return disabled;
             };
 
+            $scope.verMensaje = function (mensaje) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: false,
+                    dialogFade: false,
+                    windowClass: 'app-modal-window-xs-lg',
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Aviso</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje"></textarea>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-success" ng-click="close()">Aceptar</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function ($scope, $modalInstance, mensaje) {
+                        $scope.mensaje = mensaje;
+                        $scope.close = function () {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        mensaje: function () {
+                            return mensaje;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+
             $scope.mostrarLectores = function (mensaje) {
 
                 $scope.opts = {
@@ -203,13 +307,6 @@ define(["angular", "js/controllers",
                     scope: $scope,
                     controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
-                            /**
-                             * +Descripcion Metodo encargado de invocar el servicio que consulta
-                             *              el detalle de la factura
-                             * @author German Galvis
-                             * @fecha 19/10/2018 DD/MM/YYYY
-                             * @returns {undefined}
-                             */
                             that.listarLectores = function () {
 
                                 var obj = {
@@ -254,7 +351,27 @@ define(["angular", "js/controllers",
 
             };
 
+            $scope.guardarMensaje = function () {
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        usuario_id: $scope.session.usuario_id,
+                        mensaje: $scope.tinymceModel,
+                        fecha_fin: $scope.fechafinal,
+                        asunto: $scope.asunto,
+                        listado: $scope.datos_view.perfilesSeleccionados
+                    }
+                };
+
+                Request.realizarRequest(API.MENSAJES.INGRESAR_MENSAJE, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        $scope.setContent();
+                        AlertService.mostrarMensaje("warning", "Registro Exitoso");
+
+                    }
+                });
+            };
 
             $scope.pagina_anterior = function () {
                 if ($scope.paginaactual === 1)
@@ -269,7 +386,11 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.buscar_mensajes_usuario();
+            that.init(function () {
+                that.buscarPerfiles(function (data) {
+                    $scope.listPerfiles = data;
+                });
+            });
 
             $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

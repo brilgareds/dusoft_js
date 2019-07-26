@@ -14,6 +14,7 @@ Mensajeria.prototype.listarMensajesTotal = function (parametros, callback) {
     var columnas = [
         "a.actualizacion_id",
         "a.usuario_id",
+        "su.nombre",
         "a.asunto",
         "a.descripcion",
         G.knex.raw("to_char(a.fecha_ini, 'dd-mm-yy hh:mi am') as fecha_registro"),
@@ -32,7 +33,8 @@ Mensajeria.prototype.listarMensajesTotal = function (parametros, callback) {
     ];
 
     var query = G.knex.select(columnas)
-            .from('actualizaciones as a');
+            .from('actualizaciones as a')
+            .innerJoin("system_usuarios as su ", "a.usuario_id", "su.usuario_id");
 
     if (parametros.filtro === 2) {
         query.andWhere(G.knex.raw("a.descripcion " + G.constants.db().LIKE + "'%" + parametros.termino_busqueda + "%' "));
@@ -44,14 +46,38 @@ Mensajeria.prototype.listarMensajesTotal = function (parametros, callback) {
 
     query.orderBy('a.fecha_ini', 'desc');
 
-    if (parametros.tipo === 1) {
-        query.limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
-    }
+    query.limit(G.settings.limit).offset((parametros.pagina_actual - 1) * G.settings.limit);
 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listarMensajesTotal]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion consulta los perfiles del sistema
+ * @params parametro: 
+ * @params callback: listado
+ * @fecha 2019-07-25
+ */
+Mensajeria.prototype.consultarPerfiles = function (callback) {
+
+    var columnas = [
+        "perfil_id",
+        "descripcion"
+    ];
+
+    var query = G.knex.select(columnas)
+            .from('system_perfiles')
+            .orderBy('perfil_id', 'asc');
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [consultarPerfiles]:", err);
         callback(err);
     });
 };
@@ -135,7 +161,8 @@ Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
 
     var query = G.knex.select(columnas)
             .from('system_usuarios_perfiles as sup')
-            .innerJoin("controlar_x_perfil as cx ", "sup.perfil_id", "cx.perfil_id")
+            .innerJoin( G.knex.raw("controlar_x_perfil as cx on (cx.perfil_id = sup.perfil_id or cx.perfil_id=-1)"))
+//            .innerJoin("controlar_x_perfil as cx ", "sup.perfil_id", "cx.perfil_id")
             .innerJoin("actualizaciones as a ", "cx.actualizacion_id", "a.actualizacion_id")
             .innerJoin("system_usuarios as su ", "sup.usuario_id", "su.usuario_id")
             .leftJoin('controlar_lectura as cl', function () {
@@ -146,10 +173,8 @@ Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
             })
             .where(G.knex.raw("a.fecha_fin >=now()"))
             .andWhere('sup.usuario_id', obj.usuario_id)
+//            .orderBy(G.knex.raw("cx.obligatorio desc,cl.sw asc,a.fecha_fin"));
             .orderBy('cx.obligatorio', 'desc');
-
-//                inner join controlar_x_perfil as c on (c.perfil_id = s.perfil_id or c.perfil_id=-1)
-//                order  by c.obligatorio desc,cl.sw asc,a.fecha_fin asc;
 
 //console.log(G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
@@ -170,12 +195,58 @@ Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
 Mensajeria.prototype.IngresarLectura = function (obj, callback) {
 
     var query = G.knex('controlar_lectura').
-            insert({actualizacion_id: obj.mensaje_id, usuario_id: obj.usuario_id, sw: 1,fecha_lectura:'now()'});
+            insert({actualizacion_id: obj.mensaje_id, usuario_id: obj.usuario_id, sw: 1, fecha_lectura: 'now()'});
 
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
         console.log("err [IngresarLectura]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion registra el mensaje
+ * @params parametro: usuario_id, asunto, descripcion, fecha_fin
+ * @params callback: listado
+ * @fecha 2019-07-24
+ */
+Mensajeria.prototype.IngresarMensaje = function (obj, transaccion, callback) {
+
+    var query = G.knex('actualizaciones').
+            returning('actualizacion_id').
+            insert({asunto: obj.asunto, usuario_id: obj.usuario_id, descripcion: obj.mensaje, fecha_ini: 'now()', fecha_fin: obj.fecha_fin});
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [IngresarMensaje]:", err);
+        callback(err);
+    });
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion registra los perfiles que deben leer el mensaje
+ * @params parametro: usuario_id, asunto, descripcion, fecha_fin
+ * @params callback: listado
+ * @fecha 2019-07-24
+ */
+Mensajeria.prototype.agregarPerfilesLectura = function (obj, transaccion, callback) {
+
+    var query = G.knex('controlar_x_perfil').
+            insert({actualizacion_id: obj.mensaje_id, perfil_id: obj.item_id, obligatorio: obj.obligatorio, fecha_registro: 'now()'});
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("err [agregarPerfilesLectura]:", err);
         callback(err);
     });
 };

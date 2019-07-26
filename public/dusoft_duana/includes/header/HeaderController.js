@@ -235,9 +235,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
+                    style:'ui.tinymce',
                     size: 'lg',
                     keyboard: true,
-                    templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                   // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
                     controller: 'GruposChatController',
                     resolve: {
                         conversacion: function () {
@@ -819,8 +820,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             $scope.tinymceOptionsTabla = {
                 menubar: false,
                 toolbar: 'code',
-//                height: 300,
-//                plugins: 'preview'
+                height: 250
 
             };
 
@@ -829,6 +829,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     backdrop: true,
                     backdropClick: false,
                     dialogFade: false,
+                    windowClass: 'app-modal-window-xs-lg',
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\

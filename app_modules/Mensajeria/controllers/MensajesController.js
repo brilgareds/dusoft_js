@@ -21,12 +21,31 @@ Mensajeria.prototype.listarMensajesTotal = function (req, res) {
         filtro: args.filtro,
         pagina_actual: args.paginaActual
     };
-    
+
     G.Q.ninvoke(that.m_mensajes, 'listarMensajesTotal', parametros).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'Consultar listar mensajes total ok!!!!', 200, {mensajes: resultado}));
     }).fail(function (err) {
         res.send(G.utils.r(req.url, 'Error al Consultar listado de mensajes', 500, {mensajes: {}}));
+    }).done();
+
+};
+
+/**
+ * @author German Galvis
+ * +Descripcion lista los perfiles del sistema
+ * @fecha 2019-07-25
+ */
+Mensajeria.prototype.consultarPerfiles = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    G.Q.ninvoke(that.m_mensajes, 'consultarPerfiles').then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Consultar perfiles ok!!!!', 200, {perfiles: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar perfiles del sistema', 500, {mensajes: {}}));
     }).done();
 
 };
@@ -116,6 +135,73 @@ Mensajeria.prototype.IngresarLectura = function (req, res) {
     }).done();
 
 };
+
+/**
+ * @author German Galvis
+ * +Descripcion registra el mensaje y los perfiles que deben verlo
+ * @fecha 2019-07-24
+ */
+Mensajeria.prototype.IngresarMensaje = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var parametros = {
+        usuario_id: args.usuario_id,
+        mensaje: args.mensaje,
+        fecha_fin: args.fecha_fin,
+        asunto: args.asunto
+    };
+    G.knex.transaction(function (transaccion) {
+
+        G.Q.ninvoke(that.m_mensajes, 'IngresarMensaje', parametros, transaccion).then(function (result) {
+
+            parametros.mensaje_id = result[0];
+
+            return G.Q.nfcall(__recorreListado, that, args.listado, parametros, 0, transaccion);
+        }).then(function (resul) {
+            transaccion.commit(resul);
+        }).fail(function (err) {
+            transaccion.rollback(err);
+        }).done();
+    }).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Mensaje creado Correctamente', 200, {mensaje: resultado}));
+    }).catch(function (err) {
+        console.log("IngresarMensaje  ", err);
+        res.send(G.utils.r(req.url, 'Error al crear el mensaje', 500, {}));
+    }).done();
+};
+
+
+//----------------Funciones privadas--------------//
+function __recorreListado(that, listado, parametros, index, transaccion, callback) {
+
+    var item = listado[index];
+    if (!item) {
+        callback(false, true);
+        return;
+    }
+
+//    parametros.obligatorio = item.obligatorio;
+    parametros.obligatorio = 0;
+    parametros.item_id = item.perfil_id;
+
+    return G.Q.nfcall(that.m_mensajes.agregarPerfilesLectura, parametros, transaccion).then(function (resultado) {
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __recorreListado(that, listado, parametros, index, transaccion, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+
+}
+;
+
 
 Mensajeria.$inject = ["m_mensajes"];
 

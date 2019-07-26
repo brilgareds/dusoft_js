@@ -8,6 +8,10 @@ module.exports = function (app, di_container) {
         c_mensajes.listarMensajesTotal(req, res);
     });
 
+    app.post('/api/Mensajeria/consultarPerfiles', function (req, res) {
+        c_mensajes.consultarPerfiles(req, res);
+    });
+
     app.post('/api/Mensajeria/ConsultarLecturasMensajes', function (req, res) {
         c_mensajes.ConsultarLecturasMensajes(req, res);
     });
@@ -18,6 +22,10 @@ module.exports = function (app, di_container) {
 
     app.post('/api/Mensajeria/IngresarLectura', function (req, res) {
         c_mensajes.IngresarLectura(req, res);
+    });
+
+    app.post('/api/Mensajeria/IngresarMensaje', function (req, res) {
+        c_mensajes.IngresarMensaje(req, res);
     });
 
     // Events 

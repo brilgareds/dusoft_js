@@ -11,6 +11,7 @@ define(["angular", "js/models"], function (angular, models) {
                 this.fecha_validez = fecha_validez;
                 this.cantidad_lectores = 0;
                 this.perfiles;
+                this.nombre_usuario;
             }
 
             this.get = function (id, usuario_id, asunto, descripcion, fecha_registro,fecha_validez) {
@@ -55,6 +56,14 @@ define(["angular", "js/models"], function (angular, models) {
 
             Mensaje.prototype.getUsuarioId = function () {
                 return this.usuario_id;
+            };
+
+            Mensaje.prototype.setNombreUsuario = function (nombre_usuario) {
+                this.nombre_usuario = nombre_usuario;
+            };
+
+            Mensaje.prototype.getNombreUsuario = function () {
+                return this.nombre_usuario;
             };
             
             Mensaje.prototype.setDescripcion = function (descripcion) {

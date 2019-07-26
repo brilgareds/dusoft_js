@@ -1,49 +1,80 @@
+
 <div>
+    <div>
+        <div class="row">
+            <div class="col-md-3">
+                <fieldset>
+                    <legend>Asunto</legend>   
+                    <div class="row">
+                        <div class="col-md-12">  
+                            <input type="text" class="form-control" ng-model="asunto" 
+                                   placeholder="ingrese el asunto" name="" id=""/>
+                        </div></div>
+                </fieldset>
+            </div> 
+            <div class="col-md-2">
+                <fieldset>
+                    <legend>Valido Hasta</legend>  
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
+                               clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                        <span class="input-group-btn">
 
-    <div class="col-md-4">
-        <fieldset>
-            <legend>Asunto</legend>   
-            <div class="row">
-                <div class="col-md-7">  
-                    <input type="text" 
-                           ng-disabled="datos_view.estadoRegistro == 1 || despachoId > 0"  
-                           class="form-control"  
-                           ng-model="documentoDespachoAprobado.prefijo" 
-                           placeholder="Prefijo" 
-                           name="" id=""
-                           ng-show ="datos_view.seleccionarOtros" maxlength="4"/>
+                            <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+                </fieldset>
+            </div>
+            <div class="col-md-2">
 
-                    <ui-select  ng-model="datos_view.prefijoList"
-                                theme="select2" 
-                                class="form-control selectgeneral pull-left" 
-                                ng-change="valorSeleccionado(true)"
-                                ng-show ="!datos_view.seleccionarOtros">
-                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.prefijo}}-{{$select.selected.descripcion}}</ui-select-match>
-                        <ui-select-choices repeat="documento_usuario in  documentos_usuarios| filter:$select.search">
-                            {{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}
-                        </ui-select-choices>
-                    </ui-select>
+                <fieldset>
+                    <legend>Perfiles</legend>
+                    <div class="row">
+                        <div class="col-md-12">                                          
+                            <ui-select ng-model="datos_view.perfil" theme="select2" class="form-control selectgeneral pull-left">
+                                <ui-select-match  placeholder="Seleccionar perfil">{{ $select.selected.descripcion}}</ui-select-match>
+                                <ui-select-choices refresh="listPerfiles($select.search,true)" refresh-delay="0" repeat="x in listPerfiles | filter:$select.search">
+                                    {{ x.descripcion}}
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-1">
+                <fieldset>
+                    <legend>.</legend>
+                    <button type="button" class="btn btn-success btn-medium" ng-click="boton_agregar_perfil()">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+                </fieldset>
+            </div>
+            <div class="col-md-4">
+                <fieldset>
+                    <legend>Perfiles Seleccionados</legend>
+                    <p class="">{{datos_view.perfilesSeleccionadosLetras}}</p>
+                </fieldset>
+            </div>
+        </div>
 
-                </div></div>
-        </fieldset>
-    </div>
+        </br>
 
+        <div>
+            <textarea ui-tinymce="tinymceOptions" ng-model="tinymceModel"></textarea>
+            <button type="button" class="btn btn-warning btn-medium" ng-click="setContent()">
+                <span class="glyphicon glyphicon-trash"></span>Limpiar
+            </button>
+        </div>
 
+        </br>
 
-
-    <textarea ui-tinymce="tinymceOptions" ng-model="tinymceModel"></textarea>
-    <button type="button" class="btn btn-warning btn-medium" ng-click="setContent()">
-        <span class="glyphicon glyphicon-trash"></span>Limpiar
-    </button>
-
-    </br>
-
-    <div class="row text-center">
-        <button type="button" class="btn btn-default btn-medium" ng-click="volver()">
-            <span class="glyphicon glyphicon-share-alt"></span> Volver
-        </button>
-        <button type="button" class="btn btn-primary btn-medium" ng-disabled="validacionCrearMensaje()" ng-click="getContent()">
-            <span class="glyphicon glyphicon-ok"></span> Guardar
-        </button>
+        <div class="row text-center">
+            <button type="button" class="btn btn-default btn-medium" ng-click="volver()">
+                <span class="glyphicon glyphicon-share-alt"></span> Volver
+            </button>
+            <button type="button" class="btn btn-primary btn-medium" ng-disabled="validacionCrearMensaje()" ng-click="guardarMensaje()">
+                <span class="glyphicon glyphicon-ok"></span> Guardar
+            </button>
+        </div>
     </div>
 </div>

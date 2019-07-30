@@ -22,14 +22,14 @@ define(["angular", "js/services"], function(angular, services) {
                                     session: obj.session,
                                     data: obj
                                 },
-                        function(data) {                           
+                        function(data) {
                             callback(data);
                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                         );
 
                     };
-                    
+
                     self.sincronizacionDocumentos = function(obj, callback) {
 
                         Request.realizarRequest(
@@ -39,7 +39,7 @@ define(["angular", "js/services"], function(angular, services) {
                                     session: obj.session,
                                     data: obj
                                 },
-                        function(data) {                           
+                        function(data) {
                             callback(data);
                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
@@ -60,7 +60,7 @@ define(["angular", "js/services"], function(angular, services) {
                     );
 
                 };
-                    
+
                     self.listarTipoCuentaCategoria = function(obj, callback) {
 
                         Request.realizarRequest(
@@ -70,14 +70,14 @@ define(["angular", "js/services"], function(angular, services) {
                                     session: obj.session,
                                     data:{}
                                 },
-                        function(data) {                           
+                        function(data) {
                             callback(data);
                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                         );
 
                     };
-                    
+
                     self.listarDocumentosCuentas = function (obj, callback) {
 
                         Request.realizarRequest(
@@ -93,9 +93,9 @@ define(["angular", "js/services"], function(angular, services) {
                                 }
                         );
                     };
-                    
+
                     self.listarTiposServicios = function (obj, callback) {
-                        console.log('objeto enviado al ajax: ',obj);
+                        //console.log('objeto enviado al ajax: ',obj);
                         Request.realizarRequest(
                                 API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS,
                                 "POST",
@@ -106,7 +106,7 @@ define(["angular", "js/services"], function(angular, services) {
                                 }
                         );
                     };
-                    
+
                     self.listarTiposCuentas = function (obj, callback) {
 
                         Request.realizarRequest(
@@ -119,7 +119,7 @@ define(["angular", "js/services"], function(angular, services) {
                                 }
                         );
                     };
-                    
+
                     self.insertarTipoCuenta = function(obj, callback) {
                         Request.realizarRequest(
                             API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
@@ -128,14 +128,14 @@ define(["angular", "js/services"], function(angular, services) {
                                 session: obj.session,
                                 data: obj.data
                             },
-                            function(data) {                           
+                            function(data) {
                                 callback(data);
                                // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         );
 
                     };
-                    
+
                     self.guardarCuentas = function(obj, callback) {
                         console.log('Ajax init_0!');
                         Request.realizarRequest(
@@ -149,7 +149,7 @@ define(["angular", "js/services"], function(angular, services) {
                             }
                         );
 
-                    };                                                          
+                    };
                     return this;
     }]);
 });

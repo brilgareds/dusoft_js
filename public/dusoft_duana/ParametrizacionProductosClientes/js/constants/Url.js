@@ -14,6 +14,7 @@ define(["angular"], function(angular) {
                 'SEARCH_INVENTARY_PRODUCTS': BASE_URL + '/parametrizacionProductosClientes/searchInventaryProducts',
                 'ADD_PRODUCTS_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/addProductsContract',
                 'DELETE_PRODUCT_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/deleteProductContract',
+                'DELETE_PRODUCTS_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/deleteProductsContract',
                 'UPDATE_PRODUCT_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/updateProductContract',
                 'CREATE_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/createContract',
                 'SELLERS': BASE_URL + '/parametrizacionProductosClientes/sellers',

@@ -48248,8 +48248,9 @@ define('includes/alert/Alert',["angular", "js/services"], function (angular, ser
                             <h4>{{mensaje}}</h4>\
                         </div>\
                         <div class="modal-footer" style="margin-top: 0px">\
-                            <button class="btn btn-success" ng-click="onBtnModal(true)">Aceptar</button>\
-                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()">Cancelar</button>\
+                        <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
+                            <button class="btn btn-success" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
+                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()" ng-if="callback">Cancelar</button>\
                         </div>',
                     controller: ["$scope", "$modalInstance", "titulo", "mensaje", "obligatorio", "callback", function ($scope, $modalInstance, titulo, mensaje, obligatorio, callback) {
                             $scope.mensaje = $sce.trustAsHtml(mensaje);
@@ -52443,50 +52444,6 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     }
 
                 });
-//                $scope.opts = {
-//                    backdrop: true,
-//                    backdropClick: false,
-//                    dialogFade: false,
-//                    windowClass: 'app-modal-window-xs-lg',
-//                    keyboard: true,
-//                    template: ' <div class="modal-header">\
-//                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-//                                    <h4 class="modal-title">Aviso</h4>\
-//                                </div>\
-//                                <div class="modal-body">\
-//                                    <!--h5 >{{mensaje.descripcion}}</h5-->\
-//                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje.descripcion"></textarea>\
-//                                </div>\
-//                                <div class="modal-footer">\
-//                                    <button class="btn btn-success" ng-click="aceptar()">Aceptar</button>\
-//                                    <button class="btn btn-warning" ng-hide="habilitarBoton()" ng-click="close()">Leer mas Tarde</button>\
-//                                </div>',
-//                    scope: $scope,
-//                    controller: function ($scope, $modalInstance, mensaje) {
-//                        $scope.mensaje = mensaje;
-//                        $scope.close = function () {
-//                            $modalInstance.close();
-//                        };
-//
-//                        $scope.habilitarBoton = function () {
-//                            var disabled = false;
-//
-//                            if (mensaje.obligatorio === 1) {
-//                                disabled = true;
-//                            }
-//
-//                            return disabled;
-//                        };
-//
-//
-//                    },
-//                    resolve: {
-//                        mensaje: function () {
-//                            return mensaje;
-//                        }
-//                    }
-//                };
-//                var modalInstance = $modal.open($scope.opts);
 
             };
 
@@ -52497,24 +52454,16 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 var socketid = datos.socket_id;
                 var socket_session = {
                     usuario_id: obj_session.usuario_id,
-//                   auth_token: obj_session.auth_token,
-                    socket_id: socketid,
-//                   device:"web",
-//                   appId: "dusoft-web"
+                    socket_id: socketid
                 };
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];
-//                        if (mensaje.sw != 1) {
-                            self.verMensaje(mensaje);
-//                        }
+                        self.verMensaje(mensaje);
                     }
                 });
-                //localStorageService.set("socketid", socketid);
-//                socket.emit("onConsultarMensaje", socket_session);
             });
 
-//            $scope.buscar_mensajes_usuario();
 
 
         }]);

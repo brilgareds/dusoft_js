@@ -50,5 +50,9 @@ module.exports = function(app, di_container) {
         c_productos.listarHomologacionProductos(req, res);
     });
     
+    app.post('/api/Productos/buscarProductosPorEmpresas', function(req, res) {
+        c_productos.buscarProductosPorEmpresas(req, res);
+    });
+    
    
 };

@@ -1,0 +1,41 @@
+<h3>{{root.entries.rows[tipoCuenta.name]}}</h3>
+<div class="col-md-6 tipos-cuenta" ng-repeat="tipoCuenta in root.entries.types track by $index">
+    <div class="col-md-12">
+        <div class="col-md-12 contenedor-tipos-cuentas panel panel-primary">
+            <h1 class="col-form-label panel-heading titulo-tipo-cuenta"><b>{{tipoCuenta.title}}</b></h1>
+            <div class="col-md-12 panel-body">
+                <span class="checkbox col-md-12" style="margin-top: 0px; margin-bottom: 0px;" ng-repeat="category in root.entries.rows[tipoCuenta.name] track by $index">
+                    <div ng-if="category.cuenta_id" class="col-md-12 sin-padding" style="margin-bottom: 15px;">
+                        <div class="col-md-12">
+                            <input type="checkbox" ng-disabled="!seccion_1" ng-model="root.entries.rows[tipoCuenta.name][$index].check">
+                            <label><span class="numero-cuenta" ng-model="root.entries.rows[tipoCuenta.name][$index].cuenta_id"><b>{{category.cuenta_id}}</b></span><b> {{category.categoria_descripcion}}</b></label>
+                        </div><br class="col-md-12">
+                        <div class="col-md-12">
+                            <div class="col-md-2 contenedor-campos">
+                                <label class="col-form-label contenedor-campos-label">Centro Costos Asientos</label>
+                                <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.entries.rows[tipoCuenta.name][$index].centro_costos_asientos" ng-disabled="!root.entries.rows[tipoCuenta.name][$index].check" placeholder="Centro Costos Asientos" title="Centro Costos Asientos">
+                            </div>
+                            <div class="col-md-2 contenedor-campos">
+                                <label class="col-form-label contenedor-campos-label">Centro Utilidad Asiento</label>
+                                <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.entries.rows[tipoCuenta.name][$index].centro_utilidad_asiento" ng-disabled="!root.entries.rows[tipoCuenta.name][$index].check" placeholder="Centro Utilidad Asiento" title="Centro Utilidad Asiento">
+                            </div>
+                            <div class="col-md-2 contenedor-campos">
+                                <label class="col-form-label contenedor-campos-label">Cod Linea Costo Asiento</label>
+                                <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.entries.rows[tipoCuenta.name][$index].cod_linea_costo_asiento" ng-disabled="!root.entries.rows[tipoCuenta.name][$index].check" placeholder="Cod Linea Costo Asiento" title="Cod Linea Costo Asiento">
+                            </div>
+                            <div class="col-md-2 contenedor-campos">
+                                <label class="col-form-label contenedor-campos-label">Id Tercero Asiento</label>
+                                <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.entries.rows[tipoCuenta.name][$index].id_tercero_asiento" ng-disabled="!root.entries.rows[tipoCuenta.name][$index].check" placeholder="Id Tercero Asiento" title="Id Tercero Asiento">
+                            </div>
+                            <div class="col-md-4 contenedor-campos">
+                                <label class="col-form-label contenedor-campos-label">Observacion Asiento</label>
+                                <input type="text" class="form-control ng-pristine ng-valid ng-touched" ng-model="root.entries.rows[tipoCuenta.name][$index].observacion_asiento" ng-disabled="!root.entries.rows[tipoCuenta.name][$index].check" placeholder="Observacion Asiento" title="Observacion Asiento">
+                            </div>
+                        </div><br class="col-md-12"><br class="col-md-12">
+                    </div>
+                    <hr class="linea-separadora"/>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -16,12 +16,14 @@ DispensacionHcJobs.prototype.ejecutarJobEliminarFormulasSinMovimiento = function
     var that = this;
     // '00 30 00 * * *'
     //'*/1 * * * *'
+    if(G.program.prod){ 
     var job = new G.cronJob('00 30 00 * * *', function () {
 
                 that.c_dispensacion_hc.eliminarFormulasSinMovimiento();
 
             });
             job.start();
+    }
 
 };
 

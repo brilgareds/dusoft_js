@@ -200,10 +200,8 @@ define(["angular", "js/controllers",
                     {field: 'getNombreUsuario()', displayName: 'Creador', width: "18%"},
                     {field: 'getDescripcion()', displayName: 'Detalle', width: "12%",
                         cellClass: "txt-center dropdown-button", cellTemplate: '<div class="btn-group">\
-                     <button class="btn btn-default btn-xs" ng-click="verMensaje(row.entity.descripcion)">Vista Previa <span class="glyphicon glyphicon-edit"></span></button>\
+                     <button class="btn btn-default btn-xs" ng-click="verMensaje(row.entity)">Vista Previa <span class="glyphicon glyphicon-edit"></span></button>\
                  </div>'
-//                        {field: 'getDescripcion()', displayName: 'Detalle', width: "48%",
-//                        cellTemplate: '<textarea ui-tinymce="tinymceOptionsTabla" ng-model="row.entity.descripcion"></textarea>'
                     },
                     {field: 'getPerfiles()', displayName: 'Perfiles', width: "18%"},
                     {displayName: 'Leido', width: "4%", cellClass: "txt-center dropdown-button",
@@ -229,38 +227,8 @@ define(["angular", "js/controllers",
             };
 
             $scope.verMensaje = function (mensaje) {
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: false,
-                    dialogFade: false,
-                    windowClass: 'app-modal-window-xs-lg',
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Aviso</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje"></textarea>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-success" ng-click="close()">Aceptar</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: function ($scope, $modalInstance, mensaje) {
-                        $scope.mensaje = mensaje;
-                        $scope.close = function () {
-                            $modalInstance.close();
-                        };
 
-                    },
-                    resolve: {
-                        mensaje: function () {
-                            return mensaje;
-                        }
-                    }
-                };
-                var modalInstance = $modal.open($scope.opts);
-
+                AlertService.mostrarVentanaMensajeria(mensaje.asunto, mensaje.descripcion, 0);
             };
 
             $scope.mostrarLectores = function (mensaje) {

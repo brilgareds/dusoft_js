@@ -1,26 +1,59 @@
 <style>
 
-    .float{
-        position:fixed;
-        width:100px;
-        height:100px;
-        right:20px;
-        background-color:#0D325F;
-        color:#FFF;
-        border-radius:50px;        
-        box-shadow: 2px 2px 3px #5A99E7;
-        z-index: 2;
+   
+    
+    @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+        .radios{
+            position: fixed;
+            width:25px;
+            height:25px; 
+            text-align:center;
+        } 
+        .float{
+            position:fixed;
+            top: 200px;
+            width:50px;
+            height:50px;
+            right:17px;
+            background-color:#0D325F;
+            color:#FFF;
+            padding: 0px 0px;
+            border-radius:50px;        
+            box-shadow: 2px 2px 3px #5A99E7;
+            z-index: 2;
+        }
+        .letra{
+            text-align: center;
+            padding: 0px;
+            font-size: 8px; 
+        }
+    }
+    
+    @media only screen and (max-width: 5500px) and (min-width: 700px){
+        .radios{
+            position: fixed;
+            width:15px;
+            height:15px; 
+            text-align:center;
+        } 
+        .float{
+            position:fixed;
+            top: 200px;
+            width:100px;
+            height:100px;
+            right:17px;
+            background-color:#0D325F;
+            color:#FFF;
+            border-radius:50px;        
+            box-shadow: 2px 2px 3px #5A99E7;
+            z-index: 2;
+        }
     }
 
-    .radios{
-        position: fixed;
-        width:15px;
-        height:15px; 
-        text-align:center;
-    }
+   
 
 </style>
-<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="enviar()"><b>ENVIAR</b></button>
+<button type="button" class="btn btn-default float col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-click="enviar()"><b class="letra">ENVIAR</b></button>
 <!--<a class='flotante' href='#' ><img src='boton-flotante.png' border="0"/></a>-->
 <div>
     <div class="row">

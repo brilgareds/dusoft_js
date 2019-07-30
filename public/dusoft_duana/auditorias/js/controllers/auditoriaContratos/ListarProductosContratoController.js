@@ -24,7 +24,8 @@ define(["angular", "js/controllers",
 
             $scope.filtros = [
                 {nombre: "Descripcion", id: 1},
-                {nombre: "Codigo Producto", id: 2}
+                {nombre: "Codigo Producto", id: 2},
+                {nombre: "Cliente", id: 3}
 
             ];
             $scope.filtro = $scope.filtros[0];

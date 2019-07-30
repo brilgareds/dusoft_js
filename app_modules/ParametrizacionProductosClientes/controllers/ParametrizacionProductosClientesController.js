@@ -47,10 +47,7 @@ const __subir_archivo_plano = (files, callback) => {
         }).then(function () {
             parser = G.XlsParser;
             workbook = parser.readFile(ruta_nueva);
-            filas = G.XlsParser.serializar(workbook, [
-                'codigo',
-                'precio_venta',
-                'justificacion']);
+            filas = G.XlsParser.serializar(workbook, ['codigo', 'precio_venta']);
 
             if (!filas) {
                 callback(true);
@@ -290,6 +287,22 @@ ParametrizacionProductosClientes.prototype.deleteProductContract = (req, res) =>
             console.log('err: ', err);
             res.send(G.utils.r(req.url, err.msg, 500, err));
         });
+};
+
+ParametrizacionProductosClientes.prototype.deleteProductsContract = (req, res) => {
+    console.log('In controller "deleteProductsContract"');
+    let args = req.body.data;
+
+    promesa
+        .then(response => {
+            return G.Q.ninvoke(that.m_parametrizacionProductosClientes, 'deleteProductsContract', args);
+        }).then(response => {
+        res.send(G.utils.r(req.url, `Todos los productos del contrato #${args.contratoId} fueron eliminados con exito!`, 200, response));
+    }).catch(err => {
+        if (err.msg === undefined) { err.msg = 'Hubo un error!'; }
+        console.log('err: ', err);
+        res.send(G.utils.r(req.url, err.msg, 500, err));
+    });
 };
 
 const now = (oldDate='') => {

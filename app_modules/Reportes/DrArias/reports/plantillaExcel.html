@@ -1,0 +1,92 @@
+<!doctype html>
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <style>
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 0.1px solid #FFFFFF;
+  padding: 8px;
+  height: 10px;
+}
+
+#customers tr:nth-child(even){background-color: #F2F2F2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+/*  padding-top: 12px;
+  padding-bottom: 12px;*/
+  text-align: left;
+  background-color: #337ab7;
+  color: white;
+  font-weight: 100;
+  height: 10px;
+}
+</style>
+</head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+    <p class="h5 text-center"><strong>STOCK VALORIZADO BODEGAS AÑO {{:ano}}</strong></p>
+    <br>
+    <br>
+    <table  id="customers" style="font-size: 12px ;">
+        <thead>
+            <tr  >
+                <th scope="col" class="text-center">MES</th>
+                {{for meses}} 
+                <th scope="col" class="text-center">{{:bodega}}</th>
+                {{/for}}
+                <th scope="col" class="text-center">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{for valores}} 
+            <tr>
+                <th scope="col">{{:mes}}</th>
+                {{for bodegas}}
+                <td class="text-right">{{:~formatMoney(total)}}</td>
+                {{/for}}
+                <td class="text-right" scope="row">{{:~formatMoney(totalx)}}</td>
+            </tr>
+            {{/for}}
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <hr>
+     <p class="h5 text-center"><strong>STOCK VALORIZADO BODEGAS ESPECIALES AÑO {{:ano}}</strong></p>
+    <br>
+    <br>
+    <table  id="customers" style="font-size: 12px ;">
+        <thead>
+            <tr  >
+                <th scope="col" class="text-center">MES</th>
+                {{for mesesAnormal}} 
+                <th scope="col" class="text-center">{{:bodega}}</th>
+                {{/for}}
+                <th scope="col" class="text-center">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{for valoresAnormal}} 
+            <tr>
+                <th scope="col">{{:mes}}</th>
+                {{for bodegas}}
+                <td class="text-right">{{:~formatMoney(total)}}</td>
+                {{/for}}
+                <td class="text-right" scope="row">{{:~formatMoney(totalx)}}</td>
+            </tr>
+            {{/for}}
+        </tbody>
+    </table>
+

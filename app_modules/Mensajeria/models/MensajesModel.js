@@ -24,11 +24,6 @@ Mensajeria.prototype.listarMensajesTotal = function (parametros, callback) {
                     from controlar_x_perfil as cx\
                     left join system_perfiles as ca on cx.perfil_id = ca.perfil_id\
                     where cx.actualizacion_id = a.actualizacion_id ORDER BY cx.perfil_id) as x ) as perfiles"),
-//        "to_char(fecha_ini, 'dd-mm-yy hh:mi am') as fecha_inia",
-//        "to_char(fecha_fin, 'dd-mm-yy hh:mi am') as fecha_fina",
-//        "to_char(fecha_actu, 'dd-mm-yy hh:mi am') as fecha_actua",
-//        "fecha_ini as fecha_registro",
-//        "fecha_fin as fecha_validez",
         "a.fecha_actu"
     ];
 
@@ -153,8 +148,6 @@ Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
         "a.asunto",
         "a.descripcion",
         "a.fecha_fin",
-//        "cl.fecha_lectura",
-//        "cl.sw",
         "cx.obligatorio",
         G.knex.raw("(select nombre from system_usuarios where usuario_id=a.usuario_id) as nombre")
     ];
@@ -162,15 +155,8 @@ Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
     var query = G.knex.select(columnas)
             .from('system_usuarios_perfiles as sup')
             .innerJoin(G.knex.raw("controlar_x_perfil as cx on (cx.perfil_id = sup.perfil_id or cx.perfil_id=-1)"))
-//            .innerJoin("controlar_x_perfil as cx ", "sup.perfil_id", "cx.perfil_id")
             .innerJoin("actualizaciones as a ", "cx.actualizacion_id", "a.actualizacion_id")
             .innerJoin("system_usuarios as su ", "sup.usuario_id", "su.usuario_id")
-//            .leftJoin('controlar_lectura as cl', function () {
-//
-//                this.on("a.actualizacion_id", "cl.actualizacion_id")
-//                        .on("cl.usuario_id", obj.usuario_id);
-//
-//            })
             .whereNotIn('sup.usuario_id',
                     G.knex
                     .column(['usuario_id'])
@@ -179,7 +165,6 @@ Mensajeria.prototype.ConsultarMensajesUsuario = function (obj, callback) {
                     .andWhere(G.knex.raw("a.actualizacion_id = actualizacion_id")))
             .andWhere(G.knex.raw("a.fecha_fin >=now()"))
             .andWhere('sup.usuario_id', obj.usuario_id)
-//            .orderBy(G.knex.raw("cx.obligatorio desc,cl.sw asc,a.fecha_fin"));
             .orderBy('cx.obligatorio', 'desc');
 
 //console.log(G.sqlformatter.format(query.toString()));

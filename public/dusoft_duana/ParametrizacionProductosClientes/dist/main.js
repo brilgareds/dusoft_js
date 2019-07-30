@@ -45303,6 +45303,7 @@ define('url',["angular"], function(angular) {
                 'SEARCH_INVENTARY_PRODUCTS': BASE_URL + '/parametrizacionProductosClientes/searchInventaryProducts',
                 'ADD_PRODUCTS_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/addProductsContract',
                 'DELETE_PRODUCT_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/deleteProductContract',
+                'DELETE_PRODUCTS_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/deleteProductsContract',
                 'UPDATE_PRODUCT_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/updateProductContract',
                 'CREATE_CONTRACT': BASE_URL + '/parametrizacionProductosClientes/createContract',
                 'SELLERS': BASE_URL + '/parametrizacionProductosClientes/sellers',
@@ -48252,8 +48253,9 @@ define('includes/alert/Alert',["angular", "js/services"], function (angular, ser
                             <h4>{{mensaje}}</h4>\
                         </div>\
                         <div class="modal-footer" style="margin-top: 0px">\
-                            <button class="btn btn-success" ng-click="onBtnModal(true)">Aceptar</button>\
-                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()">Cancelar</button>\
+                        <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
+                            <button class="btn btn-success" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
+                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()" ng-if="callback">Cancelar</button>\
                         </div>',
                     controller: ["$scope", "$modalInstance", "titulo", "mensaje", "obligatorio", "callback", function ($scope, $modalInstance, titulo, mensaje, obligatorio, callback) {
                             $scope.mensaje = $sce.trustAsHtml(mensaje);
@@ -52447,50 +52449,6 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     }
 
                 });
-//                $scope.opts = {
-//                    backdrop: true,
-//                    backdropClick: false,
-//                    dialogFade: false,
-//                    windowClass: 'app-modal-window-xs-lg',
-//                    keyboard: true,
-//                    template: ' <div class="modal-header">\
-//                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-//                                    <h4 class="modal-title">Aviso</h4>\
-//                                </div>\
-//                                <div class="modal-body">\
-//                                    <!--h5 >{{mensaje.descripcion}}</h5-->\
-//                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje.descripcion"></textarea>\
-//                                </div>\
-//                                <div class="modal-footer">\
-//                                    <button class="btn btn-success" ng-click="aceptar()">Aceptar</button>\
-//                                    <button class="btn btn-warning" ng-hide="habilitarBoton()" ng-click="close()">Leer mas Tarde</button>\
-//                                </div>',
-//                    scope: $scope,
-//                    controller: function ($scope, $modalInstance, mensaje) {
-//                        $scope.mensaje = mensaje;
-//                        $scope.close = function () {
-//                            $modalInstance.close();
-//                        };
-//
-//                        $scope.habilitarBoton = function () {
-//                            var disabled = false;
-//
-//                            if (mensaje.obligatorio === 1) {
-//                                disabled = true;
-//                            }
-//
-//                            return disabled;
-//                        };
-//
-//
-//                    },
-//                    resolve: {
-//                        mensaje: function () {
-//                            return mensaje;
-//                        }
-//                    }
-//                };
-//                var modalInstance = $modal.open($scope.opts);
 
             };
 
@@ -52501,24 +52459,16 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 var socketid = datos.socket_id;
                 var socket_session = {
                     usuario_id: obj_session.usuario_id,
-//                   auth_token: obj_session.auth_token,
-                    socket_id: socketid,
-//                   device:"web",
-//                   appId: "dusoft-web"
+                    socket_id: socketid
                 };
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];
-//                        if (mensaje.sw != 1) {
-                            self.verMensaje(mensaje);
-//                        }
+                        self.verMensaje(mensaje);
                     }
                 });
-                //localStorageService.set("socketid", socketid);
-//                socket.emit("onConsultarMensaje", socket_session);
             });
 
-//            $scope.buscar_mensajes_usuario();
 
 
         }]);
@@ -52735,6 +52685,7 @@ define(
                 /******* Initialize *****/
                 let that = this;
                 let modalInstance = {};
+                $scope.modal_updateContract = false;
 
                 $scope.copyJson = obj => JSON.parse(JSON.stringify(obj));
                 $scope.abrirfechainicial = false;
@@ -52825,6 +52776,10 @@ define(
                 $scope.currentContract_updateBusinessUnit = (newUnit) => { $scope.root.data.currentContract.businessUnit = newUnit; };
                 $scope.currentContract_updateSeller = (seller) => { $scope.root.data.currentContract.seller = seller; };
                 $scope.currentContract_updateType = (newType) => { $scope.root.data.currentContract.type = newType; };
+
+                $scope.modal_close = () => {
+                    $scope.modal_updateContract = false;
+                };
 
                 $scope.abrirFechaInicial = function($event) {
                     $event.preventDefault();
@@ -52965,6 +52920,7 @@ define(
 
                 $scope.listContractProducts = (Contract, modal=true) => {
                     $scope.root.data.currentContract = Contract;
+                    $scope.modal_updateContract = true;
                     const contratoId = $scope.root.data.currentContract.contrato_numero;
                     $scope.root.form.addProducts.contratoClienteId = contratoId;
                     $scope.root.data.searchProducts = [];
@@ -52979,14 +52935,14 @@ define(
                     $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.LIST_CONTRACTS_PRODUCTS, obj, data => {
                         if (data.status === 200) {
                             $scope.root.data.currentContract.products = data.obj;
+                            $scope.searchThird($scope.root.data.currentContract);
                             console.log('Contrato is: ', $scope.root.data.currentContract);
-                            // $scope.root.data.contractProducts = data.obj;
-                            if (modal) {
-                                $scope.modal($scope.root.data.currentContract.products, 1);
-                                $scope.searchThird($scope.root.data.currentContract);
-                            }
                         } else { console.log('Error: ', data.obj.err); }
                     });
+                };
+
+                $scope.abrirFiltro = () => {
+                    $scope.filtroValidacion = !$scope.filtroValidacion;
                 };
 
                 $scope.searchInventaryProducts = () => {
@@ -53032,53 +52988,67 @@ define(
 
                 $scope.respuesta_archivo_plano = function (file, message) {
                     $scope.root.progresoArchivo = 60;
+                    let err = ``;
                     let data = (message !== undefined) ? JSON.parse(message) : {};
 
                     if (data.status === 200) {
                         $scope.root.progresoArchivo = 100;
                         AlertService.mostrarMensaje("success", data.msj);
                         $scope.root.data.searchProducts = data.obj.productos.validos;
+                        console.log('data.obj.productos.validos: ', data.obj.productos.validos);
                         for (let producto_invalido of data.obj.productos.invalidos) {
-                            AlertService.mostrarMensaje("danger", producto_invalido.mensajeError);
+                            err += `${producto_invalido.mensajeError}<br>`;
+                        }
+
+                        for (let producto_valido of data.obj.productos.validos) {
+                            if (producto_valido.precio_venta < producto_valido.costo_ultima_compra && (!producto_valido.justificacion || producto_valido.justificacion.length < 20)) {
+                                err += `El producto "${producto_valido.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
+                            }
+                        }
+                        if (err.length > 0) {
+                            //err = err.slice(0, -2);
+                            // window.alert(err);
+                            AlertService.mostrarVentanaAlerta("Error al subir archivo plano", err);
                         }
                         $scope.opciones_archivo.cancel();
                         $scope.root.progresoArchivo = 0;
                     } else {
                         console.log('Error: ', data.obj);
-                        AlertService.mostrarMensaje("danger", data.msj);
+                        if (err.length > 0) { AlertService.mostrarVentanaAlerta("Error al subir archivo plano", data.msj); }
                     }
                 };
 
                 /****************************/
                 /*** FUNCTIONS FOR MODAL ***/
                 /**************************/
-                $scope.modal = function (obj, templateId) {
-                    if (obj || templateId) {
-                        let template = '';
-                        if(templateId === 1){
-                            template = 'views/modals/listContractProducts.html';
-                        }
-
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: true,
-                            keyboard: true,
-                            templateUrl: template,
-                            scope: $scope,
-                            // controller: "VentanaMensajeSincronizacionController",
-                            resolve: {
-                                mensaje: function() {
-                                    return obj;
-                                }
-                            }
-                        };
-                        modalInstance = $modal.open($scope.opts);
-                        modalInstance.result.then(function(){},function(){});
-                    } else {
-                        alert('Error: Formato incorrecto para modal!!');
-                    }
-                };
+                // $scope.modal = function (obj, templateId) {
+                //     if (obj || templateId) {
+                //         let template = '';
+                //         if(templateId === 1){
+                //             template = 'views/modals/listContractProducts.html';
+                //         }
+                //
+                //         $scope.opts = {
+                //             backdrop: true,
+                //             backdropClick: true,
+                //             dialogFade: true,
+                //             keyboard: true,
+                //             templateUrl: template,
+                //             scope: $scope,
+                //             windowClass: 'app-modal-window-xlg-ls',
+                //             // controller: "VentanaMensajeSincronizacionController",
+                //             resolve: {
+                //                 mensaje: function() {
+                //                     return obj;
+                //                 }
+                //             }
+                //         };
+                //         modalInstance = $modal.open($scope.opts);
+                //         modalInstance.result.then(function(){},function(){});
+                //     } else {
+                //         alert('Error: Formato incorrecto para modal!!');
+                //     }
+                // };
                 $scope.test = () => {
 
                 };
@@ -53088,6 +53058,7 @@ define(
                     let countChecks = 0;
                     let errJustify = 0;
                     let errPrice = 0;
+                    let errMsg = ``;
                     let requireJustify = false;
                     let justifyValid = false;
 
@@ -53096,19 +53067,22 @@ define(
                             countChecks++;
                             productosChecks.push(producto);
                             requireJustify = producto.precio_venta < producto.costo_ultima_compra;
-                            justifyValid = producto.justificacion !== undefined && producto.justificacion.length > 20;
-                            if (producto.precio_venta === undefined) { errPrice++; }
-                            if (requireJustify && !justifyValid) { errJustify++; }
+                            if (producto.precio_venta === undefined) {
+                                errMsg += `El producto "${producto.codigo}" debe tener un precio de venta<br>`;
+                                errPrice++;
+                            }
+                            if (requireJustify && (!producto.justificacion || producto.justificacion.length < 20)) {
+                                errMsg += `El producto "${producto.codigo}" debe tener una justificacion de al menos 20 caracteres<br>`;
+                                errJustify++;
+                            }
                         }
                     }
                     if (countChecks === 0) {
-                        AlertService.mostrarMensaje('danger', 'Debe seleccionar al menos un producto!!');
+                        AlertService.mostrarVentanaAlerta('Error en la validación de los productos', `<b>¡Debe seleccionar al menos un producto!</b>`);
                     } else {
                         $scope.root.data.searchProducts = productosChecks;
-                        if (errJustify > 0) {
-                            AlertService.mostrarMensaje('danger', 'La justificación debe contener al menos 20 caracteres!!');
-                        } else if (errPrice > 0) {
-                            AlertService.mostrarMensaje('danger', 'Hay productos sin precio venta!!');
+                        if (errJustify > 0 || errPrice > 0) {
+                            AlertService.mostrarVentanaAlerta('Error en la validación de los productos', errMsg);
                         } else {
                             const obj = {
                                 session: $scope.session,
@@ -53150,6 +53124,25 @@ define(
                             }
                         });
                     } else { AlertService.mostrarMensaje('warning', 'El producto no fue eliminado'); }
+                };
+
+                $scope.deleteProductsContract = (contratoId) => {
+                    let responseUser = confirm('¿Esta seguro de eliminar TODOS los productos del contrato #' + contratoId + '?');
+                    if (responseUser) {
+                        const obj = {
+                            session: $scope.session,
+                            data: {
+                                contratoId: contratoId
+                            }
+                        };
+
+                        $scope.post(API.PARAMETRIZACION_PRODUCTOS_CLIENTES.DELETE_PRODUCTS_CONTRACT, obj, data => {
+                            if (data.status === 200) {
+                                $scope.listContractProducts($scope.root.data.currentContract, false);
+                                AlertService.mostrarMensaje('success', data.msj);
+                            } else { AlertService.mostrarMensaje('danger', data.msj); }
+                        });
+                    } else { AlertService.mostrarMensaje('warning', 'Los productos no fueron eliminados!'); }
                 };
 
                 $scope.updateProductContract = (Contract, Product) => {
@@ -53410,7 +53403,11 @@ define(
                         { field: 'producto_codigo', displayName: 'Codigo', width: '12%' },
                         { field: 'producto_descripcion', displayName: 'Descripcion', width: '30%' },
                         { field: 'requiere_autorizacion', displayName: 'Autorización', width: '8%' },
-                        { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%' },
+                        { field: 'costo_ultima_compraString', displayName: 'Costo Ultima Compra', width: '10%', cellTemplate: `
+                            <div style="line-height: 30px; margin-left: 5px;">{{row.entity.costo_ultima_compraString}}
+                                <span class="glyphicon glyphicon-warning-sign" title='"Precio venta" es mas bajo que "Costo ultima compra"' ng-style="{ display: (row.entity.producto_precio_pactado < row.entity.costo_ultima_compra) ? 'block' : 'none', top: '8px',  color: 'darkred', position: 'absolute', right: '5%' }"></span>
+                            </div>                        
+                        ` },
                         { field: 'producto_precio_pactado', displayName: 'Precio Venta', enableCellEdit: true, width: '11%' },
                         { field: 'justificacion', displayName: 'Justificación', enableCellEdit: true, width: '19%' },
                         { displayName: 'Actualizar', width: '5%', cellTemplate: `
@@ -53433,6 +53430,10 @@ define(
                                     </div>` },
                             */
                     ]
+                };
+
+                $scope.deleteAccount = () => {
+
                 };
                 that.init();
             }

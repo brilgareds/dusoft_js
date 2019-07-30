@@ -48200,8 +48200,9 @@ define('includes/alert/Alert',["angular", "js/services"], function (angular, ser
                             <h4>{{mensaje}}</h4>\
                         </div>\
                         <div class="modal-footer" style="margin-top: 0px">\
-                            <button class="btn btn-success" ng-click="onBtnModal(true)">Aceptar</button>\
-                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()">Cancelar</button>\
+                        <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
+                            <button class="btn btn-success" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
+                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()" ng-if="callback">Cancelar</button>\
                         </div>',
                     controller: ["$scope", "$modalInstance", "titulo", "mensaje", "obligatorio", "callback", function ($scope, $modalInstance, titulo, mensaje, obligatorio, callback) {
                             $scope.mensaje = $sce.trustAsHtml(mensaje);
@@ -52395,50 +52396,6 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     }
 
                 });
-//                $scope.opts = {
-//                    backdrop: true,
-//                    backdropClick: false,
-//                    dialogFade: false,
-//                    windowClass: 'app-modal-window-xs-lg',
-//                    keyboard: true,
-//                    template: ' <div class="modal-header">\
-//                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-//                                    <h4 class="modal-title">Aviso</h4>\
-//                                </div>\
-//                                <div class="modal-body">\
-//                                    <!--h5 >{{mensaje.descripcion}}</h5-->\
-//                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje.descripcion"></textarea>\
-//                                </div>\
-//                                <div class="modal-footer">\
-//                                    <button class="btn btn-success" ng-click="aceptar()">Aceptar</button>\
-//                                    <button class="btn btn-warning" ng-hide="habilitarBoton()" ng-click="close()">Leer mas Tarde</button>\
-//                                </div>',
-//                    scope: $scope,
-//                    controller: function ($scope, $modalInstance, mensaje) {
-//                        $scope.mensaje = mensaje;
-//                        $scope.close = function () {
-//                            $modalInstance.close();
-//                        };
-//
-//                        $scope.habilitarBoton = function () {
-//                            var disabled = false;
-//
-//                            if (mensaje.obligatorio === 1) {
-//                                disabled = true;
-//                            }
-//
-//                            return disabled;
-//                        };
-//
-//
-//                    },
-//                    resolve: {
-//                        mensaje: function () {
-//                            return mensaje;
-//                        }
-//                    }
-//                };
-//                var modalInstance = $modal.open($scope.opts);
 
             };
 
@@ -52449,24 +52406,16 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 var socketid = datos.socket_id;
                 var socket_session = {
                     usuario_id: obj_session.usuario_id,
-//                   auth_token: obj_session.auth_token,
-                    socket_id: socketid,
-//                   device:"web",
-//                   appId: "dusoft-web"
+                    socket_id: socketid
                 };
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];
-//                        if (mensaje.sw != 1) {
-                            self.verMensaje(mensaje);
-//                        }
+                        self.verMensaje(mensaje);
                     }
                 });
-                //localStorageService.set("socketid", socketid);
-//                socket.emit("onConsultarMensaje", socket_session);
             });
 
-//            $scope.buscar_mensajes_usuario();
 
 
         }]);
@@ -63225,11 +63174,11 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
-                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity))  ">\
-                                                    <span class="glyphicon glyphicon-ok"></span>\
+                                                <button ng-if="row.entity.getCosto() > 0 && row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()  || !valida_existencia_codigo(row.entity,row.entity.getEnFarmaciaSeleccionada()))  ">\
+                                                    <span class="glyphicon glyphicon-ok">{{parseFloat(row.entity.getCosto())}}</span>\
                                                 </button>\
-                                                <button ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto()" class="btn btn-default btn-xs" >\
+                                                <button ng-if="row.entity.getCosto() <= 0 || !row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto(row.entity)" class="btn btn-default btn-xs" >\
                                                     <span class="glyphicon glyphicon-lock"></span>\
                                                 </button>\
                                             </div>'
@@ -63237,11 +63186,15 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                 ]
             };
             
-            $scope.valida_existencia_codigo=function(data){
+            $scope.valida_existencia_codigo=function(data,dt){
               var disable=true;
+             if(data.costo > 0){  
               if( data.bodegaOrigenProducto!==Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo && data.existeProductoBodegaActual===0){
                   data.cantidadSolicitada="NE";//no existe en bodega
                   return false;
+               }   
+              }else{
+                return false;
               }
               return disable;
             };
@@ -63288,6 +63241,7 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                             setEmpresaOrigenProducto(_producto.empresa_id).
                             setCentroUtilidadOrigenProducto(_producto.centro_utilidad).
                             setBodegaOrigenProducto(_producto.bodega).
+                            setCosto(_producto.costo).
                             setExisteProductoBodegaActual(_producto.existe_producto_bodega_actual);
                     $scope.root.pedido.agregarProducto(producto);
 
@@ -63470,8 +63424,14 @@ define('controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoControll
                 $scope.rootSeleccionProductoFarmacia.filtro = filtro;
             };
 
-            $scope.mostrarAlertaProducto = function() {
-                self.mostrarAlertaSeleccionProducto("Error agregando producto", "El producto esta bloqueado o no se encuentra en la farmacia destino");
+            $scope.mostrarAlertaProducto = function(data) {
+               var mensaje="";
+                if(data.enFarmaciaSeleccionada===false)
+                    mensaje=" - El producto no esta insertado en la bodega Actual<br>";
+                if(parseFloat(data.getCosto()) <= 0)
+                    mensaje+=" - El producto tiene costo en cero";
+                    
+                self.mostrarAlertaSeleccionProducto("Error agregando producto", mensaje);
             };
 
             /*

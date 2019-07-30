@@ -108,8 +108,9 @@ define(["angular", "js/services"], function (angular, services) {
                             <h4>{{mensaje}}</h4>\
                         </div>\
                         <div class="modal-footer" style="margin-top: 0px">\
-                            <button class="btn btn-success" ng-click="onBtnModal(true)">Aceptar</button>\
-                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()">Cancelar</button>\
+                        <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
+                            <button class="btn btn-success" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
+                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()" ng-if="callback">Cancelar</button>\
                         </div>',
                     controller: ["$scope", "$modalInstance", "titulo", "mensaje", "obligatorio", "callback", function ($scope, $modalInstance, titulo, mensaje, obligatorio, callback) {
                             $scope.mensaje = $sce.trustAsHtml(mensaje);

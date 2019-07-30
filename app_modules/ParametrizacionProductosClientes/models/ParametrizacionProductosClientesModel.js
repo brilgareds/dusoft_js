@@ -330,7 +330,7 @@ ParametrizacionProductosClientesModel.prototype.createOrUpdateContract = (obj, c
                 const filter = {contrato_cliente_id: obj.contrato_numero};
                 query = G.knex('vnts_contratos_clientes').where(filter).update(fields);
             }
-            console.log('query: ', G.sqlformatter.format(query.toString()));
+            //console.log('query: ', G.sqlformatter.format(query.toString()));
 
             return query;
         }).then(response => {
@@ -472,8 +472,7 @@ ParametrizacionProductosClientesModel.prototype.existContractActive = (obj, call
                 })
                 .where(G.knex.raw(filtro))
                 .orderBy('contrato_numero');
-
-            console.log('Last Query: ', G.sqlformatter.format(query.toString()));
+            //console.log('Last Query: ', G.sqlformatter.format(query.toString()));
 
             return query;
         }).then(contractsActives => {
@@ -701,6 +700,23 @@ ParametrizacionProductosClientesModel.prototype.deleteProductContract = (obj, ca
             callback(err);
         });
 };
+ ParametrizacionProductosClientesModel.prototype.deleteProductsContract = (obj, callback) => {
+     promesa
+         .then(response => {
+             const query = G.knex('vnts_contratos_clientes_productos')
+                 .where('contrato_cliente_id', obj.contratoId)
+                 .del();
+
+             console.log('Query is: ', G.sqlformatter.format(query.toString()));
+             return query;
+         })
+         .then(response => {
+             callback(false, true);
+         }).catch(err => {
+         err.msg = `Error al intentar los productos del contrato #${obj.contratoId}`;
+         callback(err);
+     });
+ };
 
 ParametrizacionProductosClientesModel.prototype.searchInventaryProducts = (obj, callback) => {
     const offset = 0;

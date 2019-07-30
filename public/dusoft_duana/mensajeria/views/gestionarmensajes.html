@@ -52,7 +52,11 @@
             <div class="col-md-4">
                 <fieldset>
                     <legend>Perfiles Seleccionados</legend>
-                    <p class="">{{datos_view.perfilesSeleccionadosLetras}}</p>
+                    <!--<p class="">{{datos_view.perfilesSeleccionadosLetras}}</p>-->
+                    <div ng-repeat="item in datos_view.perfilesSeleccionados">
+                        <input type="checkbox" ng-model="item.obligatorio">{{item.descripcion}}
+                        <br>
+                    </div>
                 </fieldset>
             </div>
         </div>

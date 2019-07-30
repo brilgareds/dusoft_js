@@ -183,7 +183,7 @@ function __recorreListado(that, listado, parametros, index, transaccion, callbac
     }
 
 //    parametros.obligatorio = item.obligatorio;
-    parametros.obligatorio = 0;
+    parametros.obligatorio = item.obligatorio?1:0;
     parametros.item_id = item.perfil_id;
 
     return G.Q.nfcall(that.m_mensajes.agregarPerfilesLectura, parametros, transaccion).then(function (resultado) {

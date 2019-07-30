@@ -96,37 +96,6 @@ define(["angular", "js/controllers",
                 callback();
             };
 
-
-            /*          $scope.session = {
-             usuario_id: Sesion.getUsuarioActual().getId(),
-             auth_token: Sesion.getUsuarioActual().getToken()
-             };
-             
-             $scope.datos_view = {
-             termino_busqueda: ''
-             };
-             
-             $scope.filtros = [
-             {nombre: "Asunto", id: 1},
-             {nombre: "Descripcion", id: 2}
-             
-             ];
-             $scope.filtro = $scope.filtros[0];
-             
-             $scope.onSeleccionFiltro = function (filtro) {
-             
-             $scope.filtro = filtro;
-             $scope.datos_view.termino_busqueda = '';
-             
-             };
-             
-             // Variable para paginacion
-             $scope.paginas = 0;
-             $scope.cantidad_items = 0;
-             $scope.termino_busqueda = "";
-             $scope.pagina_actual = 1;*/
-
-
             $scope.crear_mensaje = function () {
 
                 $state.go('CrearMensaje');
@@ -167,6 +136,7 @@ define(["angular", "js/controllers",
             $scope.boton_agregar_perfil = function () {
 
                 if ($scope.datos_view.perfil) {
+                    $scope.datos_view.perfil.obligatorio = false;
                     $scope.datos_view.perfilesSeleccionados.push($scope.datos_view.perfil);
 
                     if ($scope.datos_view.perfilesSeleccionadosLetras !== '') {
@@ -358,7 +328,7 @@ define(["angular", "js/controllers",
                     data: {
                         usuario_id: $scope.session.usuario_id,
                         mensaje: $scope.tinymceModel,
-                        fecha_fin: $scope.fechafinal,
+                        fecha_fin: $scope.fechafinal + " 23:59:59-05",
                         asunto: $scope.asunto,
                         listado: $scope.datos_view.perfilesSeleccionados
                     }

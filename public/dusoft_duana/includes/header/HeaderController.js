@@ -235,10 +235,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
-                    style:'ui.tinymce',
+                    style: 'ui.tinymce',
                     size: 'lg',
                     keyboard: true,
-                   // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                    // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
                     controller: 'GruposChatController',
                     resolve: {
                         conversacion: function () {
@@ -816,81 +816,80 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 });
             };
 
-
-            $scope.tinymceOptionsTabla = {
-                menubar: false,
-                toolbar: 'code',
-                height: 250
-
-            };
-
-            self.verMensaje = function (mensaje) {
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: false,
-                    dialogFade: false,
-                    windowClass: 'app-modal-window-xs-lg',
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Aviso</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <!--h5 >{{mensaje.descripcion}}</h5-->\
-                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje.descripcion"></textarea>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-success" ng-click="aceptar()">Aceptar</button>\
-                                    <button class="btn btn-warning" ng-hide="habilitarBoton()" ng-click="close()">Leer mas Tarde</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: function ($scope, $modalInstance, mensaje) {
-                        $scope.mensaje = mensaje;
-                        $scope.close = function () {
-                            $modalInstance.close();
-                        };
-
-
-                        $scope.aceptar = function () {
-                            var obj = {
-                                session: session,
-                                data: {
-                                    mensaje: {
-                                        usuario_id: session.usuario_id,
-                                        mensaje_id: mensaje.actualizacion_id
-                                    }
-                                }
-                            };
-
-                            Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.INGRESAR_LECTURA, "POST", obj, function (data) {
-                                if (data.status === 200) {
-                                    $scope.close();
-                                } else {
-                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", 'No se registro la Lectura del mensaje');
-                                }
-
-                            });
-                        };
-
-                        $scope.habilitarBoton = function () {
-                            var disabled = false;
-
-                            if (mensaje.obligatorio === 1) {
-                                disabled = true;
-                            }
-
-                            return disabled;
-                        };
-
-
-                    },
-                    resolve: {
-                        mensaje: function () {
-                            return mensaje;
+            $scope.aceptar = function () {
+                var obj = {
+                    session: session,
+                    data: {
+                        mensaje: {
+                            usuario_id: session.usuario_id,
+                            mensaje_id: mensaje.actualizacion_id
                         }
                     }
                 };
-                var modalInstance = $modal.open($scope.opts);
+
+                Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.INGRESAR_LECTURA, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Leido");
+                    } else {
+                        AlertService.mostrarMensaje("warning", "No se registro la Lectura del mensaje");
+                    }
+
+                });
+            };
+
+            self.verMensaje = function (mensaje) {
+
+                AlertService.mostrarVentanaMensajeria(mensaje.asunto, mensaje.descripcion, mensaje.obligatorio, function (data) {
+
+                    if (data) {
+                        $scope.aceptar(mensaje);
+                    }
+
+                });
+//                $scope.opts = {
+//                    backdrop: true,
+//                    backdropClick: false,
+//                    dialogFade: false,
+//                    windowClass: 'app-modal-window-xs-lg',
+//                    keyboard: true,
+//                    template: ' <div class="modal-header">\
+//                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+//                                    <h4 class="modal-title">Aviso</h4>\
+//                                </div>\
+//                                <div class="modal-body">\
+//                                    <!--h5 >{{mensaje.descripcion}}</h5-->\
+//                                    <textarea ui-tinymce="tinymceOptionsTabla" ng-model="mensaje.descripcion"></textarea>\
+//                                </div>\
+//                                <div class="modal-footer">\
+//                                    <button class="btn btn-success" ng-click="aceptar()">Aceptar</button>\
+//                                    <button class="btn btn-warning" ng-hide="habilitarBoton()" ng-click="close()">Leer mas Tarde</button>\
+//                                </div>',
+//                    scope: $scope,
+//                    controller: function ($scope, $modalInstance, mensaje) {
+//                        $scope.mensaje = mensaje;
+//                        $scope.close = function () {
+//                            $modalInstance.close();
+//                        };
+//
+//                        $scope.habilitarBoton = function () {
+//                            var disabled = false;
+//
+//                            if (mensaje.obligatorio === 1) {
+//                                disabled = true;
+//                            }
+//
+//                            return disabled;
+//                        };
+//
+//
+//                    },
+//                    resolve: {
+//                        mensaje: function () {
+//                            return mensaje;
+//                        }
+//                    }
+//                };
+//                var modalInstance = $modal.open($scope.opts);
 
             };
 
@@ -909,9 +908,9 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];
-                        if (mensaje.sw != 1) {
+//                        if (mensaje.sw != 1) {
                             self.verMensaje(mensaje);
-                        }
+//                        }
                     }
                 });
                 //localStorageService.set("socketid", socketid);

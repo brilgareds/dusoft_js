@@ -12,6 +12,10 @@ module.exports = function (app, di_container) {
         c_mensajes.consultarPerfiles(req, res);
     });
 
+    app.post('/api/Mensajeria/consultarEmpresas', function (req, res) {
+        c_mensajes.consultarEmpresas(req, res);
+    });
+
     app.post('/api/Mensajeria/ConsultarLecturasMensajes', function (req, res) {
         c_mensajes.ConsultarLecturasMensajes(req, res);
     });

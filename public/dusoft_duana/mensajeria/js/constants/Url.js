@@ -10,6 +10,7 @@ define(["angular"], function (angular) {
             'MENSAJES': {
                 'LISTAR_MENSAJES_TOTAL': BASE_URL + '/Mensajeria/listarMensajesTotal',
                 'CONSULTAR_PERFILES': BASE_URL + '/Mensajeria/consultarPerfiles',
+                'CONSULTAR_EMPRESAS': BASE_URL + '/Mensajeria/consultarEmpresas',
                 'CONSULTAR_LECTURAS_MENSAJES': BASE_URL + '/Mensajeria/ConsultarLecturasMensajes',
                 'CONSULTAR_MENSAJES_USUARIO': BASE_URL + '/Mensajeria/ConsultarMensajesUsuario',
                 'INGRESAR_MENSAJE': BASE_URL + '/Mensajeria/IngresarMensaje'

@@ -41,13 +41,34 @@ Mensajeria.prototype.consultarPerfiles = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    G.Q.ninvoke(that.m_mensajes, 'consultarPerfiles').then(function (resultado) {
+    var parametros = {
+        empresa_id: args.empresa_id
+    };
+
+    G.Q.ninvoke(that.m_mensajes, 'consultarPerfiles', parametros).then(function (resultado) {
 
         res.send(G.utils.r(req.url, 'Consultar perfiles ok!!!!', 200, {perfiles: resultado}));
     }).fail(function (err) {
         res.send(G.utils.r(req.url, 'Error al Consultar perfiles del sistema', 500, {mensajes: {}}));
     }).done();
 
+};
+
+
+/**
+ * @author German Galvis
+ * +Descripcion lista las empresas
+ * @fecha 2019-07-30
+ */
+Mensajeria.prototype.consultarEmpresas = function (req, res) {
+    var that = this;
+    var parametro = req.session.user;
+    G.Q.ninvoke(that.m_mensajes, 'consultarEmpresas').then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Consultar listar empresas ok!!!!', 200, {listarEmpresas: resultado}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar listado de empresas', 500, {listarEmpresas: {}}));
+    }).done();
 };
 
 /**
@@ -101,9 +122,9 @@ Mensajeria.prototype.ConsultarRolesMensajes = function (req, res) {
 Mensajeria.prototype.ConsultarMensajesUsuario = function (req, res) {
     var that = this;
     var args = req.body.data;
-
     var parametros = {
-        usuario_id: args.mensaje.usuario_id
+        usuario_id: args.mensaje.usuario_id,
+//        empresa_id: args.mensaje.empresa_id
     };
 
     G.Q.ninvoke(that.m_mensajes, 'ConsultarMensajesUsuario', parametros).then(function (resultado) {
@@ -183,7 +204,7 @@ function __recorreListado(that, listado, parametros, index, transaccion, callbac
     }
 
 //    parametros.obligatorio = item.obligatorio;
-    parametros.obligatorio = item.obligatorio?1:0;
+    parametros.obligatorio = item.obligatorio ? 1 : 0;
     parametros.item_id = item.perfil_id;
 
     return G.Q.nfcall(that.m_mensajes.agregarPerfilesLectura, parametros, transaccion).then(function (resultado) {

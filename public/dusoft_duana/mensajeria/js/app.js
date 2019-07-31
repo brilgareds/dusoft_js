@@ -25,10 +25,8 @@ define([
     "includes/http/Request",
     "dragndropfile",
     "models/Mensaje",
-    //"controllers/PlanillasController",
-    //"controllers/ListarPlanillasController",
     "controllers/mensajeriaController",
-    
+    "controllers/crearMensajeController",
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     //Service notificaciones
@@ -82,7 +80,7 @@ define([
                     text: "Crear Mensajes",
                     templateUrl: "views/gestionarmensajes.html",
                     parent_name : "GestionarMensajes",
-                    controller: "mensajeriaController"
+                    controller: "crearMensajeController"
                 });
                 
                 if ($location.path() === "")

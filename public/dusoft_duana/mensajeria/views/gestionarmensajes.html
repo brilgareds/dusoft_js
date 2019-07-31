@@ -26,6 +26,23 @@
                 </fieldset>
             </div>
             <div class="col-md-2">
+                <fieldset>
+                    <legend>Empresa Destino</legend>  
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select ng-model="datos_view.empresaSeleccionada"  pl
+                                    class="form-control selectgeneral pull-left"
+                                    ng-change="onBuscarPerfiles()">
+                                <option value="">Seleccionar empresa</option>
+                                <option ng-repeat="x in listEmpresas"
+                                        value="{{x.empresa_id}}">{{x.razon_social}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>   
+            <div class="col-md-2">
 
                 <fieldset>
                     <legend>Perfiles</legend>
@@ -49,10 +66,9 @@
                     </button>
                 </fieldset>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <fieldset>
                     <legend>Perfiles Seleccionados</legend>
-                    <!--<p class="">{{datos_view.perfilesSeleccionadosLetras}}</p>-->
                     <div ng-repeat="item in datos_view.perfilesSeleccionados">
                         <input type="checkbox" ng-model="item.obligatorio">{{item.descripcion}}
                         <br>

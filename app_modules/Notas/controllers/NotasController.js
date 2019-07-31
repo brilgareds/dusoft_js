@@ -1,11 +1,21 @@
 /* global G */
+let that;
 
-var Notas = function (m_notas, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes, c_sincronizacion) {
-    this.m_notas = m_notas;
-    this.m_sincronizacion = m_sincronizacion;
-    this.m_facturacion_proveedores = m_facturacion_proveedores;
-    this.m_facturacion_clientes = m_facturacion_clientes;
-    this.c_sincronizacion = c_sincronizacion;
+var Notas = function (m_notas, m_notas_class, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes,
+                      c_sincronizacion, m_pago, m_facturador, m_adquiriente, m_resolucion, m_numeracion) {
+    that = this;
+    that.m_notas = m_notas;
+    that.m_notas_class = m_notas_class;
+    that.m_sincronizacion = m_sincronizacion;
+    that.m_facturacion_proveedores = m_facturacion_proveedores;
+    that.m_facturacion_clientes = m_facturacion_clientes;
+    that.c_sincronizacion = c_sincronizacion;
+
+    that.m_pago = m_pago;
+    that.m_facturador = m_facturador;
+    that.m_adquiriente = m_adquiriente;
+    that.m_resolucion = m_resolucion;
+    that.m_numeracion = m_numeracion;
 };
 
 
@@ -920,423 +930,225 @@ Notas.prototype.sincronizarNotas = function (req, res) {
     }
 };
 
+function codigoDocumentoDian(codigoDocumentoDian) {
+    switch (codigoDocumentoDian) {
+        case 'CE':
+            return 22;
+            break;
+        case 'NIT':
+            return 31;
+            break;
+        case 'RC':
+            return 11;
+            break;
+        case 'PA':
+            return 41;
+            break;
+        case 'TI':
+            return 12;
+            break;
+        case 'CC':
+            return 13;
+            break;
+    }
+}
+
+function documentosAnexos(that, pedidos, index, resultado, callback) {
+    var item = pedidos[index];
+
+    if (!item) {
+        callback(false, resultado);
+        return;
+    }
+    var docAnexo = that.m_documentos_anexos;
+
+    docAnexo.setId(item.pedido);
+    docAnexo.setTipo('OR');
+    docAnexo.setFechaEmision(item.fecha);
+    resultado.push(JSON.parse(JSON.stringify(docAnexo)));
+
+    var timer = setTimeout(function () {
+        index++;
+        documentosAnexos(that, pedidos, index, resultado, callback);
+        clearTimeout(timer);
+    }, 0);
+};
+
 /**
  * @author German Galvis
  * +Descripcion  Metodo encargado para sincronizar las notas generadas
  * @fecha 2018-09-04 (YYYY-MM-DD)
  */
-// Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
-//
-//     that = this;
-//     var args = req.body.data;
-//     var resultado;
-//     var data;
-//
-//     G.Q.nfcall(__generarSincronizacionDianDebito, that, req).then(function (data) {
-//         resultado = data;
-//
-//         return G.Q.nfcall(__productos, resultado.productos, 0, []);
-//     }).then(function (productos) {
-//
-// var subTotal = resultado.valores.subTotal.replace(".", "");
-// var total = resultado.valores.totalFactura.replace(".", "");
-//         var json = {
-//             codigoMoneda: "COP",
-//             conceptoNota: "3", // falta validar
-//             fechaExpedicion: resultado.nota.fecha_registro_nota,
-//             fechaVencimiento: "", //falta
-//             codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
-//             numeroIdentificacion: resultado.cliente.tercero_id,
-//             identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E",
-//             nombreSucursal: "",
-//             numeroNota: resultado.nota.numero,
-//             observaciones: "", //falta
-//             perfilEmision: "CLIENTE",
-//             perfilUsuario: "CLIENTE",
-//             productos: productos,
-//             subtotalNotaDebitoElectronica: subTotal.replace(".", ""),
-//             ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
-//             baseGravableReteFuente: resultado.valores.bases.base_rtf,
-//             IVA: resultado.valores.ivaTotal.replace(".", ""),
-//             baseGravableIVA: subTotal.replace(".", ""),
-//             ReteICA: resultado.valores.retencionIca.replace(".", ""),
-//             baseGravableReteICA: resultado.valores.bases.base_ica,
-//             ReteIVA: resultado.valores.retencionIva.replace(".", ""),
-//             baseGravableReteIVA: resultado.valores.bases.base_reteiva,
-//             tipoFactura: "ELECTRONICA",
-//             totalNotaDebitoElectronica: total.replace(".", ""),
-//
-//             coordXQr: 172,
-//             coordYQr: 263,
-//             coordXCufe: 67,
-//             coordYCufe: 266,
-//             pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
-//         };
-//
-//         return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
-//
-//     }).then(function (respuesta) {
-//
-//
-//         data = respuesta;
-//         var parametros = {
-//             empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
-//             prefijo: 'ND',
-//             factura_fiscal: resultado.nota.numero,
-//             sw_factura_dian: respuesta.sw_factura_dian,
-//             json_envio: data.lastRequest,
-//             respuesta_ws: data
-//         };
-//
-//         if (respuesta.sw_factura_dian === '1') {
-//
-//             return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-//
-//         } else if (respuesta.sw_factura_dian === '0') {
-//
-//             return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-//
-//         }
-//
-//     }).then(function (resultado) {
-//
-//         if (data.sw_factura_dian === '1') {
-//
-//             res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
-//
-//         } else if (data.sw_factura_dian === '0') {
-//
-//             res.send(G.utils.r(req.url, data.msj, data.status, data));
-//
-//         }
-//
-//     }).fail(function (err) {
-//
-//         res.send(G.utils.r(req.url, err.msj, err.status, err));
-//
-//     }).done();
-//
-// };
-
-Notas.prototype.generarSincronizacionDianDebito = function (req, res) {
+Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
     console.log('Sincronizacion de debito!!!');
 
-    that = this;
-    var args = req.body.data.imprimir_reporte_factura;
-    var productos;
+    var args = req.body.data;
     var resultado;
     var data;
-    var Factura = this.m_facturas;
-    var Pago = this.m_pago;
-    var Facturador = this.m_facturador;
-    var Adquiriente = this.m_adquiriente;
-    var Resolucion = this.m_resolucion;
-    var Numeracion = this.m_numeracion;
+    var Nota = that.m_notas_class;
+    var Pago = that.m_pago;
+    var Facturador = that.m_facturador;
+    var Adquiriente = that.m_adquiriente;
+    var Resolucion = that.m_resolucion;
+    var Numeracion = that.m_numeracion;
+    //console.log('Nota; ', that);
 
-    G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
-        resultado = data;
-
-        return G.Q.nfcall(__productosAdjunto, that, resultado.detalle, 0, []);
-    }).then(function (productos) {
+    G.Q.nfcall(__generarSincronizacionDianDebito, that, req).then(data => {
+        resultado = JSON.parse(JSON.stringify(data)); // console.log('data: ', data);
+        return G.Q.nfcall(__productos, resultado.productos, 0, []);
+    }).then(productos => { // console.log('productos: ', productos);
         var subTotal = resultado.valores.subTotal.replace(".", "");
         var total = resultado.valores.totalFactura.replace(".", "");
-        Factura.set_Tipodocumento('FE');
-        Factura.set_Versiondocumento('1.0');
-        Factura.set_Registrar(false);
-        Factura.set_Codigotipodocumento('01');
-        Factura.set_Tipooperacion('10');
-        Factura.set_Prefijodocumento(resultado.cabecera.prefijo);
-        Factura.set_Numerodocumento(resultado.cabecera.factura_fiscal);
-        Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
-        Factura.set_Numerolineas(resultado.detalle.length);
-        Factura.set_Subtotal(subTotal);
-        Factura.set_Totalbaseimponible(subTotal); // falta validar
-        Factura.set_SubtotalMasTributos(total);
-        Factura.set_TotalDescuentos(0);
-        Factura.set_Totalcargos(0);
-        Factura.set_Totalanticipos(0);
-        Factura.set_Total(total);
-        Factura.set_Codigomoneda('COP');
-        /*-----Clase Pago------*/
+        var json = {
+            codigoMoneda: "COP",
+            conceptoNota: "3", // falta validar
+            fechaExpedicion: resultado.nota.fecha_registro_nota,
+            fechaVencimiento: "", //falta
+            codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
+            numeroIdentificacion: resultado.cliente.tercero_id,
+            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E",
+            nombreSucursal: "",
+            numeroNota: resultado.nota.numero,
+            observaciones: "", //falta
+            perfilEmision: "CLIENTE",
+            perfilUsuario: "CLIENTE",
+            productos: productos,
+            subtotalNotaDebitoElectronica: subTotal.replace(".", ""),
+            ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
+            baseGravableReteFuente: resultado.valores.bases.base_rtf,
+            IVA: resultado.valores.ivaTotal.replace(".", ""),
+            baseGravableIVA: subTotal.replace(".", ""),
+            ReteICA: resultado.valores.retencionIca.replace(".", ""),
+            baseGravableReteICA: resultado.valores.bases.base_ica,
+            ReteIVA: resultado.valores.retencionIva.replace(".", ""),
+            baseGravableReteIVA: resultado.valores.bases.base_reteiva,
+            tipoFactura: "ELECTRONICA",
+            totalNotaDebitoElectronica: total.replace(".", ""),
+
+            coordXQr: 172,
+            coordYQr: 263,
+            coordXCufe: 67,
+            coordYCufe: 266,
+            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
+        };
+
+        Nota.set_Tipodocumento('ND');
+        Nota.set_Versiondocumento('1.0');
+        Nota.set_Registrar(false);
+        Nota.set_Control('CCFV5201905');
+        Nota.set_Cvcc('CVCC#ÁÉÍÓÚÜÑ&áéíóúúñ@¿¡!');
+        Nota.set_Formato('JSON');
+        Nota.set_Codigotipodocumento('91');
+        Nota.set_Tipooperacion('01');
+        Nota.set_Prefijodocumento(resultado.nota.prefijo);
+
+        Nota.set_Numerodocumento(resultado.nota.factura_fiscal);
+        Nota.set_Fechaemision(resultado.nota.fecha_registro);
+        Nota.set_Numerolineas(productos.length);
+        Nota.set_Subtotal(parseFloat(subTotal));
+        Nota.set_Totalbaseimponible(parseFloat(subTotal));
+        Nota.set_SubtotalMasTributos(parseFloat(total));
+        Nota.set_TotalDescuentos(0);
+        Nota.set_Totalcargos(0);
+        Nota.set_Totalanticipos(0);
+        Nota.set_Redondeo(0);
+        Nota.set_Total(parseFloat(total));
+        Nota.set_Codigomoneda('COP');
+        // console.log('Class Pago es: ', Pago);
+
         Pago.setId(1); // 1 Contado, 2 Credito
         Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
-        /*--------------------*/
-        Factura.set_Pago(Pago);
+        console.log('Resultado: ', resultado, '\n\n');
 
-        Factura.set_Listaproductos(productos);
+        Nota.set_Pago(Pago); // otra clase
+        Nota.set_Listaproductos(productos);
+        Facturador.setRazonSocial(resultado.empresa.razon_social);
+        Facturador.setNombreRegistrado(resultado.empresa.razon_social);
+        Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.empresa.tipo_id_empresa));
+        Facturador.setIdentificacion(resultado.empresa.id);
+        Facturador.setDigitoVerificacion(resultado.empresa.digito_verificacion);
+        Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
+        Facturador.setTelefono(resultado.empresa.telefono_empresa);
+        Facturador.setDireccion(resultado.empresa.direccion_empresa);
+        Facturador.setDireccionFiscal(resultado.empresa.direccion_empresa);
+        Nota.set_Facturador(Facturador); // otra clase
+        /*----- Clase Adquiriente ------*/
+        Adquiriente.setRazonSocial(resultado.nota.nombre_tercero);
+        Adquiriente.setNombreRegistrado(resultado.nota.nombre_tercero);
+        Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.nota.tipo_id_tercero));
+        Adquiriente.setIdentificacion(resultado.nota.tercero_id);
+        Adquiriente.setDigitoVerificacion(parseInt(resultado.nota.dv));
+        Adquiriente.setNaturaleza(resultado.nota.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
+        Adquiriente.setTelefono(resultado.nota.telefono);
+        Adquiriente.setDireccion(resultado.nota.direccion);
+        Adquiriente.setDireccionFiscal(resultado.nota.direccion);
+        Adquiriente.setSucursal('Principal');
+        Nota.set_Adquiriente(Adquiriente); // otra clase
+        Nota.set_Posicionxcufe(110);
+        Nota.set_Posicionycufe(256);
+        Nota.set_Posicionxqr(164);
+        Nota.set_Posicionyqr(260);
+        Nota.set_ListaCorrecciones([{ descripcion: resultado.nota.tipo_nota }]);
+        // Nota.set_Base64(json.pdf);   BASE 64
+        console.log('Nota: ', JSON.parse(JSON.stringify(Nota)));
 
+        /* console.log('Before');
         const p1 = new Promise((resolve, reject) => {
-            documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], function (err, resul) {
+            documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], (err, resul) => {
                 resolve(resul);
             });
         });
-
-        /*-----Clase Facturador------*/
-        Facturador.setRazonSocial(resultado.cabecera.razon_social);
-        Facturador.setNombreRegistrado(resultado.cabecera.razon_social);
-        Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_empresa));
-        Facturador.setIdentificacion(resultado.cabecera.id);
-        Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
-        Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
-        Facturador.setTelefono(resultado.cabecera.telefono_empresa);
-        Facturador.setDireccion(resultado.cabecera.direccion_empresa);
-        Facturador.setDireccionFiscal(resultado.cabecera.direccion_empresa);
-        /*--------------------*/
-        Factura.set_Facturador(Facturador);
-
-        /*-----Clase Adquiriente------*/
-        Adquiriente.setRazonSocial(resultado.cabecera.nombre_tercero);
-        Adquiriente.setNombreRegistrado(resultado.cabecera.nombre_tercero);
-        Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_tercero));
-        Adquiriente.setIdentificacion(resultado.cabecera.tercero_id);
-        Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
-        Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
-        Adquiriente.setTelefono(resultado.cabecera.telefono);
-        Adquiriente.setDireccion(resultado.cabecera.direccion);
-        Adquiriente.setDireccionFiscal(resultado.cabecera.direccion);
-        Adquiriente.setSucursal('Principal');
-        /*--------------------*/
-        Factura.set_Adquiriente(Adquiriente); // otra clase
-        Factura.set_Posicionxcufe(110);
-        Factura.set_Posicionycufe(256);
-        Factura.set_Posicionxqr(164);
-        Factura.set_Posicionyqr(260);
-
-        /*-----Clase Resolucion------*/
-        Resolucion.setNumero(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ);
-        Resolucion.setFechaInicio('2018-08-30');
-        Resolucion.setFechaFin('2020-08-30');
-        /*-----Clase Resolucion------*/
-        Numeracion.setPrefijo(resultado.cabecera.prefijo);
-        Numeracion.setDesde(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ);
-        Numeracion.setHasta(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ);
-        Numeracion.setFechaInicio('2018-08-30');
-        Numeracion.setFechaFin('2020-08-30');
-        /*----------------------------*/
-        Resolucion.setNumeracion(Numeracion);
-        /*----------------------------*/
-        Factura.set_Resolucion(Resolucion);
-        return false;
+        console.log('In');
 
         Promise.all([p1])
             .then(values => {
-                Factura.set_Documentosanexos(values[0]);
-                console.log("factura", Factura);
+                Nota.set_Documentosanexos(values[0]);
+                console.log("factura", Nota);
             }, reason => {
                 console.log("reason", reason);
-            });
-        return false;
-    }).fail(function (err) {
+            });*/
+        throw { response: {} };
+
+        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaDebito', json);
+    }).then(function (respuesta) {
+        data = respuesta;
+        var parametros = {
+            empresa_id: args.empresaId, //obj.parametros.parametros.direccion_ip.replace("::ffff:", ""),
+            prefijo: 'ND',
+            factura_fiscal: resultado.nota.numero,
+            sw_factura_dian: respuesta.sw_factura_dian,
+            json_envio: data.lastRequest,
+            respuesta_ws: data
+        };
+
+        if (respuesta.sw_factura_dian === '1') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        } else if (respuesta.sw_factura_dian === '0') {
+
+            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+
+        }
+
+    }).then(function (resultado) {
+
+        if (data.sw_factura_dian === '1') {
+
+            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+
+        } else if (data.sw_factura_dian === '0') {
+
+            res.send(G.utils.r(req.url, data.msj, data.status, data));
+
+        }
+
+    }).fail(err => {
+        if (!err.response) { err.response = {}; }
+        if (!err.msj) { err.msj = 'Hubo un error'; }
+        if (!err.status) { err.status = 500; }
         res.send(G.utils.r(req.url, err.msj, err.status, err));
     }).done();
-};
-
-FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
-    that = this;
-    var args = req.body.data.imprimir_reporte_factura;
-    var productos;
-    var resultado;
-    var data;
-    var Factura = this.m_facturas;
-    var Pago = this.m_pago;
-    var Facturador = this.m_facturador;
-    var Adquiriente = this.m_adquiriente;
-    var Resolucion = this.m_resolucion;
-    var Numeracion = this.m_numeracion;
-
-    G.Q.nfcall(__generarSincronizacionDian, that, req).then(function (data) {
-        resultado = data;
-//        console.log('Data: ', resultado);
-        return G.Q.nfcall(__productosAdjunto, that, resultado.detalle, 0, []);
-
-    }).then(function (productos) {
-
-        var subTotal = resultado.valores.subTotal.replace(".", "");
-        var total = resultado.valores.totalFactura.replace(".", "");
-        Factura.set_Tipodocumento('FE');
-        Factura.set_Versiondocumento('1.0');
-        Factura.set_Registrar(false);
-        // factura.set_Control(''); //falta que certicamara nos de el token
-        Factura.set_Codigotipodocumento('01');
-        Factura.set_Tipooperacion('10');
-        Factura.set_Prefijodocumento(resultado.cabecera.prefijo);
-        Factura.set_Numerodocumento(resultado.cabecera.factura_fiscal);
-        Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
-        // factura.set_Horaemision('10'); // todavia no sabemos si enviarla
-        // factura.set_Periodofacturacion('10'); // no se envia
-        Factura.set_Numerolineas(resultado.detalle.length);
-        Factura.set_Subtotal(subTotal);
-        Factura.set_Totalbaseimponible(subTotal); // falta validar
-        Factura.set_SubtotalMasTributos(total);
-        Factura.set_TotalDescuentos(0);
-        Factura.set_Totalcargos(0);
-        Factura.set_Totalanticipos(0);
-        Factura.set_Total(total);
-        Factura.set_Codigomoneda('COP');
-        // factura.set_Tasacambio(); // no se envia
-
-        /*-----Clase Pago------*/
-        Pago.setId(1); // 1 Contado, 2 Credito
-        Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
-        /*--------------------*/
-        Factura.set_Pago(Pago); // otra clase
-
-        Factura.set_Listaproductos(productos); // listado de otra clase
-//        Factura.set_Listadescripciones(); // por validar
-//        Factura.set_Listadocumentosreferenciados();
-////        Factura.set_Notasreferenciadas(); // no se usa
-
-        const p1 = new Promise((resolve, reject) => {
-            documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], function (err, resul) {
-                resolve(resul);
-            });
-        });
-//        const p2 = new Promise((resolve, reject) => {
-//            gruposImpuestos(that, resultado.cabecera.pedido_array, 0, [], function (err, resul) {
-//                resolve(resul);
-//            });
-//        });
-//        documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], function (err,resul) {
-//            console.log("retorno",resul);
-//            Factura.set_Documentosanexos(resul);
-//        });
-////        Factura.set_Listaanticipos(); // no se usa
-////        Factura.set_Listacargosdescuentos(); // no se usa
-////        Factura.set_Gruposdeducciones(); // no se usa
-
-        /*-----Clase Facturador------*/
-        Facturador.setRazonSocial(resultado.cabecera.razon_social);
-        Facturador.setNombreRegistrado(resultado.cabecera.razon_social);
-        Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_empresa));
-        Facturador.setIdentificacion(resultado.cabecera.id);
-        Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
-        Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
-//        Facturador.setCodigoRegimen();
-//        Facturador.setResponsabilidadFiscal(); // por validar
-//        Facturador.setCodigoImpuesto(); // por validar
-//        Facturador.setNombreImpuesto(); // por validar
-        Facturador.setTelefono(resultado.cabecera.telefono_empresa);
-//        Facturador.setEmail(); // no se usa
-//        Facturador.setContacto(); // no se usa
-        Facturador.setDireccion(resultado.cabecera.direccion_empresa);
-        Facturador.setDireccionFiscal(resultado.cabecera.direccion_empresa);
-//        Facturador.setListaResponsabilidadesTributarias();
-//        Facturador.setCodigoCIUU(); // no se usa
-//        Facturador.setSucursal(); // no se usa
-//        Facturador.setListaParticipantesConsorcio(); // no se usa
-        /*--------------------*/
-        Factura.set_Facturador(Facturador); // otra clase
-
-        /*-----Clase Adquiriente------*/
-        Adquiriente.setRazonSocial(resultado.cabecera.nombre_tercero);
-        Adquiriente.setNombreRegistrado(resultado.cabecera.nombre_tercero);
-        Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_tercero));
-        Adquiriente.setIdentificacion(resultado.cabecera.tercero_id);
-        Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
-        Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
-//        Adquiriente.setCodigoRegimen();
-//        Adquiriente.setResponsabilidadFiscal(); // por validar
-//        Adquiriente.setCodigoImpuesto(); // por validar
-//        Adquiriente.setNombreImpuesto(); // por validar
-        Adquiriente.setTelefono(resultado.cabecera.telefono);
-//        Adquiriente.setEmail(); // no se usa
-//        Adquiriente.setContacto(); // no se usa
-        Adquiriente.setDireccion(resultado.cabecera.direccion);
-        Adquiriente.setDireccionFiscal(resultado.cabecera.direccion);
-//        Adquiriente.setListaResponsabilidadesTributarias(); // otra clase  por validar
-//        Adquiriente.setCodigoCIUU(); // no se usa
-        Adquiriente.setSucursal('Principal');
-//        Adquiriente.setCentroCosto(); // no se usa
-        /*--------------------*/
-        Factura.set_Adquiriente(Adquiriente); // otra clase
-
-//        Factura.set_Autorizado(); // no se usa
-//        Factura.set_Entrega(); // no se usa
-//        Factura.set_Urlanexos(); // no se usa
-//        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
-        Factura.set_Posicionxcufe(110);
-        Factura.set_Posicionycufe(256);
-//        Factura.set_Rotacioncufe(0); // no se usa
-//        Factura.set_Fuentecufe(); // no se usa
-        Factura.set_Posicionxqr(164);
-        Factura.set_Posicionyqr(260);
-//        Factura.Factura.set_Fechaenvio(); // por validar
-//        Factura.set_Descripciongeneral();
-
-        /*-----Clase Resolucion------*/
-        Resolucion.setNumero(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ);
-        Resolucion.setFechaInicio('2018-08-30');
-        Resolucion.setFechaFin('2020-08-30');
-        /*-----Clase Resolucion------*/
-        Numeracion.setPrefijo(resultado.cabecera.prefijo);
-        Numeracion.setDesde(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ);
-        Numeracion.setHasta(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ);
-        Numeracion.setFechaInicio('2018-08-30');
-        Numeracion.setFechaFin('2020-08-30');
-        /*----------------------------*/
-        Resolucion.setNumeracion(Numeracion);
-        /*----------------------------*/
-        Factura.set_Resolucion(Resolucion);
-//
-//        Factura.set_ListaCorrecciones();
-
-        Promise.all([p1])
-            .then(values => {
-//                    console.log("values",values);
-                Factura.set_Documentosanexos(values[0]);
-//                    Factura.set_Gruposimpuestos(values[1]);
-                console.log("factura", Factura);
-            }, reason => {
-                console.log("reason", reason);
-            });
-
-
-
-
-//        console.log("factura", Factura);
-        // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
-        return false;
-
-        // }).then(function (respuesta) {
-        //
-        //     data = respuesta;
-        //     var parametros = {
-        //         empresa_id: args.empresaId,
-        //         prefijo: resultado.cabecera.prefijo,
-        //         factura_fiscal: resultado.cabecera.factura_fiscal,
-        //         sw_factura_dian: respuesta.sw_factura_dian,
-        //         json_envio: data.lastRequest,
-        //         respuesta_ws: data
-        //     };
-        //
-        //     if (respuesta.sw_factura_dian === '1') {
-        //
-        //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-        //
-        //     } else if (respuesta.sw_factura_dian === '0') {
-        //
-        //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-        //
-        //     }
-        //
-        // }).then(function (resultado) {
-        //
-        //     if (data.sw_factura_dian === '1') {
-        //
-        //         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
-        //
-        //     } else if (data.sw_factura_dian === '0') {
-        //
-        //         res.send(G.utils.r(req.url, data.msj, data.status, data));
-        //
-        //     }
-
-    }).fail(function (err) {
-
-        res.send(G.utils.r(req.url, err.msj, err.status, err));
-
-    }).done();
-
 };
 
 /**
@@ -1397,7 +1209,6 @@ function __generarSincronizacionDianDebito(that, req, callback) {
         parametros.tabla_2 = tabla_2;
         parametros.tabla_3 = tabla_3;
         parametros.tabla_4 = tabla_4;
-
 
         return G.Q.nfcall(that.m_notas.clienteNota, parametros);
     }).then(function (result) {
@@ -1497,7 +1308,6 @@ function __generarSincronizacionDianDebito(that, req, callback) {
         };
 
         callback(false, informacion);
-
     }).fail(function (err) {
         console.log("Error  ", err);
         callback(err);
@@ -1511,95 +1321,169 @@ function __generarSincronizacionDianDebito(that, req, callback) {
  * @fecha 2018-09-04 (YYYY-MM-DD)
  */
 Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
+    console.log('Sincronizacion de credito!!!');
 
-    that = this;
     var args = req.body.data;
     var resultado;
     var data;
+    var Nota = that.m_notas_class;
+    var Pago = that.m_pago;
+    var Facturador = that.m_facturador;
+    var Adquiriente = that.m_adquiriente;
+    var Resolucion = that.m_resolucion;
+    var Numeracion = that.m_numeracion;
+    //console.log('Nota; ', that);
+    console.log('1');
 
-    G.Q.nfcall(__generarSincronizacionDianCredito, that, req).then(function (data) {
-        resultado = data;
-        return G.Q.nfcall(__productos, resultado.productos, 0, []);
-    }).then(function (productos) {
+    G.Q.nfcall(__generarSincronizacionDianCredito, that, req)
+        .then(function (data) {
+            console.log('2');
+            resultado = JSON.parse(JSON.stringify(data)); // console.log('data: ', data);
+            return G.Q.nfcall(__productos, resultado.productos, 0, []);
+        }).then(productos => { // console.log('productos: ', productos);
+            console.log('3');
+            console.log('resultado: ', resultado);
+            var subTotal = resultado.valores.subTotal.replace(".", "");
+            var total = resultado.valores.totalFactura.replace(".", "");
+            var json = {
+                codigoMoneda: "COP",
+                conceptoNota: "3", // falta validar
+                fechaExpedicion: resultado.nota.fecha_registro_nota,
+                fechaVencimiento: "", //falta
+                codigoDocumentoDian: resultado.cliente.tipo_id_tercero,
+                numeroIdentificacion: resultado.cliente.tercero_id,
+                identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E",
+                nombreSucursal: "",
+                numeroNota: resultado.nota.numero,
+                observaciones: "", //falta
+                perfilEmision: "CLIENTE",
+                perfilUsuario: "CLIENTE",
+                productos: productos,
+                subtotalNotaDebitoElectronica: subTotal.replace(".", ""),
+                ReteFuente: resultado.valores.retencionFuente.replace(".", ""),
+                baseGravableReteFuente: resultado.valores.bases.base_rtf,
+                IVA: resultado.valores.ivaTotal.replace(".", ""),
+                baseGravableIVA: subTotal.replace(".", ""),
+                ReteICA: resultado.valores.retencionIca.replace(".", ""),
+                baseGravableReteICA: resultado.valores.bases.base_ica,
+                ReteIVA: resultado.valores.retencionIva.replace(".", ""),
+                baseGravableReteIVA: resultado.valores.bases.base_reteiva,
+                tipoFactura: "ELECTRONICA",
+                totalNotaDebitoElectronica: total.replace(".", ""),
 
-var subTotal = resultado.valores.subTotal.replace(".", "");
-var total = resultado.valores.totalFactura.replace(".", "");
-var retef = resultado.valores.retencionFuente.replace(".", "");
-        var json = {
-            codigoMoneda: "COP",
-            conceptoNota: resultado.nota.prefijo_devolucion === 'IDC' ? "1" : "6",
-            fechaExpedicion: resultado.nota.fecha_registro_nota,
-            fechaVencimiento: "", //falta
-            codigoDocumentoDian: resultado.nota.tipo_id_tercero,
-            numeroIdentificacion: resultado.nota.tercero_id,
-            identificadorFactura: resultado.nota.prefijo + "_" + resultado.nota.factura_fiscal + "_E",
-            nombreSucursal: "",
-            numeroNota: resultado.nota.numero,
-            observaciones: resultado.nota.descripcion,
-            perfilEmision: "CLIENTE",
-            perfilUsuario: "CLIENTE",
-            productos: productos,
-            subtotalNotaCreditoElectronica: subTotal.replace(".", ""),
-            ReteFuente: retef.replace(".", ""),
-            baseGravableReteFuente: resultado.valores.bases.base_rtf,
-            IVA: resultado.valores.ivaTotal.replace(".", ""),
-            baseGravableIVA: subTotal.replace(".", ""),
-            ReteICA: resultado.valores.retencionIca.replace(".", ""),
-            baseGravableReteICA: resultado.valores.bases.base_ica,
-            ReteIVA: resultado.valores.retencionIva.replace(".", ""),
-            baseGravableReteIVA: resultado.valores.bases.base_reteiva,
-            tipoFactura: "ELECTRONICA",
-            totalNotaCreditoElectronica: total.replace(".", ""),
+                coordXQr: 172,
+                coordYQr: 263,
+                coordXCufe: 67,
+                coordYCufe: 266,
+                pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
+            };
 
-            coordXQr: 172,
-            coordYQr: 263,
-            coordXCufe: 67,
-            coordYCufe: 266,
-            pdf: G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf)
-        };
+            console.log('4');
 
-        return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
+            Nota.set_Tipodocumento('NC');
+            Nota.set_Versiondocumento('1.0');
+            Nota.set_Registrar(false);
+            Nota.set_Control('CCFV5201905');
+            Nota.set_Cvcc('CVCC#ÁÉÍÓÚÜÑ&áéíóúúñ@¿¡!');
+            Nota.set_Formato('JSON');
+            Nota.set_Codigotipodocumento('91');
+            Nota.set_Tipooperacion('01');
+            Nota.set_Prefijodocumento(resultado.nota.prefijo);
 
-    }).then(function (respuesta) {
+            Nota.set_Numerodocumento(resultado.nota.factura_fiscal);
+            Nota.set_Fechaemision(resultado.nota.fecha_registro);
+            Nota.set_Numerolineas(productos.length);
+            Nota.set_Subtotal(parseFloat(subTotal));
+            Nota.set_Totalbaseimponible(parseFloat(subTotal));
+            Nota.set_SubtotalMasTributos(parseFloat(total));
+            Nota.set_TotalDescuentos(0);
+            Nota.set_Totalcargos(0);
+            Nota.set_Totalanticipos(0);
+            Nota.set_Redondeo(0);
+            Nota.set_Total(parseFloat(total));
+            Nota.set_Codigomoneda('COP');
 
-        data = respuesta;
-        var parametros = {
-            empresa_id: args.empresaId,
-            prefijo: 'NC',
-            factura_fiscal: resultado.nota.numero,
-            sw_factura_dian: respuesta.sw_factura_dian,
-            json_envio: data.lastRequest,
-            respuesta_ws: data
-        };
+            console.log('5');
 
-        if (respuesta.sw_factura_dian === '1') {
+            // console.log('Class Pago es: ', Pago);
+            Pago.setId(1); // 1 Contado, 2 Credito
+            Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
+            Nota.set_Pago(Pago); // otra clase
+            Nota.set_Listaproductos(productos);
+            Facturador.setRazonSocial(resultado.empresa.razon_social);
+            Facturador.setNombreRegistrado(resultado.empresa.razon_social);
+            Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.empresa.tipo_id_empresa));
+            Facturador.setIdentificacion(resultado.empresa.id);
+            Facturador.setDigitoVerificacion(resultado.empresa.digito_verificacion);
+            Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
+            Facturador.setTelefono(resultado.empresa.telefono_empresa);
+            Facturador.setDireccion(resultado.empresa.direccion_empresa);
+            Facturador.setDireccionFiscal(resultado.empresa.direccion_empresa);
+            Nota.set_Facturador(Facturador); // otra clase
+            console.log('6');
+            /*----- Clase Adquiriente ------*/
+            Adquiriente.setRazonSocial(resultado.nota.nombre_tercero);
+            Adquiriente.setNombreRegistrado(resultado.nota.nombre_tercero);
+            Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.nota.tipo_id_tercero));
+            Adquiriente.setIdentificacion(resultado.nota.tercero_id);
+            Adquiriente.setDigitoVerificacion(parseInt(resultado.nota.dv));
+            Adquiriente.setNaturaleza(resultado.nota.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
+            Adquiriente.setTelefono(resultado.nota.telefono);
+            Adquiriente.setDireccion(resultado.nota.direccion);
+            Adquiriente.setDireccionFiscal(resultado.nota.direccion);
+            Adquiriente.setSucursal('Principal');
+            Nota.set_Adquiriente(Adquiriente); // otra clase
+            Nota.set_Posicionxcufe(110);
+            Nota.set_Posicionycufe(256);
+            Nota.set_Posicionxqr(164);
+            Nota.set_Posicionyqr(260);
+            Nota.set_ListaCorrecciones([{ descripcion: resultado.nota.tipo_nota }]);
+            // Nota.set_Base64(json.pdf);   BASE 64
+            console.log('Nota: ', JSON.parse(JSON.stringify(Nota)));
 
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+            /* console.log('Before');
+             const p1 = new Promise((resolve, reject) => {
+             documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], (err, resul) => {
+             resolve(resul);
+             });
+             });
+             console.log('In');
 
-        } else if (respuesta.sw_factura_dian === '0') {
+             Promise.all([p1])
+             .then(values => {
+             Nota.set_Documentosanexos(values[0]);
+             console.log("factura", Nota);
+             }, reason => {
+             console.log("reason", reason);
+             });*/
+            throw { response: {} };
 
-            return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+            return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronicaNotaCredito', json);
+        }).then(function (respuesta) {
+            data = respuesta;
+            var parametros = {
+                empresa_id: args.empresaId,
+                prefijo: 'NC',
+                factura_fiscal: resultado.nota.numero,
+                sw_factura_dian: respuesta.sw_factura_dian,
+                json_envio: data.lastRequest,
+                respuesta_ws: data
+            };
 
-        }
-
-    }).then(function (resultado) {
-
-        if (data.sw_factura_dian === '1') {
-
-            res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
-
-        } else if (data.sw_factura_dian === '0') {
-
-            res.send(G.utils.r(req.url, data.msj, data.status, data));
-
-        }
-
-    }).fail(function (err) {
-
-        res.send(G.utils.r(req.url, err.msj, err.status, err));
-
-    }).done();
-
+            if (respuesta.sw_factura_dian === '1') {
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+            } else if (respuesta.sw_factura_dian === '0') {
+                return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+            }
+        }).then(function (resultado) {
+            if (data.sw_factura_dian === '1') {
+                res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+            } else if (data.sw_factura_dian === '0') {
+                res.send(G.utils.r(req.url, data.msj, data.status, data));
+            }
+        }).fail(function (err) {
+            res.send(G.utils.r(req.url, err.msj, err.status, err));
+        }).done();
 };
 /**
  * @author German Galvis (duplica de imprimirNota)
@@ -1705,7 +1589,6 @@ function __generarSincronizacionDianCredito(that, req, callback) {
             if (resultado.length > 0) {
                 valores.bases = resultado[0];
                 productos.forEach(function (row) {
-
                     subTotal += parseFloat(row.subtotal);
                     totalIva += parseFloat(row.valor_iva);
                 });
@@ -1772,7 +1655,6 @@ function __generarSincronizacionDianCredito(that, req, callback) {
         };
 
         callback(false, informacion);
-
     }).fail(function (err) {
         console.log("Error  ", err);
         callback(err);
@@ -1970,15 +1852,30 @@ function __productos(productos, index, productosDian, callback) {
         callback(false, productosDian);
         return;
     }
+    item.cantidad = parseFloat(parseFloat(item.cantidad).toFixed(0));
+    item.valor_unitario = parseFloat(parseFloat(item.valor_unitario).toFixed(2));
 
-    var prod = {//OPCIONAL
-        cantidad: parseFloat(item.cantidad).toFixed(0),
-        descripcion: item.descripcion, //String OPCIONAL -
-        identificador: item.codigo_producto, //String -
+    var prod = {    // OPCIONAL
+        numeroLinea: index+1,
+        informacion: item.descripcion_abreviada,
+        cantidad: item.cantidad,
+        valorTotal: (item.cantidad * item.valor_unitario),
+        idProducto: item.codigo_producto,
+        codigoPrecio: '01',
+        //codigoReferencia: '',
+        //valorReferencia: 0,
+        valorUnitario: item.valor_unitario,
+        cantidadReal: item.cantidad,
+        codigoUnidad: '94', // Unidad
+        esMuestraComercial: false,
+        item: {
+            codigoEstandar: 999,
+            descripcion: item.descripcion
+        },
         imprimible: true, //boolean -
-        pagable: true, //boolean -
-        valorUnitario: parseFloat(item.valor_unitario).toFixed(2)
+        pagable: true //boolean -
     };
+
     var impuesto;
     var ivaPorcentaje = parseInt(item.porc_iva);
     if (ivaPorcentaje === 0) {
@@ -1986,10 +1883,8 @@ function __productos(productos, index, productosDian, callback) {
             nombre: "IVA0",
             baseGravable: item.porc_iva,
             valor: (parseFloat(item.iva_total).toFixed(2)).replace(",", ".")
-
         };
     }
-    ;
     if (ivaPorcentaje === 19) {
         impuesto = {
             nombre: "IVA19",
@@ -1998,7 +1893,6 @@ function __productos(productos, index, productosDian, callback) {
         }
 
     }
-    ;
     if (ivaPorcentaje === 10) {
         impuesto = {
             nombre: "IVA10",
@@ -2006,7 +1900,6 @@ function __productos(productos, index, productosDian, callback) {
             valor: (parseFloat(item.iva_total).toFixed(2)).replace(",", ".")
         };
     }
-    ;
     prod.listaImpuestosDeducciones = impuesto;
     productosDian.push(prod);
 
@@ -2017,7 +1910,6 @@ function __productos(productos, index, productosDian, callback) {
     }, 0);
 }
 
-
-
-Notas.$inject = ["m_notas", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes", "c_sincronizacion"];
+Notas.$inject = ["m_notas", "m_notas_class", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes",
+    "c_sincronizacion", "m_pago", "m_facturador", "m_adquiriente", "m_resolucion", "m_numeracion"];
 module.exports = Notas;

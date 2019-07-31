@@ -175,6 +175,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "ifd.prefijo",
         "T.tipo_id_tercero",
         "T.tercero_id",
+        "T.dv",
         "T.nombre_tercero",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
@@ -197,6 +198,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "ifd.prefijo",
         "T.tipo_id_tercero",
         "T.tercero_id",
+        "T.dv",
         "T.nombre_tercero",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
@@ -230,9 +232,9 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
 
             })
             .leftJoin('logs_facturacion_clientes_ws_fi AS a',function(){
-                     this.on("a.factura_fiscal", "ifd.factura_fiscal")
-                         .on("a.prefijo", "ifd.prefijo")
-                         .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
+                 this.on("a.factura_fiscal", "ifd.factura_fiscal")
+                     .on("a.prefijo", "ifd.prefijo")
+                     .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
             })
 //            .leftJoin('logs_facturacion_clientes_ws_fi as a', function () {
 //
@@ -321,6 +323,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "ifd.prefijo",
         "T.tipo_id_tercero",
         "T.tercero_id",
+        "T.dv",
         "T.nombre_tercero",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         "ifd.valor_total",
@@ -350,6 +353,7 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "ifd.prefijo",
         "T.tipo_id_tercero",
         "T.tercero_id",
+        "T.dv",
         "T.nombre_tercero",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         "ifd.valor_total",
@@ -927,6 +931,7 @@ NotasModel.prototype.listarEmpresa = function (obj, callback) {
 NotasModel.prototype.consultarProductosNotasDebito = function (parametros, callback) {
 
     var columna = [
+        "a.descripcion_abreviada",
         "dnddc.detalle_nota_debito_despacho_cliente_id",
         "ifdd.codigo_producto",
         G.knex.raw("fc_descripcion_producto ( ifdd.codigo_producto ) AS descripcion"),

@@ -18,6 +18,31 @@
                     "module": "Sincronizacion",
                     "model": "SincronizacionModel",
                     "alias": "m_sincronizacion"
+                },
+                "notas_clase_model": {
+                    "module": "Classes",
+                    "model": "Notas.class",
+                    "alias": "m_notas_class"
+                },
+                "pago_clase_model": {
+                  "module": "Classes",
+                  "model": "Pago.class",
+                  "alias": "m_pago"
+                },
+                "facturador_clase_model": {
+                  "module": "Classes",
+                  "model": "Facturador.class",
+                  "alias": "m_facturador"
+                },
+                "adquiriente_clase_model": {
+                  "module": "Classes",
+                  "model": "Adquiriente.class",
+                  "alias": "m_adquiriente"
+                },
+                "resolucion_clase_model": {
+                  "module": "Classes",
+                  "model": "Resolucion.class",
+                  "alias": "m_resolucion"
                 }
             }],
         "events": [],

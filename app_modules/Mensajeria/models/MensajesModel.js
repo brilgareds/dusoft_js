@@ -20,9 +20,9 @@ Mensajeria.prototype.listarMensajesTotal = function (parametros, callback) {
         G.knex.raw("to_char(a.fecha_ini, 'dd-mm-yy hh:mi am') as fecha_registro"),
         G.knex.raw("to_char(a.fecha_fin, 'dd-mm-yy hh:mi am') as fecha_validez"),
         G.knex.raw("(select count(b.actualizacion_id) from controlar_lectura as b where b.actualizacion_id=a.actualizacion_id) as cantidad_lectores"),
-        G.knex.raw("(SELECT array_to_string(array_agg(descripcion), ', ') FROM (select cx.perfil_id, cx.obligatorio,ca.descripcion\
+        G.knex.raw("(SELECT array_to_string(array_agg(nombre), ', ') FROM (select cx.perfil_id, cx.obligatorio,ca.nombre\
                     from controlar_x_perfil as cx\
-                    left join system_perfiles as ca on cx.perfil_id = ca.perfil_id\
+                    left join roles as ca on cx.perfil_id = ca.id\
                     where cx.actualizacion_id = a.actualizacion_id ORDER BY cx.perfil_id) as x ) as perfiles"),
         "a.fecha_actu"
     ];

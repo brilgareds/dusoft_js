@@ -1,4 +1,6 @@
 
+/* global G */
+
 define(["angular", "js/controllers",
 ], function (angular, controllers) {
 
@@ -150,7 +152,7 @@ define(["angular", "js/controllers",
                     data: {
                         usuario_id: $scope.session.usuario_id,
                         mensaje: $scope.tinymceModel,
-                        fecha_fin: $scope.fechafinal + " 23:59:59-05",
+                        fecha_fin: $filter('date')($scope.fechafinal, "yyyy-MM-dd") + " 23:59:00",
                         asunto: $scope.asunto,
                         listado: $scope.datos_view.perfilesSeleccionados
                     }

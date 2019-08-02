@@ -7,11 +7,7 @@ function Items() {
         this.nombreEstandar = '';
         this.descripcion = '';
 
-        this.datosTecnicos = '';
         this.cantidadPaquetes = 0;
-        this.codigoPais = '';
-        this.nombrePais = '';
-        this.codigoLenguajePais = '';
         this.listaCaracteristicas = [];
         this.mandatorio = [];
     }
@@ -71,45 +67,13 @@ function Items() {
     Items.prototype.setDescripcion = function(value) {
         this.descripcion = value;
     }
-
-    Items.prototype.getDatosTecnicos = function() {
-        return this.datosTecnicos;
-    }
-
-    Items.prototype.setDatosTecnicos = function(value) {
-        this.datosTecnicos = value;
-    }
-
+    
     Items.prototype.getCantidadPaquetes = function() {
         return this.cantidadPaquetes;
     }
 
     Items.prototype.setCantidadPaquetes = function(value) {
         this.cantidadPaquetes = value;
-    }
-
-    Items.prototype.getCodigoPais = function() {
-        return this.codigoPais;
-    }
-
-    Items.prototype.setCodigoPais = function(value) {
-        this.codigoPais = value;
-    }
-
-    Items.prototype.getNombrePais = function() {
-        return this.nombrePais;
-    }
-
-    Items.prototype.setNombrePais = function(value) {
-        this.nombrePais = value;
-    }
-
-    Items.prototype.getCodigoLenguajePais = function() {
-        return this.codigoLenguajePais;
-    }
-
-    Items.prototype.setCodigoLenguajePais = function(value) {
-        this.codigoLenguajePais = value;
     }
 
     Items.prototype.getListaCaracteristicas = function() {

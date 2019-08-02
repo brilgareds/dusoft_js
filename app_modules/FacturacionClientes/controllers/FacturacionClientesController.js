@@ -3109,8 +3109,6 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
     prod.setValorTotal(numeroLinea + 1);
     prod.setIdProducto(item.codigo_producto);
 //     prod.setCodigoPrecio(); // no se usa
-//     prod.setCodigoReferencia(); // no se usa
-//     prod.setValorReferencia(); // no se usa
     prod.setValorUnitario(item.valor_unitario);
     prod.setCantidadReal(item.cantidad);
     prod.setCodigoUnidad('94'); // 94 - unidad
@@ -3128,11 +3126,7 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
     itemDatos.setCodigoEstandar('999');
     itemDatos.setNombreEstandar('Estándar de adopción del contribuyente');
     itemDatos.setDescripcion(item.descripcion + ", codigo_invima: " + item.codigo_invima + ", Fecha Vencimiento: " + item.fecha_vencimiento + ", lote: " + item.lote);
-//    itemDatos.setDatosTecnicos(); // pendiente
 //    itemDatos.setCantidadPaquetes();// pendiente
-//    itemDatos.setCodigoPais();// pendiente
-//    itemDatos.setNombrePais();// pendiente
-//    itemDatos.setCodigoLenguajePais();// pendiente
 //    itemDatos.setListaCaracteristicas();// no se usa
 //    itemDatos.setMandatorio();// no se usa
 
@@ -3248,185 +3242,180 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     var Numeracion = this.m_numeracion;
 
     G.Q.nfcall(__generarSincronizacionDian, that, req)
-        .then(function (data) {
-            resultado = data;
-            return G.Q.nfcall(__productosAdjunto, that, resultado.detalle, 0, []);
-        }).then(productos => {
-            var subTotal = resultado.valores.subTotal.replace(".", "");
-            var total = resultado.valores.totalFactura.replace(".", "");
-            Factura.set_Tipodocumento('FE');
-            Factura.set_Versiondocumento('1.0');
-            Factura.set_Registrar(false);
-            Factura.set_Codigotipodocumento('01');
-            Factura.set_Tipooperacion('10');
-            Factura.set_Prefijodocumento(resultado.cabecera.prefijo);
-            Factura.set_Numerodocumento(resultado.cabecera.factura_fiscal);
-            Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
-            Factura.set_Numerolineas(resultado.detalle.length);
-            Factura.set_Subtotal(subTotal);
-            Factura.set_Totalbaseimponible(subTotal); // falta validar
-            Factura.set_SubtotalMasTributos(total);
-            Factura.set_TotalDescuentos(0);
-            Factura.set_Totalcargos(0);
-            Factura.set_Totalanticipos(0);
-            Factura.set_Total(total);
-            Factura.set_Codigomoneda('COP');
-            /*-----Clase Pago------*/
-            Pago.setId(1); // 1 Contado, 2 Credito
-            Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
-            Factura.set_Pago(Pago); // otra clase
+            .then(function (data) {
+                resultado = data;
+                return G.Q.nfcall(__productosAdjunto, that, resultado.detalle, 0, []);
+            }).then(productos => {
+        var subTotal = resultado.valores.subTotal.replace(".", "");
+        var total = redondeoDian(resultado.valores.totalFactura);  
+        //var total = resultado.valores.totalFactura.replace(".", "");
+        Factura.set_Tipodocumento('FE');
+        Factura.set_Versiondocumento('1.0');
+        Factura.set_Control('CCFV5201905');
+        Factura.set_Cvcc('CVCC#ÁÉÍÓÚÜÑ&áéíóúúñ@¿¡!');
+        Factura.set_Formato('JSON');
+        Factura.set_Registrar(false);
+        Factura.set_Codigotipodocumento('01');
+        Factura.set_Tipooperacion('10');
+        Factura.set_Prefijodocumento(resultado.cabecera.prefijo);
+        Factura.set_Numerodocumento(resultado.cabecera.factura_fiscal);
+        Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
+        Factura.set_Numerolineas(resultado.detalle.length);
+        Factura.set_Subtotal(subTotal);
+        Factura.set_Totalbaseimponible(subTotal); // falta validar
+        Factura.set_SubtotalMasTributos(total);
+        Factura.set_TotalDescuentos(0);
+        Factura.set_Totalcargos(0);
+        Factura.set_Totalanticipos(0);
+        Factura.set_Total(total);
+        Factura.set_Codigomoneda('COP');
+        /*-----Clase Pago------*/
+        Pago.setId(1); // 1 Contado, 2 Credito
+        Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
+        Factura.set_Pago(Pago); // otra clase
 
-            Factura.set_Listaproductos(productos); // listado de otra clase
+        Factura.set_Listaproductos(productos); // listado de otra clase
 
-            const p1 = new Promise((resolve, reject) => {
-                documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], (err, resul) => {
-                    resolve(resul);
-                });
+        const p1 = new Promise((resolve, reject) => {
+            documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], (err, resul) => {
+                resolve(resul);
             });
-    //      const p2 = new Promise((resolve, reject) => {
-    //          gruposImpuestos(that, resultado.cabecera.pedido_array, 0, [], function (err, resul) {
-    //              resolve(resul);
-    //          });
-    //      });
-    //        documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], function (err,resul) {
-    //            console.log("retorno",resul);
-    //            Factura.set_Documentosanexos(resul);
-    //        });
-    ////        Factura.set_Listaanticipos(); // no se usa
-    ////        Factura.set_Listacargosdescuentos(); // no se usa
-    ////        Factura.set_Gruposdeducciones(); // no se usa
+        });
+        ////        Factura.set_Listaanticipos(); // no se usa
+        ////        Factura.set_Listacargosdescuentos(); // no se usa
+        ////        Factura.set_Gruposdeducciones(); // no se usa
 
-            /*-----Clase Facturador------*/
-            Facturador.setRazonSocial(resultado.cabecera.razon_social);
-            Facturador.setNombreRegistrado(resultado.cabecera.razon_social);
-            Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_empresa));
-            Facturador.setIdentificacion(resultado.cabecera.id);
-            Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
-            Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
-    //        Facturador.setCodigoRegimen();
-    //        Facturador.setResponsabilidadFiscal(); // por validar
-    //        Facturador.setCodigoImpuesto(); // por validar
-    //        Facturador.setNombreImpuesto(); // por validar
-            Facturador.setTelefono(resultado.cabecera.telefono_empresa);
-    //        Facturador.setEmail(); // no se usa
-    //        Facturador.setContacto(); // no se usa
-            Facturador.setDireccion(resultado.cabecera.direccion_empresa);
-            Facturador.setDireccionFiscal(resultado.cabecera.direccion_empresa);
-    //        Facturador.setListaResponsabilidadesTributarias();
-    //        Facturador.setCodigoCIUU(); // no se usa
-    //        Facturador.setSucursal(); // no se usa
-    //        Facturador.setListaParticipantesConsorcio(); // no se usa
-            /*--------------------*/
-            Factura.set_Facturador(Facturador); // otra clase
+        /*-----Clase Facturador------*/
+        Facturador.setRazonSocial(resultado.cabecera.razon_social);
+        Facturador.setNombreRegistrado(resultado.cabecera.razon_social);
+        Facturador.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_empresa));
+        Facturador.setIdentificacion(resultado.cabecera.id);
+        Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
+        Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
+        //        Facturador.setCodigoRegimen();
+        //        Facturador.setResponsabilidadFiscal(); // por validar
+        //        Facturador.setCodigoImpuesto(); // por validar 
+        //        Facturador.setNombreImpuesto(); // por validar
+        Facturador.setTelefono(resultado.cabecera.telefono_empresa);
+        //        Facturador.setEmail(); // no se usa
+        //        Facturador.setContacto(); // no se usa
+        Facturador.setDireccion(resultado.cabecera.direccion_empresa);
+        Facturador.setDireccionFiscal(resultado.cabecera.direccion_empresa);
+        //        Facturador.setListaResponsabilidadesTributarias();
+        //        Facturador.setCodigoCIUU(); // no se usa
+        //        Facturador.setSucursal(); // no se usa
+        //        Facturador.setListaParticipantesConsorcio(); // no se usa
+        /*--------------------*/
+        Factura.set_Facturador(Facturador); // otra clase
 
-            /*-----Clase Adquiriente------*/
-            Adquiriente.setRazonSocial(resultado.cabecera.nombre_tercero);
-            Adquiriente.setNombreRegistrado(resultado.cabecera.nombre_tercero);
-            Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_tercero));
-            Adquiriente.setIdentificacion(resultado.cabecera.tercero_id);
-            Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
-            Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
-    //        Adquiriente.setCodigoRegimen();
-    //        Adquiriente.setResponsabilidadFiscal(); // por validar
-    //        Adquiriente.setCodigoImpuesto(); // por validar
-    //        Adquiriente.setNombreImpuesto(); // por validar
-            Adquiriente.setTelefono(resultado.cabecera.telefono);
-    //        Adquiriente.setEmail(); // no se usa
-    //        Adquiriente.setContacto(); // no se usa
-            Adquiriente.setDireccion(resultado.cabecera.direccion);
-            Adquiriente.setDireccionFiscal(resultado.cabecera.direccion);
-    //        Adquiriente.setListaResponsabilidadesTributarias(); // otra clase  por validar
-    //        Adquiriente.setCodigoCIUU(); // no se usa
-            Adquiriente.setSucursal('Principal');
-    //        Adquiriente.setCentroCosto(); // no se usa
-            /*--------------------*/
-            Factura.set_Adquiriente(Adquiriente); // otra clase
+        /*-----Clase Adquiriente------*/
+        Adquiriente.setRazonSocial(resultado.cabecera.nombre_tercero);
+        Adquiriente.setNombreRegistrado(resultado.cabecera.nombre_tercero);
+        Adquiriente.setTipoIdentificacion(codigoDocumentoDian(resultado.cabecera.tipo_id_tercero));
+        Adquiriente.setIdentificacion(resultado.cabecera.tercero_id);
+        Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
+        Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
+        //        Adquiriente.setCodigoRegimen();
+        //        Adquiriente.setResponsabilidadFiscal(); // por validar
+        //        Adquiriente.setCodigoImpuesto(); // por validar
+        //        Adquiriente.setNombreImpuesto(); // por validar
+        Adquiriente.setTelefono(resultado.cabecera.telefono);
+        //        Adquiriente.setEmail(); // no se usa
+        //        Adquiriente.setContacto(); // no se usa
+        Adquiriente.setDireccion(resultado.cabecera.direccion);
+        Adquiriente.setDireccionFiscal(resultado.cabecera.direccion);
+        //        Adquiriente.setListaResponsabilidadesTributarias(); // otra clase  por validar
+        //        Adquiriente.setCodigoCIUU(); // no se usa
+        Adquiriente.setSucursal('Principal');
+        //        Adquiriente.setCentroCosto(); // no se usa
+        /*--------------------*/
+        Factura.set_Adquiriente(Adquiriente); // otra clase
 
-    //        Factura.set_Autorizado(); // no se usa
-    //        Factura.set_Entrega(); // no se usa
-    //        Factura.set_Urlanexos(); // no se usa
-    //        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
-            Factura.set_Posicionxcufe(110);
-            Factura.set_Posicionycufe(256);
-    //        Factura.set_Rotacioncufe(0); // no se usa
-    //        Factura.set_Fuentecufe(); // no se usa
-            Factura.set_Posicionxqr(164);
-            Factura.set_Posicionyqr(260);
-    //        Factura.Factura.set_Fechaenvio(); // por validar
-    //        Factura.set_Descripciongeneral();
+        //        Factura.set_Autorizado(); // no se usa
+        //        Factura.set_Entrega(); // no se usa
+        //        Factura.set_Urlanexos(); // no se usa
+        //        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
+        Factura.set_Posicionxcufe(110);
+        Factura.set_Posicionycufe(256);
+        //        Factura.set_Rotacioncufe(0); // no se usa
+        //        Factura.set_Fuentecufe(); // no se usa
+        Factura.set_Posicionxqr(164);
+        Factura.set_Posicionyqr(260);
+        //        Factura.Factura.set_Fechaenvio(); // por validar
+        //        Factura.set_Descripciongeneral();
 
-            /*-----Clase Resolucion------*/
-            Resolucion.setNumero(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ);
-            Resolucion.setFechaInicio('2018-08-30');
-            Resolucion.setFechaFin('2020-08-30');
-            /*-----Clase Resolucion------*/
-            Numeracion.setPrefijo(resultado.cabecera.prefijo);
-            Numeracion.setDesde(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ);
-            Numeracion.setHasta(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ);
-            Numeracion.setFechaInicio('2018-08-30');
-            Numeracion.setFechaFin('2020-08-30');
-            /*----------------------------*/
-            Resolucion.setNumeracion(Numeracion);
-            /*----------------------------*/
-            Factura.set_Resolucion(Resolucion);
-    //
-    //        Factura.set_ListaCorrecciones();
+        /*-----Clase Resolucion------*/
+        Resolucion.setNumero(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ);
+        Resolucion.setFechaInicio('2018-08-30');
+        Resolucion.setFechaFin('2020-08-30');
+        /*-----Clase Resolucion------*/
+        Numeracion.setPrefijo(resultado.cabecera.prefijo);
+        Numeracion.setDesde(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DESDE : G.constants.IDENTIFICADOR_DIAN().DESDE_BQ);
+        Numeracion.setHasta(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().HASTA : G.constants.IDENTIFICADOR_DIAN().HASTA_BQ);
+        Numeracion.setFechaInicio('2018-08-30');
+        Numeracion.setFechaFin('2020-08-30');
+        /*----------------------------*/
+        Resolucion.setNumeracion(Numeracion);
+        /*----------------------------*/
+        Factura.set_Resolucion(Resolucion);
+        //
+        //        Factura.set_ListaCorrecciones();
 
-            Promise.all([p1])
-                    .then(values => {
-    //                    console.log("values",values);
-                        Factura.set_Documentosanexos(values[0]);
-    //                    Factura.set_Gruposimpuestos(values[1]);
-                        console.log("factura", Factura);
-                    }, reason => {
-                        console.log("reason", reason);
-                    });
+        Promise.all([p1])
+                .then(values => {
+                    //                    console.log("values",values);
+                    Factura.set_Documentosanexos(values[0]);
+                    //                    Factura.set_Gruposimpuestos(values[1]);
+                    console.log("factura", Factura);
+                }, reason => {
+                    console.log("reason", reason);
+                });
 
 
 
 
-    //        console.log("factura", Factura);
-            // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
-            throw { response: {} };
-            return false;
+        //        console.log("factura", Factura);
+        // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
+        throw {response: {}};
+        return false;
 
 
-            // }).then(function (respuesta) {
-            //
-            //     data = respuesta;
-            //     var parametros = {
-            //         empresa_id: args.empresaId,
-            //         prefijo: resultado.cabecera.prefijo,
-            //         factura_fiscal: resultado.cabecera.factura_fiscal,
-            //         sw_factura_dian: respuesta.sw_factura_dian,
-            //         json_envio: data.lastRequest,
-            //         respuesta_ws: data
-            //     };
-            //
-            //     if (respuesta.sw_factura_dian === '1') {
-            //
-            //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-            //
-            //     } else if (respuesta.sw_factura_dian === '0') {
-            //
-            //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
-            //
-            //     }
-            //
-            // }).then(function (resultado) {
-            //
-            //     if (data.sw_factura_dian === '1') {
-            //
-            //         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
-            //
-            //     } else if (data.sw_factura_dian === '0') {
-            //
-            //         res.send(G.utils.r(req.url, data.msj, data.status, data));
-            //
-            //     }
-        }).fail(function (err) {
-            res.send(G.utils.r(req.url, err.msj, err.status, err));
-        }).done();
+        // }).then(function (respuesta) {
+        //
+        //     data = respuesta;
+        //     var parametros = {
+        //         empresa_id: args.empresaId,
+        //         prefijo: resultado.cabecera.prefijo,
+        //         factura_fiscal: resultado.cabecera.factura_fiscal,
+        //         sw_factura_dian: respuesta.sw_factura_dian,
+        //         json_envio: data.lastRequest,
+        //         respuesta_ws: data
+        //     };
+        //
+        //     if (respuesta.sw_factura_dian === '1') {
+        //
+        //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+        //
+        //     } else if (respuesta.sw_factura_dian === '0') {
+        //
+        //         return G.Q.ninvoke(that.m_facturacion_clientes, 'insertarLogFacturaDian', parametros);
+        //
+        //     }
+        //
+        // }).then(function (resultado) {
+        //
+        //     if (data.sw_factura_dian === '1') {
+        //
+        //         res.send(G.utils.r(req.url, 'Sincronizacion correcta con Certicamara', 200, data));
+        //
+        //     } else if (data.sw_factura_dian === '0') {
+        //
+        //         res.send(G.utils.r(req.url, data.msj, data.status, data));
+        //
+        //     }
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err.msj, err.status, err));
+    }).done();
 };
 
 FacturacionClientes.prototype.generarSincronizacionDian_original = function (req, res) {
@@ -3616,7 +3605,9 @@ function __generarSincronizacionDian(that, req, callback) {
                 var coma = ", ";
                 var length = resultado.length - 1;
                 resultado.forEach(function (row, index) {
-                    if (index === length) { coma = ""; }
+                    if (index === length) {
+                        coma = "";
+                    }
                     parametrosReporte.cabecera.pedido_cliente_id += row.pedido_cliente_id + coma;
                     parametrosReporte.cabecera.pedido_array.push({pedido: row.pedido_cliente_id, fecha: G.moment(row.fecha_registro).format(format2)});
 //                    parametrosReporte.cabecera.pedido_array.push(row.pedido_cliente_id);
@@ -4624,11 +4615,55 @@ function documentosAnexos(that, pedidos, index, resultado, callback) {
         documentosAnexos(that, pedidos, index, resultado, callback);
         clearTimeout(timer);
     }, 0);
-};
+}
+;
 
 function gruposImpuestos(that, productos, index, productosDian, callback) {
-   
-};
+
+}
+;
+
+function redondeoDian(numero) {
+    var punto = numero.indexOf(".");
+    var decimales = numero.substr(punto + 1, numero.length);
+    var entero = numero.substr(0, punto);
+    var digitoSiguienteAlMenSig = parseInt(decimales.substr(3, 1));
+    var digitoMenSig = parseInt(decimales.substr(2, 1));
+    var redondeo = 0;
+
+    if (isNaN(numero) || punto > 0 && isNaN(decimales)) {
+        return "Error! no es un numero";
+    }
+
+    if (punto < 0) {
+        return numero;
+    }
+    if (decimales.length <= 2) {
+        return numero;
+    }
+
+    if (digitoMenSig >= 0 && digitoMenSig <= 4) {
+        redondeo = entero + "." + decimales.substr(0, 2);
+    }
+
+    if (digitoMenSig >= 6 && digitoMenSig <= 9) {
+        redondeo = entero + "." + (parseInt(decimales.substr(0, 2)) + 1);
+    }
+
+    if (digitoMenSig === 5) {
+        if (isNaN(digitoSiguienteAlMenSig) || digitoSiguienteAlMenSig === 0 || digitoSiguienteAlMenSig % 2 === 0) {
+            redondeo = entero + "." + decimales.substr(0, 2);
+        } else if (digitoSiguienteAlMenSig % 2 !== 0) {
+            redondeo = entero + "." + (parseInt(decimales.substr(0, 2)) + 1);
+        } else {
+            redondeo = entero + "." + decimales.substr(0, 2);
+        }
+    }
+
+    return redondeo;
+}
+
+
 
 FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes",
     "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_productos", "m_lista_impuestos", "m_items", "m_facturador", "m_adquiriente", "m_documentos_anexos",

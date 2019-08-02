@@ -998,7 +998,8 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
         return G.Q.nfcall(__productos, resultado.productos, 0, []);
     }).then(productos => { // console.log('productos: ', productos);
         var subTotal = resultado.valores.subTotal.replace(".", "");
-        var total = resultado.valores.totalFactura.replace(".", "");
+        var total = redondeoDian(resultado.valores.totalFactura);
+//      var total = resultado.valores.totalFactura.replace(".", "");
         var json = {
             codigoMoneda: "COP",
             conceptoNota: "3", // falta validar
@@ -1343,8 +1344,9 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         }).then(productos => { // console.log('productos: ', productos);
             console.log('3');
             console.log('resultado: ', resultado);
-            var subTotal = resultado.valores.subTotal.replace(".", "");
-            var total = resultado.valores.totalFactura.replace(".", "");
+            var subTotal = resultado.valores.subTotal.replace(".", "");          
+            var total = redondeoDian(resultado.valores.totalFactura);  
+//            var total = resultado.valores.totalFactura.replace(".", "");
             var json = {
                 codigoMoneda: "COP",
                 conceptoNota: "3", // falta validar
@@ -1909,6 +1911,47 @@ function __productos(productos, index, productosDian, callback) {
         clearTimeout(timer);
     }, 0);
 }
+
+function redondeoDian(numero) {
+    var punto = numero.indexOf(".");
+    var decimales = numero.substr(punto + 1, numero.length);
+    var entero = numero.substr(0, punto);
+    var digitoSiguienteAlMenSig = parseInt(decimales.substr(3, 1));
+    var digitoMenSig = parseInt(decimales.substr(2, 1));
+    var redondeo = 0;
+
+    if (isNaN(numero) || punto > 0 && isNaN(decimales)) {
+        return "Error! no es un numero";
+    }
+
+    if (punto < 0) {
+        return numero;
+    }
+    if (decimales.length <= 2) {
+        return numero;
+    }
+
+    if (digitoMenSig >= 0 && digitoMenSig <= 4) {
+        redondeo = entero + "." + decimales.substr(0, 2);
+    }
+
+    if (digitoMenSig >= 6 && digitoMenSig <= 9) {
+        redondeo = entero + "." + (parseInt(decimales.substr(0, 2)) + 1);
+    }
+
+    if (digitoMenSig === 5) {
+        if (isNaN(digitoSiguienteAlMenSig) || digitoSiguienteAlMenSig === 0 || digitoSiguienteAlMenSig % 2 === 0) {
+            redondeo = entero + "." + decimales.substr(0, 2);
+        } else if (digitoSiguienteAlMenSig % 2 !== 0) {
+            redondeo = entero + "." + (parseInt(decimales.substr(0, 2)) + 1);
+        } else {
+            redondeo = entero + "." + decimales.substr(0, 2);
+        }
+    }
+
+    return redondeo;
+}
+
 
 Notas.$inject = ["m_notas", "m_notas_class", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes",
     "c_sincronizacion", "m_pago", "m_facturador", "m_adquiriente", "m_resolucion", "m_numeracion"];

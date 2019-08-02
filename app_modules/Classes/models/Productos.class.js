@@ -6,8 +6,6 @@ function Productos() {
         this.valorTotal = 0.0;
         this.idProducto = '';
         this.codigoPrecio = '';
-        this.codigoReferencia = '';
-        this.valorReferencia = 0;
         this.valorUnitario = 0.0;
         this.cantidadReal = 0.0;
         this.codigoUnidad = '';
@@ -64,22 +62,6 @@ function Productos() {
 
     Productos.prototype.setCodigoPrecio = function (value) {
         this.codigoPrecio = value;
-    };
-
-    Productos.prototype.getCodigoReferencia = function () {
-        return this.codigoReferencia;
-    };
-
-    Productos.prototype.setCodigoReferencia = function (value) {
-        this.codigoReferencia = value;
-    };
-
-    Productos.prototype.getValorReferencia = function () {
-        return this.valorReferencia;
-    };
-
-    Productos.prototype.setValorReferencia = function (value) {
-        this.valorReferencia = value;
     };
 
     Productos.prototype.getValorUnitario = function () {

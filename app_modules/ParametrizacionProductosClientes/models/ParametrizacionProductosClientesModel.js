@@ -561,8 +561,8 @@ ParametrizacionProductosClientesModel.prototype.updateProductContract = (obj, ca
 };
 
 ParametrizacionProductosClientesModel.prototype.listContractProducts = (obj, callback) => {
-    const offset = 0;
-    const limit = 50;
+    // const offset = 0;
+    // const limit = 50;
 
     if (!obj.descripcion) { obj.descripcion = ''; }
     if (!obj.laboratorio) { obj.laboratorio = ''; }
@@ -594,8 +594,8 @@ ParametrizacionProductosClientesModel.prototype.listContractProducts = (obj, cal
                 .andWhere('d.descripcion', 'ILIKE', `%${obj.principio_activo}%`)
                 .andWhere('inventarios.empresa_id', obj.empresaId)
                 .orderBy('b.descripcion')
-                .limit(limit)
-                .offset(offset);
+                // .limit(limit)
+                // .offset(offset);
             return query;
         }).then(productos => {
             if (productos.length > 0) {

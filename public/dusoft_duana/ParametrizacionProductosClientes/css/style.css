@@ -2,6 +2,10 @@
     display: inline-block;
 }
 
+.ngTopPanel, .ngHeaderContainer, .ngHeaderScroller, .ngViewport, .ngCanvas, .ngCanvas > div {
+
+}
+
 .panel {
     margin-bottom: 25px;
 }
@@ -294,7 +298,7 @@ i.glyphicon {
 }
 .table-responsive.contractProducts .ngViewport.ng-scope {
     height: auto !important;
-    max-height: 270px !important;
+    max-height: 190px !important;
 }
 .span-flex-center {
     display: flex;

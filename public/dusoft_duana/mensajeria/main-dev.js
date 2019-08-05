@@ -7,6 +7,7 @@ requirejs.config({
         angular: "../../javascripts/angular/angular",
         route: "../../javascripts/angular/angular-ui-router",
         controllers: "js/controllers/",
+        services: "js/services",
         includes:"../includes/",
         models:"js/models",
         directive:"js/directive",

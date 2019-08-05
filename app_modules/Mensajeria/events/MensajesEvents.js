@@ -1,5 +1,5 @@
 
-var AutenticacionEvents = function(socket, m_mensajes) {
+var MensajeriaEvents = function(socket, m_mensajes) {
 
 
 
@@ -8,41 +8,12 @@ var AutenticacionEvents = function(socket, m_mensajes) {
 };
 
 // Notificacion al Clientes que esta conectado al socket
-AutenticacionEvents.prototype.onConnected1 = function(socket_id) {    
+MensajeriaEvents.prototype.onConnected1 = function(socket_id) {    
 
     this.io.to(socket_id).emit('onConnected1', {socket_id: socket_id});
 };
-//
-//
-//AutenticacionEvents.prototype.guardarTokenPush = function(datos) {    
-//    var that = this;
-//
-//    G.Q.ninvoke(that.m_auth,'guardarTokenPush', datos).then(function() {
-//      
-//    }).fail(function(err) {
-//        console.log("ocurrio un error ", err);
-//    }).done();
-//};
-//
-//// Actualizar La sesion del usuario con el socket asignado
-//AutenticacionEvents.prototype.onActualizarSesion = function(datos) { 
-//   
-//    var that = this;
-//    G.auth.update(datos, function(){
-//        that.io.to(datos.socket_id).emit('onSesionActualizada', datos);
-//    });
-//};
-//
-//// Notificacion en Real Time Que algunas sesiones inactivas se cerraron automaicamente
-//AutenticacionEvents.prototype.onCerrarSesion = function(sesion_usuario) {
-//
-//    var that = this;
-//
-//    if (sesion_usuario.socket_id)
-//        that.io.to(sesion_usuario.socket_id).emit('onCerrarSesion', {msj: 'Sesion Cerrada'});
-//};
 
-AutenticacionEvents.prototype.ConsultarMensajes = function (datos) {
+MensajeriaEvents.prototype.ConsultarMensajes = function (datos) {
     var that = this;
     var args = datos;
 
@@ -62,6 +33,45 @@ AutenticacionEvents.prototype.ConsultarMensajes = function (datos) {
 };
 
 
-AutenticacionEvents.$inject = ["socket", "m_mensajes"];
+MensajeriaEvents.prototype.onNotificarMensajeria = function(obj, callback) {    
 
-module.exports = AutenticacionEvents;
+    var that = this;
+    
+//    var usuariosANotificar = [];
+    
+    G.Q.nfcall(G.auth.getAllSessions).then(function(sessiones){
+        
+        for(var i in sessiones){    
+            var _session = sessiones[i];
+            
+//            for(var ii in usuarios){
+//                var _usuario = usuarios[ii];
+                
+//                if(_session.usuario_id === _usuario.usuario_id){
+                    
+                    that.io.to(_session.socket_id).emit('onNotificarMensajeria', {obj});
+
+                    //Se valida que la notificacion no se envie de forma repetida ni al usuario que la emitio
+//                    if(usuariosANotificar.indexOf(_usuario.usuario_id) === -1 && parseInt(_usuario.usuario_id) !== parseInt(usuarioEmite)){
+//                        usuariosANotificar.push(_usuario.usuario_id);
+//                    }
+                    
+//                }
+                
+//            }
+                
+        }
+        
+//        that.enviarNotificacionPush({usuarios:usuariosANotificar, mensaje:mensaje});
+        
+        callback(false);
+        
+    }).fail(function(err){
+        callback(err);
+    });
+};
+
+
+MensajeriaEvents.$inject = ["socket", "m_mensajes"];
+
+module.exports = MensajeriaEvents;

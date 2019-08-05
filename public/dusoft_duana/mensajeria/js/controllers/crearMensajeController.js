@@ -162,7 +162,10 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
                         $scope.setContent();
                         AlertService.mostrarMensaje("warning", "Registro Exitoso");
+//                        $scope.$emit("onMensajeNuevo", mensaje, Usuario.getUsuarioActual());
 
+                    }else{
+                        AlertService.mostrarMensaje("warning", "Mensaje No Registrado");
                     }
                 });
             };

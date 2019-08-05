@@ -852,12 +852,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
 
             //evento de coneccion al socket
-            socket.on("onConnected1", function (datos) {
-                var socketid = datos.socket_id;
-                var socket_session = {
-                    usuario_id: obj_session.usuario_id,
-                    socket_id: socketid,
-                };
+//            socket.on("onConnected1", function (datos) {
+            socket.on("onNotificarMensajeria", function (datos) {
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];

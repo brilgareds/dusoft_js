@@ -1,9 +1,10 @@
 
 /* global G */
 
-var Mensajeria = function (m_mensajes) {
+var Mensajeria = function (m_mensajes, mensajes_events) {
 
     this.m_mensajes = m_mensajes;
+    this.mensajes_events = mensajes_events;
 };
 
 /**
@@ -184,8 +185,11 @@ Mensajeria.prototype.IngresarMensaje = function (req, res) {
         }).fail(function (err) {
             transaccion.rollback(err);
         }).done();
-    }).then(function (resultado) {
+    }).then(function (res) {
+//        return G.Q.ninvoke(that.mensajes_events, "onNotificarMensaje", detalle, usuarios, args.chat.usuario_id);
+        return G.Q.ninvoke(that.mensajes_events, "onNotificarMensajeria",parametros);
 
+    }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Mensaje creado Correctamente', 200, {mensaje: resultado}));
     }).catch(function (err) {
         console.log("IngresarMensaje  ", err);
@@ -224,6 +228,6 @@ function __recorreListado(that, listado, parametros, index, transaccion, callbac
 ;
 
 
-Mensajeria.$inject = ["m_mensajes"];
+Mensajeria.$inject = ["m_mensajes", "e_mensajes"];
 
 module.exports = Mensajeria;

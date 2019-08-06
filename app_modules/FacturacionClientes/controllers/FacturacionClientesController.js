@@ -3260,6 +3260,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Factura.set_Prefijodocumento(resultado.cabecera.prefijo);
         Factura.set_Numerodocumento(resultado.cabecera.factura_fiscal);
         Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
+        Factura.set_Horaemision(resultado.cabecera.fecha_registro);
         Factura.set_Numerolineas(resultado.detalle.length);
         Factura.set_Subtotal(subTotal);
         Factura.set_Totalbaseimponible(subTotal); // falta validar

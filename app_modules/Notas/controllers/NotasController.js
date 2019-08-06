@@ -1,4 +1,4 @@
-/* global G */
+/* global G, parseFloat */
 let that;
 
 var Notas = function (m_notas, m_notas_class, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes,
@@ -1045,6 +1045,7 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
 
         Nota.set_Numerodocumento(resultado.nota.factura_fiscal);
         Nota.set_Fechaemision(resultado.nota.fecha_registro);
+        Nota.set_Horaemision(resultado.cabecera.fecha_registro);
         Nota.set_Numerolineas(productos.length);
         Nota.set_Subtotal(parseFloat(subTotal));
         Nota.set_Totalbaseimponible(parseFloat(subTotal));
@@ -1394,6 +1395,7 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
 
             Nota.set_Numerodocumento(resultado.nota.factura_fiscal);
             Nota.set_Fechaemision(resultado.nota.fecha_registro);
+            Nota.set_Horaemision(resultado.cabecera.fecha_registro);
             Nota.set_Numerolineas(productos.length);
             Nota.set_Subtotal(parseFloat(subTotal));
             Nota.set_Totalbaseimponible(parseFloat(subTotal));
@@ -1892,7 +1894,7 @@ function __productos(productos, index, productosDian, callback) {
             nombre: "IVA19",
             baseGravable: item.porc_iva,
             valor: (parseFloat(item.iva_total).toFixed(2)).replace(",", ".")
-        }
+        };
 
     }
     if (ivaPorcentaje === 10) {

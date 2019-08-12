@@ -27,8 +27,18 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                     'a.tipo_id_tercero',
                     'a.tercero_id',
                     'c.nombre_tercero',
-                    'a.codigo_unidad_negocio',
-                    'd.descripcion',
+                    G.knex.raw(`
+                        CASE
+                            WHEN a.codigo_unidad_negocio IS NULL
+                                THEN ''
+                            WHEN a.codigo_unidad_negocio IS NOT NULL
+                                THEN a.codigo_unidad_negocio
+                            END as codigo_unidad_negocio`),
+                    G.knex.raw(`
+                        CASE
+                            WHEN d.descripcion IS NULL THEN ''
+                            WHEN d.descripcion IS NOT NULL THEN d.descripcion
+                            END as descripcion`),
                     'a.contrato_generico',
                     'a.condiciones_cliente',
                     'a.observaciones',
@@ -94,11 +104,15 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                 .limit(limit)
                 .offset(offset);
 
+            console.log('The Query is: ', G.sqlformatter.format(query.toString()));
+
             return query;
         }).then(contratos => {
             if (contratos.length > 0) {
 
                 for (let contrato of contratos) {
+                    if (!contrato.codigo_unidad_negocio) { contrato.codigo_unidad_negocio = ''; }
+                    contrato.codigo_unidad_negocio = !contrato.codigo_unidad_negocio ? '':contrato.codigo_unidad_negocio;
                     contrato.type = { cod: parseFloat(contrato.tipo_contrato) };
                     contrato.seller = {
                         cod: parseFloat(contrato.vendedor_id),
@@ -106,9 +120,12 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                         sellerDocType: contrato.tipo_id_vendedor,
                         sellerDocNum: contrato.vendedor_id
                     };
+                    if (contrato.codigo_unidad_negocio !== undefined && contrato.codigo_unidad_negocio !== '' && contrato.codigo_unidad_negocio.length > 0) {
+                        contrato.codigo_unidad_negocio = parseFloat(contrato.codigo_unidad_negocio.trim());
+                    }
                     contrato.businessUnit = {
-                        cod: parseFloat(contrato.codigo_unidad_negocio),
-                        name: parseFloat(contrato.codigo_unidad_negocio) + ' - ' + contrato.descripcion
+                        cod: contrato.codigo_unidad_negocio,
+                        name: contrato.codigo_unidad_negocio + ' - ' + contrato.descripcion
                     };
                     contrato.docType = contrato.tipo_id_tercero;
                     contrato.docNum = contrato.tercero_id;

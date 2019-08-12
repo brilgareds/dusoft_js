@@ -70,8 +70,7 @@ const __subir_archivo_plano = (files, callback) => {
 const __validar_productos_archivo_plano = (that, index, filas, productosValidos, productosInvalidos, parametros, callback) => {
     let producto = filas[index];
     if (!producto) { callback(false, productosValidos, productosInvalidos); return; } // Si no existe sale del ciclo!
-    // console.log('Product is: ', producto);
-    if (producto.codigo && producto.codigo === 'string' && producto.codigo.length > 0) { producto.codigo = producto.codigo.trim(); }
+    if (producto.codigo) { producto.codigo = String(producto.codigo).trim(); }
 
     let obj = {
         codigo_producto: producto.codigo,

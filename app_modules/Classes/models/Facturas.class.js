@@ -5,6 +5,8 @@ function Facturas() {
     this.versionDocumento = '';
     this.registrar = false;
     this.control = '';
+    this.cvcc = '';
+    this.formato = '';
     this.codigoTipoDocumento = '';
     this.tipoOperacion = '';
     this.prefijoDocumento = '';
@@ -68,6 +70,14 @@ Facturas.prototype.get_Registrar = function () {
 
 Facturas.prototype.get_Control = function () {
     return this.control;
+};
+
+Facturas.prototype.get_Cvcc = function () {
+    return this.cvcc;
+};
+
+Facturas.prototype.get_Formato = function () {
+    return this.formato;
 };
 
 Facturas.prototype.get_Codigotipodocumento = function () {
@@ -324,6 +334,46 @@ Facturas.prototype.set_Control = function (nuevoValor) {
     return respuesta;
 };
 
+Facturas.prototype.set_Cvcc = function (nuevoValor) {
+    let respuesta = {status: false, msj: '', errorCount: 0};
+    if (nuevoValor.length > 30) {
+        respuesta.errorCount++;
+        respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
+    }
+    if (typeof nuevoValor === 'String') {
+        respuesta.errorCount++;
+        respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
+    }
+    if (respuesta.errorCount_ > 0) {
+        respuesta.msj.substring(0, respuesta.msj.length - 2);
+    } else {
+        respuesta.status = true;
+        respuesta.msj = 'ok';
+    }
+    this.cvcc = nuevoValor;
+    return respuesta;
+};
+
+Facturas.prototype.set_Formato = function (nuevoValor) {
+    let respuesta = {status: false, msj: '', errorCount: 0};
+    if (nuevoValor.length > 10) {
+        respuesta.errorCount++;
+        respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
+    }
+    if (typeof nuevoValor === 'String') {
+        respuesta.errorCount++;
+        respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
+    }
+    if (respuesta.errorCount_ > 0) {
+        respuesta.msj.substring(0, respuesta.msj.length - 2);
+    } else {
+        respuesta.status = true;
+        respuesta.msj = 'ok';
+    }
+    this.formato = nuevoValor;
+    return respuesta;
+};
+
 Facturas.prototype.set_Codigotipodocumento = function (nuevoValor) {
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
@@ -405,6 +455,7 @@ Facturas.prototype.set_Numerodocumento = function (nuevoValor) {
 };
 
 Facturas.prototype.set_Fechaemision = function (nuevoValor) {
+    var formato = 'DD-MM-YYYY';
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
         respuesta.errorCount++;
@@ -420,11 +471,13 @@ Facturas.prototype.set_Fechaemision = function (nuevoValor) {
         respuesta.status = true;
         respuesta.msj = 'ok';
     }
-    this.fechaEmision = nuevoValor;
+    this.fechaEmision = G.moment(nuevoValor).format(formato);
+//    this.fechaEmision = nuevoValor;
     return respuesta;
 };
 
 Facturas.prototype.set_Horaemision = function (nuevoValor) {
+    var formato = 'HH:mm:ss';
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
         respuesta.errorCount++;
@@ -440,7 +493,8 @@ Facturas.prototype.set_Horaemision = function (nuevoValor) {
         respuesta.status = true;
         respuesta.msj = 'ok';
     }
-    this.horaEmision = nuevoValor;
+    this.horaEmision = G.moment(nuevoValor).format(formato);
+//    this.horaEmision = nuevoValor;
     return respuesta;
 };
 

@@ -98,6 +98,8 @@ Sistema.prototype.querysActiveInDb = (req, res) => {
         .then(rows => {
             response.push(rows);
             res.send(G.utils.r(req.url, 'Mostrando procesos de la base de datos', 200, response));
+
+
         }).catch(err => {
             console.log('Error: ', err);
             res.send(G.utils.r(req.url, err.msg, 500, {}));

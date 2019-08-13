@@ -1366,7 +1366,112 @@ function _generar_reporte_planilla_despacho(rows, callback) {
             phantom: {
                 margin: "10px",
                 width: '792px',
-                footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`
+                headerHeight: "250px",
+                footer: `<div style='text-align:right'>{#pageNum}/{#numPages}</div>`,
+                header:
+                        `<style>
+                            body {
+                font-family: 'Open Sans', sans-serif;
+                font-size:10px;
+                line-height:15px;
+            }
+            .pad-top-botm {
+                padding-bottom:0px;
+                padding-top:10px;
+            }
+            h4 {
+                text-transform:uppercase;
+            }
+
+            .contact-info span {
+                /*font-size:10px;*/
+                padding:0px 50px 0px 50px;
+            }
+
+            .contact-info hr {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+
+            .client-info {
+                /*font-size:10px;*/
+            }
+
+            .footer-info {
+                font-size:8px;
+            }
+
+            .ttl-amts {
+                text-align:right;
+                padding-right:50px;
+            }
+            .box {
+                float: left;
+                width: 300px;
+                height: 50px;
+                /*margin: 1em;*/
+            }
+            table, th, td, tr {
+                /*border: 1px solid black;*/
+                border: none;
+                border-collapse: collapse;
+                page-break-inside: avoid; 
+                /*white-space: nowrap;*/
+            }
+            td {
+                page-break-inside: avoid;
+                font-size: 12px;
+            }
+
+            table.table-border{
+                border: 1px solid black;
+                page-break-inside: avoid;
+            }
+
+            .table-border{
+                border: 1px solid black;
+                page-break-inside: avoid;
+            }
+
+            .table-border td{
+                border: 1px solid black;
+                page-break-inside: avoid;
+            }
+
+            .footer{
+                /*margin-top:20px;*/
+                width:100%;
+            }
+
+            .contenedor-despacho{
+                background: gray;
+                color: white;
+                text-align: right;
+            }
+
+            .color-placeholder{
+                color: lightgrey;
+            }
+                         </style>
+                         <table class="table" width='100%'>                        
+                    <tr>
+                        <td style="width: 150px">
+                            <img src="{#asset /logocliente.png @encoding=dataURI}" style="padding-bottom:20px;" width="150px" height="50px" /> 
+                        </td>
+                        <td  colspan="2" align="center"><h3><strong> PLANILLA DE DESPACHOS DE MERCANCÍA </strong></h3> </td>                            
+                    </tr>
+                    <tr>
+                        <td  style="width: 150px"><b>Transpotador (a):</b></td>
+                        <td>{{:planilla_despacho.nombre_transportadora }} {{:planilla_despacho.numero_placa_externo}}</td>
+                        <td > <b>Guia Nro :</b>`+ rows.planilla_despacho.numero_guia+`</td>                            
+                    </tr>
+                    <tr>
+                        <td ><b>Fecha Salida :</b></td>
+                        <td >{{:planilla_despacho.fecha_despacho}}</td>
+                        <td > <b>Tipo Guia :</b> {{:planilla_despacho.tipo_planilla}}</td>                              
+                    </tr>                        
+                </table> 
+                            `
             }
         },
         data: {

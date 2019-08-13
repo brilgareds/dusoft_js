@@ -52401,11 +52401,11 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     session: session,
                     data: {
                         mensaje: {
-                            usuario_id: session.usuario_id
+                            usuario_id: session.usuario_id,
+//                            empresa_id: session.empresaId
                         }
                     }
                 };
-
                 Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.CONSULTAR_MENSAJES_USUARIO, "POST", obj, function (data) {
 
                     var obj = data.obj.mensajes;
@@ -52459,7 +52459,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 var socketid = datos.socket_id;
                 var socket_session = {
                     usuario_id: obj_session.usuario_id,
-                    socket_id: socketid
+                    socket_id: socketid,
                 };
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {

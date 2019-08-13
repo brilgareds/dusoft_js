@@ -1,0 +1,50 @@
+
+<div>
+    <div>
+        <div class="row">
+            <div class="col-md-3">
+                <p class="input-group">
+
+                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_mensaje()">
+                        <span class="glyphicon glyphicon-plus"></span> Crear Mensaje
+                    </button>
+                </p>
+            </div> 
+
+            <div class="col-md-3 pull-right">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="filtro in filtros">
+                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <input type="text" class="form-control" ng-keypress="buscador_mensajes($event);" ng-model="datos_view.termino_busqueda" placeholder="Buscar" name="" id="" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit" ng-click="buscar_mensajes_usuario();"><i class="glyphicon glyphicon-search"></i></button>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive" >
+            <div class="defaultGrid grid-responsive"  ng-grid="lista_mensajes"></div>
+        </div>
+
+        </br>
+
+        <div class="row text-center">
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+                <span class="glyphicon glyphicon-chevron-left" ></span>
+            </button>
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items < 25" ng-click="pagina_siguiente()">
+                <span class="glyphicon glyphicon-chevron-right" ></span>
+            </button>
+        </div>
+    </div>
+</div>

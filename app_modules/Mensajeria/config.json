@@ -1,0 +1,27 @@
+{
+    "module": "Mensajeria",
+    "dependency": {
+        "controllers": [{
+                "mensajes_controller": {
+                    "module": "Mensajeria",
+                    "controller": "MensajesController",
+                    "alias": "c_mensajes"
+                }
+            }],
+        "models": [{
+                "mensajes_model": {
+                    "module": "Mensajeria",
+                    "model": "MensajesModel",
+                    "alias": "m_mensajes"
+                }
+            }],
+        "events": [{
+                "mensajes_events": {
+                    "module": "Mensajeria",
+                    "event": "MensajesEvents",
+                    "alias": "e_mensajes"
+                }
+            }],
+        "cronJobs": []
+    }
+}

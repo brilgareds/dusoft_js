@@ -48,6 +48,10 @@ AuditoriaContratos.prototype.listarProductosContrato = function (parametros, cal
                 this.andWhere('a.estado', '1');
                 this.andWhere(G.knex.raw("b.precio_pactado <= c.costo_ultima_compra"));
 
+                if (parametros.filtro === 3) {
+                    this.andWhere(G.knex.raw("d.nombre_tercero " + G.constants.db().LIKE + "'%" + parametros.termino_busqueda + "%' "));
+                }
+
                 if (parametros.filtro === 2) {
                     this.andWhere(G.knex.raw("b.codigo_producto " + G.constants.db().LIKE + "'%" + parametros.termino_busqueda + "%' "));
                 }

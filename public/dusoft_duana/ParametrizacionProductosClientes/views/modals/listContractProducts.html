@@ -47,7 +47,7 @@
                         <span class="btn btn-danger" ng-show="root.data.currentContract.products.length" ng-click="deleteProductsContract(root.data.currentContract.contrato_numero)" style="position: absolute; right: 0; top: -3px;">Borrar <b>TODOS</b> los productos!</span>
                     </h4>
                     <div class="table-responsive contractProducts" style="margin-bottom: 15px;">
-                        <div ng-style="{ display: (root.data.currentContract.products.length) ? 'block': 'none' }" ng-grid="contractProducts" style="width: 100%;"></div>
+                        <div style="width: 100%;" ng-grid="contractProducts"></div>
                         <h4 ng-show="!root.data.currentContract.products.length" style="text-align: center; margin: 0px; background: #eaeaea; padding: 10px; font-size: 20px;">
                             <i>Sin productos agregados!</i>
                         </h4>

@@ -26,6 +26,10 @@
                 'MODULOS':{
                     'ES_MODULO_PADRE':BASE_URL+"/Modulos/esModuloPadre"
                 },
+                'MENSAJERIA':{
+                    'CONSULTAR_MENSAJES_USUARIO': BASE_URL + '/Mensajeria/ConsultarMensajesUsuario',
+                    'INGRESAR_LECTURA': BASE_URL + '/Mensajeria/IngresarLectura'
+                },
                 'PRODUCTOS':{
                     'CONSULTAR_EXISTENCIAS' : BASE_URL+"/Productos/consultarExistencias",
                     'GUARDAR_EXISTENCIA_BODEGA' : BASE_URL+"/Productos/guardarExistenciaBodega",

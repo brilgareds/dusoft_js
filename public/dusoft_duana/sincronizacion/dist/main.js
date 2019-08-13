@@ -34194,41 +34194,48 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            $scope.credito_debito=false;
-            $scope.debito_credito=false;
+            $scope.root = {
+                prefijo: {},
+                init: {
+                    entries: {
+                        types: [
+                            {
+                                title: 'Debito',
+                                name: 'debito',
+                                entries: {}
+                            },
+                            {
+                                title: 'Credito',
+                                name: 'credito',
+                                entries: {}
+                            }
+                        ],
+                        rows: {}
+                    }
+                },
+                listarTiposServicios: [],
+                entries: {},
+                tipos_categorias: [
+                    { 'descripcion': 'Debito',  'id': 0 },
+                    { 'descripcion': 'Credito', 'id': 1 }
+                ]
+            };
+            $scope.credito_debito = false;
+            $scope.debito_credito = false;
 
-            that.init = callback => {
-                $scope.root = {
-                    prefijo: {},
-                    listarTiposServicios: [],
-                    tipesEntries: [
-                        {
-                            title: 'Debito',
-                            name: 'debito',
-                            entries: {}
-                        },
-                        {
-                            title: 'Credito',
-                            name: 'credito',
-                            entries: {}
-                        }
-                    ],
-                    tipos_categorias: [
-                        { 'descripcion': 'Debito',  'id': 0 },
-                        { 'descripcion': 'Credito', 'id': 1 }
-                    ]
-                };
-
+            that.init = () => {
+                // Inicialización de variables
+                $scope.root.entries = JSON.parse(JSON.stringify($scope.root.init.entries));
                 $scope.contador_checked = 0;
                 $scope.seccion_1 = false;
                 $scope.seccion_2 = false;
                 $scope.servicios = false;
                 $scope.boton = false;
+                $scope.root.listarTiposCuentas = {};
                 $scope.root.tipos_categorias = [
                     { 'descripcion': 'Debito',  'id': 0 },
                     { 'descripcion': 'Credito', 'id': 1 }
                 ];
-                $scope.root.listarTiposCuentas = {};
                 $scope.documentosCuentas = {
                     empresa_id: Usuario.getUsuarioActual().getEmpresa().codigo,
                     centro_id: Usuario.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
@@ -34238,9 +34245,16 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                     cuentas: [],
                     categorias: {}
                 };
-                callback();
+
+                // Funciones a ejecutar al iniciar
+                that.listarPrefijos();
+                that.listarTiposServicios();
             };
-            
+
+
+            $scope.post = (url, obj, callback) => {
+                Request.realizarRequest(url, "POST", obj, data => { callback(data) });
+            };
 
             $scope.prefijo_actualizado = function(prefijo){
                 console.log('prefijo es:', prefijo);                
@@ -34266,63 +34280,71 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
 
             $scope.servicio_actualizado = function(servicio) {
                 console.log('Servicio es: ', servicio);
-                if (servicio != undefined && servicio != '' && servicio != ' ') {
+                if (servicio && servicio != '' && servicio != ' ') {
                     $scope.seccion_1 = true;
                     $scope.seccion_2 = true;
                     $scope.boton = true;
                     $scope.documentosCuentas.servicio = servicio;
                     that.listarTiposCuentas();
                 }
-            }; 
-                                    
-            $scope.guardar_cuentas = function() {
-                //var respuestaUsuario = confirm('¿Esta seguro de actualizar los valores de esas cuentas?');
-                var cuentas_actualizadas = JSON.parse(JSON.stringify($scope.root.tipesEntries));
-                cuentas_actualizadas.credito = JSON.parse(JSON.stringify($scope.root.tipesEntries.credito));
-                cuentas_actualizadas.debito = JSON.parse(JSON.stringify($scope.root.tipesEntries.debito));
-                // console.log('before, creditos: ', cuentas_actualizadas.credito);
+            };
 
-                //  $scope.root.tipesEntries
+            $scope.cleanNoSelected = () => {
+                let entry = {};
+                let entries = {};
+                let index = 0;
+                let countEntries = 0;
+                let tipos_cuenta = {};
+                let cuentas_actualizadas = JSON.parse(JSON.stringify($scope.root.entries));
 
-                // smb://10.0.2.224/discos/<d>/<GSI7>
-
-                // smb://NASUPV    /discos/<letra>/<usuario>
-
-                for (tipo_cuenta in cuentas_actualizadas) {
-                    if (Array.isArray(cuentas_actualizadas[tipo_cuenta]) && cuentas_actualizadas[tipo_cuenta].length > 0){
-
-                        for (index in cuentas_actualizadas[tipo_cuenta]){
-
-                            if (cuentas_actualizadas[tipo_cuenta][index] && !cuentas_actualizadas[tipo_cuenta][index].check) {
-                                // cuentas_actualizadas[tipo_cuenta].splice(index, 1);
-                                delete cuentas_actualizadas[tipo_cuenta][index];
-                                console.log('Un elemento borrado!! index: ', index);
-                            }
+                for (tipos_cuenta of cuentas_actualizadas.types) {
+                    index = 0;
+                    entries = cuentas_actualizadas.rows[tipos_cuenta.name];
+                    countEntries = cuentas_actualizadas.rows[tipos_cuenta.name].length;
+                    if (Array.isArray(entries) && entries.length > 0) {
+                        while (index <= countEntries) {
+                            if (entries[index] && !entries[index].check) { entries.splice(index, 1); index = 0; }
+                            else { index++; }
                         }
                     }
                 }
 
-                //console.log('after, creditos: ', cuentas_actualizadas.credito);
+                return cuentas_actualizadas;
+            };
 
-                var obj = {
+            $scope.deleteAccounts = () => {
+                let cuentas_borradas = $scope.cleanNoSelected();
+                const obj = {
                     session: $scope.session,
                     data: {
-                        tipesEntries: cuentas_actualizadas,
-                        debito: cuentas_actualizadas.debito,
-                        credito: cuentas_actualizadas.credito
+                        entries: cuentas_borradas
                     }
                 };
-                // console.log('El objeto enviado es ', obj.data);
-                ServerServiceDoc.guardarCuentas(obj, function (data) {
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.DELETE_ACCOUNTS, obj, data => {
                     if (data.status === 200) {
-                        AlertService.mostrarVentanaAlerta("Actualizacion de cuentas", data.msj);
-                        //$scope.root.listarTiposCuentas = data.obj.listarTiposCuentas;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                        that.listarTiposCuentas();
+                        AlertService.mostrarVentanaAlerta("Eliminación de cuentas", data.msj);
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
-                //console.log('Funcion del submit!!');
-                console.log('Cuentas son: ',$scope.documentosCuentas);
+            };
+                                    
+            $scope.guardar_cuentas = () => {
+                let cuentas_actualizadas = $scope.cleanNoSelected();
+                console.log('Cuentas_actualizadas: ', cuentas_actualizadas);
+
+                const obj = {
+                    session: $scope.session,
+                    data: {
+                        tipesEntries: cuentas_actualizadas.types,
+                        debito: cuentas_actualizadas.rows.debito,
+                        credito: cuentas_actualizadas.rows.credito
+                    }
+                }; // console.log('El objeto enviado es ', obj.data);
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.GUARDAR_CUENTAS, obj, data => {
+                    if (data.status === 200) { AlertService.mostrarVentanaAlerta("Actualizacion de cuentas", data.msj);}
+                    else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
+                });
             };
             /*
             $scope.validarDebito=function(cuenta, checked, seccion, origen){      
@@ -34372,55 +34394,48 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
             */
 
             that.listarPrefijos = function () {
-                var obj = {
+                const obj = {
                     session: $scope.session,
                     data: {
                         empresaId: Usuario.getUsuarioActual().getEmpresa().codigo
                     }
                 };
-//                console.log("ServerService",ServerServiceDoc);
-                ServerServiceDoc.listarPrefijos(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, obj, data => {
+                    console.log('Ajax!!, url: ', API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, 'obj: ', obj);
+
                     if (data.status === 200) {
-                        // console.log('Prefijos Array: ', data);
                         $scope.root.listarPrefijos = data.obj.listarPrefijos.prefijos;
                         $scope.root.listarPrefijosFiltrados = data.obj.listarPrefijos.prefijosFiltrados;
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { console.log('data: ', data); AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
-            that.listarTipoCuentaCategoria = function (callback) {
-                console.log("listarTipoCuentaCategoria");
-                var obj = {
-                    session: $scope.session
+            that.listarTipoCuentaCategoria = callback => {
+                const obj = {
+                    session: $scope.session,
+                    data: {}
                 };
-                ServerServiceDoc.listarTipoCuentaCategoria(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPO_CUENTA_CATEGORIA, obj, data => {
                     if (data.status === 200) {
                         console.log("data: ", data.obj.listarTipoCuentaCategoria);
                         callback(data.obj.listarTipoCuentaCategoria);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
-            that.listarDocumentosCuentas = function () {
-                console.log("listarDocumentosCuentas");
-                var obj = {
-                    session: $scope.session
+            that.listarDocumentosCuentas = () => {
+                const obj = {
+                    session: $scope.session,
+                    data: {}
                 };
-                ServerServiceDoc.listarDocumentosCuentas(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_DOCUMENTOS_CUENTAS, obj, data => {
                     if (data.status === 200) {
                         console.log("data",data.obj);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
             that.listarTiposCuentas = () => {
-                //console.log("listarTiposCuentas");
 
                 const obj = {
                     session: $scope.session,
@@ -34432,87 +34447,74 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                         servicio: $scope.documentosCuentas.servicio
                     }
                 };
-                ServerServiceDoc.listarTiposCuentas(obj, data => {
-                    $scope.root.tipesEntries = {};
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_CUENTAS, obj, data => {
+                    $scope.root.entries = JSON.parse(JSON.stringify($scope.root.init.entries));
                     $scope.documentosCuentas.categorias = {};
 
                     if (data.status === 200) {
-                        // console.log("data inicial: ", data.obj);
-                        var resultado = data.obj.entries;
-                        var tipo_cuenta = '';
-                        var datos_cuenta = {};
-                        var datos_cuenta_vacio = {};
-                        var categoria_nueva = '';
-                        var categoria_vieja = '';
-                        var cuentas_count = 0;
-                        var cuentas_total = resultado.length;
+                        let resultado = data.obj.entries;
+                        let tipo_cuenta = '';
+                        let categoria_nueva = '';
+                        let cuentas_count = 0;
+                        let cuentas_total = resultado.length;
                         let entry = {};
 
                         for (let key in resultado) {
                             cuentas_count++;
                             entry = resultado[key];
-                            categoria_nueva = entry.categoria_descripcion;
-
-                            console.log('cuenta es: ', entry);
+                            categoria_nueva = entry.categoria_descripcion; // console.log('cuenta es: ', entry);
 
                             tipo_cuenta = (entry.sw_cuenta === '0') ? 'debito':'credito';
 
-                            if($scope.documentosCuentas.categorias[categoria_nueva] === undefined) {
+                            if ($scope.documentosCuentas.categorias[categoria_nueva] === undefined) {
                                 $scope.documentosCuentas.categorias[categoria_nueva] = {};
                             }
-                            if($scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta] === undefined) {
+                            if ($scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta] === undefined) {
                                 $scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta] = [];
                             }
-                            if($scope.root.tipesEntries['debito'] === undefined){
-                                $scope.root.tipesEntries['debito'] = [];
+                            if ($scope.root.entries.rows.debito === undefined) {
+                                $scope.root.entries.rows.debito = [];
                             }
-                            if($scope.root.tipesEntries['credito'] === undefined){
-                                $scope.root.tipesEntries['credito'] = [];
+                            if ($scope.root.entries.rows.credito === undefined) {
+                                $scope.root.entries.rows.credito = [];
                             }
 
                             $scope.documentosCuentas.categorias[categoria_nueva][tipo_cuenta].push(entry);
-                            $scope.root.tipesEntries[tipo_cuenta].push(entry);
-                            //console.log('Array en ciclo: ', $scope.documentosCuentas);
-                        };
-                        //$scope.root.listarTiposCuentas = $scope.documentosCuentas;
-                        console.log('Cuentas1 es: ', $scope.root.tipesEntries);
-                        // console.log('Cuentas2 es: ', $scope.documentosCuentas);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                            $scope.root.entries.rows[tipo_cuenta].push(entry);
+                        }; // console.log('Cuentas son: ', $scope.root.entries);
+                    } else { AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj); }
                 });
             };
             
-           that.insertarTipoCuenta = obj => {
+           $scope.insertarTipoCuenta = cuenta => {
+               console.log('Eyyyyy');
                 const obj = {
                     session: $scope.session,
-                    data: obj
+                    data: cuenta
                 };
-                ServerServiceDoc.insertarTipoCuenta(obj, data => {
-                    //console.log('Respuesta del insert desde el controlador Frontend!!: ', data);
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA, obj, data => {
                     if (data.status === 200) {
                        AlertService.mostrarVentanaAlerta("Mensaje del sistema: ", "Se Almacenó Correctamente");
                        $scope.documentosCuentas.cuenta = '';
                        that.listarTiposCuentas();
                        that.listarPrefijos(obj.data.empresaId);
                        that.listarTiposServicios(obj.data.prefijoId);
-                    } else {
-                        AlertService.mostrarVentanaAlerta(data.obj.insertTiposCuentas);
-                        // AlertService.mostrarVentanaAlerta("Error Mensaje del sistema: ", data.msj);
-                    }
+                    } else { AlertService.mostrarVentanaAlerta(data.msj); }
                 });
-            };
+           };
             
             $scope.validarCuenta=function(data, tipo){
                 //console.log('Data en validacion: ', data);
-                if(tipo === 'debito'){
+                if (tipo === 'debito') {
 
-                }else if(tipo === 'credito'){
+                } else if (tipo === 'credito') {
 
                 }
-                var response = false;
-                for(cuenta in data){
-                    if((data.cuenta_id+"").slice(0, 2) === compara){
+                let response = false;
+                for (cuenta in data) {
+                    if ((data.cuenta_id+"").slice(0, 2) === compara){
                         response = true;
                     }
                 }
@@ -34596,7 +34598,7 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
                             $scope.cuentaCategoriaId={categoria_id:0,categoria_descripcion:"------"};
-                            
+
                             that.listarTipoCuentaCategoria(data => {
                                 $scope.root.listarTipoCuentaCategoria = data;
                             });
@@ -34609,10 +34611,10 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                                     campos.centro_id    && (campos.centro_id.length  > 0) &&
                                     campos.bodega_id    && (campos.bodega_id.length  > 0) &&
                                     campos.cuenta       && (campos.cuenta.length     > 0) &&
-                                    campos.servicio     && (campos.servicio.length   > 0) &&
-                                    campos.categoriaId  && (campos.categoriaId.length > 0) &&
-                                    campos.tipo_cuenta  && (campos.tipo_cuenta === '') &&
-                                    campos.categoriaDescripcion && (campos.categoriaDescripcion.length > 0)) {
+                                    campos.servicio     && (campos.servicio          > 0) &&
+                                    campos.categoriaId  && (campos.categoriaId       > 0) &&
+                                    campos.tipo_cuenta !== undefined  && (campos.tipo_cuenta !== '') &&
+                                    campos.categoriaDescripcion && (campos.categoriaDescripcion.length > 0) ) {
 
                                     response = true;
                                 }
@@ -34621,9 +34623,9 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                             };
 
                             $scope.guardar = function () {
-                                if (!$scope.validaterFieldsInsert($scope.documentosCuentas)) { return false; }
+                                if (!$scope.validaterFieldsInsert($scope.documentosCuentas)) { console.log('Errorrrr'); return false; }
 
-                                var obj = {
+                                const obj = {
                                     prefijoId: $scope.documentosCuentas.prefijo_id,
                                     empresaId: $scope.documentosCuentas.empresa_id,
                                     centroId: $scope.documentosCuentas.centro_id,
@@ -34635,7 +34637,7 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                                     cuentaTipo: $scope.documentosCuentas.tipo_cuenta
                                 };
                                 //console.log('objeto en insert Cuenta - Frontend: ', obj);
-                                that.insertarTipoCuenta(obj);
+                                $scope.insertarTipoCuenta(obj);
                                 $modalInstance.close();
                             };
 
@@ -34653,18 +34655,14 @@ define('controllers/asignacionCuentas/AsignacionCuentasController',["angular", "
                         prefijo: prefijo
                     }
                 };
-                ServerServiceDoc.listarTiposServicios(obj, function(data){
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS, obj, data => {
                     $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
-                    $scope.root.listarTiposServiciosFiltrados = data.obj.listarTiposServicios.serviciosFiltrados;
-                    // console.log('Servicios: ', $scope.root.listarTiposServicios);
-                    //console.log('Ajax init!! data: ', data.obj.listarTiposServicios);
+                    $scope.root.listarTiposServiciosFiltrados = data.obj.listarTiposServicios.serviciosFiltrados;;
                 });
             };
                         
-            that.init(function () {
-                that.listarPrefijos();
-                that.listarTiposServicios();
-            });
+            that.init();
         }]);
 });
 
@@ -34705,6 +34703,10 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
                 that.listarPrefijos();
             };
 
+            $scope.post = (url, obj, callback) => {
+                Request.realizarRequest(url, "POST", obj, data => { callback(data) });
+            };
+
             that.listarPrefijos = () => {
                 const obj = {
                     session: $scope.session,
@@ -34713,7 +34715,7 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
                     }
                 };
 //              console.log("ServerService",ServerServiceDoc);
-                ServerServiceDoc.listarPrefijos(obj, function (data) {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_PREFIJOS, obj, data => {
                     if (data.status === 200) {
                         console.log('Prefijos Array: ', data);
                         $scope.root.listarPrefijos = data.obj.listarPrefijos.prefijos;
@@ -34770,7 +34772,8 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
                     session: $scope.session,
                     data: {}
                 };
-                ServerServiceDoc.listarTiposServicios(obj, data =>{
+
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.LISTAR_TIPOS_SERVICIOS, obj, data => {
                     console.log('Servicios: ', data);
                     $scope.root.listarTiposServicios = data.obj.listarTiposServicios.servicios;
                 });
@@ -34794,7 +34797,7 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
                 };
                 console.log('Objeto antes de Ajax: ', obj);
 
-                ServerServiceDoc.sincronizacionDocumentos(obj, data => {
+                $scope.post(API.SINCRONIZACION_DOCUMENTOS.SINCRONIZACION_DOCUMENTOS, obj, data => {
                     if (data.status === 200) {
                         $scope.root.estado = true;
                         $scope.root.asientosContables = data.obj.asientosContables;
@@ -34918,9 +34921,7 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
             };
 
             $scope.listar_proveedores = termino_busqueda => {
-                if (termino_busqueda.length < 3) {
-                    return;
-                }
+                if (termino_busqueda.length < 3) { return; }
                 $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
 
                 that.buscar_proveedores(proveedores => {
@@ -34938,10 +34939,8 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, data => {
-                    if (data.status === 200) {
-                        callback(data.obj.proveedores);
-                    }
+                $scope.post(API.PROVEEDORES.LISTAR_PROVEEDORES, obj, data => {
+                    if (data.status === 200) { callback(data.obj.proveedores); }
                 });
             };
 
@@ -34956,7 +34955,6 @@ define('controllers/sincronizacionDocumentos/SincronizacionDocumentosController'
             $scope.seleccionar_proveedor = recepcion => {
                 $scope.cod_proveedor = recepcion.proveedor.codigo_proveedor_id;
             };
-
             that.init();
         }]);
 });
@@ -35237,6 +35235,7 @@ define('url',["angular"], function(angular) {
                 "SINCRONIZACION_DOCUMENTOS": BASE_URL + "/SincronizacionDocumentos/sincronizarDocumentos",
                 "LISTAR_TIPOS_FACTURAS": BASE_URL + "/SincronizacionDocumentos/listarTiposFacturas",
                 "GUARDAR_CUENTAS": BASE_URL + "/SincronizacionDocumentos/guardarCuentas",
+                "DELETE_ACCOUNTS": BASE_URL + "/SincronizacionDocumentos/deleteAccounts",
                 "BUSCAR_SERVICIO": BASE_URL + "/SincronizacionDocumentos/buscarServicio"
             },
             'PROVEEDORES':{
@@ -35531,6 +35530,10 @@ define('includes/classes/Usuario',["angular", "js/models"], function(angular, mo
                 },
                 'MODULOS':{
                     'ES_MODULO_PADRE':BASE_URL+"/Modulos/esModuloPadre"
+                },
+                'MENSAJERIA':{
+                    'CONSULTAR_MENSAJES_USUARIO': BASE_URL + '/Mensajeria/ConsultarMensajesUsuario',
+                    'INGRESAR_LECTURA': BASE_URL + '/Mensajeria/IngresarLectura'
                 },
                 'PRODUCTOS':{
                     'CONSULTAR_EXISTENCIAS' : BASE_URL+"/Productos/consultarExistencias",
@@ -38514,36 +38517,37 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
     "includes/classes/Empresa", "includes/classes/Modulo",
     "includes/classes/Rol", "includes/classes/OpcionModulo",
     "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
-    "includes/components/chat/Chat","includes/components/usuarios/Usuarios",
+    "includes/components/chat/Chat", "includes/components/usuarios/Usuarios",
     "includes/components/notificaciones/NotificacionesController",
-    "includes/components/gruposChat/GruposChatController", 'includes/classes/Chat/Conversacion'], function(angular, controllers) {
+    "includes/components/gruposChat/GruposChatController", 'includes/classes/Chat/Conversacion'], function (angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
-        "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
-        "$timeout","$modal", "Conversacion",  "webNotification","$window",
-        function($scope, $rootScope, $state,
+        "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega", "VariableModulo",
+        "$timeout", "$modal", "Conversacion", "webNotification", "$window",
+        function ($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
                 $timeout, $modal, Conversacion, webNotification, $window) {
 
             var self = this;
-           
-            
+            var mensaje = false;
+
+
             var obj_session = localStorageService.get("session");
             $scope.conversacionesSinLeer = $rootScope.conversacionesSinLeer;
-            
-            if (!obj_session){
+
+            if (!obj_session) {
                 window.location = "../pages/401.html";
                 return;
             }
-            
+
             // setUsuarioActual(obj_session);
-            
-            self.redireccionarLogin = function(){
+
+            self.redireccionarLogin = function () {
                 window.location = "../login";
             };
-            
+
             $scope.mostarLock = false;
             $scope.unlockform = {};
 
@@ -38551,18 +38555,18 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 usuario: "",
                 clave: ""
             };
-            
+
             $scope.centrosUtilidad = [];
 
             var session = {
                 usuario_id: obj_session.usuario_id,
                 auth_token: obj_session.auth_token
             };
-            
+
             $scope.enHome = false;
             //$scope.empresas = [];
 
-            self.setUsuarioActual = function(obj) {
+            self.setUsuarioActual = function (obj) {
                 var usuario = Usuario.get(obj.usuario_id, obj.usuario, obj.nombre);
 
                 usuario.setRutaAvatar("/images/avatar_empty.png");
@@ -38594,8 +38598,8 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             };
 
 
-            self.obtenerEmpresasUsuario = function(callback) {
-               
+            self.obtenerEmpresasUsuario = function (callback) {
+
                 var obj = {
                     session: session,
                     data: {
@@ -38605,7 +38609,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     }
                 };
 
-                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_EMPRESAS_USUARIO, "POST", obj, function(data) {
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_EMPRESAS_USUARIO, "POST", obj, function (data) {
                     var obj = data.obj.parametrizacion_usuarios;
 
                     if (obj) {
@@ -38632,7 +38636,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             };
 
 
-            self.traerUsuarioPorId = function(usuario_id, callback) {
+            self.traerUsuarioPorId = function (usuario_id, callback) {
 
                 var obj = {
                     session: session,
@@ -38643,14 +38647,14 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     }
                 };
 
-                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_USUARIO_POR_ID, "POST", obj, function(data) {
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_USUARIO_POR_ID, "POST", obj, function (data) {
                     var obj = data.obj.parametrizacion_usuarios.usuario;
 
                     if (obj) {
 
                         self.setUsuarioActual(obj);
                         callback(obj);
-                        
+
                     }
 
                 });
@@ -38658,7 +38662,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
 
 
-            self.traerParametrizacionPorUsuario = function(empresa_id, limpiarCache, callback) {
+            self.traerParametrizacionPorUsuario = function (empresa_id, limpiarCache, callback) {
 
                 var obj = {
                     session: session,
@@ -38666,26 +38670,26 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                         parametrizacion_usuarios: {
                             usuario_id: $scope.Usuario.getId(),
                             empresa_id: empresa_id,
-                            limpiar_cache:limpiarCache
+                            limpiar_cache: limpiarCache
                         }
                     }
                 };
 
-                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO, "POST", obj, function(data) {
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO, "POST", obj, function (data) {
                     var obj = data.obj.parametrizacion_usuarios;
-                    
+
                     if (obj) {
                         obj = obj.parametrizacion;
                         var modulos = obj.modulos || [];
-                        
+
                         self.asignarModulosUsuario(modulos);
 
                         self.asignarEmpresasFarmacias(obj.centros_utilidad);
-                        localStorageService.set("chat", {estado:'0'});
-                     
+                        localStorageService.set("chat", {estado: '0'});
+
                         callback(obj);
                     } else {
-                        $scope.cerraSesion(function() {
+                        $scope.cerraSesion(function () {
                             self.redireccionarLogin();
                         });
                     }
@@ -38694,26 +38698,26 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             };
 
             //asigna los centros de utilidad y bodegas al usuario
-            self.asignarEmpresasFarmacias = function(centros) {
+            self.asignarEmpresasFarmacias = function (centros) {
                 for (var i in centros) {
                     var _empresa = centros[i];
                     //se instancia las emrpesas del usuario
-                    if(_empresa.seleccionado_usuario === '1'){
-                        
+                    if (_empresa.seleccionado_usuario === '1') {
+
                         var empresa = Empresa.get(_empresa.nombre_empresa, _empresa.empresa_id);
-                                                
+
                         //se asigna los centros de utilidad y bodega de la empresa                        
-                        centros.forEach(function(centro){
-                            if(empresa.getCodigo() === centro.empresa_id && centro.seleccionado_usuario === '1'){
-                                
+                        centros.forEach(function (centro) {
+                            if (empresa.getCodigo() === centro.empresa_id && centro.seleccionado_usuario === '1') {
+
                                 var _centro = CentroUtilidad.get(centro.descripcion, centro.centro_utilidad_id);
                                 _centro.setNombreEmpresa(centro.nombre_empresa);
                                 _centro.setEmpresaId(centro.empresa_id);
-                                
+
                                 for (var ii in centro.bodegas) {
                                     var bodega = centro.bodegas[ii];
 
-                                    if(bodega.seleccionado_usuario === '1'){
+                                    if (bodega.seleccionado_usuario === '1') {
                                         var _bodega = Bodega.get(bodega.descripcion, bodega.bodega_id);
 
                                         _centro.agregarBodega(_bodega);
@@ -38721,69 +38725,70 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                                 }
                                 empresa.agregarCentroUtilidad(_centro);
                                 //centros de utilidad por la empresa que el usuario selecciona en el dropdown superior
-                                if($scope.Usuario.getEmpresa().getCodigo() === _centro.getEmpresaId() ){
+                                if ($scope.Usuario.getEmpresa().getCodigo() === _centro.getEmpresaId()) {
                                     $scope.Usuario.getEmpresa().agregarCentroSiNoExiste(angular.copy(_centro));
                                 }
-                                
+
                             }
                         });
-                        
+
                         $scope.Usuario.agregarEmpresaFarmacia(empresa);
                     }
                 }
-                
+
             };
-            
-            
-           /**
-            * @author Eduar Garcia
-            * +Descripcion Handler del boton de chat
-            * @fecha 2016-09-14
-            */
-            $scope.onMostrarVentanaGrupos = function(){
+
+
+            /**
+             * @author Eduar Garcia
+             * +Descripcion Handler del boton de chat
+             * @fecha 2016-09-14
+             */
+            $scope.onMostrarVentanaGrupos = function () {
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
+                    style: 'ui.tinymce',
                     size: 'lg',
                     keyboard: true,
-                    templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                    // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
                     controller: 'GruposChatController',
                     resolve: {
-                        conversacion: function() {
+                        conversacion: function () {
                             return Conversacion.get();
                         }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            
-            
-            $scope.onCentroSeleccionado = function(centro){
+
+
+            $scope.onCentroSeleccionado = function (centro) {
                 localStorageService.set("centro_utilidad_usuario", centro.getCodigo());
                 $scope.Usuario.getEmpresa().setCentroUtilidadSeleccionado(centro);
             };
-            
-            $scope.onBodegaSeleccionada = function(bodega){ 
-              //  console.log("history.length ",history.length );
+
+            $scope.onBodegaSeleccionada = function (bodega) {
+                //  console.log("history.length ",history.length );
                 localStorageService.set("bodega_usuario", bodega.getCodigo());
-                $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega); 
+                $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega);
                 self.limpiar();
 //                var moduloActual = $scope.Usuario.getModuloActual();
-                
+
 //                if(!moduloActual || moduloActual.nombre.toLowerCase() === 'dashboard'){
 //                    return;
 //                }
-                
+
                 self.irAlHome();
-                
+
             };
-            
+
             self.limpiar = function () {
-                var session=localStorageService.get("session");
-               // console.log("session ",session);
+                var session = localStorageService.get("session");
+                // console.log("session ",session);
                 var llavesMemoria = localStorageService.keys();
-                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat","validacionEgresosDetalle"];
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat", "validacionEgresosDetalle"];
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
@@ -38793,14 +38798,14 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     }
                 }
             };
-            
-            $scope.onIrAlHome = function(){
-                
-                 $scope.opts = {
+
+            $scope.onIrAlHome = function () {
+
+                $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
-                  //  size: 'sm',
+                    //  size: 'sm',
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -38814,58 +38819,58 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                                     <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance, moduloActual) {
+                    controller: function ($scope, $modalInstance, moduloActual) {
                         $scope.moduloActual = moduloActual;
-                        $scope.confirmar = function() {
+                        $scope.confirmar = function () {
                             self.irAlHome();
                             $modalInstance.close();
                         };
 
-                        $scope.close = function() {
+                        $scope.close = function () {
                             $modalInstance.close();
                         };
 
                     },
                     resolve: {
-                        moduloActual: function() {
+                        moduloActual: function () {
                             return moduloActual;
                         }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
-                
+
             };
-            
-            self.irAlHome = function(mensaje){
+
+            self.irAlHome = function (mensaje) {
 //                console.log("ir al home");
                 var moduloActual = $scope.Usuario.getModuloActual();
                 localStorageService.set("mensajeDashboard", null);
-                
+
                 //si el usuario no tiene asignado el home
-                if(!moduloActual){
-                    if(mensaje){
+                if (!moduloActual) {
+                    if (mensaje) {
                         AlertService.mostrarMensaje("warning", mensaje.mensaje);
                     }
                     return;
                 }
-                
-                if(mensaje){
+
+                if (mensaje) {
                     localStorageService.set("mensajeDashboard", mensaje);
                 }
-                                
-                if(moduloActual.nombre.toLowerCase() !== 'dashboard'){
+
+                if (moduloActual.nombre.toLowerCase() !== 'dashboard') {
 //                    console.log("dashboard");
 //                    localStorageService.clearAll(); 
 //                    return;
                 }
                 window.location = "/dusoft_duana/home";
             };
-            
+
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual
-            self.asignarModulosUsuario = function(modulos) {
+            self.asignarModulosUsuario = function (modulos) {
                 var _modulos = [];
                 var _modulosObjetoValor = {};
-                
+
                 for (var i in modulos) {
 
                     var modulo = modulos[i];
@@ -38878,7 +38883,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                                 modulo.state,
                                 "usuario_modulo_",
                                 modulo.alias
-                        );
+                                );
 
 
                         _modulo.setIcon(modulo.icon);
@@ -38887,25 +38892,25 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                         var _opciones = modulo.opciones;
 
-                        for(var ii in _opciones) {
+                        for (var ii in _opciones) {
                             var _opcion = _opciones[ii];
-                            
-                           //la opcion esta deshabilitada
-                            if(_opcion.estado === '0'){
+
+                            //la opcion esta deshabilitada
+                            if (_opcion.estado === '0') {
                                 _opcion.estado_opcion_rol = _opcion.estado;
                             }
-                            
+
                             var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
                             opcion.setEstado_opcion_rol(_opcion.estado_opcion_rol);
                             _modulo.agregarOpcion(opcion);
                         }
-                        
+
                         var _variables = modulo.variables;
-                        
-                        for(var iii in _variables){
+
+                        for (var iii in _variables) {
                             var _variable = _variables[iii];
-                            if(_variable.estado === '1'){
-                                
+                            if (_variable.estado === '1') {
+
                                 var variable = VariableModulo.get(_variable.id, _variable.nombre, _variable.valor, _variable.observacion);
                                 _modulo.agregarVariable(variable);
                             }
@@ -38915,7 +38920,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                         _modulos.push(_modulo);
 
                         //objeto para mejorar el perfomance en el momento de buscar el modulo actual cada vez que cambie el router
-                        if(!_modulo.esModuloPadre()){
+                        if (!_modulo.esModuloPadre()) {
                             _modulosObjetoValor[modulo.state] = {
                                 id: "usuario_modulo_" + modulo.modulo_id,
                                 parent: modulo.parent,
@@ -38923,36 +38928,36 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                                 state: modulo.state,
                                 icon: modulo.icon,
                                 opciones: _modulo.getOpciones(true),
-                                variables:_modulo.getVariables(true),
-                                esPadre:_modulo.esModuloPadre(),
-                                alias:_modulo.getAlias()
+                                variables: _modulo.getVariables(true),
+                                esPadre: _modulo.esModuloPadre(),
+                                alias: _modulo.getAlias()
                             };
                         }
-                        
+
                     }
 
                 }
-                
+
                 if (_modulos.length > 0) {
                     $scope.Usuario.setModulos(_modulos);
                     $scope.Usuario.setObjetoModulos(_modulosObjetoValor);
                     //estando los modulos preparados se envian al controlador del menu                      
                     $rootScope.$emit("modulosUsuario");
                 } else {
-                    $scope.cerraSesion(function() {
+                    $scope.cerraSesion(function () {
                         window.location = "../pages/401.html";
                     });
                 }
             };
-            
-            $scope.onVerPerfilUsuario = function(){
-                 localStorageService.set("usuarioo_id", $scope.Usuario.getId());
-                 window.location = "../parametrizacion/#/AdministracionUsuarios";
+
+            $scope.onVerPerfilUsuario = function () {
+                localStorageService.set("usuarioo_id", $scope.Usuario.getId());
+                window.location = "../parametrizacion/#/AdministracionUsuarios";
             };
 
-            $scope.onEmpresaSeleccionada = function(empresa) {
+            $scope.onEmpresaSeleccionada = function (empresa) {
                 $scope.Usuario.setEmpresa(empresa);
-                self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(), true, function(parametrizacion) {
+                self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(), true, function (parametrizacion) {
 
                     var obj = localStorageService.get("session");
 
@@ -38963,48 +38968,48 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 });
             };
 
-            $scope.cerraSesionBtnClick = function($event) {
+            $scope.cerraSesionBtnClick = function ($event) {
                 $event.preventDefault();
-                $scope.cerraSesion(function() {
+                $scope.cerraSesion(function () {
                     self.redireccionarLogin();
                 });
 
             };
 
-            $scope.cerraSesion = function(callback) {
+            $scope.cerraSesion = function (callback) {
                 $scope.session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
 
-                Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function(data) {
+                Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function (data) {
                     localStorageService.remove("session");
                     localStorageService.remove("socketsIds");
                     var llavesMemoria = localStorageService.keys();
                     var llavesPermanentes = ["centro_utilidad_usuario", "bodega_usuario"];
-                    
-                    for(var i in llavesMemoria){
+
+                    for (var i in llavesMemoria) {
                         var key = llavesMemoria[i];
-                        
-                        if(llavesPermanentes.indexOf(key) === -1){
+
+                        if (llavesPermanentes.indexOf(key) === -1) {
                             localStorageService.remove(key);
                         }
-                    }    
-                    
+                    }
+
                     callback();
 
                 });
             };
 
-            $scope.autenticar = function() {
+            $scope.autenticar = function () {
 
                 var session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
-                Request.realizarRequest('/api/unLockScreen', "POST", {session: session, data: {login: {contrasenia: $scope.obj_session.clave}}}, function(data) {
+                Request.realizarRequest('/api/unLockScreen', "POST", {session: session, data: {login: {contrasenia: $scope.obj_session.clave}}}, function (data) {
                     if (data.status === 200) {
                         $scope.msgerror = "";
                         $scope.mostrarmensaje = false;
@@ -39018,14 +39023,14 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 });
             };
 
-            $scope.bloquearPantalla = function() {
+            $scope.bloquearPantalla = function () {
 
                 var session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
-                Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
+                Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function (data) {
                     if (data.status === 200) {
                         $scope.mostarLock = true;
                         $scope.obj_session = {};
@@ -39033,20 +39038,20 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
                 });
             };
-            
-            $rootScope.$on("onIrAlHome",function(e,mensaje){
-                
+
+            $rootScope.$on("onIrAlHome", function (e, mensaje) {
+
                 self.irAlHome(mensaje);
 
             });
-            
-            $rootScope.$on("onDeshabilitarBtnChat", function(){
-               $scope.deshabilitarBtnChat = true; 
+
+            $rootScope.$on("onDeshabilitarBtnChat", function () {
+                $scope.deshabilitarBtnChat = true;
             });
 
-            $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                
-                if(toState.name.toLowerCase() === "dashboard"){
+            $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+
+                if (toState.name.toLowerCase() === "dashboard") {
                     $scope.enHome = true;
                 }
 
@@ -39060,76 +39065,76 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 //no se encontro el modulo, el usuario no tiene permisos para verlo
                 if (!moduloActual) {
                     event.preventDefault();
-                    self.irAlHome({mensaje: "El usuario no tiene permisos para ver la sección de "+ toState.name, tipo:"warning"});
+                    self.irAlHome({mensaje: "El usuario no tiene permisos para ver la sección de " + toState.name, tipo: "warning"});
                     return;
                 }
 
                 $scope.Usuario.setModuloActual(moduloActual);
-                
+
 
             });
-            
-                        
-          /**
-            * @author Eduar Garcia
-            * +Descripcion Handler del boton de chat
-            * @fecha 2016-09-05
-            */
-            $scope.onBtnChat = function(){
+
+
+            /**
+             * @author Eduar Garcia
+             * +Descripcion Handler del boton de chat
+             * @fecha 2016-09-05
+             */
+            $scope.onBtnChat = function () {
                 self.abrirChat();
             };
-            
-            
-            $rootScope.$on("onAbrirChat",function(e, conversacionId){
-               
-               localStorageService.set("mensajeNotificacion", {id_conversacion:conversacionId});
-               self.abrirChat(); 
+
+
+            $rootScope.$on("onAbrirChat", function (e, conversacionId) {
+
+                localStorageService.set("mensajeNotificacion", {id_conversacion: conversacionId});
+                self.abrirChat();
             });
-            
-            self.abrirChat = function(){
-                
-                var chat =  localStorageService.get("chat");
-               
-                
-                if(chat && chat.estado === '1'){
+
+            self.abrirChat = function () {
+
+                var chat = localStorageService.get("chat");
+
+
+                if (chat && chat.estado === '1') {
                     var storageConversacion = localStorageService.get("mensajeNotificacion");
-                    $rootScope.$emit("onCargarOtraConversacion",storageConversacion.id_conversacion);
+                    $rootScope.$emit("onCargarOtraConversacion", storageConversacion.id_conversacion);
                     return;
                 }
-                
+
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
                     size: 'lg',
                     keyboard: true,
-                    animation:false,
-                    template:'<chat></chat>', 
-                    windowClass:"contenedorChat",
-                    backdropClass:"chatBackground",
-                    controller:["$scope", "$modalInstance",function($scope, $modalInstance){
-                        $scope.onCerrarChat = function(){
-                            $modalInstance.close();
-                        };
-                        
-                    }]
+                    animation: false,
+                    template: '<chat></chat>',
+                    windowClass: "contenedorChat",
+                    backdropClass: "chatBackground",
+                    controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                            $scope.onCerrarChat = function () {
+                                $modalInstance.close();
+                            };
+
+                        }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-                
-                modalInstance.result.then(function() {
-                    localStorageService.set("chat", {estado:'0'});
-                }, function() {
-                    localStorageService.set("chat", {estado:'0'});
+
+                modalInstance.result.then(function () {
+                    localStorageService.set("chat", {estado: '0'});
+                }, function () {
+                    localStorageService.set("chat", {estado: '0'});
                 });
-                $rootScope.$emit("onToogleChat", {forzarAbrir:true});
-                localStorageService.set("chat", {estado:'1'});
+                $rootScope.$emit("onToogleChat", {forzarAbrir: true});
+                localStorageService.set("chat", {estado: '1'});
             };
-            
-            $rootScope.$on("onConversacionesSinLeer", function(e, data){
+
+            $rootScope.$on("onConversacionesSinLeer", function (e, data) {
                 $scope.conversacionesSinLeer = data;
             });
 
-            self.obtenerModuloActual = function(state) {
+            self.obtenerModuloActual = function (state) {
                 var obj = $scope.Usuario.getObjetoModulos();
 
                 var modulo = obj[state];
@@ -39138,44 +39143,44 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
             };
 
-            socket.on("onCerrarSesion", function() {
-         
-                $scope.cerraSesion(function() {
+            socket.on("onCerrarSesion", function () {
+
+                $scope.cerraSesion(function () {
                     window.location = "../pages/403.html";
                 });
             });
-            
-            socket.on("onNotificacionChat", function(data){
+
+            socket.on("onNotificacionChat", function (data) {
                 var mensaje = data.mensaje;
-                               
+
                 localStorageService.set("mensajeNotificacion", mensaje);
-                
-                var chat =  localStorageService.get("chat");              
-                if(!chat || chat.estado !== '1') {
+
+                var chat = localStorageService.get("chat");
+                if (!chat || chat.estado !== '1') {
                     self.abrirChat();
-                } else if(mensaje.id_conversacion !== $rootScope.conversacionSeleccionada.getId()) {
+                } else if (mensaje.id_conversacion !== $rootScope.conversacionSeleccionada.getId()) {
                     $rootScope.agregarNotificacion(mensaje.id_conversacion);
                 }
-                
-                
-                
+
+
+
                 //Evita mostrar la notificacion a el mismo usuario
-                if(document.hidden && parseInt(mensaje.usuarioEmite) !== parseInt($scope.Usuario.getId())){
+                if (document.hidden && parseInt(mensaje.usuarioEmite) !== parseInt($scope.Usuario.getId())) {
                     var socketArray = localStorageService.get("socketsIds");
-                    
-                    if(!socketArray){
+
+                    if (!socketArray) {
                         return;
                     }
-       
-                    
-                    if($rootScope.socketId === socketArray[0]){
-                        
+
+
+                    if ($rootScope.socketId === socketArray[0]) {
+
                         var onHide;
 
-                        webNotification.showNotification(mensaje.usuario+ " dice: ", {
+                        webNotification.showNotification(mensaje.usuario + " dice: ", {
                             body: mensaje.mensaje,
                             icon: '/images/logo.png',
-                            tag:"1",
+                            tag: "1",
                             onClick: function onNotificationClicked() {
 
                                 self.abrirChat();
@@ -39185,121 +39190,197 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                             autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
                         }, function onShow(error, hide) {
                             if (error) {
-                                
+
                             } else {
-                                 onHide =  hide;
+                                onHide = hide;
                                 setTimeout(function hideNotification() {
-                                   onHide();
-                                   //manually close the notification (you can skip this if you use the autoClose option)
+                                    onHide();
+                                    //manually close the notification (you can skip this if you use the autoClose option)
                                 }, 30000);
                             }
                         });
                     }
-                    
+
                 }
-                
+
             });
 
             //evento de coneccion al socket
-            socket.on("onConnected", function(datos) {
+            socket.on("onConnected", function (datos) {
                 var socketid = datos.socket_id;
                 var socket_session = {
-                   usuario_id: obj_session.usuario_id,
-                   auth_token: obj_session.auth_token,
-                   socket_id: socketid,
-                   device:"web",
-                   appId: "dusoft-web"
+                    usuario_id: obj_session.usuario_id,
+                    auth_token: obj_session.auth_token,
+                    socket_id: socketid,
+                    device: "web",
+                    appId: "dusoft-web"
                 };
-                
+
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
-            
-            
-            socket.on("onSesionActualizada", function(data){
-                
+
+
+            socket.on("onSesionActualizada", function (data) {
+
                 var socketId = data.socket_id;
                 $rootScope.socketId = socketId;
-                
+
                 var socketArray = localStorageService.get("socketsIds");
-                
-                if(!socketArray){
+
+                if (!socketArray) {
                     socketArray = [];
                 }
-                
+
                 socketArray.push(socketId);
-                
+
                 localStorageService.set("socketsIds", JSON.stringify(socketArray));
             });
-            
-            $(window).on('beforeunload', function(){
+
+            $(window).on('beforeunload', function () {
                 var socketArray = localStorageService.get("socketsIds");
-                
-                if(socketArray){
-                    
+
+                if (socketArray) {
+
                     var index = socketArray.indexOf($rootScope.socketId);
-                    
-                    if(index !== -1){
-                        
-                        socketArray.splice(socketArray.indexOf($rootScope.socketId),1);
+
+                    if (index !== -1) {
+
+                        socketArray.splice(socketArray.indexOf($rootScope.socketId), 1);
                         localStorageService.set("socketsIds", JSON.stringify(socketArray));
-                        
+
                     }
                 }
-                
-                
+
+
             });
-            
-            
-            self.traerUsuarioPorId(obj_session.usuario_id, function() {
+
+
+            self.traerUsuarioPorId(obj_session.usuario_id, function () {
                 var empresa_id = obj_session.empresa_id;
 
                 if (!empresa_id) {
                     empresa_id = $scope.Usuario.getEmpresa().getCodigo();
                 }
 
-                self.traerParametrizacionPorUsuario(empresa_id, false, function(parametrizacion) {
+                self.traerParametrizacionPorUsuario(empresa_id, false, function (parametrizacion) {
 
-                    self.obtenerEmpresasUsuario(function() {
-           
+                    self.obtenerEmpresasUsuario(function () {
+
                         //se selecciona el centro de utilidad y bodega predeterminado del usuario
                         var centrosUtilidadEmpresa = $scope.Usuario.getEmpresa().getCentrosUtilidad();
                         var codigoCentroUtilidadUsuario = localStorageService.get("centro_utilidad_usuario");
                         var codigoBodegaUsuario = localStorageService.get("bodega_usuario");
-                        
-                        for(var i in centrosUtilidadEmpresa){
-                            var _centro = centrosUtilidadEmpresa[i];
-                            
-                            if(_centro.getCodigo() === codigoCentroUtilidadUsuario){
-                                $scope.onCentroSeleccionado(_centro);
-                                var bodegas = _centro.getBodegas(); 
 
-                                for(var ii in bodegas){
-                                    if(codigoBodegaUsuario === bodegas[ii].getCodigo()){
+                        for (var i in centrosUtilidadEmpresa) {
+                            var _centro = centrosUtilidadEmpresa[i];
+
+                            if (_centro.getCodigo() === codigoCentroUtilidadUsuario) {
+                                $scope.onCentroSeleccionado(_centro);
+                                var bodegas = _centro.getBodegas();
+
+                                for (var ii in bodegas) {
+                                    if (codigoBodegaUsuario === bodegas[ii].getCodigo()) {
                                         $scope.onBodegaSeleccionada(bodegas[ii]);
                                         break;
                                     }
                                 }
-                                
+
                                 break;
-                                
-                                
+
+
                             }
                         }
-                        
+
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
-                        
+
                         var moduloChat = Usuario.getUsuarioActual().objetoModulos["ChatDusoft"];
-                        
-                        if(moduloChat){
+
+                        if (moduloChat) {
                             $scope.permisoGuardarConversacion = moduloChat.opciones["sw_guardar_conversacion"];
                         }
-                        
+
 
                     });
 
                 });
             });
+
+            self.buscar_mensajes_usuario = function (callback) {
+
+                var obj = {
+                    session: session,
+                    data: {
+                        mensaje: {
+                            usuario_id: session.usuario_id
+                        }
+                    }
+                };
+
+                Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.CONSULTAR_MENSAJES_USUARIO, "POST", obj, function (data) {
+
+                    var obj = data.obj.mensajes;
+
+                    if (obj) {
+
+                        callback(obj);
+
+                    }
+
+                });
+            };
+
+            $scope.aceptar = function () {
+                var obj = {
+                    session: session,
+                    data: {
+                        mensaje: {
+                            usuario_id: session.usuario_id,
+                            mensaje_id: mensaje.actualizacion_id
+                        }
+                    }
+                };
+
+                Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.INGRESAR_LECTURA, "POST", obj, function (data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Leido");
+                    } else {
+                        AlertService.mostrarMensaje("warning", "No se registro la Lectura del mensaje");
+                    }
+
+                });
+            };
+
+            self.verMensaje = function (mensaje) {
+
+                AlertService.mostrarVentanaMensajeria(mensaje.asunto, mensaje.descripcion, mensaje.obligatorio, function (data) {
+
+                    if (data) {
+                        $scope.aceptar(mensaje);
+                    }
+
+                });
+
+            };
+
+
+
+            //evento de coneccion al socket
+            socket.on("onConnected1", function (datos) {
+                var socketid = datos.socket_id;
+                var socket_session = {
+                    usuario_id: obj_session.usuario_id,
+                    socket_id: socketid
+                };
+                self.buscar_mensajes_usuario(function (msj) {
+                    if (msj.length > 0) {
+                        mensaje = msj[0];
+                        self.verMensaje(mensaje);
+                    }
+                });
+            });
+
+
 
         }]);
 });
@@ -39380,58 +39461,58 @@ define('loader',["angular","js/directive"], function(angular, directive){
 
 });
 
-define('includes/alert/Alert',["angular","js/services"], function(angular, services){
+define('includes/alert/Alert',["angular", "js/services"], function (angular, services) {
 
-    var Alert = services.service('AlertService',["$modal", "$sce", function($modal, $sce) {
-      var that = this;
-      this.el;
-      this.colaEjecucion = [];
-      this.timer;
-      this.mostrandoMensaje = false;
-      this.intervalo = 4000;
+    var Alert = services.service('AlertService', ["$modal", "$sce", function ($modal, $sce) {
+            var that = this;
+            this.el;
+            this.colaEjecucion = [];
+            this.timer;
+            this.mostrandoMensaje = false;
+            this.intervalo = 4000;
 
-      this.mostrarMensaje = function(tipo, msg){
+            this.mostrarMensaje = function (tipo, msg) {
 
-         this.colaEjecucion.push({tipo:tipo,msg:msg});
-         this.procesarMensaje();
-          
-      };
+                this.colaEjecucion.push({tipo: tipo, msg: msg});
+                this.procesarMensaje();
 
-      this.procesarMensaje =function(){
-        if(!this.mostrandoMensaje){
+            };
 
-            var msg = this.colaEjecucion[0];
+            this.procesarMensaje = function () {
+                if (!this.mostrandoMensaje) {
 
-            if(msg){
-                this.mostrandoMensaje = true;
-      
-                that.el.html("<p class='alertcontenido alert alert-"+msg.tipo+"'>\
-                                "+msg.msg+"</p>").show();
+                    var msg = this.colaEjecucion[0];
 
-                this.timer = setTimeout(function(){
-                    that.el.html("<p>"+msg.msg+"</p>").hide();
-                    that.destruirIntervalo();
-                    that.colaEjecucion.splice(0,1);
-                    that.mostrandoMensaje = false;
-                    that.procesarMensaje();
-                   
-                },this.intervalo);
+                    if (msg) {
+                        this.mostrandoMensaje = true;
+
+                        that.el.html("<p class='alertcontenido alert alert-" + msg.tipo + "'>\
+                                " + msg.msg + "</p>").show();
+
+                        this.timer = setTimeout(function () {
+                            that.el.html("<p>" + msg.msg + "</p>").hide();
+                            that.destruirIntervalo();
+                            that.colaEjecucion.splice(0, 1);
+                            that.mostrandoMensaje = false;
+                            that.procesarMensaje();
+
+                        }, this.intervalo);
 
 
-            } else {
-            }
+                    } else {
+                    }
 
-        }
-      };
-      
-      this.mostrarVentanaAlerta = function(titulo, mensaje, callback){
-          
-            var opts = {
-            backdrop: true,
-            backdropClick: true,
-            dialogFade: false,
-            keyboard: true,
-            template: ' <div class="modal-header">\
+                }
+            };
+
+            this.mostrarVentanaAlerta = function (titulo, mensaje, callback) {
+
+                var opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
                             <button type="button" class="close" ng-click="close()">&times;</button>\
                             <h4 class="modal-title">{{titulo}}</h4>\
                         </div>\
@@ -39443,55 +39524,118 @@ define('includes/alert/Alert',["angular","js/services"], function(angular, servi
                             <button class="btn btn-warning" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
                             <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-if="callback">Cancelar</button>\
                         </div>',
-            controller: ["$scope", "$modalInstance", "titulo", "mensaje", "callback", function($scope, $modalInstance, titulo, mensaje, callback) {
-                $scope.mensaje = $sce.trustAsHtml(mensaje);
-                $scope.titulo  = titulo;
-                $scope.callback = callback;
-                $scope.close = function() {
-                    if(callback){
-                        callback(false);
+                    controller: ["$scope", "$modalInstance", "titulo", "mensaje", "callback", function ($scope, $modalInstance, titulo, mensaje, callback) {
+                            $scope.mensaje = $sce.trustAsHtml(mensaje);
+                            $scope.titulo = titulo;
+                            $scope.callback = callback;
+                            $scope.close = function () {
+                                if (callback) {
+                                    callback(false);
+                                }
+                                $modalInstance.close();
+                            };
+
+                            $scope.onBtnModal = function (aceptar) {
+                                callback(aceptar);
+                                $modalInstance.close();
+                            }
+
+                        }],
+                    resolve: {
+                        titulo: function () {
+                            return titulo;
+                        },
+                        mensaje: function () {
+                            return mensaje;
+                        },
+                        callback: function () {
+                            return callback;
+                        }
                     }
-                    $modalInstance.close();
                 };
-                
-                $scope.onBtnModal = function(aceptar){
-                    callback(aceptar);
-                    $modalInstance.close();
-                }
+                var modalInstance = $modal.open(opts);
+            };
 
-            }],
-            resolve: {
-                titulo: function() {
-                    return titulo;
-                },
-                mensaje: function(){
-                    return mensaje;
-                },
-                callback : function(){
-                    return callback;
-                }
-            }
-        };
-        var modalInstance = $modal.open(opts);
-      };
+            this.mostrarVentanaMensajeria = function (titulo, mensaje, obligatorio, callback) {
 
-      this.destruirIntervalo =function(){
-        clearTimeout(this.timer);
-        this.timer = null;
-      };
+                var opts = {
+                    backdrop: 'static',
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                            <button type="button" class="close" ng-click="close()" ng-hide="habilitarBoton()">&times;</button>\
+                            <h4 class="modal-title" style="margin-top: 0px; text-align: center"><strong>{{titulo}}</strong></h4>\
+                        </div>\
+                        <div class="modal-body" ng-bind-html="mensaje">\
+                            <h4>{{mensaje}}</h4>\
+                        </div>\
+                        <div class="modal-footer" style="margin-top: 0px">\
+                        <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
+                            <button class="btn btn-success" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
+                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-hide="habilitarBoton()" ng-if="callback">Cancelar</button>\
+                        </div>',
+                    controller: ["$scope", "$modalInstance", "titulo", "mensaje", "obligatorio", "callback", function ($scope, $modalInstance, titulo, mensaje, obligatorio, callback) {
+                            $scope.mensaje = $sce.trustAsHtml(mensaje);
+                            $scope.titulo = titulo;
+                            $scope.obligatorio = obligatorio;
+                            $scope.callback = callback;
+                            $scope.close = function () {
+                                if (callback) {
+                                    callback(false);
+                                }
+                                $modalInstance.close();
+                            };
 
-      angular.element(document).ready(function () {
-          $("body").append(
-              "<div id='systemAlerlt'>"+
+                            $scope.habilitarBoton = function () {
+                                var disabled = false;
 
+                                if (obligatorio === 1) {
+                                    disabled = true;
+                                }
 
-              "</div>"
-          );
+                                return disabled;
+                            };
 
-          that.el = $("#systemAlerlt");
-      });
+                            $scope.onBtnModal = function (aceptar) {
+                                callback(aceptar);
+                                $modalInstance.close();
+                            };
 
-    }]);
+                        }],
+                    resolve: {
+                        titulo: function () {
+                            return titulo;
+                        },
+                        mensaje: function () {
+                            return mensaje;
+                        },
+                        obligatorio: function () {
+                            return obligatorio;
+                        },
+                        callback: function () {
+                            return callback;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open(opts);
+            };
+
+            this.destruirIntervalo = function () {
+                clearTimeout(this.timer);
+                this.timer = null;
+            };
+
+            angular.element(document).ready(function () {
+                $("body").append(
+                        "<div id='systemAlerlt'>" +
+                        "</div>"
+                        );
+
+                that.el = $("#systemAlerlt");
+            });
+
+        }]);
 
 
 
@@ -52117,14 +52261,14 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                     session: obj.session,
                                     data: obj
                                 },
-                        function(data) {                           
+                        function(data) {
                             callback(data);
                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                         );
 
                     };
-                    
+
                     self.sincronizacionDocumentos = function(obj, callback) {
 
                         Request.realizarRequest(
@@ -52134,7 +52278,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                     session: obj.session,
                                     data: obj
                                 },
-                        function(data) {                           
+                        function(data) {
                             callback(data);
                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
@@ -52155,7 +52299,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                     );
 
                 };
-                    
+
                     self.listarTipoCuentaCategoria = function(obj, callback) {
 
                         Request.realizarRequest(
@@ -52165,14 +52309,14 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                     session: obj.session,
                                     data:{}
                                 },
-                        function(data) {                           
+                        function(data) {
                             callback(data);
                            // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                         );
 
                     };
-                    
+
                     self.listarDocumentosCuentas = function (obj, callback) {
 
                         Request.realizarRequest(
@@ -52188,7 +52332,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                 }
                         );
                     };
-                    
+
                     self.listarTiposServicios = function (obj, callback) {
                         //console.log('objeto enviado al ajax: ',obj);
                         Request.realizarRequest(
@@ -52201,7 +52345,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                 }
                         );
                     };
-                    
+
                     self.listarTiposCuentas = function (obj, callback) {
 
                         Request.realizarRequest(
@@ -52214,7 +52358,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                 }
                         );
                     };
-                    
+
                     self.insertarTipoCuenta = function(obj, callback) {
                         Request.realizarRequest(
                             API.SINCRONIZACION_DOCUMENTOS.INSERTAR_TIPO_CUENTA,
@@ -52223,14 +52367,14 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                                 session: obj.session,
                                 data: obj.data
                             },
-                            function(data) {                           
+                            function(data) {
                                 callback(data);
                                // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         );
 
                     };
-                    
+
                     self.guardarCuentas = function(obj, callback) {
                         console.log('Ajax init_0!');
                         Request.realizarRequest(
@@ -52244,7 +52388,7 @@ define('services/serviceSincronizacion/ServerServiceDoc',["angular", "js/service
                             }
                         );
 
-                    };                                                          
+                    };
                     return this;
     }]);
 });

@@ -133,7 +133,8 @@ define([
                 .state('ListarPedidosFarmacias',{
                     url: "/ListarPedidosFarmacias",
                     text: "Pedidos Farmacias",
-                    templateUrl: "views/generacionpedidos/pedidosfarmacias/listapedidos.html"
+                    templateUrl: "views/generacionpedidos/pedidosfarmacias/listapedidos.html",
+                    controller: "PedidosFarmaciaController"
                 })
                 .state('GuardarPedidoTemporal',{
                     url: "/GuardarPedidoTemporal",

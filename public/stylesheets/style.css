@@ -648,6 +648,11 @@ a{
     height:500px;
 }
 
+.app-modal-window-xs-lg .modal-dialog{
+    width:35%;
+    height:50%;
+}
+
 .app-modal-window-xlg-ls .modal-dialog{
     width:70%;
     height:100%;

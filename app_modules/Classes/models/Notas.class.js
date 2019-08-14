@@ -454,6 +454,7 @@ Notas.prototype.set_Numerodocumento = function(nuevoValor) {
 };
 
 Notas.prototype.set_Fechaemision = function(nuevoValor) {
+    var formato = 'DD-MM-YYYY';
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
         respuesta.errorCount++;
@@ -469,11 +470,13 @@ Notas.prototype.set_Fechaemision = function(nuevoValor) {
         respuesta.status = true;
         respuesta.msj = 'ok';
     }
-    this.fechaEmision = nuevoValor;
+    this.fechaEmision = G.moment(nuevoValor).format(formato);
+//    this.fechaEmision = nuevoValor;
     return respuesta;
 };
 
 Notas.prototype.set_Horaemision = function(nuevoValor) {
+    var formato = 'HH:mm:ss';
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
         respuesta.errorCount++;
@@ -489,7 +492,8 @@ Notas.prototype.set_Horaemision = function(nuevoValor) {
         respuesta.status = true;
         respuesta.msj = 'ok';
     }
-    this.horaEmision = nuevoValor;
+    this.horaEmision = G.moment(nuevoValor).format(formato);
+//    this.horaEmision = nuevoValor;
     return respuesta;
 };
 

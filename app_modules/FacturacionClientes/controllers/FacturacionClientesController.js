@@ -3247,11 +3247,9 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
                 return G.Q.nfcall(__productosAdjunto, that, resultado.detalle, 0, []);
             }).then(productos => {
         var subTotal = resultado.valores.subTotal.replace(".", "");
-        console.log("resultado.valores.totalFactura", resultado.valores.totalFactura);
-        console.log("resultado.valores.totalFactura.replace", resultado.valores.totalFactura.replace(".", ""));
-//        var total = redondeoDian(resultado.valores.totalFactura.replace(".", ""));  
-        var total = redondeoDian(12,1);  
-//        var total = resultado.valores.totalFactura.replace(".", "");
+        var tot = resultado.valores.totalFactura.replace(/(\.)/g, "");
+        var numero = tot.replace(",", ".");
+        var total = redondeoDian(numero);
         Factura.set_Tipodocumento('FE');
         Factura.set_Versiondocumento('1.0');
         Factura.set_Control('CCFV5201905');
@@ -3370,7 +3368,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
                     //                    console.log("values",values);
                     Factura.set_Documentosanexos(values[0]);
                     //                    Factura.set_Gruposimpuestos(values[1]);
-                    console.log("factura", Factura);
+//                    console.log("factura", Factura);
                 }, reason => {
                     console.log("reason", reason);
                 });
@@ -4628,44 +4626,34 @@ function gruposImpuestos(that, productos, index, productosDian, callback) {
 ;
 
 function redondeoDian(numero) {
-//    var nume = num.replace(".", ""); 
-//    console.log("nume", nume);
-//    var numero = parseFloat(nume.replace(",", ".")); 
-//    console.log("numero", numero);
     var punto = numero.indexOf(".");
     var decimales = numero.substr(punto + 1, numero.length);
     var entero = numero.substr(0, punto);
     var digitoSiguienteAlMenSig = parseInt(decimales.substr(3, 1));
     var digitoMenSig = parseInt(decimales.substr(2, 1));
     var redondeo = 0;
-console.log("1");
+    
     if (isNaN(numero) || punto > 0 && isNaN(decimales)) {
-        console.log("1.1");
         return "Error! no es un numero";
     }
-console.log("2");
+    
     if (punto < 0) {
-        console.log("22");
         return numero;
     }
-    console.log("3");
+    
     if (decimales.length <= 2) {
-        console.log("33");
         return numero;
     }
-console.log("4");
+    
     if (digitoMenSig >= 0 && digitoMenSig <= 4) {
-        console.log("44");
         redondeo = entero + "." + decimales.substr(0, 2);
-    }console.log("5");
+    }
 
     if (digitoMenSig >= 6 && digitoMenSig <= 9) {
-        console.log("55");
         redondeo = entero + "." + (parseInt(decimales.substr(0, 2)) + 1);
     }
-console.log("6");
+
     if (digitoMenSig === 5) {
-        console.log("66");
         if (isNaN(digitoSiguienteAlMenSig) || digitoSiguienteAlMenSig === 0 || digitoSiguienteAlMenSig % 2 === 0) {
             redondeo = entero + "." + decimales.substr(0, 2);
         } else if (digitoSiguienteAlMenSig % 2 !== 0) {
@@ -4674,7 +4662,6 @@ console.log("6");
             redondeo = entero + "." + decimales.substr(0, 2);
         }
     }
-console.log("fin");
     return redondeo;
 }
 

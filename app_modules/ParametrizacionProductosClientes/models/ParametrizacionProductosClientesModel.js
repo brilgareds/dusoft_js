@@ -104,8 +104,6 @@ ParametrizacionProductosClientesModel.prototype.listContracts = (filtros, callba
                 .limit(limit)
                 .offset(offset);
 
-            console.log('The Query is: ', G.sqlformatter.format(query.toString()));
-
             return query;
         }).then(contratos => {
             if (contratos.length > 0) {

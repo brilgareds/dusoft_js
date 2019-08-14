@@ -863,12 +863,12 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             });
 
 
-            self.buscar_mensajes_usuario(function (msj) {
+           /* self.buscar_mensajes_usuario(function (msj) {
                 if (msj.length > 0) {
                     mensaje = msj[0];
                     self.verMensaje(mensaje);
                 }
-            });
+            });*/
 
 
         }]);

@@ -641,6 +641,7 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
 
     var args = req.body.data;
     var tipo_planilla = '';
+    var estado = '';
 
     if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined) {
         res.send(G.utils.r(req.url, 'planilla_id no esta definidas', 404, {}));
@@ -713,8 +714,6 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
                             direccion = datos[z][0].direccion_sede;
                         }
 
-
-//                        documentos.push({tercero: z, detalle: datos[z]});
                         documentos.push({tercero: z, ciudad: datos[z][0].ciudad, direccion: direccion, detalle: datos[z]});
                     }
 
@@ -727,6 +726,16 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function (req, res) {
                     }
 
                     planilla_despacho.tipo_planilla = tipo_planilla;
+
+                    if (planilla_despacho.estado === '0') {
+                        estado = "ANULADA";
+                    } else if (planilla_despacho.estado === '1') {
+                        estado = "ACTIVA";
+                    } else if (planilla_despacho.estado === '2') {
+                        estado = "DESPACHADA";
+                    }
+
+                    planilla_despacho.estado_planilla = estado;
 
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function (err, nombre_reporte) {
 
@@ -1396,7 +1405,10 @@ function _generar_reporte_planilla_despacho(rows, callback) {
                         <td style="width: 150px">
                             <img src="{#asset /logocliente.png @encoding=dataURI}" style="padding-bottom:20px;" width="150px" height="50px" /> 
                         </td>
-                        <td  colspan="2" align="center"><h3><strong> PLANILLA DE DESPACHOS DE MERCANCÍA </strong></h3> </td>                            
+                        <td  colspan="2" align="center">
+                            <h3><strong> PLANILLA DE DESPACHOS DE MERCANCÍA</strong></h3> 
+                            <h3><strong>{{:planilla_despacho.estado_planilla}}</strong></h3> 
+                        </td>                            
                     </tr>
                     <tr>
                         <td  style="width: 150px"><b>Transpotador (a):</b></td>

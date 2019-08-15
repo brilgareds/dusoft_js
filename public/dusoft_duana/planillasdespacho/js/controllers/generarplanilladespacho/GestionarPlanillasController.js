@@ -476,7 +476,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "30%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "25%"},
                     {field: 'get_descripcion()', displayName: 'Documento', width: "20%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_bolsas()', displayName: 'Cant. Bolsas', width: "10%"},
@@ -487,7 +487,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <button class="btn btn-default btn-xs" ng-click="modificar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
                     },
-                    {field: '', cellClass: "checkseleccion", width: "3%",
+                    {field: '', cellClass: "checkseleccion", width: "5%",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-click='onDocSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}
                 ]
             };

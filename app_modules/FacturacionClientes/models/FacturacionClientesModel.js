@@ -64,17 +64,19 @@ FacturacionClientesModel.prototype.actualizarEstadoProcesoFacturacion = function
  * @controller FacturacionClientes.prototype.generarFacturasAgrupadas
  */
 FacturacionClientesModel.prototype.procesosFacturacion = function (obj, callback) {
+    var query = true;
 
-    var columnas = [G.knex.raw("a.*"),
-        G.knex.raw("case when a.estado=1 then 'Procesando' \
+    if (obj.filtro !== undefined && obj.factura_fiscal !== undefined && obj.prefijo !== undefined) {
+        var columnas = [G.knex.raw("a.*"),
+            G.knex.raw("case when a.estado=1 then 'Procesando' \
         when a.estado=2 then 'Error'\
         when a.estado=3 then 'Terminado'  \
         when a.estado=4 then 'Facturando' end as descripcion_estado_facturacion"),
-        G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = a.empresa_id) as nombre_empresa"),
-        G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario")
+            G.knex.raw("(SELECT e.razon_social FROM empresas as e WHERE e.empresa_id = a.empresa_id) as nombre_empresa"),
+            G.knex.raw("(SELECT s.nombre FROM system_usuarios as s WHERE s.usuario_id = a.usuario_id) as nombre_usuario")
 
-    ];
-    var query = G.knex.select(columnas)
+        ];
+        query = G.knex.select(columnas)
             .from('proceso_facturacion as a')
             .where(function () {
                 if (obj.filtro === '0') {
@@ -82,18 +84,18 @@ FacturacionClientesModel.prototype.procesosFacturacion = function (obj, callback
                 }
                 if (obj.filtro === '1') {
                     this.andWhere("factura_fiscal", obj.factura_fiscal)
-                            .andWhere("prefijo", obj.prefijo)
+                        .andWhere("prefijo", obj.prefijo)
                 }
                 if (obj.filtro === '2') {
                     this.andWhere(G.knex.raw("a.fecha_creacion >= TO_CHAR(now(),'yyyy-mm-dd') or a.fecha_creacion is null"));
 
                 }
             });
-    if (obj.filtro !== '2') {
-        query.limit(1)
+        if (obj.filtro !== '2') { query.limit(1); }
     }
+
     query.then(function (resultado) {
-        callback(false, resultado)
+        callback(false, resultado);
     }).catch(function (err) {
         console.log("err [procesosFacturacion]:", err);
         callback({err: err, msj: "Error al consultar los parametros de retencion"});

@@ -528,121 +528,59 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function (req, res) {
 
     var args = req.body.data;
 
-    if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined || args.planillas_despachos.empresa_id === undefined || args.planillas_despachos.prefijo === undefined || args.planillas_despachos.numero === undefined) {
-        res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero no esta definido', 404, {}));
-        return;
-    }
+    /*if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined || args.planillas_despachos.empresa_id === undefined || args.planillas_despachos.prefijo === undefined || args.planillas_despachos.numero === undefined) {
+     res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero no esta definido', 404, {}));
+     return;
+     }
+     
+     if (args.planillas_despachos.tipo === undefined) {
+     res.send(G.utils.r(req.url, 'tipo no esta definido', 404, {}));
+     return;
+     }
+     
+     if (args.planillas_despachos.planilla_id === '' || args.planillas_despachos.empresa_id === '' || args.planillas_despachos.prefijo === '' || args.planillas_despachos.numero === '') {
+     res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero estan vacios', 404, {}));
+     return;
+     }
+     
+     if (args.planillas_despachos.tipo === '') {
+     res.send(G.utils.r(req.url, 'tipo esta vacio', 404, {}));
+     return;
+     }
+     
+     var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas    
+     var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+     
+     tabla = tabla[tipo];
+     
+     if (tabla === undefined) {
+     res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
+     return;
+     }*/
+    var parametros = {
+        planilla_id: args.planillas_despachos.planilla_id,
+        usuario_id: req.session.user.usuario_id,
+        estado_pedido: ''
 
-    if (args.planillas_despachos.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'tipo no esta definido', 404, {}));
-        return;
-    }
+    };
 
-    if (args.planillas_despachos.planilla_id === '' || args.planillas_despachos.empresa_id === '' || args.planillas_despachos.prefijo === '' || args.planillas_despachos.numero === '') {
-        res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero estan vacios', 404, {}));
-        return;
-    }
+    G.knex.transaction(function (transaccion) {
 
-    if (args.planillas_despachos.tipo === '') {
-        res.send(G.utils.r(req.url, 'tipo esta vacio', 404, {}));
-        return;
-    }
+        G.Q.nfcall(__eliminarDocumentoPlanilla, that, args.planillas_despachos.elementos, parametros, 0, transaccion).then(function (result) {
 
-    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas    
-    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+            transaccion.commit(result);
+        }).fail(function (err) {
+            transaccion.rollback(err);
+        }).done();
+    }).then(function (resultado) {
 
-    tabla = tabla[tipo];
-
-    if (tabla === undefined) {
-        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
-        return;
-    }
-
-    var planilla_id = args.planillas_despachos.planilla_id;
-    var empresa_id = args.planillas_despachos.empresa_id;
-    var prefijo = args.planillas_despachos.prefijo;
-    var numero = args.planillas_despachos.numero;
-    var usuario_id = req.session.user.usuario_id;
-    var estado_pedido = '';
-
-    that.m_planillas_despachos.eliminar_documento_planilla(tabla, planilla_id, empresa_id, prefijo, numero, function (err, rows, result) {
-
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
-            return;
-        } else {
-
-            if (tipo === '2') {
-                // Otras Empresas
-                res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                return;
-            }
-
-            // Registrar los responsables del pedido, y notificar en tiempo real
-            that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function (err, documento_bodega) {
-
-                if (err || documento_bodega.length === 0) {
-                    res.send(G.utils.r(req.url, 'Se ha generado un error consultado el documento', 500, {planillas_despachos: []}));
-                    return;
-                } else {
-
-                    documento_bodega = documento_bodega[0];
-
-                    var numero_pedido = documento_bodega.numero_pedido;
-                    var estado_actual_pedido = documento_bodega.estado_pedido;
-
-                    if (estado_actual_pedido === '3') {
-                        // si es Zona de despacho  => pasa a auditado                        
-                        estado_pedido = '2';
-                    } else if (estado_actual_pedido === '9') {
-                        // si es Zona con pdtes => pasa a auditado con pdtes
-                        estado_pedido = '8';
-                    } else {
-                        estado_pedido = estado_actual_pedido;
-                    }
+        res.send(G.utils.r(req.url, 'Documentos eliminados Correctamente', 200, {respuestaFI: resultado}));
+    }).catch(function (err) {
+        console.log("eliminarDocumentoPlanilla  ", err);
+        res.send(G.utils.r(req.url, 'Error al eliminar los documentos', 500, {}));
+    }).done();
 
 
-                    if (tipo === '0') {
-                        // Farmacias
-                        that.m_pedidos_farmacias.eliminar_responsables_pedidos(numero_pedido, function (err, rows, resultado) {
-
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 0', 500, {}));
-                                return;
-                            } else {
-                                that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function (err, rows) {
-                                    // Notificando Pedidos Actualizados en Real Time
-                                    that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-
-                                    res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                                    return;
-                                });
-                            }
-                        });
-                    }
-
-                    if (tipo === '1') {
-                        // Clientes   
-                        that.m_pedidos_clientes.eliminar_responsables_pedidos(numero_pedido, function (err, rows, resultado) {
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
-                                return;
-                            } else {
-                                that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function (err, rows) {
-
-                                    // Notificando Pedidos Actualizados en Real Time
-                                    that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-
-                                    res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                                    return;
-                                });
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    });
 };
 
 PlanillasDespachos.prototype.despacharPlanilla = function (req, res) {
@@ -1463,7 +1401,7 @@ function _generar_reporte_planilla_despacho(rows, callback) {
                     <tr>
                         <td  style="width: 150px"><b>Transpotador (a):</b></td>
                         <td>{{:planilla_despacho.nombre_transportadora }} {{:planilla_despacho.numero_placa_externo}}</td>
-                        <td > <b>Guia Nro :</b>`+ rows.planilla_despacho.numero_guia+`</td>                            
+                        <td > <b>Guia Nro :</b>` + rows.planilla_despacho.numero_guia + `</td>                            
                     </tr>
                     <tr>
                         <td ><b>Fecha Salida :</b></td>
@@ -1536,6 +1474,40 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 }
 ;
 
+function __eliminarDocumentoPlanilla(that, listado, parametros, index, transaccion, callback) {
+
+    var item = listado[index];
+    if (!item) {
+        callback(false, 0);
+        return;
+    }
+
+    parametros.empresa_id = item.empresa_id;
+    parametros.prefijo = item.prefijo;
+    parametros.numero = item.numero;
+
+    var tipo = item.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas    
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+    tabla = tabla[tipo];
+
+    parametros.tabla = tabla;
+
+    return G.Q.nfcall(that.m_planillas_despachos.eliminar_documento_planilla, parametros, transaccion).then(function (resultado) {
+
+        // Otras Empresas
+        var timer = setTimeout(function () {
+            clearTimeout(timer);
+            index++;
+            __eliminarDocumentoPlanilla(that, listado, parametros, index, transaccion, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        console.log("error", err);
+        callback(err);
+
+    }).done();
+}
+;
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

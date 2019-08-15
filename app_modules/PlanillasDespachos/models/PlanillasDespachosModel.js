@@ -19,12 +19,6 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
         "b.estado as estado_transportadora",
-//        "e.tipo_pais_id as pais_id",
-//        "e.pais as nombre_pais",
-//        "d.tipo_dpto_id as departamento_id",
-//        "d.departamento as nombre_departamento",
-//        "a.ciudad_id",
-//        "c.municipio as nombre_ciudad",
         "a.nombre_conductor",
         "a.observacion",
         "g.total_cajas",
@@ -42,18 +36,6 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function (fecha_i
     var query = G.knex.select(columnas)
             .from("inv_planillas_despacho as a")
             .innerJoin("inv_transportadoras as b", "b.transportadora_id", "a.inv_transportador_id")
-//            .innerJoin('tipo_mpios as c', function () {
-//
-//                this.on("c.tipo_mpio_id", "a.ciudad_id")
-//                        .on("c.tipo_dpto_id", "a.departamento_id")
-//                        .on("c.tipo_pais_id", "a.pais_id");
-//            })
-//            .innerJoin('tipo_dptos as d', function () {
-//
-//                this.on("d.tipo_dpto_id", "c.tipo_dpto_id")
-//                        .on("d.tipo_pais_id", "c.tipo_pais_id");
-//            })
-//            .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras, sum(a.cantidad_bolsas) as total_bolsas\
                           from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 1\
@@ -104,12 +86,6 @@ PlanillasDespachosModel.prototype.listar_planillas_por_documento = function (fec
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
         "b.estado as estado_transportadora",
-//        "e.tipo_pais_id as pais_id",
-//        "e.pais as nombre_pais",
-//        "d.tipo_dpto_id as departamento_id",
-//        "d.departamento as nombre_departamento",
-//        "a.ciudad_id",
-//        "c.municipio as nombre_ciudad",
         "a.nombre_conductor",
         "a.observacion",
         "g.total_cajas",
@@ -349,12 +325,6 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
         "b.descripcion as nombre_transportadora",
         "b.placa_vehiculo",
         "b.estado as estado_transportadora",
-//        "e.tipo_pais_id as pais_id",
-//        "e.pais as nombre_pais",
-//        "d.tipo_dpto_id as departamento_id",
-//        "d.departamento as nombre_departamento",
-//        "a.ciudad_id",
-//        "c.municipio as nombre_ciudad",
         "a.nombre_conductor",
         "a.observacion",
         "g.total_cajas",
@@ -372,18 +342,6 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function (planil
     var query = G.knex.select(columnas)
             .from("inv_planillas_despacho as a")
             .innerJoin("inv_transportadoras as b", "b.transportadora_id", "a.inv_transportador_id")
-//            .innerJoin('tipo_mpios as c', function () {
-//
-//                this.on("c.tipo_mpio_id", "a.ciudad_id")
-//                        .on("c.tipo_dpto_id", "a.departamento_id")
-//                        .on("c.tipo_pais_id", "a.pais_id");
-//            })
-//            .innerJoin('tipo_dptos as d', function () {
-//
-//                this.on("d.tipo_dpto_id", "c.tipo_dpto_id")
-//                        .on("d.tipo_pais_id", "c.tipo_pais_id");
-//            })
-//            .innerJoin("tipo_pais as e", "e.tipo_pais_id", "d.tipo_pais_id")
             .innerJoin("system_usuarios as f", "f.usuario_id", "a.usuario_id")
             .leftJoin(G.knex.raw("(select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras, sum(a.cantidad_bolsas) as total_bolsas\
                           from (select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, a.cantidad_bolsas, a.observacion, a.fecha_registro, 1\
@@ -419,7 +377,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
         sql = " and a.planilla_id = :1 ";
     }
     if (termino_busqueda !== undefined && termino_busqueda !== "") {
-        sql += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
+//        sql += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 or a.numero " + G.constants.db().LIKE + " :2)"
+        sql += " and ( a.numero = :2)";
     }
 
     var sql = " select *,false as chequeado from (\
@@ -550,8 +509,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
                     inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
                 ) as a where true " + sql + ";";
-    var query = G.knex.raw(sql, {1: planilla_id, 2: '%' + termino_busqueda + '%'});
-    
+//    var query = G.knex.raw(sql, {1: planilla_id, 2: '%' + termino_busqueda + '%'});
+        var query = G.knex.raw(sql, {1: planilla_id, 2: termino_busqueda});
 //    console.log("qqq",G.sqlformatter.format(query.toString())); 
     query.then(function (resultado) {
         callback(false, resultado.rows);
@@ -592,7 +551,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
             sql3 += " AND q.planilla_id = :1";
         }
 //        sql3 += " AND (q.planilla_id is null or q.planilla_id='0')";
-         
+
         sql3 += " AND q.planilla_id is null";
     }
 
@@ -965,6 +924,7 @@ PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function (paramet
     }).done();
 
 };
+
 /**
  * @author Cristian 
  * +Modifico German Galvis
@@ -997,16 +957,34 @@ PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function (tabla
         callback(err);
     });
 };
-PlanillasDespachosModel.prototype.eliminar_documento_planilla = function (tabla, planilla_id, empresa_id, prefijo, numero, callback) {
 
-    var sql = " delete from " + tabla + " where inv_planillas_despacho_id = :1 and empresa_id = :2 and  prefijo = :3 and  numero = :4";
-    var parametros = {1: planilla_id, 2: empresa_id, 3: prefijo, 4: numero};
-    G.knex.raw(sql, parametros).then(function (resultado) {
-        callback(false, resultado.rows, resultado);
+/**
+ * @author Cristian 
+ * +Modifico German Galvis
+ * +Descripcion elimina los documentos de la planilla 
+ * @fecha 2019-08-18 YYYY-MM-DD
+ * @returns {callback}
+ */
+PlanillasDespachosModel.prototype.eliminar_documento_planilla = function (parametros, transaccion, callback) {
+
+var query =  G.knex(G.knex.raw(parametros.tabla)).
+            where('inv_planillas_despacho_id', parametros.planilla_id).
+            andWhere('empresa_id', parametros.empresa_id).
+            andWhere('prefijo', parametros.prefijo).
+            andWhere('numero', parametros.numero).
+            del();
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
     }).catch(function (err) {
+        console.log("Error eliminar_documento_planilla", err);
         callback(err);
     });
 };
+
 PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function (planilla_id, estado, callback) {
 
 

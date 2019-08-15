@@ -34,7 +34,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.datos_view = {
                 termino_busqueda_ciudades: '',
-                termino_busqueda_documentos: ''
+                termino_busqueda_documentos: '',
+                docSeleccionados: []
             };
             $scope.datos_view.prefijosPlanilla = [
                 {prefijo: 'I', descripcion: "INSUMOS"},
@@ -51,16 +52,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 //                    if ($scope.planilla.get_numero_guia() > 0)
 //                        that.render_ciudades(ciudades);
 
-                    that.buscar_transportadoras(function () {
+                that.buscar_transportadoras(function () {
 
-                        if ($scope.planilla.get_numero_guia() > 0) {
-                            that.consultar_planilla_despacho(function (continuar) {
-                                if (continuar) {
-                                    $scope.consultar_documentos_planilla_despacho();
-                                }
-                            });
-                        }
-                    });
+                    if ($scope.planilla.get_numero_guia() > 0) {
+                        that.consultar_planilla_despacho(function (continuar) {
+                            if (continuar) {
+                                $scope.consultar_documentos_planilla_despacho();
+                            }
+                        });
+                    }
+                });
 //                });
             };
 
@@ -225,7 +226,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
-            
+
             that.render_documentos = function (documentos) {
 
                 $scope.planilla.limpiar_documentos();
@@ -265,9 +266,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.confirmar_eliminar_documento_planilla = function (documento) {
+            $scope.confirmar_eliminar_documento_planilla = function () {
 
-                $scope.planilla.set_documento(documento);
+//                $scope.planilla.set_documento(documento);
 
                 $scope.opts = {
                     backdrop: true,
@@ -279,11 +280,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4>¿Eliminar documento <b>{{ planilla.get_documento().get_prefijo_numero() }}</b>?</h4>\
+                                        <h4>¿Eliminar documentos?</h4>\
+                                        <!--h4>¿Eliminar documento <b>{{ planilla.get_documento().get_prefijo_numero() }}</b>?</h4-->\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-warning" ng-click="cancelar_eliminacion_documento()">Cancelar</button>\
-                                        <button class="btn btn-primary" ng-click="aceptar_eliminacion_documento(planilla.get_documentos().length)">Aceptar</button>\
+                                        <button class="btn btn-primary" ng-click="aceptar_eliminacion_documento(datos_view.docSeleccionados)">Aceptar</button>\
                                     </div>',
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
@@ -309,15 +311,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         planillas_despachos: {
                             planilla_id: $scope.planilla.get_numero_guia(),
-                            empresa_id: $scope.planilla.get_documento().get_empresa_id(),
-                            prefijo: $scope.planilla.get_documento().get_prefijo(),
-                            numero: $scope.planilla.get_documento().get_numero(),
-                            tipo: $scope.planilla.get_documento().get_tipo(),
                             elementos: elementos
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.PLANILLAS.ELIMINAR_DOCUMENTO, "POST", obj, function (data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -382,7 +380,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     session: $scope.session,
                     data: {
                         planillas_despachos: {
-                            planilla_id: $scope.planilla.get_numero_guia(),
+                            planilla_id: $scope.planilla.get_numero_guia()
                         }
                     }
                 };
@@ -451,6 +449,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 enableRowSelection: false,
                 showFooter: true,
                 footerTemplate: '<div class="row col-md-12">\
+                                    <div class="btn-group pull-right">\
+                                        <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla()" ng-disabled="planilla.get_estado()==\'2\' || datos_view.docSeleccionados.length < 1" ><span class="glyphicon glyphicon-remove">Eliminar</span></button>\
+                                    </div>\
+                                </div>\
+                                <br>\
+                                <hr>\
+                                <div class="row col-md-12">\
                                     <div class="col-md-3 pull-right">\
                                         <table class="table table-clear">\
                                             <tbody>\
@@ -477,13 +482,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_cantidad_bolsas()', displayName: 'Cant. Bolsas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
                     {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
-//                    {field: 'lio_id', displayName: 'Lio', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Modificar", width: "7%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
                                             <button class="btn btn-default btn-xs" ng-click="modificar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
-                    }
+                    },
+                    {field: '', cellClass: "checkseleccion", width: "3%",
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-click='onDocSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"}
                 ]
             };
 
@@ -507,6 +512,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             };
+
+
+            $scope.onDocSeleccionado = function (check, row) {
+
+                row.selected = check;
+                if (check) {
+                    that.agregarEFC(row.entity);
+                } else {
+
+                    that.quitarEFC(row.entity);
+                }
+
+            };
+
+            that.quitarEFC = function (doc) {
+                for (var i in $scope.datos_view.docSeleccionados) {
+                    var _doc = $scope.datos_view.docSeleccionados[i];
+                    if (_doc.prefijo === doc.prefijo && _doc.numero === doc.numero) {
+                        $scope.datos_view.docSeleccionados.splice(i, true);
+                        break;
+                    }
+                }
+            };
+
+            that.agregarEFC = function (doc) {
+                $scope.datos_view.docSeleccionados.push(doc);
+            };
+
 
             that.mostrarVentanaLiosModificar = function (documentos) {
                 $scope.opts = {
@@ -617,7 +650,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             numero_guia_externo: $scope.planilla.get_numero_guia_externo(),
                             numero_placa_externo: $scope.planilla.get_numero_placa_externo(),
                             tipo_planilla: $scope.planilla.tipo_planilla.prefijo,
-                            numeroPlanilla:  $scope.planilla.get_numero_guia()
+                            numeroPlanilla: $scope.planilla.get_numero_guia()
                         }
                     }
                 };

@@ -13,8 +13,8 @@ function Facturador() {
         this.telefono = '';
         this.email = '';
         this.contacto = [];
-        this.direccion = [];
-        this.direccionFiscal = [];
+        this.direccion = {};
+        this.direccionFiscal = {};
         this.listaResponsabilidadesTributarias = {};
         this.codigoCIUU = '';
         this.sucursal = '';

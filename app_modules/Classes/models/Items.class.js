@@ -7,7 +7,7 @@ function Items() {
         this.nombreEstandar = '';
         this.descripcion = '';
 
-        this.cantidadPaquetes = 0;
+        this.cantidadPaquete = 0;
         this.listaCaracteristicas = [];
         this.mandatorio = [];
     }
@@ -69,11 +69,11 @@ function Items() {
     }
     
     Items.prototype.getCantidadPaquetes = function() {
-        return this.cantidadPaquetes;
+        return this.cantidadPaquete;
     }
 
     Items.prototype.setCantidadPaquetes = function(value) {
-        this.cantidadPaquetes = value;
+        this.cantidadPaquete = value;
     }
 
     Items.prototype.getListaCaracteristicas = function() {

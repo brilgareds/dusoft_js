@@ -430,6 +430,10 @@ function __camposListaFacturasGeneradas() {
         "a.tipo_id_tercero",
         "a.tercero_id",
         "c.nombre_tercero",
+        "c.tipo_dpto_id",
+        "c.tipo_mpio_id",
+        "f.municipio",
+        "g.departamento",
         "c.direccion",
         "c.telefono",
         "c.dv",
@@ -627,7 +631,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
             .leftJoin("logs_facturacion_clientes_ws_fi as b ", function () {
                 this.on("a.prefijo", "b.prefijo")
                         .on("a.factura_fiscal", "b.factura_fiscal")
-                        .on(G.knex.raw("b.prefijo_nota IS NULL"))
+                        .on(G.knex.raw("b.prefijo_nota IS NULL"));
             }).orderBy("fecha_registro", "desc");
 
     query.limit(G.settings.limit).

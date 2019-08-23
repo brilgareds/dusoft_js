@@ -2,7 +2,7 @@
 
 var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion,
         e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas, m_pago, m_productos,
-        m_lista_impuestos, m_items, m_facturador, m_adquiriente, m_documentos_anexos, m_resolucion, m_numeracion) {
+        m_lista_impuestos, m_items, m_facturador, m_adquiriente, m_documentos_anexos, m_resolucion, m_numeracion,m_direccion,m_direccion_adquiriente) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
@@ -22,6 +22,8 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
     this.m_documentos_anexos = m_documentos_anexos;
     this.m_resolucion = m_resolucion;
     this.m_numeracion = m_numeracion;
+    this.m_direccion = m_direccion;
+    this.m_direccion_adquiriente = m_direccion_adquiriente;
 
     G.log.configure({
         appenders: [
@@ -3104,33 +3106,21 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
     }
     var prod = that.m_productos;
     prod.setNumeroLinea(index + 1);
-//     prod.setInformacion(); //no se a que se refiere
     prod.setCantidad(item.cantidad);
     prod.setValorTotal(numeroLinea + 1);
     prod.setIdProducto(item.codigo_producto);
-//     prod.setCodigoPrecio(); // no se usa
-    prod.setValorUnitario(item.valor_unitario);
+    prod.setValorUnitario(parseFloat(item.valor_unitario));
     prod.setCantidadReal(item.cantidad);
     prod.setCodigoUnidad('94'); // 94 - unidad
-    prod.setEsMuestraComercial(false); // es gratis o no
-//     prod.setListaCargosDescuentos(false); // otra clase no se usa
-//     prod.setListaDeducciones(false); // otra clase no se usa
-//     prod.setListaCorrecciones(false); // otra clase no se usa
+    prod.setEsMuestraComercial(false);
 
     var itemDatos = that.m_items;
-
-//    itemDatos.setMarca();// no se usa
-//    itemDatos.setModelo();// no se usa
     itemDatos.setCodigoArticuloVendedor(item.codigo_producto);
-//    itemDatos.setCodigoExtendidoVendedor();// no se usa
     itemDatos.setCodigoEstandar('999');
     itemDatos.setNombreEstandar('Estándar de adopción del contribuyente');
     itemDatos.setDescripcion(item.descripcion + ", codigo_invima: " + item.codigo_invima + ", Fecha Vencimiento: " + item.fecha_vencimiento + ", lote: " + item.lote);
-//    itemDatos.setCantidadPaquetes();// pendiente
-//    itemDatos.setListaCaracteristicas();// no se usa
-//    itemDatos.setMandatorio();// no se usa
 
-    prod.setItem(itemDatos); // otra clase
+    prod.setItem(itemDatos);
 
 
     var ivaPorcentaje = parseInt(item.porc_iva);
@@ -3139,12 +3129,13 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
         var impuesto = that.m_lista_impuestos;
         impuesto.set_codigo('01'); // 01 IVA
         impuesto.set_nombre('IVA');
-        impuesto.set_baseGravable(item.subtotal);
-        impuesto.set_porcentaje(item.porc_iva);
-        impuesto.set_valor(item.iva_total);
+        impuesto.set_baseGravable(parseFloat(item.subtotal));
+        impuesto.set_porcentaje(parseFloat(item.porc_iva));
+        impuesto.set_valor(parseFloat(item.iva_total));
         impuesto.set_codigoUnidad('94'); // 94 - unidad
         // impuesto.set_unidad(); // no se usa
-        prod.setListaImpuestos(impuesto); // otra clase
+//        prod.setListaImpuestos(impuesto); // otra clase
+        prod.listaImpuestos.push(impuesto);
     }
     ;
     if (ivaPorcentaje === 10) {
@@ -3157,7 +3148,8 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
         impuesto.set_valor(item.iva_total);
         impuesto.set_codigoUnidad('94'); // 94 - unidad
         // impuesto.set_unidad(); // no se usa
-        prod.setListaImpuestos(impuesto);
+//        prod.setListaImpuestos(impuesto);
+        prod.listaImpuestos.push(impuesto);
     }
     ;
 
@@ -3237,6 +3229,8 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
     var Factura = this.m_facturas;
     var Pago = this.m_pago;
     var Facturador = this.m_facturador;
+    var Direccion = this.m_direccion;
+    var DireccionAdquiriente = this.m_direccion_adquiriente;
     var Adquiriente = this.m_adquiriente;
     var Resolucion = this.m_resolucion;
     var Numeracion = this.m_numeracion;
@@ -3263,29 +3257,27 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Factura.set_Fechaemision(resultado.cabecera.fecha_registro);
         Factura.set_Horaemision(resultado.cabecera.fecha_registro);
         Factura.set_Numerolineas(resultado.detalle.length);
-        Factura.set_Subtotal(subTotal);
-        Factura.set_Totalbaseimponible(subTotal); // falta validar
-        Factura.set_SubtotalMasTributos(total);
+        Factura.set_Subtotal(parseFloat(subTotal));
+        Factura.set_Totalbaseimponible(parseFloat(subTotal));
+        Factura.set_SubtotalMasTributos(parseFloat(total));
         Factura.set_TotalDescuentos(0);
         Factura.set_Totalcargos(0);
         Factura.set_Totalanticipos(0);
-        Factura.set_Total(total);
+        Factura.set_Total(parseFloat(total));
         Factura.set_Codigomoneda('COP');
+        
         /*-----Clase Pago------*/
         Pago.setId(1); // 1 Contado, 2 Credito
         Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
-        Factura.set_Pago(Pago); // otra clase
+        Factura.set_Pago(Pago);
 
-        Factura.set_Listaproductos(productos); // listado de otra clase
+        Factura.set_Listaproductos(productos);
 
         const p1 = new Promise((resolve, reject) => {
             documentosAnexos(that, resultado.cabecera.pedido_array, 0, [], (err, resul) => {
                 resolve(resul);
             });
         });
-        ////        Factura.set_Listaanticipos(); // no se usa
-        ////        Factura.set_Listacargosdescuentos(); // no se usa
-        ////        Factura.set_Gruposdeducciones(); // no se usa
 
         /*-----Clase Facturador------*/
         Facturador.setRazonSocial(resultado.cabecera.razon_social);
@@ -3294,21 +3286,24 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Facturador.setIdentificacion(resultado.cabecera.id);
         Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
         Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
-        //        Facturador.setCodigoRegimen();
-        //        Facturador.setResponsabilidadFiscal(); // por validar
-        //        Facturador.setCodigoImpuesto(); // por validar 
-        //        Facturador.setNombreImpuesto(); // por validar
         Facturador.setTelefono(resultado.cabecera.telefono_empresa);
-        //        Facturador.setEmail(); // no se usa
-        //        Facturador.setContacto(); // no se usa
-        Facturador.setDireccion(resultado.cabecera.direccion_empresa);
-        Facturador.setDireccionFiscal(resultado.cabecera.direccion_empresa);
-        //        Facturador.setListaResponsabilidadesTributarias();
-        //        Facturador.setCodigoCIUU(); // no se usa
-        //        Facturador.setSucursal(); // no se usa
-        //        Facturador.setListaParticipantesConsorcio(); // no se usa
-        /*--------------------*/
-        Factura.set_Facturador(Facturador); // otra clase
+        
+        /*-----Clase Direccion------*/
+        Direccion.set_codigoPais("CO");
+        Direccion.set_nombrePais("Colombia");
+        Direccion.set_codigoLenguajePais("es");
+        
+        Direccion.set_codigoDepartamento(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO_BQ);
+        Direccion.set_nombreDepartamento(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO_BQ);
+        Direccion.set_codigoCiudad(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD : G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD_BQ);
+        Direccion.set_nombreCiudad(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD : G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD_BQ);
+        Direccion.set_direccionFisica(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA : G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA_BQ);
+        Direccion.set_codigoPostal(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL : G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL_BQ);
+        
+        /*----------------------------*/
+        
+        Facturador.setDireccion(Direccion);
+        Factura.set_Facturador(Facturador);
 
         /*-----Clase Adquiriente------*/
         Adquiriente.setRazonSocial(resultado.cabecera.nombre_tercero);
@@ -3317,34 +3312,30 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Adquiriente.setIdentificacion(resultado.cabecera.tercero_id);
         Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
         Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
-        //        Adquiriente.setCodigoRegimen();
-        //        Adquiriente.setResponsabilidadFiscal(); // por validar
-        //        Adquiriente.setCodigoImpuesto(); // por validar
-        //        Adquiriente.setNombreImpuesto(); // por validar
         Adquiriente.setTelefono(resultado.cabecera.telefono);
-        //        Adquiriente.setEmail(); // no se usa
-        //        Adquiriente.setContacto(); // no se usa
-        Adquiriente.setDireccion(resultado.cabecera.direccion);
-        Adquiriente.setDireccionFiscal(resultado.cabecera.direccion);
-        //        Adquiriente.setListaResponsabilidadesTributarias(); // otra clase  por validar
-        //        Adquiriente.setCodigoCIUU(); // no se usa
-        Adquiriente.setSucursal('Principal');
-        //        Adquiriente.setCentroCosto(); // no se usa
-        /*--------------------*/
-        Factura.set_Adquiriente(Adquiriente); // otra clase
+        
+        /*-----Clase DireccionAdquiriente------*/
+        DireccionAdquiriente.set_codigoPais("CO");
+        DireccionAdquiriente.set_nombrePais("Colombia");
+        DireccionAdquiriente.set_codigoLenguajePais("es");
+        
+        DireccionAdquiriente.set_codigoDepartamento(resultado.cabecera.tipo_dpto_id);
+        DireccionAdquiriente.set_nombreDepartamento(resultado.cabecera.departamento);
+        DireccionAdquiriente.set_codigoCiudad(resultado.cabecera.tipo_dpto_id+""+resultado.cabecera.tipo_mpio_id);
+        DireccionAdquiriente.set_nombreCiudad(resultado.cabecera.municipio);
+        DireccionAdquiriente.set_direccionFisica(resultado.cabecera.direccion);
+        DireccionAdquiriente.set_codigoPostal(resultado.cabecera.tipo_dpto_id+"0"+resultado.cabecera.tipo_mpio_id);
+        
+        /*----------------------------*/
+  
+        Adquiriente.setDireccion(DireccionAdquiriente);
+        Factura.set_Adquiriente(Adquiriente);
 
-        //        Factura.set_Autorizado(); // no se usa
-        //        Factura.set_Entrega(); // no se usa
-        //        Factura.set_Urlanexos(); // no se usa
         //        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
         Factura.set_Posicionxcufe(110);
         Factura.set_Posicionycufe(256);
-        //        Factura.set_Rotacioncufe(0); // no se usa
-        //        Factura.set_Fuentecufe(); // no se usa
         Factura.set_Posicionxqr(164);
         Factura.set_Posicionyqr(260);
-        //        Factura.Factura.set_Fechaenvio(); // por validar
-        //        Factura.set_Descripciongeneral();
 
         /*-----Clase Resolucion------*/
         Resolucion.setNumero(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION : G.constants.IDENTIFICADOR_DIAN().IDENTIFICADOR_RESOLUCION_BQ);
@@ -3360,15 +3351,13 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Resolucion.setNumeracion(Numeracion);
         /*----------------------------*/
         Factura.set_Resolucion(Resolucion);
-        //
-        //        Factura.set_ListaCorrecciones();
 
         Promise.all([p1])
                 .then(values => {
-                    //                    console.log("values",values);
                     Factura.set_Documentosanexos(values[0]);
                     //                    Factura.set_Gruposimpuestos(values[1]);
-//                    console.log("factura", Factura);
+                    validarCamposVacios(Factura);
+//                    console.log("factura", JSON.stringify(Factura));
                 }, reason => {
                     console.log("reason", reason);
                 });
@@ -4600,6 +4589,7 @@ function codigoDocumentoDian(codigoDocumentoDian) {
 
 function documentosAnexos(that, pedidos, index, resultado, callback) {
     var item = pedidos[index];
+    var formato = 'YYYY-MM-DD';
 
     if (!item) {
         callback(false, resultado);
@@ -4609,7 +4599,7 @@ function documentosAnexos(that, pedidos, index, resultado, callback) {
 
     docAnexo.setId(item.pedido);
     docAnexo.setTipo('OR');
-    docAnexo.setFechaEmision(item.fecha);
+    docAnexo.setFechaEmision(G.moment(item.fecha).format(formato));
     resultado.push(JSON.parse(JSON.stringify(docAnexo)));
 
     var timer = setTimeout(function () {
@@ -4632,19 +4622,19 @@ function redondeoDian(numero) {
     var digitoSiguienteAlMenSig = parseInt(decimales.substr(3, 1));
     var digitoMenSig = parseInt(decimales.substr(2, 1));
     var redondeo = 0;
-    
+
     if (isNaN(numero) || punto > 0 && isNaN(decimales)) {
         return "Error! no es un numero";
     }
-    
+
     if (punto < 0) {
         return numero;
     }
-    
+
     if (decimales.length <= 2) {
         return numero;
     }
-    
+
     if (digitoMenSig >= 0 && digitoMenSig <= 4) {
         redondeo = entero + "." + decimales.substr(0, 2);
     }
@@ -4665,10 +4655,25 @@ function redondeoDian(numero) {
     return redondeo;
 }
 
+const validarCamposVacios = factura => {
+    let response = false;
+    const tipo = typeof factura;
+    const existe = factura !== undefined;
+    const esIterable = (Array.isArray(factura) || tipo === 'object');
+    const contiene = factura.length ? factura.length : Object.keys(factura).length;
+
+    if (existe && esIterable && contiene) {
+        for (const item in factura) {
+            if (validarCamposVacios(factura[item])){ delete factura[item]; }
+        }
+    } else if (tipo !== 'number' && tipo !== 'boolean' && (!existe || !contiene)) { response = true; }
+    return response;
+};
+
 
 
 FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes",
     "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_productos", "m_lista_impuestos", "m_items", "m_facturador", "m_adquiriente", "m_documentos_anexos",
-    "m_resolucion", "m_numeracion"];
+    "m_resolucion", "m_numeracion","m_direccion","m_direccion_adquiriente"];
 
 module.exports = FacturacionClientes;

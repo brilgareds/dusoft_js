@@ -48,7 +48,6 @@ function Facturas() {
     this.posicionXQr = 0;
     this.posicionYQr = 0;
 
-    this.fechaEnvio = '';           // Campo de Factura
     this.descripcionGeneral = '';   // Campo de Factura
     this.resolucion = {};           // Campo de Factura
     this.listaCorrecciones = [];    // Campo de Nota
@@ -238,10 +237,6 @@ Facturas.prototype.get_Posicionxqr = function () {
 
 Facturas.prototype.get_Posicionyqr = function () {
     return this.posicionYQr;
-};
-
-Facturas.prototype.get_Fechaenvio = function () {
-    return this.fechaEnvio;
 };
 
 Facturas.prototype.get_Descripciongeneral = function () {
@@ -455,7 +450,7 @@ Facturas.prototype.set_Numerodocumento = function (nuevoValor) {
 };
 
 Facturas.prototype.set_Fechaemision = function (nuevoValor) {
-    var formato = 'DD-MM-YYYY';
+    var formato = 'YYYY-MM-DD';
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
         respuesta.errorCount++;
@@ -1175,26 +1170,6 @@ Facturas.prototype.set_Posicionyqr = function (nuevoValor) {
         respuesta.msj = 'ok';
     }
     this.posicionYQr = nuevoValor;
-    return respuesta;
-};
-
-Facturas.prototype.set_Fechaenvio = function (nuevoValor) {
-    let respuesta = {status: false, msj: '', errorCount: 0};
-    if (nuevoValor.length > 20) {
-        respuesta.errorCount++;
-        respuesta.msj += 'tamaño no permitido (' + nuevoValor.length + '), ';
-    }
-    if (typeof nuevoValor === 'String') {
-        respuesta.errorCount++;
-        respuesta.msj += 'tipo valor no permitido (' + typeof nuevoValor + '), ';
-    }
-    if (respuesta.errorCount_ > 0) {
-        respuesta.msj.substring(0, respuesta.msj.length - 2);
-    } else {
-        respuesta.status = true;
-        respuesta.msj = 'ok';
-    }
-    this.fechaEnvio = nuevoValor;
     return respuesta;
 };
 

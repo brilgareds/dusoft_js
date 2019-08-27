@@ -6,7 +6,7 @@ function ListaImpuestos() {
         this.porcentaje = 0.0;
         this.valor = 0.0;
         this.codigoUnidad = '';
-        this.unidad = 0.0;
+        this.unidad;
 
     }
 

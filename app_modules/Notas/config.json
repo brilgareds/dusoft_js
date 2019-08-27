@@ -39,6 +39,16 @@
                   "model": "Adquiriente.class",
                   "alias": "m_adquiriente"
                 },
+                "direccion_clases_model": {
+                    "module": "Classes",
+                    "model": "Direccion.class",
+                    "alias": "m_direccion"
+                },
+                "direccion_adquiriente_clases_model": {
+                    "module": "Classes",
+                    "model": "DireccionAdquiriente.class",
+                    "alias": "m_direccion_adquiriente"
+                },
                 "resolucion_clase_model": {
                   "module": "Classes",
                   "model": "Resolucion.class",

@@ -2,7 +2,7 @@ function Pago () {
     this.id = 0;
     this.codigoMedioPago = "";
     this.fechaVencimiento = "";
-    this.listaIdentificadoesPago = [];
+    this.listaIdentificadoresPago = [];
 
     Pago.prototype.getId = function () {
         return this.id;
@@ -29,11 +29,11 @@ function Pago () {
     };
 
     Pago.prototype.getListaIdentificadoesPago = function () {
-        return this.listaIdentificadoesPago;
+        return this.listaIdentificadoresPago;
     };
 
     Pago.prototype.setListaIdentificadoesPago = function (listaIdentificadoesPago) {
-        this.listaIdentificadoesPago = listaIdentificadoesPago;
+        this.listaIdentificadoresPago = listaIdentificadoesPago;
     };
 }
 

@@ -3109,6 +3109,7 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
     prod.setCantidad(item.cantidad);
     prod.setValorTotal(numeroLinea + 1);
     prod.setIdProducto(item.codigo_producto);
+    prod.setCodigoPrecio('01');
     prod.setValorUnitario(parseFloat(item.valor_unitario));
     prod.setCantidadReal(item.cantidad);
     prod.setCodigoUnidad('94'); // 94 - unidad
@@ -3287,6 +3288,12 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Facturador.setDigitoVerificacion(resultado.cabecera.digito_verificacion);
         Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
         Facturador.setTelefono(resultado.cabecera.telefono_empresa);
+        Facturador.setCodigoImpuesto('01');
+        Facturador.setEmail(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR : G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR_BQ);
+        Facturador.setNombreImpuesto('IVA');
+        Facturador.setCodigoRegimen('04');
+        Facturador.setResponsabilidadFiscal('O-09');
+        Facturador.setListaResponsabilidadesTributarias([{codigo:'01',nombre:'IVA'},{codigo:'03',nombre:'ICA'},{codigo:'05',nombre:'ReteIVA'},{codigo:'06',nombre:'ReteFuente'}]);
         
         /*-----Clase Direccion------*/
         Direccion.set_codigoPais("CO");
@@ -3313,6 +3320,12 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Adquiriente.setDigitoVerificacion(resultado.cabecera.dv);
         Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
         Adquiriente.setTelefono(resultado.cabecera.telefono);
+        Adquiriente.setCodigoImpuesto('01');
+        Adquiriente.setEmail(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR : G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR_BQ);
+        Adquiriente.setNombreImpuesto('IVA');
+        Adquiriente.setCodigoRegimen('04');
+        Adquiriente.setResponsabilidadFiscal('O-09');
+        Adquiriente.setListaResponsabilidadesTributarias([{codigo:'01',nombre:'IVA'},{codigo:'03',nombre:'ICA'},{codigo:'05',nombre:'ReteIVA'},{codigo:'06',nombre:'ReteFuente'}]);
         
         /*-----Clase DireccionAdquiriente------*/
         DireccionAdquiriente.set_codigoPais("CO");
@@ -3331,7 +3344,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Adquiriente.setDireccion(DireccionAdquiriente);
         Factura.set_Adquiriente(Adquiriente);
 
-        //        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
+//        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
         Factura.set_Posicionxcufe(110);
         Factura.set_Posicionycufe(256);
         Factura.set_Posicionxqr(164);
@@ -3357,7 +3370,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
                     Factura.set_Documentosanexos(values[0]);
                     //                    Factura.set_Gruposimpuestos(values[1]);
                     validarCamposVacios(Factura);
-//                    console.log("factura", JSON.stringify(Factura));
+                    console.log("factura", JSON.stringify(Factura));
                 }, reason => {
                     console.log("reason", reason);
                 });

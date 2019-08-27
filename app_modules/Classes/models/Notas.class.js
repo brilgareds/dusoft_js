@@ -47,8 +47,6 @@ function Notas() {
     this.fuenteCufe = '';
     this.posicionXQr = 0;
     this.posicionYQr = 0;
-
-    this.fechaEnvio = '';           // Campo de Factura
     this.descripcionGeneral = '';   // Campo de Factura
     this.resolucion = {};           // Campo de Factura
     this.listaCorrecciones = [];    // Campo de Nota
@@ -454,7 +452,7 @@ Notas.prototype.set_Numerodocumento = function(nuevoValor) {
 };
 
 Notas.prototype.set_Fechaemision = function(nuevoValor) {
-    var formato = 'DD-MM-YYYY';
+    var formato = 'YYYY-MM-DD';
     let respuesta = {status: false, msj: '', errorCount: 0};
     if (nuevoValor.length > 20) {
         respuesta.errorCount++;

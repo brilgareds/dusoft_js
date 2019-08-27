@@ -2,7 +2,7 @@
 let that;
 
 var Notas = function (m_notas, m_notas_class, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes,
-        c_sincronizacion, m_pago, m_facturador, m_adquiriente, m_resolucion, m_numeracion) {
+        c_sincronizacion, m_pago, m_facturador, m_adquiriente, m_resolucion, m_numeracion,m_direccion,m_direccion_adquiriente) {
     that = this;
     that.m_notas = m_notas;
     that.m_notas_class = m_notas_class;
@@ -16,6 +16,9 @@ var Notas = function (m_notas, m_notas_class, m_sincronizacion, m_facturacion_pr
     that.m_adquiriente = m_adquiriente;
     that.m_resolucion = m_resolucion;
     that.m_numeracion = m_numeracion;
+    that.m_direccion = m_direccion;
+    that.m_direccion_adquiriente = m_direccion_adquiriente;
+    
 };
 
 
@@ -992,6 +995,7 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
     var Adquiriente = that.m_adquiriente;
     var Resolucion = that.m_resolucion;
     var Numeracion = that.m_numeracion;
+    var Direccion = that.m_direccion;
     //console.log('Nota; ', that);
 
     G.Q.nfcall(__generarSincronizacionDianDebito, that, req).then(data => {
@@ -1075,8 +1079,19 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
         Facturador.setDigitoVerificacion(resultado.empresa.digito_verificacion);
         Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
         Facturador.setTelefono(resultado.empresa.telefono_empresa);
-        Facturador.setDireccion(resultado.empresa.direccion_empresa);
-        Facturador.setDireccionFiscal(resultado.empresa.direccion_empresa);
+        
+        Direccion.set_codigoPais("CO");
+        Direccion.set_nombrePais("Colombia");
+        Direccion.set_codigoLenguajePais("es");        
+        Direccion.set_codigoDepartamento(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO_BQ);
+        Direccion.set_nombreDepartamento(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO_BQ);
+        Direccion.set_codigoCiudad(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD : G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD_BQ);
+        Direccion.set_nombreCiudad(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD : G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD_BQ);
+        Direccion.set_direccionFisica(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA : G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA_BQ);
+        Direccion.set_codigoPostal(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL : G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL_BQ);
+        
+        
+        Facturador.setDireccion(Direccion);
         Nota.set_Facturador(Facturador); // otra clase
         /*----- Clase Adquiriente ------*/
         Adquiriente.setRazonSocial(resultado.nota.nombre_tercero);
@@ -1344,6 +1359,8 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
     var Adquiriente = that.m_adquiriente;
     var Resolucion = that.m_resolucion;
     var Numeracion = that.m_numeracion;
+    var Direccion = that.m_direccion;
+    var DireccionAdquiriente = this.m_direccion_adquiriente;
 
     G.Q.nfcall(__generarSincronizacionDianCredito, that, req)
             .then(function (data) {
@@ -1354,6 +1371,7 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         var tot = resultado.valores.totalFactura.replace(/(\.)/g, "");
         var numero = tot.replace(",", ".");
         var total = redondeoDian(numero);
+//        console.log('resultado: ', resultado);
 //            var total = resultado.valores.totalFactura.replace(".", "");
 //        var json = {
 //            codigoMoneda: "COP",
@@ -1423,8 +1441,26 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         Facturador.setDigitoVerificacion(resultado.empresa.digito_verificacion);
         Facturador.setNaturaleza('1'); // 1- Juridica 2- Natural
         Facturador.setTelefono(resultado.empresa.telefono_empresa);
-        Facturador.setDireccion(resultado.empresa.direccion_empresa);
-        Facturador.setDireccionFiscal(resultado.empresa.direccion_empresa);
+        Facturador.setCodigoImpuesto('01');
+        Facturador.setEmail(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR : G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR_BQ);
+        Facturador.setNombreImpuesto('IVA');
+//        Facturador.setCodigoRegimen('04');
+        Facturador.setResponsabilidadFiscal('O-09');
+        Facturador.setListaResponsabilidadesTributarias([{codigo:'01',nombre:'IVA'},{codigo:'03',nombre:'ICA'},{codigo:'05',nombre:'ReteIVA'},{codigo:'06',nombre:'ReteFuente'}]);
+        
+        Direccion.set_codigoPais("CO");
+        Direccion.set_nombrePais("Colombia");
+        Direccion.set_codigoLenguajePais("es");        
+        Direccion.set_codigoDepartamento(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO_BQ);
+        Direccion.set_nombreDepartamento(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO_BQ);
+        Direccion.set_codigoCiudad(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD : G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD_BQ);
+        Direccion.set_nombreCiudad(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD : G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD_BQ);
+        Direccion.set_direccionFisica(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA : G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA_BQ);
+        Direccion.set_codigoPostal(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL : G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL_BQ);
+        
+        
+        Facturador.setDireccion(Direccion);
+        //Facturador.setDireccionFiscal(resultado.empresa.direccion_empresa);
         Nota.set_Facturador(Facturador); // otra clase
 
         /*----- Clase Adquiriente ------*/
@@ -1435,9 +1471,27 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         Adquiriente.setDigitoVerificacion(parseInt(resultado.nota.dv));
         Adquiriente.setNaturaleza(resultado.nota.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
         Adquiriente.setTelefono(resultado.nota.telefono);
-        Adquiriente.setDireccion(resultado.nota.direccion);
-        Adquiriente.setDireccionFiscal(resultado.nota.direccion);
-        Adquiriente.setSucursal('Principal');
+        Adquiriente.setCodigoImpuesto('01');
+        Adquiriente.setEmail(resultado.nota.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR : G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR_BQ);
+        Adquiriente.setNombreImpuesto('IVA');
+        Adquiriente.setCodigoRegimen('04');
+        Adquiriente.setResponsabilidadFiscal('O-09');
+        Adquiriente.setListaResponsabilidadesTributarias([{codigo:'01',nombre:'IVA'},{codigo:'03',nombre:'ICA'},{codigo:'05',nombre:'ReteIVA'},{codigo:'06',nombre:'ReteFuente'}]);
+
+        /*-----Clase DireccionAdquiriente------*/
+        DireccionAdquiriente.set_codigoPais("CO");
+        DireccionAdquiriente.set_nombrePais("Colombia");
+        DireccionAdquiriente.set_codigoLenguajePais("es");
+        DireccionAdquiriente.set_codigoDepartamento(resultado.nota.tipo_dpto_id);
+        DireccionAdquiriente.set_nombreDepartamento(resultado.nota.departamento);
+        DireccionAdquiriente.set_codigoCiudad(resultado.nota.tipo_dpto_id+""+resultado.nota.tipo_mpio_id);
+        DireccionAdquiriente.set_nombreCiudad(resultado.nota.municipio);
+        DireccionAdquiriente.set_direccionFisica(resultado.nota.direccion);
+        DireccionAdquiriente.set_codigoPostal(resultado.nota.tipo_dpto_id+"0"+resultado.nota.tipo_mpio_id);
+        
+        /*----------------------------*/
+        
+        Adquiriente.setDireccion(DireccionAdquiriente);
         Nota.set_Adquiriente(Adquiriente); // otra clase
         Nota.set_Posicionxcufe(110);
         Nota.set_Posicionycufe(256);
@@ -1445,7 +1499,8 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         Nota.set_Posicionyqr(260);
         Nota.set_ListaCorrecciones([{descripcion: resultado.nota.tipo_nota}]);
         // Nota.set_Base64(json.pdf);   BASE 64
-        console.log('Nota: ', JSON.parse(JSON.stringify(Nota)));
+//        validarCamposVacios(Nota);
+        console.log('Nota: ', JSON.stringify(Nota));
 
         /* console.log('Before');
          const p1 = new Promise((resolve, reject) => {
@@ -1917,7 +1972,6 @@ function __productos(productos, index, productosDian, callback) {
 }
 
 function redondeoDian(numero) {
-    console.log("numero",numero);
     var punto = numero.indexOf(".");
     var decimales = numero.substr(punto + 1, numero.length);
     var entero = numero.substr(0, punto);
@@ -1957,7 +2011,22 @@ function redondeoDian(numero) {
     return redondeo;
 }
 
+const validarCamposVacios = nota => {
+    console.log("ingreso");
+    let response = false;
+    const tipo = typeof nota;
+    const existe = nota !== undefined;
+    const esIterable = (Array.isArray(nota) || tipo === 'object');
+    const contiene = nota.length ? nota.length : Object.keys(nota).length;
+
+    if (existe && esIterable && contiene) {
+        for (const item in nota) {
+            if (validarCamposVacios(nota[item])){ delete nota[item]; }
+        }
+    } else if (tipo !== 'number' && tipo !== 'boolean' && (!existe || !contiene)) { response = true; }
+    return response;
+};
 
 Notas.$inject = ["m_notas", "m_notas_class", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes",
-    "c_sincronizacion", "m_pago", "m_facturador", "m_adquiriente", "m_resolucion", "m_numeracion"];
+    "c_sincronizacion", "m_pago", "m_facturador", "m_adquiriente", "m_resolucion", "m_numeracion","m_direccion","m_direccion_adquiriente"];
 module.exports = Notas;

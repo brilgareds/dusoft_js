@@ -11,7 +11,7 @@ var NotasModel = function () {
  * @returns {callback}
  */
 NotasModel.prototype.listarFacturas = function (obj, callback) {
-    
+
     var columna_a = [
         "ifd.factura_fiscal",
         "ifd.prefijo",
@@ -217,7 +217,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     ];
 
     var query = G.knex.select(columna_a)
-    .from(G.knex.raw("inv_facturas_despacho ifd"))            
+            .from(G.knex.raw("inv_facturas_despacho ifd"))
             .innerJoin('terceros as T', function () {
 
                 this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
@@ -231,16 +231,16 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                         .on("nddc.prefijo", "ifd.prefijo");
 
             })
-            .leftJoin('logs_facturacion_clientes_ws_fi AS a',function(){
-                 this.on("a.factura_fiscal", "ifd.factura_fiscal")
-                     .on("a.prefijo", "ifd.prefijo")
-                     .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
+            .leftJoin('logs_facturacion_clientes_ws_fi AS a', function () {
+                this.on("a.factura_fiscal", "ifd.factura_fiscal")
+                        .on("a.prefijo", "ifd.prefijo")
+                        .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
             })
             .where(function () {
 
-                    if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
-                       this.andWhere('ifd.empresa_id', obj.empresa_id);
-                    }
+                if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
+                    this.andWhere('ifd.empresa_id', obj.empresa_id);
+                }
 
                 this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
             });
@@ -249,7 +249,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     query.unionAll(function () {
 
         this.select(columna_b)
-        .from(G.knex.raw("inv_facturas_agrupadas_despacho ifd"))
+                .from(G.knex.raw("inv_facturas_agrupadas_despacho ifd"))
                 .innerJoin('terceros as T', function () {
 
                     this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
@@ -263,15 +263,15 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                             .on("nddc.prefijo", "ifd.prefijo");
 
                 })
-                .leftJoin('logs_facturacion_clientes_ws_fi AS a',function(){
-                     this.on("a.factura_fiscal", "ifd.factura_fiscal")
-                         .on("a.prefijo", "ifd.prefijo")
-                         .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
+                .leftJoin('logs_facturacion_clientes_ws_fi AS a', function () {
+                    this.on("a.factura_fiscal", "ifd.factura_fiscal")
+                            .on("a.prefijo", "ifd.prefijo")
+                            .on("a.numero_nota", "nddc.nota_debito_despacho_cliente_id");
                 })
                 .where(function () {
 
                     if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
-                       this.andWhere('ifd.empresa_id', obj.empresa_id);
+                        this.andWhere('ifd.empresa_id', obj.empresa_id);
                     }
 
                     this.andWhere('nddc.nota_debito_despacho_cliente_id', obj.numero);
@@ -280,7 +280,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     });
 
     query.orderBy('nombre_tercero');
-    
+
     query.then(function (resultado) {
 
         callback(false, resultado);
@@ -305,6 +305,10 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "T.tercero_id",
         "T.dv",
         "T.nombre_tercero",
+        "T.tipo_dpto_id",
+        "T.tipo_mpio_id",
+        "tm.municipio",
+        "td.departamento",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         "ifd.valor_total",
         "ifd.saldo",
@@ -335,6 +339,10 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
         "T.tercero_id",
         "T.dv",
         "T.nombre_tercero",
+        "T.tipo_dpto_id",
+        "T.tipo_mpio_id",
+        "tm.municipio",
+        "td.departamento",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         "ifd.valor_total",
         "ifd.saldo",
@@ -366,6 +374,17 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
                         .on("T.tercero_id", "ifd.tercero_id");
 
             })
+            .innerJoin('tipo_mpios as tm', function () {
+
+                this.on("T.tipo_pais_id", "tm.tipo_pais_id")
+                        .on("T.tipo_dpto_id", "tm.tipo_dpto_id")
+                        .on("T.tipo_mpio_id", "tm.tipo_mpio_id");
+            })
+            .innerJoin('tipo_dptos as td', function () {
+                this.on("td.tipo_pais_id", "tm.tipo_pais_id")
+                        .on("td.tipo_dpto_id", "tm.tipo_dpto_id");
+
+            })
             .innerJoin('notas_credito_despachos_clientes as ncdc', function () {
 
                 this.on("ncdc.empresa_id", "ifd.empresa_id")
@@ -382,11 +401,11 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 
             })
             .where(function () {
-               
-                    if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
-                        this.andWhere('ifd.empresa_id', obj.empresa_id);
-                    }
-            
+
+                if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
+                    this.andWhere('ifd.empresa_id', obj.empresa_id);
+                }
+
                 this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
             });
 
@@ -400,6 +419,16 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
                     this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
                             .on("T.tercero_id", "ifd.tercero_id");
 
+                })
+                .innerJoin('tipo_mpios as tm', function () {
+
+                    this.on("T.tipo_pais_id", "tm.tipo_pais_id")
+                            .on("T.tipo_dpto_id", "tm.tipo_dpto_id")
+                            .on("T.tipo_mpio_id", "tm.tipo_mpio_id");
+                })
+                .innerJoin('tipo_dptos as td', function () {
+                    this.on("td.tipo_pais_id", "tm.tipo_pais_id")
+                            .on("td.tipo_dpto_id", "tm.tipo_dpto_id");
                 })
                 .innerJoin('notas_credito_despachos_clientes_agrupados as ncdc', function () {
 
@@ -417,16 +446,15 @@ NotasModel.prototype.ConsultarNotasCredito = function (obj, callback) {
 
                 })
                 .where(function () {
-                    
+
                     if (obj.empresa_id !== undefined && obj.empresa_id !== '') {
-                         this.andWhere('ifd.empresa_id', obj.empresa_id);
+                        this.andWhere('ifd.empresa_id', obj.empresa_id);
                     }
                     this.andWhere('ncdc.nota_credito_despacho_cliente_id', obj.numero);
                 });
     });
 
     query.orderBy(G.knex.raw("4"));
-
     query.then(function (resultado) {
 
         callback(false, resultado)
@@ -1327,83 +1355,85 @@ NotasModel.prototype.ConsultarSubtotalFactura = function (obj, callback) {
     });
 };
 
-const promesa = new Promise((resolve, reject) => { resolve(true); });
+const promesa = new Promise((resolve, reject) => {
+    resolve(true);
+});
 
 NotasModel.prototype.detalleNotasFacturaProveedor = function (obj, callback) {
     promesa
-        .then(response => {
-            let columnas = [
-                "a.codigo_producto",
-                G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
-                "a.valor_concepto",
-                "a.porc_iva",
-                "a.observacion",
-                "c.descripcion_concepto_general",
-                "d.descripcion_concepto_especifico",
-                "a.cantidad",
-                "a.valor_unitario",
-                G.knex.raw("((a.porc_iva/100)*a.valor_concepto) as iva"),
-                G.knex.raw("((a.valor_unitario * a.cantidad) * (a.porc_iva/100)) as iva_total"),
-                G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
-                G.knex.raw("((1-(a.porc_iva/100))*a.valor_concepto) as costo"),
-                G.knex.raw("((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))))) as total1"),
-                "f.sw_insumos",
-                "f.sw_medicamento"
-            ];
+            .then(response => {
+                let columnas = [
+                    "a.codigo_producto",
+                    G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"),
+                    "a.valor_concepto",
+                    "a.porc_iva",
+                    "a.observacion",
+                    "c.descripcion_concepto_general",
+                    "d.descripcion_concepto_especifico",
+                    "a.cantidad",
+                    "a.valor_unitario",
+                    G.knex.raw("((a.porc_iva/100)*a.valor_concepto) as iva"),
+                    G.knex.raw("((a.valor_unitario * a.cantidad) * (a.porc_iva/100)) as iva_total"),
+                    G.knex.raw("(a.valor_unitario * a.cantidad) as subtotal"),
+                    G.knex.raw("((1-(a.porc_iva/100))*a.valor_concepto) as costo"),
+                    G.knex.raw("((((a.cantidad))*(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))))) as total1"),
+                    "f.sw_insumos",
+                    "f.sw_medicamento"
+                ];
 
-            let query = G.knex.select(columnas)
-                .from("inv_notas_credito_proveedor_d as a")
-                .innerJoin("glosas_concepto_general_especifico as b", function () {
-                    this.on("a.concepto", "b.codigo_concepto_general")
-                        .on("a.concepto_especifico", "b.codigo_concepto_especifico");
-                })
-                .innerJoin("glosas_concepto_general as c", function () {
-                    this.on("c.codigo_concepto_general", "b.codigo_concepto_general");
-                })
-                .innerJoin("glosas_concepto_especifico as d", function () {
-                    this.on("d.codigo_concepto_especifico", "b.codigo_concepto_especifico");
-                })
-                .innerJoin("inventarios_productos as e", function () {
-                    this.on("e.codigo_producto", "a.codigo_producto");
-                })
-                .innerJoin("inv_grupos_inventarios as f", function () {
-                    this.on("f.grupo_id", "e.grupo_id");
-                })
-                .where('a.empresa_id', obj.empresa_id)
-                .andWhere('a.prefijo', obj.prefijo)
-                .andWhere('a.numero', obj.numero);
+                let query = G.knex.select(columnas)
+                        .from("inv_notas_credito_proveedor_d as a")
+                        .innerJoin("glosas_concepto_general_especifico as b", function () {
+                            this.on("a.concepto", "b.codigo_concepto_general")
+                                    .on("a.concepto_especifico", "b.codigo_concepto_especifico");
+                        })
+                        .innerJoin("glosas_concepto_general as c", function () {
+                            this.on("c.codigo_concepto_general", "b.codigo_concepto_general");
+                        })
+                        .innerJoin("glosas_concepto_especifico as d", function () {
+                            this.on("d.codigo_concepto_especifico", "b.codigo_concepto_especifico");
+                        })
+                        .innerJoin("inventarios_productos as e", function () {
+                            this.on("e.codigo_producto", "a.codigo_producto");
+                        })
+                        .innerJoin("inv_grupos_inventarios as f", function () {
+                            this.on("f.grupo_id", "e.grupo_id");
+                        })
+                        .where('a.empresa_id', obj.empresa_id)
+                        .andWhere('a.prefijo', obj.prefijo)
+                        .andWhere('a.numero', obj.numero);
 
-            query.unionAll(function () {
-                this.select(columnas)
-                    .from("inv_notas_debito_proveedor_d as a")
-                    .innerJoin("glosas_concepto_general_especifico as b", function () {
-                        this.on("a.concepto", "b.codigo_concepto_general")
-                            .on("a.concepto_especifico", "b.codigo_concepto_especifico");
-                    })
-                    .innerJoin("glosas_concepto_general as c", function () {
-                        this.on("c.codigo_concepto_general", "b.codigo_concepto_general");
-                    })
-                    .innerJoin("glosas_concepto_especifico as d", function () {
-                        this.on("d.codigo_concepto_especifico", "b.codigo_concepto_especifico");
-                    })
-                    .innerJoin("inventarios_productos as e", function () {
-                        this.on("e.codigo_producto", "a.codigo_producto");
-                    })
-                    .innerJoin("inv_grupos_inventarios as f", function () {
-                        this.on("f.grupo_id", "e.grupo_id");
-                    })
-                    .where('a.empresa_id', obj.empresa_id)
-                    .andWhere('a.prefijo', obj.prefijo)
-                    .andWhere('a.numero', obj.numero);
-            });
+                query.unionAll(function () {
+                    this.select(columnas)
+                            .from("inv_notas_debito_proveedor_d as a")
+                            .innerJoin("glosas_concepto_general_especifico as b", function () {
+                                this.on("a.concepto", "b.codigo_concepto_general")
+                                        .on("a.concepto_especifico", "b.codigo_concepto_especifico");
+                            })
+                            .innerJoin("glosas_concepto_general as c", function () {
+                                this.on("c.codigo_concepto_general", "b.codigo_concepto_general");
+                            })
+                            .innerJoin("glosas_concepto_especifico as d", function () {
+                                this.on("d.codigo_concepto_especifico", "b.codigo_concepto_especifico");
+                            })
+                            .innerJoin("inventarios_productos as e", function () {
+                                this.on("e.codigo_producto", "a.codigo_producto");
+                            })
+                            .innerJoin("inv_grupos_inventarios as f", function () {
+                                this.on("f.grupo_id", "e.grupo_id");
+                            })
+                            .where('a.empresa_id', obj.empresa_id)
+                            .andWhere('a.prefijo', obj.prefijo)
+                            .andWhere('a.numero', obj.numero);
+                });
 
-            return query;
-        }).then(resultado => {
-            callback(false, resultado)
-        }).catch(err => {
-            console.log("err [detalleNotasFacturaProveedor]:", err);
-            callback(err);
-        });
+                return query;
+            }).then(resultado => {
+        callback(false, resultado)
+    }).catch(err => {
+        console.log("err [detalleNotasFacturaProveedor]:", err);
+        callback(err);
+    });
 };
 
 NotasModel.prototype.consultarNotasFacturaProveedor = function (obj, callback) {
@@ -1440,30 +1470,30 @@ NotasModel.prototype.consultarNotasFacturaProveedor = function (obj, callback) {
         'numero',
         G.knex.raw("to_char(b.fecha_registro,'DD-MM-YYYY') as fecha_nota"),
         'valor_nota',
-        'documento_id' 
+        'documento_id'
     ];
-  
+
     var query = G.knex.select(columnas)
             .from("inv_facturas_proveedores as a")
             .innerJoin("inv_notas_credito_proveedor as b", function () {
                 this.on("a.numero_factura", "b.numero_factura")
-                    .on("a.empresa_id", "b.empresa_id");
+                        .on("a.empresa_id", "b.empresa_id");
             })
             .where('a.empresa_id', obj.empresa_id)
             .andWhere('b.prefijo', obj.prefijo)
             .andWhere('b.numero', obj.numero);
-    
-        query.unionAll(function () {
-            
+
+    query.unionAll(function () {
+
         this.select(columnas)
-            .from("inv_facturas_proveedores as a")
-            .innerJoin("inv_notas_debito_proveedor as b", function () {
-                this.on("a.numero_factura", "b.numero_factura")
-                    .on("a.empresa_id", "b.empresa_id");
-            })
-            .where('a.empresa_id', obj.empresa_id)
-            .andWhere('b.prefijo', obj.prefijo)
-            .andWhere('b.numero', obj.numero);
+                .from("inv_facturas_proveedores as a")
+                .innerJoin("inv_notas_debito_proveedor as b", function () {
+                    this.on("a.numero_factura", "b.numero_factura")
+                            .on("a.empresa_id", "b.empresa_id");
+                })
+                .where('a.empresa_id', obj.empresa_id)
+                .andWhere('b.prefijo', obj.prefijo)
+                .andWhere('b.numero', obj.numero);
     });
     query.then(function (resultado) {
 

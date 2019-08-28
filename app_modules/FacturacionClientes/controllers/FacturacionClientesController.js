@@ -3321,7 +3321,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Adquiriente.setNaturaleza(resultado.cabecera.sw_persona_juridica === '0' ? '2' : '1'); // 1- Juridica 2- Natural
         Adquiriente.setTelefono(resultado.cabecera.telefono);
         Adquiriente.setCodigoImpuesto('01');
-        Adquiriente.setEmail(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR : G.constants.IDENTIFICADOR_DIAN().CORREO_FACTURADOR_BQ);
+        Adquiriente.setEmail(resultado.cabecera.email);
         Adquiriente.setNombreImpuesto('IVA');
         Adquiriente.setCodigoRegimen('04');
         Adquiriente.setResponsabilidadFiscal('O-09');
@@ -3542,7 +3542,8 @@ function __generarSincronizacionDian(that, req, callback) {
     var usuario_id = req.session.user.usuario_id;
     var today = new Date();
     var formato = 'YYYY-MM-DD hh:mm';
-    var format2 = 'DD-MM-YYYY';
+//    var format2 = 'DD-MM-YYYY';
+    var format2 = 'YYYY-MM-DD';
     var fechaToday = G.moment(today).format(formato);
     var parametrosReporte = {
         cabecera: '',
@@ -4612,7 +4613,8 @@ function documentosAnexos(that, pedidos, index, resultado, callback) {
 
     docAnexo.setId(item.pedido);
     docAnexo.setTipo('OR');
-    docAnexo.setFechaEmision(G.moment(item.fecha).format(formato));
+//    docAnexo.setFechaEmision(G.moment(item.fecha).format(formato));
+    docAnexo.setFechaEmision(item.fecha);
     resultado.push(JSON.parse(JSON.stringify(docAnexo)));
 
     var timer = setTimeout(function () {

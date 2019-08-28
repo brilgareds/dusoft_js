@@ -464,7 +464,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Empresa.limpiar_clientes();
                 clientes.forEach(function (data) {
-
+                    if((data.tipo_id_tercero != 'AS' && data.tipo_id_tercero != 'CE' && data.tercero_id.length > 6) || 
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '505')|| 
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '258')|| 
+                            (data.tipo_id_tercero === 'CE' && data.tercero_id === '10365')){
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
@@ -472,7 +475,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
                     cliente.setEstadoContrato(data.estado_contrato);
                     $scope.Empresa.set_clientes(cliente);
-
+                    }
                 });
 
 
@@ -575,6 +578,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
+                    disabled = true;
+                
+//                console.log("$scope.Pedido.getCliente().getId()",$scope.Pedido);
+                if ($scope.Pedido.getCliente().getId() === '805027743' && ($scope.Pedido.sede === undefined || $scope.Pedido.sede === null ))
                     disabled = true;
 
 

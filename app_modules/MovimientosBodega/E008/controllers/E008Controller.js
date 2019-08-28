@@ -1709,7 +1709,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function (req, res) {
 
 
 E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
-
+    var formato = 'DD-MM-YYYY';
     var args = req.body.data;
 
     if (args.documento_temporal === undefined) {
@@ -1764,6 +1764,7 @@ E008Controller.prototype.imprimirRotuloClientes = function (req, res) {
             }
 
             if (!existe) {
+                rows[i].fecha= G.moment(new Date()).format(formato);
                 detalleDepurado.push(rows[i]);
             }
         }

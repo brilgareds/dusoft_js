@@ -52348,11 +52348,11 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     session: session,
                     data: {
                         mensaje: {
-                            usuario_id: session.usuario_id
+                            usuario_id: session.usuario_id,
+//                            empresa_id: session.empresaId
                         }
                     }
                 };
-
                 Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.CONSULTAR_MENSAJES_USUARIO, "POST", obj, function (data) {
 
                     var obj = data.obj.mensajes;
@@ -52402,12 +52402,8 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
 
             //evento de coneccion al socket
-            socket.on("onConnected1", function (datos) {
-                var socketid = datos.socket_id;
-                var socket_session = {
-                    usuario_id: obj_session.usuario_id,
-                    socket_id: socketid
-                };
+//            socket.on("onConnected1", function (datos) {
+            socket.on("onNotificarMensajeria", function (datos) {
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];
@@ -52416,6 +52412,13 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 });
             });
 
+
+           /* self.buscar_mensajes_usuario(function (msj) {
+                if (msj.length > 0) {
+                    mensaje = msj[0];
+                    self.verMensaje(mensaje);
+                }
+            });*/
 
 
         }]);
@@ -67437,7 +67440,10 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
 
                 $scope.Empresa.limpiar_clientes();
                 clientes.forEach(function (data) {
-
+                    if((data.tipo_id_tercero != 'AS' && data.tipo_id_tercero != 'CE' && data.tercero_id.length > 6) || 
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '505')|| 
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '258')|| 
+                            (data.tipo_id_tercero === 'CE' && data.tercero_id === '10365')){
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
@@ -67445,7 +67451,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
                     cliente.setEstadoContrato(data.estado_contrato);
                     $scope.Empresa.set_clientes(cliente);
-
+                    }
                 });
 
 
@@ -67548,6 +67554,10 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                 if ($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
+                    disabled = true;
+                
+//                console.log("$scope.Pedido.getCliente().getId()",$scope.Pedido);
+                if ($scope.Pedido.getCliente().getId() === '805027743' && ($scope.Pedido.sede === undefined || $scope.Pedido.sede === null ))
                     disabled = true;
 
 

@@ -177,6 +177,10 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "T.tercero_id",
         "T.dv",
         "T.nombre_tercero",
+        "T.tipo_dpto_id",
+        "T.tipo_mpio_id",
+        "tm.municipio",
+        "td.departamento",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
         "ifd.valor_total",
@@ -200,6 +204,10 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
         "T.tercero_id",
         "T.dv",
         "T.nombre_tercero",
+        "T.tipo_dpto_id",
+        "T.tipo_mpio_id",
+        "tm.municipio",
+        "td.departamento",
         G.knex.raw("TO_CHAR(ifd.fecha_registro,'YYYY-MM-DD') as fecha_registro"),
         G.knex.raw("to_char(ifd.fecha_registro, 'yyyy') as anio_factura"),
         "ifd.valor_total",
@@ -222,6 +230,17 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
 
                 this.on("T.tipo_id_tercero", "ifd.tipo_id_tercero")
                         .on("T.tercero_id", "ifd.tercero_id");
+
+            })
+            .innerJoin('tipo_mpios as tm', function () {
+
+                this.on("T.tipo_pais_id", "tm.tipo_pais_id")
+                        .on("T.tipo_dpto_id", "tm.tipo_dpto_id")
+                        .on("T.tipo_mpio_id", "tm.tipo_mpio_id");
+            })
+            .innerJoin('tipo_dptos as td', function () {
+                this.on("td.tipo_pais_id", "tm.tipo_pais_id")
+                        .on("td.tipo_dpto_id", "tm.tipo_dpto_id");
 
             })
             .innerJoin('notas_debito_despachos_clientes as nddc', function () {
@@ -256,6 +275,17 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
                             .on("T.tercero_id", "ifd.tercero_id");
 
                 })
+                .innerJoin('tipo_mpios as tm', function () {
+
+                    this.on("T.tipo_pais_id", "tm.tipo_pais_id")
+                            .on("T.tipo_dpto_id", "tm.tipo_dpto_id")
+                            .on("T.tipo_mpio_id", "tm.tipo_mpio_id");
+                })
+                .innerJoin('tipo_dptos as td', function () {
+                    this.on("td.tipo_pais_id", "tm.tipo_pais_id")
+                            .on("td.tipo_dpto_id", "tm.tipo_dpto_id");
+
+                })
                 .innerJoin('notas_debito_despachos_clientes_agrupados as nddc', function () {
 
                     this.on("nddc.empresa_id", "ifd.empresa_id")
@@ -280,7 +310,7 @@ NotasModel.prototype.ConsultarNotasDebito = function (obj, callback) {
     });
 
     query.orderBy('nombre_tercero');
-
+//console.log(">>> ",G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
 
         callback(false, resultado);

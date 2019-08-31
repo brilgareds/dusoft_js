@@ -38,6 +38,7 @@ G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
 G.base64 = require('base64topdf');
+G.fetch = require("node-fetch");
 G.path = path;
 G.Q = require('q');
 G.accounting = accounting;

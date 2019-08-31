@@ -1,8 +1,8 @@
 /* global G, parseFloat */
 
 var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m_e008, m_usuarios, m_sincronizacion,
-        e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas, m_pago, m_productos,
-        m_lista_impuestos, m_items, m_facturador, m_adquiriente, m_documentos_anexos, m_resolucion, m_numeracion,m_direccion,m_direccion_adquiriente) {
+        e_facturacion_clientes, m_pedidos_clientes, c_sincronizacion, m_productos, m_facturas, m_pago,
+        m_lista_impuestos, m_items, m_facturador, m_adquiriente, m_documentos_anexos, m_resolucion, m_numeracion, m_direccion, m_direccion_adquiriente) {
     this.m_facturacion_clientes = m_facturacion_clientes;
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.m_e008 = m_e008;
@@ -14,7 +14,7 @@ var FacturacionClientes = function (m_facturacion_clientes, m_dispensacion_hc, m
     this.c_sincronizacion = c_sincronizacion;
     this.m_facturas = m_facturas;
     this.m_pago = m_pago;
-    this.m_productos = m_productos;
+    //this.m_productos = m_productos;
     this.m_lista_impuestos = m_lista_impuestos;
     this.m_items = m_items;
     this.m_facturador = m_facturador;
@@ -3266,7 +3266,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Factura.set_Totalanticipos(0);
         Factura.set_Total(parseFloat(total));
         Factura.set_Codigomoneda('COP');
-        
+
         /*-----Clase Pago------*/
         Pago.setId(1); // 1 Contado, 2 Credito
         Pago.setCodigoMedioPago('47'); // 47 Transferencia Bancaria
@@ -3293,22 +3293,22 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Facturador.setNombreImpuesto('IVA');
         Facturador.setCodigoRegimen('04');
         Facturador.setResponsabilidadFiscal('O-09');
-        Facturador.setListaResponsabilidadesTributarias([{codigo:'01',nombre:'IVA'},{codigo:'03',nombre:'ICA'},{codigo:'05',nombre:'ReteIVA'},{codigo:'06',nombre:'ReteFuente'}]);
-        
+        Facturador.setListaResponsabilidadesTributarias([{codigo: '01', nombre: 'IVA'}, {codigo: '03', nombre: 'ICA'}, {codigo: '05', nombre: 'ReteIVA'}, {codigo: '06', nombre: 'ReteFuente'}]);
+
         /*-----Clase Direccion------*/
         Direccion.set_codigoPais("CO");
         Direccion.set_nombrePais("Colombia");
         Direccion.set_codigoLenguajePais("es");
-        
+
         Direccion.set_codigoDepartamento(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().CODIGO_DEPARTAMENTO_BQ);
         Direccion.set_nombreDepartamento(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO : G.constants.IDENTIFICADOR_DIAN().NOMBRE_DEPARTAMENTO_BQ);
         Direccion.set_codigoCiudad(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD : G.constants.IDENTIFICADOR_DIAN().CODIGO_CIUDAD_BQ);
         Direccion.set_nombreCiudad(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD : G.constants.IDENTIFICADOR_DIAN().NOMBRE_CIUDAD_BQ);
         Direccion.set_direccionFisica(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA : G.constants.IDENTIFICADOR_DIAN().DIRECCION_FISICA_BQ);
         Direccion.set_codigoPostal(resultado.cabecera.prefijo === 'FDC' ? G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL : G.constants.IDENTIFICADOR_DIAN().CODIGO_POSTAL_BQ);
-        
+
         /*----------------------------*/
-        
+
         Facturador.setDireccion(Direccion);
         Factura.set_Facturador(Facturador);
 
@@ -3325,22 +3325,22 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Adquiriente.setNombreImpuesto('IVA');
         Adquiriente.setCodigoRegimen('04');
         Adquiriente.setResponsabilidadFiscal('O-09');
-        Adquiriente.setListaResponsabilidadesTributarias([{codigo:'01',nombre:'IVA'},{codigo:'03',nombre:'ICA'},{codigo:'05',nombre:'ReteIVA'},{codigo:'06',nombre:'ReteFuente'}]);
-        
+        Adquiriente.setListaResponsabilidadesTributarias([{codigo: '01', nombre: 'IVA'}, {codigo: '03', nombre: 'ICA'}, {codigo: '05', nombre: 'ReteIVA'}, {codigo: '06', nombre: 'ReteFuente'}]);
+
         /*-----Clase DireccionAdquiriente------*/
         DireccionAdquiriente.set_codigoPais("CO");
         DireccionAdquiriente.set_nombrePais("Colombia");
         DireccionAdquiriente.set_codigoLenguajePais("es");
-        
+
         DireccionAdquiriente.set_codigoDepartamento(resultado.cabecera.tipo_dpto_id);
         DireccionAdquiriente.set_nombreDepartamento(resultado.cabecera.departamento);
-        DireccionAdquiriente.set_codigoCiudad(resultado.cabecera.tipo_dpto_id+""+resultado.cabecera.tipo_mpio_id);
+        DireccionAdquiriente.set_codigoCiudad(resultado.cabecera.tipo_dpto_id + "" + resultado.cabecera.tipo_mpio_id);
         DireccionAdquiriente.set_nombreCiudad(resultado.cabecera.municipio);
         DireccionAdquiriente.set_direccionFisica(resultado.cabecera.direccion);
-        DireccionAdquiriente.set_codigoPostal(resultado.cabecera.tipo_dpto_id+"0"+resultado.cabecera.tipo_mpio_id);
-        
+        DireccionAdquiriente.set_codigoPostal(resultado.cabecera.tipo_dpto_id + "0" + resultado.cabecera.tipo_mpio_id);
+
         /*----------------------------*/
-  
+
         Adquiriente.setDireccion(DireccionAdquiriente);
         Factura.set_Adquiriente(Adquiriente);
 
@@ -3368,20 +3368,18 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Promise.all([p1])
                 .then(values => {
                     Factura.set_Documentosanexos(values[0]);
-                    //                    Factura.set_Gruposimpuestos(values[1]);
+            
                     validarCamposVacios(Factura);
-                    console.log("factura", JSON.stringify(Factura));
+//                    console.log("factura promesa", JSON.stringify(Factura));
+                    fetchFacturacion(JSON.stringify(Factura));
                 }, reason => {
                     console.log("reason", reason);
                 });
 
 
-
-
-        //        console.log("factura", Factura);
         // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
-        throw {response: {}};
-        return false;
+//        throw {response: {}};
+//        return false;
 
 
         // }).then(function (respuesta) {
@@ -4679,16 +4677,35 @@ const validarCamposVacios = factura => {
 
     if (existe && esIterable && contiene) {
         for (const item in factura) {
-            if (validarCamposVacios(factura[item])){ delete factura[item]; }
+            if (validarCamposVacios(factura[item])) {
+                delete factura[item];
+            }
         }
-    } else if (tipo !== 'number' && tipo !== 'boolean' && (!existe || !contiene)) { response = true; }
+    } else if (tipo !== 'number' && tipo !== 'boolean' && (!existe || !contiene)) {
+        response = true;
+    }
     return response;
 };
+
+const fetchFacturacion = async (obj) => {
+    const response = await G.fetch(G.constants.WS().FACTURACION_ELECTRONICA.NUEVA_FACTURA, {
+//    const response = await G.fetch('https://devv5.certifactura.co/servicios/recepcionPrueba/rest/emitir', {
+        method: 'POST',
+        body: obj, // string or object
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Authorization': G.constants.WS().FACTURACION_ELECTRONICA.SHA1 //'Basic RjAwNDRVU1VBUklPMTo2MjZlMTRkMzAwZDY4MThiOTBmMDU3NjY1Y2U3ODM1NzEwYWM5OWYw'
+        }
+    });
+    const myJson = await response.json(); //extract JSON from the http response
+    console.log("myJson",myJson);
+    // do something with myJson
+}
 
 
 
 FacturacionClientes.$inject = ["m_facturacion_clientes", "m_dispensacion_hc", "m_e008", "m_usuarios", "m_sincronizacion", "e_facturacion_clientes", "m_pedidos_clientes",
-    "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_productos", "m_lista_impuestos", "m_items", "m_facturador", "m_adquiriente", "m_documentos_anexos",
-    "m_resolucion", "m_numeracion","m_direccion","m_direccion_adquiriente"];
+    "c_sincronizacion", "m_productos", "m_facturas", "m_pago", "m_lista_impuestos", "m_items", "m_facturador", "m_adquiriente", "m_documentos_anexos",
+    "m_resolucion", "m_numeracion", "m_direccion", "m_direccion_adquiriente"];
 
 module.exports = FacturacionClientes;

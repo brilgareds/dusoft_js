@@ -2,7 +2,7 @@
 let that;
 
 var Notas = function (m_notas, m_notas_class, m_sincronizacion, m_facturacion_proveedores, m_facturacion_clientes,
-        c_sincronizacion, m_pago, m_facturador, m_adquiriente, m_resolucion, m_numeracion, m_direccion, m_direccion_adquiriente) {
+        c_sincronizacion, m_pago,m_productos,m_lista_impuestos, m_items, m_facturador, m_adquiriente, m_resolucion, m_numeracion, m_direccion, m_direccion_adquiriente) {
     that = this;
     that.m_notas = m_notas;
     that.m_notas_class = m_notas_class;
@@ -12,6 +12,9 @@ var Notas = function (m_notas, m_notas_class, m_sincronizacion, m_facturacion_pr
     that.c_sincronizacion = c_sincronizacion;
 
     that.m_pago = m_pago;
+    that.m_productos = m_productos;
+    that.m_lista_impuestos = m_lista_impuestos;
+    that.m_items = m_items;
     that.m_facturador = m_facturador;
     that.m_adquiriente = m_adquiriente;
     that.m_resolucion = m_resolucion;
@@ -985,7 +988,8 @@ function documentosAnexos(that, pedidos, index, resultado, callback) {
  */
 Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
     console.log('Sincronizacion de debito!!!');
-
+    //that = this;
+    var formato = 'YYYY-MM-DD';
     var args = req.body.data;
     var resultado;
     var data;
@@ -1001,12 +1005,19 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
 
     G.Q.nfcall(__generarSincronizacionDianDebito, that, req).then(data => {
         resultado = JSON.parse(JSON.stringify(data)); // console.log('data: ', data);
-        return G.Q.nfcall(__productos, resultado.productos, 0, []);
+        return G.Q.nfcall(__productosAdjunto,that, resultado.productos, 0, []);
     }).then(productos => {
         var subTotal = resultado.valores.subTotal.replace(".", "");
         var tot = resultado.valores.totalFactura.replace(/(\.)/g, "");
         var numero = tot.replace(",", ".");
         var total = redondeoDian(numero);
+
+        if (G.moment(resultado.cliente.fecha_registro).format(formato) < '2019-08-10') {
+            console.log("If");
+        } else {
+            console.log("Else");
+        }
+
 //        var total = redondeoDian(resultado.valores.totalFactura);
 //      var total = resultado.valores.totalFactura.replace(".", "");
         /*var json = {
@@ -1115,7 +1126,7 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
         DireccionAdquiriente.set_codigoPais("CO");
         DireccionAdquiriente.set_nombrePais("Colombia");
         DireccionAdquiriente.set_codigoLenguajePais("es");
-        
+
         DireccionAdquiriente.set_codigoDepartamento(resultado.nota.tipo_dpto_id);
         DireccionAdquiriente.set_nombreDepartamento(resultado.nota.departamento);
         DireccionAdquiriente.set_codigoCiudad(resultado.nota.tipo_dpto_id + "" + resultado.nota.tipo_mpio_id);
@@ -1133,8 +1144,8 @@ Notas.prototype.generarSincronizacionDianDebito = (req, res) => {
         Nota.set_ListaCorrecciones([{descripcion: resultado.nota.tipo_nota}]);
         // Nota.set_Base64(json.pdf);   BASE 64
         validarCamposVacios(Nota);
-
-        console.log('Nota: ', JSON.stringify(Nota));
+        fetchFacturacion(JSON.stringify(Nota));
+//        console.log('Nota: ', JSON.stringify(Nota));
 
         /* console.log('Before');
          const p1 = new Promise((resolve, reject) => {
@@ -1372,7 +1383,7 @@ function __generarSincronizacionDianDebito(that, req, callback) {
  */
 Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
     console.log('Sincronizacion de credito!!!');
-
+    var formato = 'YYYY-MM-DD';
     var args = req.body.data;
     var resultado;
     var data;
@@ -1394,7 +1405,13 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         var tot = resultado.valores.totalFactura.replace(/(\.)/g, "");
         var numero = tot.replace(",", ".");
         var total = redondeoDian(numero);
-//        console.log('resultado: ', resultado);
+
+        if (G.moment(resultado.nota.fecha_registro).format(formato) < '2019-08-10') {
+            console.log("If");
+        } else {
+            console.log("Else");
+        }
+
 //            var total = resultado.valores.totalFactura.replace(".", "");
 //        var json = {
 //            codigoMoneda: "COP",
@@ -1523,8 +1540,8 @@ Notas.prototype.generarSincronizacionDianCredito = function (req, res) {
         Nota.set_ListaCorrecciones([{descripcion: resultado.nota.tipo_nota}]);
         // Nota.set_Base64(json.pdf);   BASE 64
         validarCamposVacios(Nota);
-
-        console.log('Nota: ', JSON.stringify(Nota));
+        fetchFacturacion(JSON.stringify(Nota));
+//        console.log('Nota: ', JSON.stringify(Nota));
 
         /* console.log('Before');
          const p1 = new Promise((resolve, reject) => {
@@ -1995,6 +2012,74 @@ function __productos(productos, index, productosDian, callback) {
     }, 0);
 }
 
+const __productosAdjunto = function (that, productos, index, productosDian, callback) {
+    var item = productos[index];
+    var numeroLinea = index;
+
+
+    if (!item) {
+        callback(false, productosDian);
+        return;
+    }
+    var prod = that.m_productos;
+    prod.setNumeroLinea(index + 1);
+    prod.setCantidad(item.cantidad);
+    prod.setValorTotal(numeroLinea + 1);
+    prod.setIdProducto(item.codigo_producto);
+    prod.setCodigoPrecio('01');
+    prod.setValorUnitario(parseFloat(item.valor_unitario));
+    prod.setCantidadReal(item.cantidad);
+    prod.setCodigoUnidad('94'); // 94 - unidad
+    prod.setEsMuestraComercial(false);
+    var itemDatos = that.m_items;
+    itemDatos.setCodigoArticuloVendedor(item.codigo_producto);
+    itemDatos.setCodigoEstandar('999');
+    itemDatos.setNombreEstandar('Estándar de adopción del contribuyente');
+    itemDatos.setDescripcion(item.descripcion + ", codigo_invima: " + item.codigo_invima + ", Fecha Vencimiento: " + item.fecha_vencimiento + ", lote: " + item.lote);
+
+    prod.setItem(itemDatos);
+
+
+    var ivaPorcentaje = parseInt(item.porc_iva);
+
+    if (ivaPorcentaje === 19) {
+        var impuesto = that.m_lista_impuestos;
+        impuesto.set_codigo('01'); // 01 IVA
+        impuesto.set_nombre('IVA');
+        impuesto.set_baseGravable(parseFloat(item.subtotal));
+        impuesto.set_porcentaje(parseFloat(item.porc_iva));
+        impuesto.set_valor(parseFloat(item.iva_total));
+        impuesto.set_codigoUnidad('94'); // 94 - unidad
+        // impuesto.set_unidad(); // no se usa
+//        prod.setListaImpuestos(impuesto); // otra clase
+        prod.listaImpuestos.push(impuesto);
+    }
+    ;
+    if (ivaPorcentaje === 10) {
+
+        var impuesto = that.m_lista_impuestos;
+        impuesto.set_codigo('01'); // 01 IVA
+        impuesto.set_nombre('IVA');
+        impuesto.set_baseGravable(item.subtotal);
+        impuesto.set_porcentaje(item.porc_iva);
+        impuesto.set_valor(item.iva_total);
+        impuesto.set_codigoUnidad('94'); // 94 - unidad
+        // impuesto.set_unidad(); // no se usa
+//        prod.setListaImpuestos(impuesto);
+        prod.listaImpuestos.push(impuesto);
+    }
+    ;
+
+    productosDian.push(prod);
+
+    var timer = setTimeout(function () {
+        index++;
+        __productosAdjunto(that, productos, index, productosDian, callback);
+        clearTimeout(timer);
+    }, 0);
+};
+
+
 function redondeoDian(numero) {
     var punto = numero.indexOf(".");
     var decimales = numero.substr(punto + 1, numero.length);
@@ -2058,6 +2143,21 @@ const validarCamposVacios = nota => {
     return response;
 };
 
+const fetchFacturacion = async (obj) => {
+    const response = await G.fetch(G.constants.WS().FACTURACION_ELECTRONICA.NUEVA_FACTURA, {
+//    const response = await G.fetch('https://devv5.certifactura.co/servicios/recepcionPrueba/rest/emitir', {
+        method: 'POST',
+        body: obj, // string or object
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Authorization': G.constants.WS().FACTURACION_ELECTRONICA.SHA1 //'Basic RjAwNDRVU1VBUklPMTo2MjZlMTRkMzAwZDY4MThiOTBmMDU3NjY1Y2U3ODM1NzEwYWM5OWYw'
+        }
+    });
+    const myJson = await response.json(); //extract JSON from the http response
+    console.log("myJson", myJson);
+    // do something with myJson
+}
+
 Notas.$inject = ["m_notas", "m_notas_class", "m_sincronizacion", "m_facturacion_proveedores", "m_facturacion_clientes",
-    "c_sincronizacion", "m_pago", "m_facturador", "m_adquiriente", "m_resolucion", "m_numeracion", "m_direccion", "m_direccion_adquiriente"];
+    "c_sincronizacion", "m_pago", "m_productos", "m_lista_impuestos", "m_items", "m_facturador", "m_adquiriente", "m_resolucion", "m_numeracion", "m_direccion", "m_direccion_adquiriente"];
 module.exports = Notas;

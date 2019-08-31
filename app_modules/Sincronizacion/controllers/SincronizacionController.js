@@ -1,155 +1,19 @@
-/* global G */
+/* global G, fetch */
 'use strict';
 
 let that;
 
-let Sincronizacion = function (m_adquiriente, m_autorizado, m_centro_costo, m_condiciones_entrega, m_contacto,
-    m_direccion, m_documentos_anexos, m_entrega, m_facturador, m_facturas, m_grupo_deducciones, m_grupo_impuestos,
-    m_items, m_lista_anticipos, m_lista_caracteristicas, m_lista_cargos_descuentos, m_lista_correcciones,
-    m_lista_deducciones, m_lista_documentos_referenciados, m_lista_impuestos, m_lista_participantes_consorcio,
-    m_mandatorio, m_notas_referenciadas, m_numeracion, m_pago, m_periodo_facturacion, m_productos, m_resolucion,
-    m_sucursal, m_tasa_cambio, m_transportista, m_sincronizacion, m_clientes,m_error,emails) {
-
-    this.m_adquiriente = m_adquiriente;
-    this.m_autorizado = m_autorizado;
-    this.m_centro_costo = m_centro_costo;
-    this.m_condiciones_entrega = m_condiciones_entrega;
-    this.m_contacto = m_contacto;
-    this.m_direccion = m_direccion;
-    this.m_documentos_anexos = m_documentos_anexos;
-    this.m_entrega = m_entrega;
-    this.m_facturador = m_facturador;
-    this.m_facturas = m_facturas;
-    this.m_grupo_deducciones = m_grupo_deducciones;
-    this.m_grupo_impuestos = m_grupo_impuestos;
-    this.m_items = m_items;
-    this.m_lista_anticipos = m_lista_anticipos;
-    this.m_lista_caracteristicas = m_lista_caracteristicas;
-    this.m_lista_cargos_descuentos = m_lista_cargos_descuentos;
-    this.m_lista_correcciones = m_lista_correcciones;
-    this.m_lista_deducciones = m_lista_deducciones;
-    this.m_lista_documentos_referenciados = m_lista_documentos_referenciados;
-    this.m_lista_impuestos = m_lista_impuestos;
-    this.m_lista_participantes_consorcio = m_lista_participantes_consorcio;
-    this.m_mandatorio = m_mandatorio;
-    this.m_notas_referenciadas = m_notas_referenciadas;
-    this.m_numeracion = m_numeracion;
-    this.m_pago = m_pago;
-    this.m_periodo_facturacion = m_periodo_facturacion;
-    this.m_productos = m_productos;
-    this.m_resolucion = m_resolucion;
-    this.m_sucursal = m_sucursal;
-    this.m_tasa_cambio = m_tasa_cambio;
-    this.m_transportista = m_transportista;
-    this.m_sincronizacion = m_sincronizacion;
-    this.m_clientes = m_clientes;
-    this.m_error = m_error;
-    this.emails = emails;
-    that = this;
-    //that.test();
-};
-
-// const promesa = new Promise((resolve, reject) => { resolve(true); });
-
-Sincronizacion.prototype.test = function () {
-
-    let count = 0;
-    let cantidadFunciones = 2;
-
-    const p1 = new Promise((resolve, reject) => {
-        G.Q.ninvoke(_productos)
-    });
-    const p2 = new Promise((resolve, reject) => {
-
-    });
-    const p3 = new Promise((resolve, reject) => {
-
-    });
-    const p4 = new Promise((resolve, reject) => {
-
-    });
-
-    Promise.all([p1, p2, p3, p4])
-        .then(values => {
-            console.log(values);
-        }, reason => {
-            console.log(reason)
-        });
-
-
-
-
-
-    new Promise(() => {
-        console.log('test 1');
-        console.log('count: ', count, 'cantidadFunciones: ', cantidadFunciones);
-        new Promise(() => {
-            count++;
-            console.log('test 2');
-            console.log('count: ', count, 'cantidadFunciones: ', cantidadFunciones);
-            if (count === cantidadFunciones) {
-                console.log('Deberia de salir aqui!!');
-                return true;
-            }
-        }).catch(error => {
-            console.log('error: ', error);
-            throw error;
-        });
-
-        new Promise(() => {
-            count++;
-            console.log('test 3');
-            console.log('count: ', count, 'cantidadFunciones: ', cantidadFunciones);
-            if (count === cantidadFunciones) { return true; }
-        }).catch(error => {
-            console.log('error: ', error);
-            throw error;
-        });
-
-        new Promise(() => {
-            count++;
-            if (count === cantidadFunciones) { return true; }
-        }).catch(error => {
-            console.log('error: ', error);
-            throw error;
-        });
-
-        new Promise(() => {
-            count++;
-            if (count === cantidadFunciones) { return true; }
-        }).catch(error => {
-            console.log('error: ', error);
-            throw error;
-        });
-    }).then(response => {
-
-        console.log('fine!!');
-    }).catch(error => {
-
-        console.log('error: ', error);
-    });
-
-    // console.log('Eyyyy', this.m_pago);
-    // // console.log(JSON.parse(this.m_pago));
-    // // console.log(this.m_pago.codigoMedioPago);
-    // this.m_pago.setId(7);
-    // console.log('El valor final es: ', this.m_pago.getId());
-    //console.log('\nEooo', this.m_pago);
-    // Sincronizacion.codigoMedioPago('Easd');
-    // Sincronizacion.fechaVencimiento('asdasdasd');
+let Sincronizacion = function () {
 
 };
-
 
 Sincronizacion.prototype.facturacionElectronica = function (req, callback) {
     var that = this;
 
-//    G.Q.nfcall(__jsonFactura, req).then(function (resultado) { // facturacion anterior sin adjunto de pdf
     G.Q.nfcall(__jsonFacturaAjdunto, req).then(function (resultado) {
 
         var obj = {};
         obj.x = '';
-//        obj.funcion = "crearFacturaElectronica";  // facturacion anterior sin adjunto de pdf
         obj.funcion = "crearFacturaElectronica";
         obj.parametros = resultado;
         obj.url = G.constants.WS().FACTURACION_ELECTRONICA.FACTURA;
@@ -195,7 +59,7 @@ Sincronizacion.prototype.facturacionElectronicaNotaCredito = function (req, call
     var that = this;
 
     G.Q.nfcall(__jsonNotaCredito, req).then(function (resultado) {
-        
+
         var obj = {};
         obj.x = '';
         obj.funcion = "crearNotaCreditoElectronica";
@@ -219,11 +83,11 @@ Sincronizacion.prototype.facturacionElectronicaNotaCredito = function (req, call
 
 
 Sincronizacion.prototype.consultaFacturacionElectronica = function (req, callback) {
-    
+
     var obj = {};
-       
+
     G.Q.nfcall(__jsonConsultaDocumento, req).then(function (resultado) {
-        
+
         var obj = {};
         obj.x = '';
         obj.funcion = "consultaDocumentos";
@@ -233,13 +97,13 @@ Sincronizacion.prototype.consultaFacturacionElectronica = function (req, callbac
         return G.Q.nfcall(__FacturacionDian, obj);
 
     }).then(function (resultado) {
-        
-      var pdf =resultado.result.ConsultaResultadoValidacionDocumentosResponse.documento;
-      var y = G.base64.base64Decode(pdf, G.dirname + "/public/reports/doc_dian/"+req.factura+".pdf");
-      callback(false, req.factura+".pdf");
+
+        var pdf = resultado.result.ConsultaResultadoValidacionDocumentosResponse.documento;
+        var y = G.base64.base64Decode(pdf, G.dirname + "/public/reports/doc_dian/" + req.factura + ".pdf");
+        callback(false, req.factura + ".pdf");
 
     }).fail(function (err) {
-        
+
         callback(err.root.Envelope.Body.Fault.faultstring.$value);
 
     }).done();
@@ -258,7 +122,7 @@ function __FacturacionDian(obj, callback) {
 
     var password = G.constants.CREDENCIALESCERTICAMARA().CONTRASENA; // optional password
     var username = G.constants.CREDENCIALESCERTICAMARA().USUARIO; // optional password  
-    var tmp = { lastRequest: {} };
+    var tmp = {lastRequest: {}};
     //Se invoca el ws
 
     G.Q.nfcall(G.soap.createClient, url).then(function (client) {
@@ -279,7 +143,7 @@ function __FacturacionDian(obj, callback) {
         resultado.result = result;
         resultado.lastRequest = G.xmlformatter(tmp.lastRequest);
         G.logError(G.xmlformatter(tmp.lastRequest));
-    }).then(function () {  
+    }).then(function () {
         resultado.sw_factura_dian = '1';
         callback(false, resultado);
 
@@ -295,15 +159,15 @@ function __FacturacionDian(obj, callback) {
 }
 
 function __jsonConsultaDocumento(obj, callback) {
-  
+
     var crearFactura = {
-        ConsultaResultadoValidacionDocumentosPeticion:{
-            tipoDocumento : obj.tipoDocumento,//obj.tipoDocumento,//factura
-            numeroDocumento : obj.factura,//prefijo_nofactura
-            tipoRespuesta : obj.tipoRespuesta 
-       }
+        ConsultaResultadoValidacionDocumentosPeticion: {
+            tipoDocumento: obj.tipoDocumento, //obj.tipoDocumento,//factura
+            numeroDocumento: obj.factura, //prefijo_nofactura
+            tipoRespuesta: obj.tipoRespuesta
+        }
     };
-        
+
     callback(false, crearFactura);
 }
 
@@ -339,7 +203,7 @@ function __jsonNotaCredito(obj, callback) {
                 {// OPCIONAL
                     nombre: "IVA", //String -
                     valor: obj.IVA.replace(",", "."), //decimal -
-                    baseGravable: obj.baseGravableIVA.split(",",1) //decimal -
+                    baseGravable: obj.baseGravableIVA.split(",", 1) //decimal -
                 },
                 {// OPCIONAL
                     nombre: "ReteICA", //String -
@@ -388,13 +252,13 @@ function __jsonNotaCredito(obj, callback) {
             }
         }
     };
-    
-    if(obj.productos.length > 0){
+
+    if (obj.productos.length > 0) {
         crearNotaCredito.notaCreditoElectronicaCanonica.productos = obj.productos;
-    }else{
-        crearNotaCredito.notaCreditoElectronicaCanonica.productos = {cantidad:0,descripcion:"no aplica",identificador:"0",valorUnitario:0};
+    } else {
+        crearNotaCredito.notaCreditoElectronicaCanonica.productos = {cantidad: 0, descripcion: "no aplica", identificador: "0", valorUnitario: 0};
     }
-    
+
     callback(false, crearNotaCredito);
 }
 
@@ -430,7 +294,7 @@ function __jsonNotaDebito(obj, callback) {
                 {// OPCIONAL
                     nombre: "IVA", //String -
                     valor: obj.IVA.replace(",", "."), //decimal -
-                    baseGravable: obj.baseGravableIVA.split(",",1) //decimal -
+                    baseGravable: obj.baseGravableIVA.split(",", 1) //decimal -
                 },
                 {// OPCIONAL
                     nombre: "ReteICA", //String -
@@ -479,11 +343,11 @@ function __jsonNotaDebito(obj, callback) {
             }
         }
     };
-    
-        if(obj.productos.length > 0){
+
+    if (obj.productos.length > 0) {
         crearNotaDebito.notaDebitoElectronicaCanonica.productos = obj.productos;
-        }else{
-        crearNotaDebito.notaDebitoElectronicaCanonica.productos = {cantidad:0,descripcion:"no aplica",identificador:"0",valorUnitario:0};
+    } else {
+        crearNotaDebito.notaDebitoElectronicaCanonica.productos = {cantidad: 0, descripcion: "no aplica", identificador: "0", valorUnitario: 0};
     }
 
     callback(false, crearNotaDebito);
@@ -524,130 +388,6 @@ function mediosPago(mediosPago) {
             return '20';
             break;
     }
-}
-
-function __jsonFactura(obj, callback) {
-
-    var formato = 'DD-MM-YYYY';
-    var crearFacturaElectronica = {
-        attributes: {
-            xmlns: 'http://contrato.factura.webservices.servicios.certifactura.certicamara.com/'
-        },
-        facturaElectronicaCanonica: {
-            attributes: {
-                xmlns: ''
-            },
-            codigoMoneda: obj.codigoMoneda, //String -
-            descripcion: "", //String OPCIONAL-
-            descuentos: {},
-            fechaExpedicion: G.moment(obj.fechaExpedicion).format(formato), //String OPCIONAL  DD/MM/YYYY -
-//            fechaVencimiento: G.moment(obj.fechaVencimiento).format(formato), //String OPCIONAL DD/MM/YYYY -
-            icoterms: '', //String OPCIONAL -
-            identificacionReceptor: {
-                codigoDocumentoDian: codigoDocumentoDian(obj.codigoDocumentoDian), //int -
-                numeroIdentificacion: obj.numeroIdentificacion//String -
-            },
-            identificadorConsecutivo: obj.identificadorConsecutivo, //long -
-            identificadorResolucion: obj.identificadorResolucion, //String -
-            mediosPago: mediosPago(obj.mediosPago), //String OPCIONAL -
-            nombreSucursal: obj.nombreSucursal, //String -
-            numeracionResolucionWS: {
-                desde: obj.desde, //long -
-                hasta: obj.hasta, //long -
-                prefijo: obj.prefijo//String -
-            },
-            perfilEmision: "CLIENTE", //String -
-            perfilUsuario: "CLIENTE", //String -
-            productos: obj.productos, //OPCIONAL
-            subtotalFactura: obj.subtotalFactura, //decimal OPCIONAL -
-            subtotalesImpuestosDeduccion: [
-                {// OPCIONAL
-                    nombre: "ReteFuente", //String -
-                    valor: obj.ReteFuente, //decimal -
-                    baseGravable: obj.baseGravableReteFuente.replace(".", "") //decimal -
-                },
-                {// OPCIONAL
-                    nombre: "IVA", //String -
-                    valor: obj.IVA, //decimal -
-                    baseGravable: obj.baseGravableIVA //decimal -
-                },
-                {// OPCIONAL
-                    nombre: "ReteICA", //String -
-                    valor: obj.ReteICA, //decimal -
-                    baseGravable: obj.baseGravableReteICA.replace(".", "") //decimal -
-                },
-                {// OPCIONAL
-                    nombre: "ReteIVA", //String -
-                    valor: obj.ReteIVA, //decimal -
-                    baseGravable: obj.baseGravableReteIVA.replace(".", "") //decimal -
-                }
-            ],
-            tipoFactura: obj.tipoFactura, //numeric -
-            totalFactura: obj.totalFactura //decimal OPCIONAL -
-        },
-        facturaEspecializada: {
-            attributes: {
-                xmlns: ''
-            },
-            AtributosAdicionales: {
-                AtributoAdicional: [{// OPCIONAL
-                        nombreAtributo: "mensajeContribuyente", //String
-                        valor: obj.mensajeContribuyente, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "mensajeResolucion", //String
-                        valor: obj.mensajeResolucion, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "nombreAdquirente", //String
-                        valor: obj.nombreAdquirente, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "vendedor", //String
-                        valor: obj.vendedor, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "numeroPedido", //String
-                        valor: obj.numeroPedido, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "Descuento", //String
-                        valor: 0, //decimal
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "totalenLetras", //String
-                        valor: obj.totalenLetras, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "observacionesPedido", //String
-                        valor: obj.observacionesPedido.replace("\n"," "), //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "observacionesDespacho", //String
-                        valor: obj.observacionesDespacho.replace("\n"," "), //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "elaboradoPor", //String
-                        valor: obj.elaboradoPor, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "tipoFormato", //String
-                        valor: obj.tipoFormato, //String
-                        tipo: "Texto"
-                    }, {// OPCIONAL
-                        nombreAtributo: "condiciones", //String
-                        valor: obj.condiciones, //String
-                        tipo: "Texto"
-                    }]
-            }
-        }
-    };
-
-     if(obj.fechaVencimiento){
-        crearFacturaElectronica.facturaElectronicaCanonica.fechaVencimiento = G.moment(obj.fechaVencimiento).format(formato); //String OPCIONAL DD/MM/YYYY -
-    }
-
-    callback(false, crearFacturaElectronica);
 }
 
 function __jsonFacturaAjdunto(obj, callback) {
@@ -743,12 +483,6 @@ function __jsonFacturaAjdunto(obj, callback) {
     callback(false, crearFacturaElectronica);
 }
 
-Sincronizacion.$inject = ['m_adquiriente', 'm_autorizado', 'm_centro_costo', 'm_condiciones_entrega', 'm_contacto',
-    'm_direccion', 'm_documentos_anexos', 'm_entrega', 'm_facturador', 'm_facturas', 'm_grupo_deducciones',
-    'm_grupo_impuestos', 'm_items', 'm_lista_anticipos', 'm_lista_caracteristicas', 'm_lista_cargos_descuentos',
-    'm_lista_correcciones', 'm_lista_deducciones', 'm_lista_documentos_referenciados', 'm_lista_impuestos',
-    'm_lista_participantes_consorcio', 'm_mandatorio', 'm_notas_referenciadas', 'm_numeracion', 'm_pago',
-    'm_periodo_facturacion', 'm_productos', 'm_resolucion', 'm_sucursal', 'm_tasa_cambio', 'm_transportista',
-    'm_sincronizacion', 'm_clientes','m_error','emails'];
+Sincronizacion.$inject = [];
 
 module.exports = Sincronizacion;

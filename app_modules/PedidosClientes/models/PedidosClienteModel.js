@@ -320,7 +320,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
 
     if (fecha_inicial !== undefined) {
 
-        facturaFiscal = G.knex.raw("CASE WHEN estado_factura_fiscal = 0 THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
+        facturaFiscal = G.knex.raw("CASE WHEN estado_factura_fiscal = '0' THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
 
         estadoFacturaFiscal = "estado_factura_fiscal";
 
@@ -1012,7 +1012,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function (responsabl
                on (\
                    vopmc.farmacia_id = b.empresa_id\
                    and vopmc.centro_utilidad = b.centro_utilidad\
-                   and vopmc.bodega = a.pedido_cliente_id\
+                   and vopmc.bodega = b.bodega\
                )\
        where\
            id_orden_pedido_origen = a.pedido_cliente_id limit 1\

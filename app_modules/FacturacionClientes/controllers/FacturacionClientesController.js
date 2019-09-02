@@ -3107,7 +3107,7 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
     var prod = that.m_productos;
     prod.setNumeroLinea(index + 1);
     prod.setCantidad(item.cantidad);
-    prod.setValorTotal(numeroLinea + 1);
+    prod.setValorTotal(parseFloat(item.total1));
     prod.setIdProducto(item.codigo_producto);
     prod.setCodigoPrecio('01');
     prod.setValorUnitario(parseFloat(item.valor_unitario));
@@ -3121,12 +3121,12 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
     itemDatos.setNombreEstandar('Estándar de adopción del contribuyente');
     itemDatos.setDescripcion(item.descripcion + ", codigo_invima: " + item.codigo_invima + ", Fecha Vencimiento: " + item.fecha_vencimiento + ", lote: " + item.lote);
 
-    prod.setItem(itemDatos);
+    prod.setItem(JSON.parse(JSON.stringify(itemDatos)));
 
 
     var ivaPorcentaje = parseInt(item.porc_iva);
 
-    if (ivaPorcentaje === 19) {
+    if (ivaPorcentaje === 19 || ivaPorcentaje === 10) {
         var impuesto = that.m_lista_impuestos;
         impuesto.set_codigo('01'); // 01 IVA
         impuesto.set_nombre('IVA');
@@ -3136,25 +3136,11 @@ const __productosAdjunto = function (that, productos, index, productosDian, call
         impuesto.set_codigoUnidad('94'); // 94 - unidad
         // impuesto.set_unidad(); // no se usa
 //        prod.setListaImpuestos(impuesto); // otra clase
-        prod.listaImpuestos.push(impuesto);
+        prod.listaImpuestos.push(JSON.parse(JSON.stringify(impuesto)));
     }
     ;
-    if (ivaPorcentaje === 10) {
-
-        var impuesto = that.m_lista_impuestos;
-        impuesto.set_codigo('01'); // 01 IVA
-        impuesto.set_nombre('IVA');
-        impuesto.set_baseGravable(item.subtotal);
-        impuesto.set_porcentaje(item.porc_iva);
-        impuesto.set_valor(item.iva_total);
-        impuesto.set_codigoUnidad('94'); // 94 - unidad
-        // impuesto.set_unidad(); // no se usa
-//        prod.setListaImpuestos(impuesto);
-        prod.listaImpuestos.push(impuesto);
-    }
-    ;
-
-    productosDian.push(prod);
+    
+    productosDian.push(JSON.parse(JSON.stringify(prod)));
 
     var timer = setTimeout(function () {
         index++;
@@ -3310,6 +3296,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         /*----------------------------*/
 
         Facturador.setDireccion(Direccion);
+//        Facturador.setDireccionFiscal(Direccion);
         Factura.set_Facturador(Facturador);
 
         /*-----Clase Adquiriente------*/
@@ -3342,6 +3329,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         /*----------------------------*/
 
         Adquiriente.setDireccion(DireccionAdquiriente);
+//        Adquiriente.setDireccionFiscal(DireccionAdquiriente);
         Factura.set_Adquiriente(Adquiriente);
 
 //        Factura.set_Base64(G.base64.base64Encode(G.dirname + "/public/reports/" + resultado.pdf));
@@ -3368,7 +3356,7 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
         Promise.all([p1])
                 .then(values => {
                     Factura.set_Documentosanexos(values[0]);
-            
+
                     validarCamposVacios(Factura);
 //                    console.log("factura promesa", JSON.stringify(Factura));
                     fetchFacturacion(JSON.stringify(Factura));
@@ -3378,8 +3366,8 @@ FacturacionClientes.prototype.generarSincronizacionDian = function (req, res) {
 
 
         // return G.Q.ninvoke(that.c_sincronizacion, 'facturacionElectronica', json);
-//        throw {response: {}};
-//        return false;
+        throw {response: {}};
+        return false;
 
 
         // }).then(function (respuesta) {
@@ -4669,12 +4657,15 @@ function redondeoDian(numero) {
 }
 
 const validarCamposVacios = factura => {
+
     let response = false;
+    let contiene = 0;
     const tipo = typeof factura;
     const existe = factura !== undefined;
     const esIterable = (Array.isArray(factura) || tipo === 'object');
-    const contiene = factura.length ? factura.length : Object.keys(factura).length;
-
+    if (existe) {
+        contiene = factura.length ? factura.length : Object.keys(factura).length;
+    }
     if (existe && esIterable && contiene) {
         for (const item in factura) {
             if (validarCamposVacios(factura[item])) {
@@ -4698,7 +4689,7 @@ const fetchFacturacion = async (obj) => {
         }
     });
     const myJson = await response.json(); //extract JSON from the http response
-    console.log("myJson",myJson);
+    console.log("myJson", myJson);
     // do something with myJson
 }
 

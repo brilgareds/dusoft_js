@@ -67443,7 +67443,8 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     if((data.tipo_id_tercero != 'AS' && data.tipo_id_tercero != 'CE' && data.tercero_id.length > 6) || 
                             (data.tipo_id_tercero === 'AS' && data.tercero_id === '505')|| 
                             (data.tipo_id_tercero === 'CC' && data.tercero_id === '84')|| 
-                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '258')|| 
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '258')||
+                            (data.tipo_id_tercero === 'NIT' && data.tercero_id === '17')||
                             (data.tipo_id_tercero === 'CE' && data.tercero_id === '10365')){
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     cliente.setDepartamento(data.departamento);

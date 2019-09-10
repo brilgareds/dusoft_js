@@ -194,7 +194,7 @@ Sincronizacion.prototype.consultaFacturacionElectronica = function (req, callbac
         obj.parametros = resultado;
         obj.url = G.constants.WS().FACTURACION_ELECTRONICA.CONSULTA_FACTURA;
 
-        return G.Q.nfcall(__FacturacionDian, obj);
+        return G.Q.nfcall(__FacturacionDianDescarga, obj);
 
     }).then(function (resultado) {
         
@@ -221,6 +221,54 @@ function __FacturacionDian(obj, callback) {
 
 
     var password = G.constants.CREDENCIALESCERTICAMARA().CONTRASENA; // optional password
+    var username = G.constants.CREDENCIALESCERTICAMARA().USUARIO; // optional password  
+    var tmp = { lastRequest: {} };
+    //Se invoca el ws
+
+    G.Q.nfcall(G.soap.createClient, url).then(function (client) {
+        tmp = client;
+        var options = {
+            passwordType: 'PasswordText',
+            hasTimeStamp: false,
+            hasTokenCreated: true,
+            hasNonce: true,
+            mustUnderstand: 1,
+            actor: ''
+        };
+        client.setSecurity(new G.soap.WSSecurity(username, password, options));
+
+        return G.Q.ninvoke(client, obj.funcion, obj.parametros);
+
+    }).spread(function (result, raw, soapHeader) {
+        resultado.result = result;
+        resultado.lastRequest = G.xmlformatter(tmp.lastRequest);
+        G.logError(G.xmlformatter(tmp.lastRequest));
+    }).then(function () {  
+        resultado.sw_factura_dian = '1';
+        callback(false, resultado);
+
+    }).fail(function (err) {
+        err.lastRequest = G.xmlformatter(tmp.lastRequest);
+        obj.error = true;
+        obj.tipo = '0';
+        G.logError(err);
+        err.sw_factura_dian = '0';
+        callback(err);
+
+    }).done();
+}
+
+/*
+ * Andres Mauricio Gonzalez
+ * obj  { parametros : (informacion que se envian al ws),funcion: (nombre de la funcion que ejecuta el ws)}
+ */
+function __FacturacionDianDescarga(obj, callback) {
+    var url = obj.url;
+    var resultado = {};
+    obj.error = false;
+
+
+    var password = G.constants.CREDENCIALESCERTICAMARA().CONTRASENA_DESCARGA; // optional password
     var username = G.constants.CREDENCIALESCERTICAMARA().USUARIO; // optional password  
     var tmp = { lastRequest: {} };
     //Se invoca el ws

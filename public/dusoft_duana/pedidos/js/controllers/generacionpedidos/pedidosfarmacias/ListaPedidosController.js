@@ -512,7 +512,7 @@ define(["angular",
             } else if (!empresaUsuario.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
                 $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para generar pedidos", tipo: "warning"});
             } else {
-                self.buscarPedidos();
+               // self.buscarPedidos();
             }
 
         }]);

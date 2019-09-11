@@ -298,7 +298,7 @@ define(["angular",
              
             
             localStorageService.remove("pedidotemporal");
-            self.buscarPedidos();
+          //  self.buscarPedidos();
 
         }]);
 

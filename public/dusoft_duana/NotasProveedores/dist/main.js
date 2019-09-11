@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-'use strict';
+
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -51870,9 +51870,13 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
             self.limpiar = function () {
                 var session = localStorageService.get("session");
-                // console.log("session ",session);
+                var userId=session.usuario_id;
+                var itemUsuarioId = userId+"OBTENER_USUARIO_POR_ID";
+                var itemParamerizacionUsuario = userId+"OBTENER_PARAMETRIZACION_USUARIO";
+                var itemEmpresaUsuario = userId+"OBTENER_EMPRESAS_USUARIO";
                 var llavesMemoria = localStorageService.keys();
-                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat", "validacionEgresosDetalle"];
+                var llavesPermanentes = ["session", "centro_utilidad_usuario", "bodega_usuario", "chat","mensajeDashboard", "validacionEgresosDetalle",itemUsuarioId,itemParamerizacionUsuario,itemEmpresaUsuario];
+               
 
                 for (var i in llavesMemoria) {
                     var key = llavesMemoria[i];
@@ -52340,7 +52344,190 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             });
 
 
-            self.traerUsuarioPorId(obj_session.usuario_id, function () {
+
+           
+
+
+            var p1 = new Promise((resolve, reject) => {
+                
+                var socketUsuarioId = localStorageService.get(obj_session.usuario_id+"OBTENER_USUARIO_POR_ID");
+                console.log("OBTENER_USUARIO_POR_ID::****** ",socketUsuarioId);
+                if(!socketUsuarioId){
+                    var obj = {
+                        session: session,
+                        data: {
+                            parametrizacion_usuarios: {
+                                usuario_id: obj_session.usuario_id
+                            }
+                        }
+                    };
+                    Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_USUARIO_POR_ID, "POST", obj, function (data) {
+                        var obj = data.obj.parametrizacion_usuarios.usuario;
+
+                        if (obj) {
+                            console.log("guarda en el localstorage ");
+                            //almaceno en el localstorage OBTENER_USUARIO_POR_ID
+                            localStorageService.set(obj_session.usuario_id+"OBTENER_USUARIO_POR_ID", JSON.stringify(obj));
+                            self.setUsuarioActual(obj);
+                            resolve(obj);
+                        }
+                    });
+                }else{
+                   console.log("Entro al localstorage devuelve ::",obj);
+                   self.setUsuarioActual(socketUsuarioId);
+                   resolve(socketUsuarioId);
+                }
+            });
+            
+           
+        
+        
+          p1.then(function(value) {
+              
+              
+                console.log("P1",value);
+               
+                var empresa_id = obj_session.empresa_id;
+
+                if (!empresa_id) {
+                    empresa_id = $scope.Usuario.getEmpresa().getCodigo();
+                }
+            
+            
+            var p3 = new Promise((resolve, reject) => {
+                var socketEmpresaUsuario = localStorageService.get(obj_session.usuario_id+"OBTENER_EMPRESAS_USUARIO");
+                if(!socketEmpresaUsuario){
+                var obj = {
+                    session: session,
+                    data: {
+                        parametrizacion_usuarios: {
+                            usuario_id: obj_session.usuario_id
+                        }
+                    }
+                };
+
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_EMPRESAS_USUARIO, "POST", obj, function (data) {
+                    var obj = data.obj.parametrizacion_usuarios;
+
+                    if (obj) {
+                        localStorageService.set(obj_session.usuario_id+"OBTENER_EMPRESAS_USUARIO",JSON.stringify(obj));
+                        resolve(obj);
+                    }
+                });
+                }else{
+                   
+                   resolve(socketEmpresaUsuario);
+                }
+            });
+
+            var p2 = new Promise((resolve, reject) => {
+                
+                var socketObtenerParametrizacionUsuario = localStorageService.get(obj_session.usuario_id+"OBTENER_PARAMETRIZACION_USUARIO");
+                 if(!socketObtenerParametrizacionUsuario){
+                  
+                   var empresa_id = obj_session.empresa_id;
+             
+                    if (!empresa_id) {
+                    empresa_id = $scope.Usuario.getEmpresa().getCodigo();
+                    }
+                    
+                    
+                var obj = {
+                    session: session,
+                    data: {
+                        parametrizacion_usuarios: {
+                            usuario_id: obj_session.usuario_id,
+                            empresa_id: empresa_id,
+                            limpiar_cache: false
+                        }
+                    }
+                };
+
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO, "POST", obj, function (data) {
+                    var obj = data.obj.parametrizacion_usuarios;
+                    if (obj) {
+                        localStorageService.set(obj_session.usuario_id+"OBTENER_PARAMETRIZACION_USUARIO",JSON.stringify(obj));
+                        resolve(obj);
+                    } else {
+                        resolve('nada');
+                    }
+                });
+                }else{
+                   
+                   resolve(socketObtenerParametrizacionUsuario);
+                }
+            });
+
+            Promise.all([p2, p3]).then(values => {
+                console.log("P2 P3",values);
+                var obj1 = values[0].parametrizacion;
+                
+                if (obj1) {
+                    var modulos = obj1.modulos || [];
+                    self.asignarModulosUsuario(modulos);
+                    self.asignarEmpresasFarmacias(obj1.centros_utilidad);
+                    localStorageService.set("chat", {estado: '0'});
+                } else {
+                }
+
+          
+                var centrosUtilidadEmpresa = $scope.Usuario.getEmpresa().getCentrosUtilidad();
+                var codigoCentroUtilidadUsuario = localStorageService.get("centro_utilidad_usuario");
+                var codigoBodegaUsuario = localStorageService.get("bodega_usuario");
+                
+                 var obj2 = values[1];
+                 var empresas = obj2.empresas || [];
+
+                        //se hace el set correspondiente para el plugin de jstree
+                        for (var i in empresas) {
+                            var empresa = Empresa.get(empresas[i].razon_social, empresas[i].empresa_id);
+
+                            if (empresa.getCodigo() === $scope.Usuario.getEmpresa().getCodigo()) {
+                                empresa.setCentrosUtilidad($scope.Usuario.getEmpresa().getCentrosUtilidad());
+                                $scope.Usuario.setEmpresa(empresa);
+                            }
+
+                            $scope.Usuario.agregarEmpresaUsuario(empresa);
+                        }
+                
+                ciclo(centrosUtilidadEmpresa, codigoCentroUtilidadUsuario, codigoBodegaUsuario);
+
+
+
+                $rootScope.$emit("parametrizacionUsuarioLista", value);
+                var moduloChat = Usuario.getUsuarioActual().objetoModulos["ChatDusoft"];
+                if (moduloChat) {
+                    $scope.permisoGuardarConversacion = moduloChat.opciones["sw_guardar_conversacion"];
+                }
+
+                console.log(values);
+            }, reason => {
+                console.log(reason);
+            });
+            
+        });
+
+         var ciclo = (centrosUtilidadEmpresa, codigoCentroUtilidadUsuario, codigoBodegaUsuario) => {
+                for (var i in centrosUtilidadEmpresa) {
+                    var _centro = centrosUtilidadEmpresa[i];
+
+                    if (_centro.getCodigo() === codigoCentroUtilidadUsuario) {
+                        $scope.onCentroSeleccionado(_centro);
+                        var bodegas = _centro.getBodegas();
+
+                        for (var ii in bodegas) {
+                            if (codigoBodegaUsuario === bodegas[ii].getCodigo()) {
+                                $scope.onBodegaSeleccionada(bodegas[ii]);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            
+
+        /*    self.traerUsuarioPorId(obj_session.usuario_id, function () {
                 var empresa_id = obj_session.empresa_id;
 
                 if (!empresa_id) {
@@ -52388,7 +52575,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     });
 
                 });
-            });
+            });*/
 
             self.buscar_mensajes_usuario = function (callback) {
 
@@ -52396,11 +52583,11 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     session: session,
                     data: {
                         mensaje: {
-                            usuario_id: session.usuario_id
+                            usuario_id: session.usuario_id,
+//                            empresa_id: session.empresaId
                         }
                     }
                 };
-
                 Request.realizarRequest(URL.CONSTANTS.API.MENSAJERIA.CONSULTAR_MENSAJES_USUARIO, "POST", obj, function (data) {
 
                     var obj = data.obj.mensajes;
@@ -52450,12 +52637,8 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
 
 
             //evento de coneccion al socket
-            socket.on("onConnected1", function (datos) {
-                var socketid = datos.socket_id;
-                var socket_session = {
-                    usuario_id: obj_session.usuario_id,
-                    socket_id: socketid
-                };
+//            socket.on("onConnected1", function (datos) {
+            socket.on("onNotificarMensajeria", function (datos) {
                 self.buscar_mensajes_usuario(function (msj) {
                     if (msj.length > 0) {
                         mensaje = msj[0];
@@ -52464,6 +52647,13 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                 });
             });
 
+
+           /* self.buscar_mensajes_usuario(function (msj) {
+                if (msj.length > 0) {
+                    mensaje = msj[0];
+                    self.verMensaje(mensaje);
+                }
+            });*/
 
 
         }]);

@@ -1387,9 +1387,9 @@ define(["angular", "js/controllers",
 
                             that.cargar_permisos();
 
-                            that.buscar_cotizaciones('');
-
-                            that.buscar_pedidos('', '');
+//                            that.buscar_cotizaciones('');
+//
+//                            that.buscar_pedidos('', '');
 
                             $scope.datos_view.inactivarTab = true;
 

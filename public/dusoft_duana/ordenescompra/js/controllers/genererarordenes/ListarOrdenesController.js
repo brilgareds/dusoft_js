@@ -858,7 +858,7 @@ define(["angular", "js/controllers",
                 }
             });
 
-            $scope.buscar_ordenes_compras();
+           // $scope.buscar_ordenes_compras();
             
             $scope.onSeleccionFiltro = function(filtro){
                 $scope.pagina_actual = 1;

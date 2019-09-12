@@ -30,7 +30,7 @@ TemporalesCronjob.prototype.iniciar = function(){
 TemporalesCronjob.prototype.backuptExistencias = function(){
     var that = this;
     //El cronjob correra todos los dias a media noche
-    var job = new G.cronJob('00 00 00 * * *', function () {
+    var job = new G.cronJob('00 00 23 * * *', function () {
         
         var sql = "INSERT INTO existencias_bodega_backup\
                     SELECT * FROM existencias_bodegas where empresa_id in ('03', 'FD') AND existencia > 0;"

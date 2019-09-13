@@ -371,7 +371,7 @@ I008Controller.prototype.listarDocumentoId = function (req, res) {
         tabla = 'inv_bodegas_movimiento_tmp_ingresosdespachos_farmacia';
     }
 
-parametros.tabla = tabla;
+    parametros.tabla = tabla;
 
 
     G.Q.nfcall(that.m_i008.listarDocumentoId, parametros).then(function (result) {
@@ -444,8 +444,15 @@ I008Controller.prototype.crearDocumento = function (req, res) {
             parametros.tabla_2 = tabla_2;
             parametros.modificacion = modificacion;
 
-            return G.Q.nfcall(that.m_i008.agregarMovimientoIngresoDespachoFarmacia, parametros, transaccion);
+            return G.Q.nfcall(that.m_i008.consultarMovimientoIngresoDespachoFarmacia, parametros, transaccion);
 
+        }).then(function (result) {
+
+            if (result.length > 0) {
+                throw 'EFC ya registrado';
+            } else {
+                return G.Q.nfcall(that.m_i008.agregarMovimientoIngresoDespachoFarmacia, parametros, transaccion);
+            }
         }).then(function () {
 //            return G.Q.nfcall(that.m_i008.updateEstadoMovimientoDespachoFarmacia, parametros, transaccion);
 //        }).then(function () {
@@ -494,7 +501,7 @@ I008Controller.prototype.crearDocumento = function (req, res) {
 
     }).then(function (resultado) {
 
-        bodega_o = resultado[0];       
+        bodega_o = resultado[0];
         return G.Q.nfcall(that.m_movimientos_bodegas.getDoc, parametros);
 
     }).then(function (resultado) {
@@ -534,7 +541,7 @@ I008Controller.prototype.crearDocumento = function (req, res) {
 
     }).catch(function (err) {
         console.log("crearDocumento>>>>", err);
-        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento '+ err, 500, {err: err}));
     }).done();
 };
 

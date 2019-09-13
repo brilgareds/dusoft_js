@@ -42,7 +42,7 @@ DocumentoBodegaI008.prototype.listarTraslados = function (parametro, callback) {
                 .orderBy('a.numero', 'desc');
 
     }
-    
+
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -187,7 +187,7 @@ DocumentoBodegaI008.prototype.agregarItem = function (parametros, transaccion, c
             insert({bodega: parametros.bodega, cantidad: parametros.cantidad_enviada, centro_utilidad: parametros.centroUtilidad,
                 codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
                 fecha_vencimiento: parametros.fechaVencimiento, lote: parametros.lote, usuario_id: parametros.usuarioId,
-                item_id_compras: parametros.item_id,total_costo:parametros.total_costo
+                item_id_compras: parametros.item_id, total_costo: parametros.total_costo
             });
 
     if (transaccion)
@@ -401,6 +401,35 @@ DocumentoBodegaI008.prototype.agregarMovimientoIngresoDespachoFarmacia = functio
     }).done();
 };
 
+/**
+ * @author German Galvis
+ * +Descripcion consulta un registro en la tabla inv_bodegas_movimiento_ingresosdespachos_farmacias
+ *  o inv_bodegas_movimiento_ingresosdespachos_clientes
+ * @fecha 2019-09-13 YYYY/MM/DD
+ */
+DocumentoBodegaI008.prototype.consultarMovimientoIngresoDespachoFarmacia = function (parametros, transaccion, callback) {
+
+    var query = G.knex
+            .select()
+            .from(parametros.tabla_1)
+            .where('empresa_despacho', parametros.empresa_origen)
+            .andWhere('prefijo_despacho', parametros.prefijo_despacho)
+            .andWhere('numero_despacho', parametros.numero_despacho);
+
+
+//    console.log('SQL en consultarMovimientoIngresoDespachoFarmacia: ', G.sqlformatter.format(query.toString()));
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function (resultado) {
+        callback(false, resultado);
+    }).catch(function (err) {
+        console.log("Error consultarMovimientoIngresoDespachoFarmacia", err);
+        callback(err);
+    }).done();
+};
+
 
 /**
  * @author German Galvis
@@ -409,7 +438,7 @@ DocumentoBodegaI008.prototype.agregarMovimientoIngresoDespachoFarmacia = functio
  * @fecha 2019-01-15 YYYY/MM/DD
  */
 DocumentoBodegaI008.prototype.updateEstadoMovimientoDespachoFarmacia = function (parametros, transaccion, callback) {
-    
+
     var query = G.knex(parametros.tabla_2)
             .where('empresa_id', parametros.empresa_origen)
             .andWhere('prefijo', parametros.prefijo_despacho)

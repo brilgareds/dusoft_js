@@ -18,6 +18,7 @@ var jsreport = require("jsreport");
 
 var accounting = require("accounting");
 var cacheKey = "dusoft";
+const cors = require ('cors');
 
 if(process.argv.indexOf("cacheKey") !== -1){ 
     cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
@@ -213,6 +214,7 @@ if (cluster.isMaster) {
 */
     //crea servidor http
     var app = express();
+    app.use(cors());
     var server = app.listen(G.settings.server_port);
     //console.log('Server en el Socket es: ',server);
     var container = intravenous.create();

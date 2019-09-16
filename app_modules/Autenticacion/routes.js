@@ -40,7 +40,7 @@ module.exports = function(app, di_container) {
 
     // Events 
     io.sockets.on('connection', function(socket) {
-        
+                
         e_auth.onConnected(socket.id);
 
         socket.on('onActualizarSesion', function(datos) {

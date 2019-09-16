@@ -753,7 +753,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             var p1 = new Promise((resolve, reject) => {
                 
                 var socketUsuarioId = localStorageService.get(obj_session.usuario_id+"OBTENER_USUARIO_POR_ID");
-                console.log("OBTENER_USUARIO_POR_ID::****** ",socketUsuarioId);
+               
                 if(!socketUsuarioId){
                     var obj = {
                         session: session,
@@ -767,7 +767,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         var obj = data.obj.parametrizacion_usuarios.usuario;
 
                         if (obj) {
-                            console.log("guarda en el localstorage ");
+                          
                             //almaceno en el localstorage OBTENER_USUARIO_POR_ID
                             localStorageService.set(obj_session.usuario_id+"OBTENER_USUARIO_POR_ID", JSON.stringify(obj));
                             self.setUsuarioActual(obj);
@@ -785,7 +785,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         
         
           p1.then(function(value) {
-              
+
                 var empresa_id = obj_session.empresa_id;
 
                 if (!empresa_id) {
@@ -898,9 +898,9 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     $scope.permisoGuardarConversacion = moduloChat.opciones["sw_guardar_conversacion"];
                 }
 
-                console.log(values);
+              
             }, reason => {
-                console.log(reason);
+                
             });
             
         });

@@ -529,7 +529,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
             var variosMeses = [];
            // var ItmCero = itemProducto;
             const itemProductoVarios = jsonCopy (itemProducto);
-            itemProductoVarios.producto = 'PRODUCTOS SIN MOVIMIENTO';            
+            itemProductoVarios.producto = 'PRODUCTOS SIN MOVIMIENTO EN 2 MESES';            
             variosMeses.push(itemProductoVarios);
             
             return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, [],rojos,variosMeses,bodega);

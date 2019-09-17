@@ -785,8 +785,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         
         
           p1.then(function(value) {
-                           
-               
+
                 var empresa_id = obj_session.empresa_id;
 
                 if (!empresa_id) {
@@ -859,7 +858,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             });
 
             Promise.all([p2, p3]).then(values => {
-              
                 var obj1 = values[0].parametrizacion;
                 
                 if (obj1) {

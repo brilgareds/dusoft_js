@@ -1,11 +1,11 @@
 var TemporalesCronjob = function() {
    var that = this;
    //Cronjob solo corren en modo produccion
-//    if(G.program.prod){
+    if(G.program.prod){
        
-//        that.iniciar();
+        that.iniciar();
         that.backuptExistencias();
-//    }
+    }
     
 
 
@@ -50,7 +50,7 @@ TemporalesCronjob.prototype.backuptExistencias = function(){
                     where\
                     a.existencia_actual > 0\
                     and a.empresa_id in ('03', 'FD');";
-        console.log("SQL::::::::::::::::::::::",sql);
+
         G.knex.raw(sql).then(function(){
            console.log("**************backuptExistencias****************");
         }).catch(function(err){

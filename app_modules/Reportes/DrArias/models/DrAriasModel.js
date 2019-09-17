@@ -498,7 +498,7 @@ DrAriasModel.prototype.rotacion = function(obj,callback) {
                     ) as a where stock_farmacia > 0 or stock_bodega > 0 or cantidad_total_despachada > 0\
                 )\
             ) as a   \
-";//rotacion_diaria_medipol
+";
     
     var query = G.knex.raw(sql);
 //    console.log(G.sqlformatter.format(query.toString())); 

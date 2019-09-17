@@ -7,6 +7,20 @@ var Reportes = function (drArias, j_reporteDrAriasJobs, eventos_dr_arias, emails
     this.io = socket;
 };
 
+var itemProducto = {
+        codigo_poducto: '',
+        producto: '',
+        molecula: '',
+        laboratorio: '',
+        tipo_producto: '',
+        promedioMes: '',
+        totalStock: '',
+        pedido60Dias: '',
+        stockBodega: '',
+        nivel: '',
+        color: 'MARRON'
+  };
+
 /**
  * @author Andres M Gonzalez
  * +Descripcion controlador que lista todos los datos del Dr Arias
@@ -443,6 +457,10 @@ function __rotacionesBodegas(that, bodega, callback) {
     }
 }
 
+function jsonCopy(src) { 
+  return JSON.parse (JSON.stringify (src)); 
+} 
+
 function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callback) {
     var name;
     var archivoName;
@@ -503,17 +521,35 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
              ordenPor = {orden: 'laboratorio', asc:'asc'};
             }
             name = "Bodega: "+complemento+" - " + listarPlanes[0].nom_bode;
-            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";       
-
-            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, []);//rotacion normal
+            archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";     
+            var rojos = [];
+            const itemProductoRojo = jsonCopy (itemProducto);
+            itemProductoRojo.producto = 'PRODUCTOS CON MOVIMIENTO PARA MAS DE 5 MESES';
+            rojos.push(itemProductoRojo);
+            var variosMeses = [];
+           // var ItmCero = itemProducto;
+            const itemProductoVarios = jsonCopy (itemProducto);
+            itemProductoVarios.producto = 'PRODUCTOS SIN MOVIMIENTO';            
+            variosMeses.push(itemProductoVarios);
+            
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes,ordenPor, [],rojos,variosMeses,bodega);
+            
         }else{
             name = "Bodega: DUANA S.A";
             archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
-            return G.Q.nfcall(__organizaRotacionFarmacia, 0, listarPlanes, []);//rotacion todo Duana
+            return G.Q.nfcall(__organizaRotacionFarmacia, 0, listarPlanes, []);
         }
         
-    }).then(function (resultados) {
-
+    }).then(function (resul) {
+         
+        var resultados = [];
+        
+        if(resul[1].length > 1 && resul[2].length > 1){
+          resultados = resul[0].concat(resul[1],resul[2]);    
+        }else{
+          resultados = resul[0];
+        }
+                
         resultados.nameHoja = "Rotacion";
         resultados.nameArchivo = archivoName;
         resultados.name = name;
@@ -611,11 +647,8 @@ function __rotacionesBodegasMovil(that, bodega, res,callback) {
         bodega.controlRotacionId = respuesta[0]; 
         bodega.swEstadoCorreo = 0;
         notificacion = bodega;
-       
-        //that.io.sockets.emit('onNotificarRotacion', notificacion);  
-        //that.e_dr_arias.onNotificarRotacion(bodega.usuarioId,notificacion);
-//console.log("bodega************* ",bodega);
-throw {msj:"Error"};return;
+
+        throw {msj:"Error"};return;
         return G.Q.ninvoke(that.m_drArias, 'rotacion', bodega);
 
     }).then(function (respuesta) {
@@ -640,7 +673,7 @@ throw {msj:"Error"};return;
         
         name = "Bodega: " + listarPlanes[0].nom_bode;
         archivoName = listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";
-        return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, []);
+        return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, [],[],[],bodega);
         
          farmacias=respuesta;
         if(bodega.bodega!=='03'){
@@ -653,7 +686,7 @@ throw {msj:"Error"};return;
             name = "Bodega: "+complemento+ listarPlanes[0].nom_bode;
             archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";      
        
-            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, ordenPor, []);//rotacion normal
+            return G.Q.nfcall(__organizaRotacion, 0, listarPlanes, ordenPor, [],[],[],bodega);//rotacion normal
         }else{
             name = "Bodega: DUANA S.A";
             archivoName = "DUANA S.A_" + fechaToday + "_" + bodega.meses + ".xlsx";            
@@ -919,12 +952,17 @@ function __creaExcel(data, callback) {
     data.forEach(function (element) {
 
         if (element.color === 'ROJO') {
-            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+            worksheet.addRow([element.codigo_poducto, element.producto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
                 element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
                 color: {argb: 'C42807'}, name: 'Calibri', size: 9
             };
+        }else if (element.color === 'MARRON') {
+            worksheet.addRow([element.codigo_poducto, element.producto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+                element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]).font = {
+                color: {argb: '5A180A'}, name: 'Calibri', size: 10, bold: true
+            };
         } else {
-            worksheet.addRow([element.codigo_poducto, element.poducto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
+            worksheet.addRow([element.codigo_poducto, element.producto, element.molecula, element.laboratorio, element.tipo_producto, element.nivel,
                 element.promedioMes, element.totalStock, element.pedido60Dias, '', element.stockBodega]);
         }
 
@@ -967,18 +1005,20 @@ function __creaExcel(data, callback) {
     });
 };
 
-function __organizaRotacion(index, data,ordenPor, resultado, callback) {
+
+
+function __organizaRotacion(index, data,ordenPor, resultado,valoresEnRojo, valorPromedioCero, bodega, callback) {
   
     var _resultado = data[index];
     index++;
 
     if (_resultado) {
-        callback(false, sortJSON(resultado, ordenPor.orden, ordenPor.asc));
+        callback(false, sortJSON(resultado, ordenPor.orden, ordenPor.asc),sortJSON(valoresEnRojo, ordenPor.orden, ordenPor.asc),sortJSON(valorPromedioCero, ordenPor.orden, ordenPor.asc));//
     }
 
     var resultColumna = {
         codigo_poducto: _resultado.codigo_producto,
-        poducto: _resultado.producto,
+        producto: _resultado.producto,
         molecula: _resultado.molecula,
         laboratorio: _resultado.laboratorio,
         tipo_producto: _resultado.tipo_producto,
@@ -998,12 +1038,20 @@ function __organizaRotacion(index, data,ordenPor, resultado, callback) {
 
     var mayor5 = resultColumna.totalStock >= 5;
 
-    resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
-    resultColumna.color = (resultColumna.color === "ROJO" && resultColumna.promedioMes === 0 && resultColumna.totalStock < 10) ? "N/A" : resultColumna.color;
-
-    resultado.push(resultColumna);
-
-    return __organizaRotacion(index, data,ordenPor, resultado, callback);
+        resultColumna.color = (promedio_dia < 0 && mayor5 === true && (mxm >= 5 || mxm === Infinity)) ? "ROJO" : "N/A";
+        resultColumna.color = (resultColumna.color === "ROJO" && resultColumna.promedioMes === 0 && resultColumna.totalStock < 10) ? "N/A" : resultColumna.color;
+          
+       if(bodega.bodega !=='03' && bodega.empresa!=='FD' && resultColumna.color === "ROJO"){            
+        valoresEnRojo.push(resultColumna);
+       }else{
+         if(bodega.bodega !=='03' && bodega.empresa!=='FD' && resultColumna.promedioMes === 0){
+           valorPromedioCero.push(resultColumna);
+         }else{ 
+           resultado.push(resultColumna);   
+         }
+       }
+    
+    return __organizaRotacion(index, data, ordenPor, resultado, valoresEnRojo,valorPromedioCero, bodega, callback);
 }
 
 function __organizaRotacionFarmacia(index, data, resultado, callback) {

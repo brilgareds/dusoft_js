@@ -1,11 +1,11 @@
 var TemporalesCronjob = function() {
    var that = this;
    //Cronjob solo corren en modo produccion
-    if(G.program.prod){
+//    if(G.program.prod){
        
-        that.iniciar();
+//        that.iniciar();
         that.backuptExistencias();
-    }
+//    }
     
 
 
@@ -29,9 +29,9 @@ TemporalesCronjob.prototype.iniciar = function(){
 //Proceso temporal hasta cuadrar los lapsos de cierre
 TemporalesCronjob.prototype.backuptExistencias = function(){
     //El cronjob correra todos los dias a media noche
-    var job = new G.cronJob('00 00 00 * * *', function () {
-        var d = new Date();
-        var fecha = d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+    var job = new G.cronJob('00 01 * * *', function () {
+        var d = new Date();//08:23
+        var fecha = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
         var sql = "INSERT INTO\
                     existencia_productos_x_dia\
                     select\
@@ -50,7 +50,7 @@ TemporalesCronjob.prototype.backuptExistencias = function(){
                     where\
                     a.existencia_actual > 0\
                     and a.empresa_id in ('03', 'FD');";
-        
+        console.log("SQL::::::::::::::::::::::",sql);
         G.knex.raw(sql).then(function(){
            console.log("**************backuptExistencias****************");
         }).catch(function(err){

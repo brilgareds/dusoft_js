@@ -1856,7 +1856,7 @@ DispensacionHcModel.prototype.profesionalFormula = function (obj, callback) {
             .from('hc_formulacion_antecedentes as hc')
             .leftJoin('profesionales_usuarios AS usu', function () {
 //                this.on("hc.medico_id", "usu.usuario_id");
-                this.on(G.knex.raw("CAST(hc.medico_id AS integer) = usu.usuario_id"));
+                this.on(G.knex.raw("CAST(hc.medico_id AS numeric) = usu.usuario_id"));
             }).leftJoin('profesionales AS pro', function () {
         this.on("usu.tipo_tercero_id", "pro.tipo_id_tercero")
                 .on("usu.tercero_id", "pro.tercero_id");
@@ -1864,7 +1864,6 @@ DispensacionHcModel.prototype.profesionalFormula = function (obj, callback) {
         this.on("pro.tipo_profesional", "tipos.tipo_profesional");
     })
             .where('hc.evolucion_id', obj.evolucionId);
-//    console.log("err [profesionalFormula]:", G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {
@@ -2266,8 +2265,6 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
         if (sumaTotalDispensados === 0) {
 
             G.Q.ninvoke(that, 'consultarPendientesFormula', parametros.evolucion).then(function (resultado) {
-                console.log("consultarPendientesFormula->>>", resultado);
-                console.log("consultarPendientesFormula resultado.length->>>", resultado.length);
                 if (resultado.rows.length > 0) {
                     totalInsertadosPendientes = 1;
                 } else {

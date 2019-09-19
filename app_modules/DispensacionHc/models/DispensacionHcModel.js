@@ -1864,6 +1864,7 @@ DispensacionHcModel.prototype.profesionalFormula = function (obj, callback) {
         this.on("pro.tipo_profesional", "tipos.tipo_profesional");
     })
             .where('hc.evolucion_id', obj.evolucionId);
+//    console.log("err [profesionalFormula]:", G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

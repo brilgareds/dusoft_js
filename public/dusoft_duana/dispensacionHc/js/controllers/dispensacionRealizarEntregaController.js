@@ -270,9 +270,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 AlertService.mostrarMensaje("warning", data.msj);
  
                 socket.on("onNotificarEntregaFormula", function(datos) {
-                     
+                     console.log("dispensacionPendientes",datos.status);
                     if(datos.status === 200){
- 
+            
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
@@ -302,7 +302,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 AlertService.mostrarMensaje("warning", data.msj);
                  
                 socket.on("onNotificarEntregaFormula", function(datos) {
-                     
+                     console.log("dispensacionNormal",datos.status);
                     if(datos.status === 200){
  
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 

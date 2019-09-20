@@ -524,7 +524,7 @@ function __rotacionesBodegasGeneracionExcel(that, bodega,productosLista, callbac
             archivoName = complemento+listarPlanes[0].nom_bode + "_" + fechaToday + "_" + bodega.meses + ".xlsx";     
             var rojos = [];
             const itemProductoRojo = jsonCopy (itemProducto);
-            itemProductoRojo.producto = 'PRODUCTOS CON MOVIMIENTO PARA MAS DE 5 MESES';
+            itemProductoRojo.producto = 'PRODUCTOS CON STOCK PARA MAS DE 5 MESES';
             rojos.push(itemProductoRojo);
             var variosMeses = [];
            // var ItmCero = itemProducto;

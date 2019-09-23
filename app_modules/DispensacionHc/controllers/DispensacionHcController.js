@@ -165,7 +165,7 @@ function __swSincronizarProductos(funcion, parametros, callback) {
 
     }).spread(function (result, raw, soapHeader) {
 
-        G.logError(JSON.stringify(result.return));
+       // G.logError(JSON.stringify(result.return));
 
         if (!result.return["$value"]) {
             throw {msj: "Se ha generado un error", status: 403, obj: {}};
@@ -308,7 +308,7 @@ function __wsSincronizarFormulasDispensadas(parametros,callback){
 
         
 
-     G.logError(result.return.message["$value"]);          
+    // G.logError(result.return.message["$value"]);          
      
         if(!result.return){
             throw {msj:"Se ha generado un error", status:403, obj:{}}; 

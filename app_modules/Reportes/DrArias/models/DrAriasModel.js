@@ -651,7 +651,7 @@ DrAriasModel.prototype.rotacionFarmaciasDuana = function(obj,callback) {
 //     console.log(G.sqlformatter.format(query.toString())); 
 
     query.then(function(resultado) {
-        G.logError(G.sqlformatter.format(query.toString()));
+       // G.logError(G.sqlformatter.format(query.toString()));
 	callback(false, resultado.rows);
     }). catch (function(err) {
 	console.log("Error [listarPlanes] Parametros: ", err);

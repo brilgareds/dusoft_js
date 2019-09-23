@@ -360,7 +360,7 @@ DispensacionHcModel.prototype.listarFormulas = function (obj, callback) {
                 }
             });
 
-    G.logError(G.sqlformatter.format(query.toString()));
+    //G.logError(G.sqlformatter.format(query.toString()));
 
     query.limit(G.settings.limit).
             offset((obj.paginaActual - 1) * G.settings.limit);

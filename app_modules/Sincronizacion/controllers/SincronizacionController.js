@@ -242,7 +242,7 @@ function __FacturacionDian(obj, callback) {
     }).spread(function (result, raw, soapHeader) {
         resultado.result = result;
         resultado.lastRequest = G.xmlformatter(tmp.lastRequest);
-        G.logError(G.xmlformatter(tmp.lastRequest));
+      //  G.logError(G.xmlformatter(tmp.lastRequest));
     }).then(function () {  
         resultado.sw_factura_dian = '1';
         callback(false, resultado);
@@ -290,7 +290,7 @@ function __FacturacionDianDescarga(obj, callback) {
     }).spread(function (result, raw, soapHeader) {
         resultado.result = result;
         resultado.lastRequest = G.xmlformatter(tmp.lastRequest);
-        G.logError(G.xmlformatter(tmp.lastRequest));
+       // G.logError(G.xmlformatter(tmp.lastRequest));
     }).then(function () {  
         resultado.sw_factura_dian = '1';
         callback(false, resultado);

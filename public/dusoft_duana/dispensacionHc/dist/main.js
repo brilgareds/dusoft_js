@@ -55864,9 +55864,9 @@ define('controllers/DispensacionHcDetalleController',["angular", "js/controllers
        $scope.$on('emitAutorizarDispensacionMedicamento', function(e, parametros) { 
            console.log("emitAutorizarDispensacionMedicamento",parametros);
             if(parametros.pendientes === 0){
-                that.listarMedicamentosFormulados(parametros);
+                that.listarMedicamentosFormulados(parametros.evolucionId);
             }else{
-                that.listarMedicamentosFormuladosPendientes(parametros);
+                that.listarMedicamentosFormuladosPendientes(parametros.evolucionId);
             }
         }); 
         

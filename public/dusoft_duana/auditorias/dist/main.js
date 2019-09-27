@@ -46164,7 +46164,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     style: 'ui.tinymce',
                     size: 'lg',
                     keyboard: true,
-                    // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                     templateUrl: '../includes/components/gruposChat/GrupoChat.html',
                     controller: 'GruposChatController',
                     resolve: {
                         conversacion: function () {
@@ -46679,7 +46679,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             var p1 = new Promise((resolve, reject) => {
                 
                 var socketUsuarioId = localStorageService.get(obj_session.usuario_id+"OBTENER_USUARIO_POR_ID");
-                console.log("OBTENER_USUARIO_POR_ID::****** ",socketUsuarioId);
+               
                 if(!socketUsuarioId){
                     var obj = {
                         session: session,
@@ -46693,7 +46693,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                         var obj = data.obj.parametrizacion_usuarios.usuario;
 
                         if (obj) {
-                            console.log("guarda en el localstorage ");
+                          
                             //almaceno en el localstorage OBTENER_USUARIO_POR_ID
                             localStorageService.set(obj_session.usuario_id+"OBTENER_USUARIO_POR_ID", JSON.stringify(obj));
                             self.setUsuarioActual(obj);
@@ -46711,10 +46711,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
         
         
           p1.then(function(value) {
-              
-              
-                console.log("P1",value);
-               
+
                 var empresa_id = obj_session.empresa_id;
 
                 if (!empresa_id) {
@@ -46787,7 +46784,6 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
             });
 
             Promise.all([p2, p3]).then(values => {
-                console.log("P2 P3",values);
                 var obj1 = values[0].parametrizacion;
                 
                 if (obj1) {
@@ -46828,9 +46824,9 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     $scope.permisoGuardarConversacion = moduloChat.opciones["sw_guardar_conversacion"];
                 }
 
-                console.log(values);
+              
             }, reason => {
-                console.log(reason);
+                
             });
             
         });

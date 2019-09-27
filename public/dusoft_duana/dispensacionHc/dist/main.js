@@ -51632,7 +51632,7 @@ define('includes/header/HeaderController',["angular", "js/controllers", "include
                     style: 'ui.tinymce',
                     size: 'lg',
                     keyboard: true,
-                    // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                     templateUrl: '../includes/components/gruposChat/GrupoChat.html',
                     controller: 'GruposChatController',
                     resolve: {
                         conversacion: function () {

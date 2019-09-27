@@ -238,7 +238,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     style: 'ui.tinymce',
                     size: 'lg',
                     keyboard: true,
-                    // templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                     templateUrl: '../includes/components/gruposChat/GrupoChat.html',
                     controller: 'GruposChatController',
                     resolve: {
                         conversacion: function () {

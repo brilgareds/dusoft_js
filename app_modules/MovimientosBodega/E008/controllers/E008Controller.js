@@ -2664,6 +2664,8 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
                 obj.resultadoEncabezado = result.return.descripcion["$value"];
                 if (!result.return.estado["$value"]) {
                     throw {msj: /*result.return.descripcion["$value"]*/"Se ha generado un error sincronizando el documento", status: 403, obj: {}};
+                } else if(result.return.estado["$value"] === '0'){
+                   throw {msj: result.return.descripcion["$value"], status: 403, obj: {}};    
                 } else {
                     obj.temporal = result.return.docTmpId["$value"];
                     obj.tipo = '0';
@@ -2814,11 +2816,13 @@ function __sincronizarDetalleDocumento(obj, callback) {
 
                 //Asi fallen los productos se debe continuar con el proceso
                 if (!result.return.estado["$value"]) {
-                    //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
+                    throw {msj:"Error en la sincronizacion"/*+result.return.descripcion["$value"]*/, status:403, obj:{}}; 
                     obj.error = true;
-                }
-
+                } else if(result.return.estado["$value"] === '0'){
+                   throw {msj: result.return.descripcion["$value"], status: 403, obj: {}};    
+                }else{
                 def.resolve();
+                }
 
             }).fail(function (err) {
         console.log("ERROR __sincronizarDetalleDocumento ", err);

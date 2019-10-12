@@ -1,3 +1,5 @@
+/* global G */
+
 var FacturacionProveedores = function(m_facturacion_proveedores,m_sincronizacion,m_actas_tecnicas) {
     this.m_facturacion_proveedores = m_facturacion_proveedores;
     this.m_sincronizacion = m_sincronizacion;

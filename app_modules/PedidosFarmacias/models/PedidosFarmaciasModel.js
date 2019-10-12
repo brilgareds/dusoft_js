@@ -1028,7 +1028,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
                on (\
                    vopmc.farmacia_id = b.empresa_id\
                    and vopmc.centro_utilidad = b.centro_utilidad\
-                   and vopmc.bodega = a.solicitud_prod_a_bod_ppal_id\
+                   and vopmc.bodega = b.bodega\
                )\
        where\
            id_orden_pedido_origen = a.solicitud_prod_a_bod_ppal_id limit 1\
@@ -1192,7 +1192,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function (responsa
                 }
             });
 
-
+//console.log('SQL en consultaDetalleFacturaGenerada: ', G.sqlformatter.format(query.toString()));
     query.totalRegistros = 0;
     
     query.then(function (total) {

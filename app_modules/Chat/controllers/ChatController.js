@@ -1,4 +1,6 @@
 
+/* global G */
+
 var ChatController = function(mChat, eventChat, mUsuarios) {
     this.mChat = mChat;
     this.eventChat = eventChat;

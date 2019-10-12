@@ -330,35 +330,38 @@ OrdenesCompra.prototype.guardarBodega = function (req, res) {
     var that = this;
     var args = req.body.data;
 
-    var bodegaDestino = args.ordenes_compras.bodegaDestino || undefined;
+//    var bodegaDestino = args.ordenes_compras.bodegaDestino || undefined;
+    var terceroDestino = args.ordenes_compras.terceroDestino || undefined;
     var borrarBodega = args.ordenes_compras.borrarBodega;
     var ante = [];
 
-    if (!bodegaDestino) {
+    if (!terceroDestino) {
         res.send(G.utils.r(req.url, 'La bodega destino no esta definida', 404, {}));
         return;
     }
 
     var parametro = {
-        orden_compra_id: bodegaDestino.ordenCompraId,
+        orden_compra_id: terceroDestino.ordenCompraId,
         usuario_id: req.session.user.usuario_id,
         fecha: new Date()
     };
 
-    if (bodegaDestino && !borrarBodega) {
-        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro).then(function (resultado) {
+    if (terceroDestino && !borrarBodega) {
+//        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro).then(function (resultado) {
+        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino_1, parametro).then(function (resultado) {
             if (resultado.length > 0) {
-                parametro.anterior = JSON.stringify({"bodega": resultado[0].bodega});
+                parametro.anterior = JSON.stringify({"bodega": resultado[0].nombre_destino});
             } else {
                 parametro.anterior = JSON.stringify("");
             }
 
-            return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
+            return G.Q.nfcall(that.m_ordenes_compra.updateDestinoOrden, terceroDestino);
 
         }).then(function (resultado) {
 
             parametro.accion = resultado.accion;
-            return G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro);
+//            return G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro);
+            return G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino_1, parametro);
 
         }).then(function (resultado) {
 
@@ -367,15 +370,15 @@ OrdenesCompra.prototype.guardarBodega = function (req, res) {
              * Fecha: 09-10-2017
              * +Descripcion: se modifica para realizar el log del modulo
              */
-            parametro.actual = JSON.stringify({"bodega": resultado[0].bodega});
-            bodegaDestino.descripcionAccion = 'Inserta Orden de Compra Destino ';
+            parametro.actual = JSON.stringify({"bodega": resultado[0].nombre_destino});
+            terceroDestino.descripcionAccion = 'Inserta Orden de Compra Destino ';
 
             if (parametro.accion === '2') {
-                bodegaDestino.descripcionAccion = 'Modifica Orden de Compra Destino ';
+                terceroDestino.descripcionAccion = 'Modifica Orden de Compra Destino ';
             }
 
             parametro.tabla = 'compras_ordenes_destino';
-            parametro.detalle = JSON.stringify(bodegaDestino);
+            parametro.detalle = JSON.stringify(terceroDestino);
 
             return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs, parametro);
 
@@ -387,11 +390,12 @@ OrdenesCompra.prototype.guardarBodega = function (req, res) {
 
     } else if (borrarBodega) {
 
-        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro).then(function (resultado) {
+//        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino, parametro).then(function (resultado) {
+        G.Q.nfcall(that.m_ordenes_compra.listOrdenCompraDestino_1, parametro).then(function (resultado) {
 
-            parametro.anterior = JSON.stringify({"bodega": +resultado[0].bodega});
+            parametro.anterior = JSON.stringify({"bodega": +resultado[0].nombre_destino});
 
-            return G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId);
+            return G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, terceroDestino.ordenCompraId);
 
         }).then(function (resultado) {
             /*
@@ -404,8 +408,8 @@ OrdenesCompra.prototype.guardarBodega = function (req, res) {
             parametro.tabla = 'compras_ordenes_destino';
 
             parametro.actual = "";
-            bodegaDestino.descripcionAccion = 'Elimina Orden de Compra Destino';
-            parametro.detalle = JSON.stringify(bodegaDestino);
+            terceroDestino.descripcionAccion = 'Elimina Orden de Compra Destino';
+            parametro.detalle = JSON.stringify(terceroDestino);
 
             return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs, parametro);
 
@@ -446,30 +450,13 @@ OrdenesCompra.prototype.insertarOrdenCompra = function (req, res) {
         return;
     }
 
-    /*G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id, null).then(function(rows) {
-     var def = G.Q.defer();
-     numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
-     //Se guarda la ubicacion de la bodega destino de la orden
-     if (bodegaDestino) {
-     bodegaDestino.ordenCompraId = numero_orden;
-     return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
-     } else {
-     def.resolve();
-     }
-     
-     }).then(function(resulado) {
-     res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
-     }).fail(function(err) {
-     console.log("error generado ", err);
-     res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: {}}));
-     }).done();*/
-
     var parametros = {
         unidad_negocio: args.ordenes_compras.unidad_negocio,
         proveedor: args.ordenes_compras.codigo_proveedor,
         empresa_id: args.ordenes_compras.empresa_id,
         observacion: args.ordenes_compras.observacion,
         bodegaDestino: args.ordenes_compras.bodegaDestino,
+        terceroDestino: args.ordenes_compras.terceroDestino,
         usuario_id: req.session.user.usuario_id,
         empresa_pedido: args.ordenes_compras.empresa_pedido,
         centro_utilidad_pedido: args.ordenes_compras.centro_utilidad_pedido,
@@ -789,7 +776,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function (req, res) {
                                 };
                                 that.m_ordenes_compra.consultar_detalle_orden_compra({numero_orden: numero_orden, termino_busqueda: codigo_producto}, function (err, lista_productos) {
                                     lista_productos = lista_productos[0];
-                                    parametro.actual = JSON.stringify({"cantidad_solicitada": lista_productos.cantidad_solicitada, "valor": lista_productos.valor})
+                                    parametro.actual = JSON.stringify({"cantidad_solicitada": lista_productos.cantidad_solicitada, "valor": lista_productos.valor});
                                     that.m_ordenes_compra.insertar_orden_compra_logs(parametro, function (err, rows, result) {
                                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
                                         return;
@@ -1036,7 +1023,7 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function (req, res) {
                         res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
                         return;
                     } else {
-                        var msj = " Orden de Compra Finalizada Correctamente"
+                        var msj = " Orden de Compra Finalizada Correctamente";
                         if (finalizar_orden_compra === '0')
                             msj = ' Orden de Compra en proceso de modificacion';
 
@@ -1082,7 +1069,7 @@ OrdenesCompra.prototype.eliminarNovedad = function (req, res) {
             detalle: JSON.stringify({novedadId: novedadId, descripcion: 'eliminarRegistroNovedad', descripcionAccion: 'elimino registro de novedad'}),
             fecha: new Date(),
             anterior: JSON.stringify({novedadId: novedadId}),
-            actual: JSON.stringify({'novedadId': ''}),
+            actual: JSON.stringify({'novedadId': ''})
         };
 
         return G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_logs, parametro);
@@ -1949,7 +1936,7 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function (req, res) {
 
     }).then(function (resultado) {
 
-        res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: result}));
+        res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: resultado}));
 
     }).fail(function (err) {
         res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
@@ -2287,6 +2274,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function (args) {
             empresa_id: args.ordenes_compras.empresa_id,
             observacion: args.ordenes_compras.observacion,
             bodegaDestino: args.ordenes_compras.bodegaDestino,
+            terceroDestino:  null  ,//args.ordenes_compras.terceroDestino,
             usuario_id: args.ordenes_compras.usuario_id,
             detalle: args.ordenes_compras.productos,
             ordenId: 0,
@@ -2354,7 +2342,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function (args) {
                 req: args.ordenes_compras.req,
                 empresa: args.ordenes_compras.empresa_id,
                 prefijo_documento: args.ordenes_compras.prefijo_documento,
-                numero_documento: args.ordenes_compras.numero_documento,
+                numero_documento: args.ordenes_compras.numero_documento
             }
         };
 
@@ -2427,7 +2415,7 @@ function __generacionAutomatica(datos, callback) {
                 req: datos.data.req,
                 empresa: datos.data.empresa,
                 prefijo_documento: datos.data.prefijo_documento,
-                numero_documento: datos.data.numero_documento,
+                numero_documento: datos.data.numero_documento
             };
 
             return G.Q.nfcall(__ejecutarDocumento, parametros);
@@ -2960,18 +2948,19 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
     //cotizacion, pedidoGenerado
     var that = this;
     var numero_orden;
+//    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra,
+//parametros.unidad_negocio,
+//            parametros.proveedor,
+//            parametros.empresa_id,
+//            parametros.observacion,
+//            parametros.usuario_id,
+//            parametros.empresa_pedido,
+//            parametros.centro_utilidad_pedido,
+//            parametros.bodega_pedido,
+//            parametros.terminarOrden,
+//            null).then(function (rows) {
 
-    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra,
-            parametros.unidad_negocio,
-            parametros.proveedor,
-            parametros.empresa_id,
-            parametros.observacion,
-            parametros.usuario_id,
-            parametros.empresa_pedido,
-            parametros.centro_utilidad_pedido,
-            parametros.bodega_pedido,
-            parametros.terminarOrden,
-            null).then(function (rows) {
+    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra_1,parametros,null).then(function (rows) {
 
         var def = G.Q.defer();
         numero_orden = (rows.length > 0) ? rows[0] : 0;

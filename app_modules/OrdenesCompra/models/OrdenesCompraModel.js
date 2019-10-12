@@ -90,7 +90,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
                 orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
                 orWhere("d.razon_social", G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
                 orWhere(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + obj.termino_busqueda + "%");
-            })
+            });
         } else {
             if (obj.filtro && obj.filtro.proveedor){
                 this.where("c.tercero_id", G.constants.db().LIKE, "%" + obj.termino_busqueda + "%").
@@ -121,7 +121,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(obj, callback) {
                         INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
                     INNER JOIN archivos_novedades_ordenes_compras ccc ON bbb.id = ccc.novedad_orden_compra_id\
                     WHERE aaa.orden_pedido_id = a.numero_orden\
-        ) as total_archivos"),
+        ) as total_archivos")
     ]).from(query);
 
     /*callback(true, query.toSQL());
@@ -166,7 +166,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
     
     var join="";
     if(paremetros.filtraUnidadNegocio !== undefined){
-	where+=" AND a.codigo_unidad_negocio = "+paremetros.filtraUnidadNegocio+"  ";
+	where+=" AND a.codigo_unidad_negocio = '"+paremetros.filtraUnidadNegocio+"'  ";
     }
 
     var sql = " SELECT \
@@ -212,7 +212,9 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE "+where+" AND a.codigo_proveedor_id = :1  \
                 order by 1 DESC ";
-    G.knex.raw(sql, {1:paremetros.codigo_proveedor_id}).then(function(resultado){
+   var query = G.knex.raw(sql, {1:paremetros.codigo_proveedor_id});
+            //console.log('SQL en listar_ordenes_compra_proveedor: ', G.sqlformatter.format(query.toString()));
+            query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -291,7 +293,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
             this.where("a.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%");  
         }
 
-    })
+    });
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit);
         
@@ -311,6 +313,10 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\
                 a.codigo_proveedor_id,\
+                a.tipo_id_tercero as tipo_id_destino,\
+                a.tercero_id as id_destino,\
+                td.direccion as direccion_destino,\
+                td.nombre_tercero as nombre_destino,\
                 e.tipo_id_tercero,\
                 e.tercero_id,\
                 e.nombre_tercero,\
@@ -373,6 +379,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 ) as i on a.codigo_proveedor_id = i.codigo_proveedor_id\
                 left join compras_ordenes_destino k on k.orden_compra_id = a.orden_pedido_id\
                 left join bodegas l on l.bodega = k.bodega and l.empresa_id = k.empresa_id and l.centro_utilidad = k.centro_utilidad\
+                left join terceros td on a.tipo_id_tercero = td.tipo_id_tercero and a.tercero_id = td.tercero_id \
                 WHERE a.orden_pedido_id = :1 ";
     
     G.knex.raw(sql, {1:numero_orden}).then(function(resultado){
@@ -495,7 +502,7 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
        callback(err);
     });
 
-}
+};
 
 /*
  * @autor Andres M. Gonzalez 
@@ -547,6 +554,50 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
      
 };
 
+// Ingresar Cabecera Orden de Compra
+OrdenesCompraModel.prototype.insertar_orden_compra_1 = function(obj, transaccion, callback) {
+
+
+var tercero = {tercero_id :null,
+                tipo_id: null};
+            
+            
+            if(obj.terceroDestino){
+                tercero.tercero_id = obj.terceroDestino.tercero_id;
+                tercero.tipo_id = obj.terceroDestino.tipo_id_tercero;
+            }
+
+
+    var parametros = {
+        orden_pedido_id:G.knex.raw("(select max(orden_pedido_id) +1 from compras_ordenes_pedidos)"),
+        codigo_unidad_negocio:obj.unidad_negocio, codigo_proveedor_id:obj.proveedor, empresa_id:obj.empresa_id,
+        observacion:obj.observacion, usuario_id:obj.usuario_id, estado:'1',
+        fecha_orden:'now()', empresa_id_pedido: obj.empresa_pedido || null, 
+        centro_utilidad_pedido: obj.centro_utilidad_pedido || null, bodega_pedido:obj.bodega_pedido || null,
+        tercero_id: tercero.tercero_id,tipo_id_tercero: tercero.tipo_id
+    };
+    
+    if(obj.terminarOrden){
+        parametros["estado"] = '3';
+        parametros["fecha_verificado"] = 'now()';
+        parametros["fecha_ingreso"] = 'now()';
+        parametros["fecha_recibido"] = 'now()';
+    }
+    
+    var query = G.knex("compras_ordenes_pedidos").returning("orden_pedido_id").insert(parametros);
+         console.log('SQL en insertar_orden_compra_1: ', G.sqlformatter.format(query.toString()));
+    if(transaccion) query.transacting(transaccion);
+     
+    query.then(function(resultado){
+        
+       callback(false, resultado);
+    }).catch(function(err){
+       console.log("erro (/catch) [insertar_orden_compra_1]: ", err);
+       callback(err);
+    });
+     
+};
+
 OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback) {
     var accion='';
     var sql = " SELECT id,empresa_id,centro_utilidad,bodega FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
@@ -563,6 +614,29 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
                   VALUES( :1, :2, :3, :4 )";
            return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
        }
+       
+    }).then(function(resultado){
+        resultado.accion=accion;
+        resultado.anterior=dato;
+        callback(false, resultado);
+	
+    }).catch(function(err){
+       console.log("error [guardarDestinoOrden]: ", err);
+       callback({msj: "Error al guardar el destino de la orden", status: 500});
+    });
+     
+};
+
+OrdenesCompraModel.prototype.updateDestinoOrden = function(parametros, callback) {
+    var accion='';
+    var sql = " SELECT tipo_id_tercero,tercero_id FROM compras_ordenes_pedidos WHERE orden_pedido_id = :1 ";
+    var dato={}; 
+    G.knex.raw(sql, {1:parametros.ordenCompraId}).then(function(resultado){
+       dato=resultado.rows;
+	   accion='2';
+           sql = "UPDATE compras_ordenes_pedidos set tipo_id_tercero = :2, tercero_id = :3 WHERE orden_pedido_id = :1 ";
+           return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.tipo_id_tercero, 3:parametros.tercero_id});
+       
        
     }).then(function(resultado){
         resultado.accion=accion;
@@ -594,9 +668,28 @@ OrdenesCompraModel.prototype.listOrdenCompraDestino = function(parametros, callb
      
 };
 
+OrdenesCompraModel.prototype.listOrdenCompraDestino_1 = function(parametros, callback) {
+
+    var sql = " SELECT td.nombre_tercero as nombre_destino \
+		FROM compras_ordenes_pedidos a\
+		left join terceros td on a.tipo_id_tercero = td.tipo_id_tercero and a.tercero_id = td.tercero_id \
+                WHERE orden_pedido_id = :1 ";
+  
+    G.knex.raw(sql, {1:parametros.orden_compra_id}).then(function(resultado){
+	
+     callback(false, resultado.rows);
+	
+    }).catch(function(err){
+       console.log("error [listOrdenCompraDestino_1]: ", err);
+       callback({msj: "Error al guardar el destino de la orden", status: 500});
+    });
+     
+};
+
 OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
 
-    var sql = " DELETE  FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+//    var sql = " DELETE  FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+    var sql = " UPDATE compras_ordenes_pedidos set tipo_id_tercero = null, tercero_id = null WHERE orden_pedido_id = :1 ";
     
     G.knex.raw(sql, {1:orden}).then(function(resultado){
         callback(false, resultado);
@@ -633,7 +726,7 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
     G.knex.raw(sql, {1:numero_orden, 2:estado}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("actualizar_estado_orden_compra ", err)
+        console.log("actualizar_estado_orden_compra ", err);
        callback(err);
     });
 };
@@ -942,7 +1035,7 @@ OrdenesCompraModel.prototype.guardarNovedades = function(productos, novedad_id, 
             }, 0);
         }
     }).fail(function(err){
-        callback(err)
+        callback(err);
     }).done();
     
 };
@@ -1709,7 +1802,7 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
     G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado);
     }).catch(function(err){
-       console.log("err [modificar_productos_recepcion_mercancia]: ", err)
+       console.log("err [modificar_productos_recepcion_mercancia]: ", err);
        callback(err);
     });
 };
@@ -1847,7 +1940,7 @@ function _generarReporteOrdenes(obj, callback) {
             recipe: "phantom-pdf",
             engine: 'jsrender'
         },
-        data: {ordenes:Object.keys(obj).map(function (key) {return obj[key]})}
+        data: {ordenes:Object.keys(obj).map(function (key) {return obj[key];})}
     }, function(err, response) {
 
         response.body(function(body) {
@@ -1896,7 +1989,7 @@ function __gestionarOrdenesAgrupadas(params, callback){
         centroPedido = '1';
         
         if(encabezado.codigo_unidad_negocio === '4'){  //Bodega Cosmitet
-            bodegaPedido  = '06'
+            bodegaPedido  = '06';
             
         } else { //Bodega Duana
             bodegaPedido = '03';
@@ -1910,7 +2003,7 @@ function __gestionarOrdenesAgrupadas(params, callback){
         encabezado.ordenId = id[0];
         var detalle = {transaccion:params.transaccion, encabezado:encabezado, contexto:params.contexto};
         
-        return G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, detalle)
+        return G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, detalle);
         
     }).then(function(resultado){
        params.index++;

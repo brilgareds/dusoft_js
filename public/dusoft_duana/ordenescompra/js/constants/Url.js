@@ -69,6 +69,9 @@ define(["angular"], function(angular) {
             },
             'BODEGAS' : {
                 'BUSCAR_BODEGAS' : BASE_URL + '/Bodegas/listarBodegasPorTermino'
+            },
+            'TERCEROS' : {
+                'BUSCAR_TERCEROS' : BASE_URL + '/Terceros/GestionTerceros/listarTercerosOrdenes'
             }
             
         }

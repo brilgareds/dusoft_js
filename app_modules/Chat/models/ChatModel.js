@@ -1,3 +1,5 @@
+/* global G */
+
 var ChatModel = function() {
 
 };
@@ -14,7 +16,7 @@ ChatModel.prototype.cambiarEstadoUsuarioGrupo = function(parametros, callback) {
     where('grupo_id', parametros.grupo_id).
     andWhere("usuario_id", parametros.usuario_id).
     update({
-        estado:Number(parametros.estado),
+        estado:Number(parametros.estado)
     }).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
@@ -49,7 +51,7 @@ ChatModel.prototype.guardarGrupo = function(parametros, callback) {
        callback(false, resultado);
        
    }).fail(function(err){
-       callback(err)
+       callback(err);
    });;
 };
 
@@ -105,7 +107,7 @@ ChatModel.prototype.listarGrupos = function(parametros, callback) {
     } 
     
     if(parametros.estado){
-        query.where("estado", parametros.estado)
+        query.where("estado", parametros.estado);
     }
     
     query.limit(G.settings.limit).
@@ -144,7 +146,7 @@ ChatModel.prototype.insertarGrupo = function(parametros, callback) {
         callback(err); 
     });
 
-}
+};
 
 /**
 * @author Eduar Garcia
@@ -221,8 +223,9 @@ ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
     }
     
     query.where("c.estado", "1").
-    orderBy("c.nombre", "ASC").limit(G.settings.limit).
-    offset((parametros.pagina - 1) * G.settings.limit);
+    orderBy("c.nombre", "ASC");
+    //.limit(G.settings.limit).
+    //offset((parametros.pagina - 1) * G.settings.limit);
     
     query.then(function(resultado){
         callback(false, resultado);

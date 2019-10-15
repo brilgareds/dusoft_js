@@ -1,3 +1,5 @@
+/* global G */
+
 var ProductosModel = function() {
 
 
@@ -465,7 +467,7 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, bodega_
     }
 
     if(filtro.validarBodega){
-        sqlAux += " and a.centro_utilidad = '1' and a.bodega = '03' "
+        sqlAux += " and a.centro_utilidad = '1' and a.bodega = '03' ";
     }
 
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
@@ -863,7 +865,7 @@ ProductosModel.prototype.buscarProductosCodificacion = function(parametros, call
         "med.sw_alimento_enteral",
         "med.dias_previos_vencimiento",
         "med.sw_farmacovigilancia",
-        "med.descripcion_alerta",
+        "med.descripcion_alerta"
      ];
     
                           

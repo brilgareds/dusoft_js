@@ -166,6 +166,26 @@ Terceros.prototype.listarTerceros = function(req, res){
     }).done();
 };
 
+Terceros.prototype.listarTercerosOrdenes = function(req, res){
+
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.tercero){
+        res.send(G.utils.r(req.url, 'No se pudo listar los terceros', 404, {}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.mTerceros,'listarTercerosOrdenes', args).then(function(resultado) {
+        
+        res.send(G.utils.r(req.url, 'Consulta de tercero', 200, {terceros: resultado}));
+        
+    }).fail(function(err){
+	console.log("listarTercerosOrdenes ",err);
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error consultando los terceros', 404, {}));
+    }).done();
+};
+
 Terceros.prototype.obtenerTiposDocumentos = function(req, res){
     var that = this;
     var args = req.body.data;

@@ -2324,7 +2324,7 @@ function __validarDumian(identificacion_cliente, tipo_id_cliente) {
             (identificacion_cliente === '900112820' && tipo_id_cliente === "AS") || //LABORATORIO CLINICA AMAN CMS +
             (identificacion_cliente === '800088098' && tipo_id_cliente === "NIT") || //LABORATORIO CLINICA AMAN CMS +
             (identificacion_cliente === '900470642' && tipo_id_cliente === "NIT") || //MEDICAL DUARTE Z.F SAS +
-            (identificacion_cliente === '900228989' && tipo_id_cliente === "NIT") || //CLINICA SANTA SOFIA +
+            //(identificacion_cliente === '900228989' && tipo_id_cliente === "NIT") || //CLINICA SANTA SOFIA +
             (identificacion_cliente === '800179870' && tipo_id_cliente === "NIT")) { //HOSPITAL SAN ANDRES DE TUMACO+
 
         return true;
@@ -2373,6 +2373,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function (req, res) {
                         (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS") ||
                         (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS") ||
                         (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS") ||
+                        (tipoPedido === 1 && pedido.identificacion_cliente === '900228989' && pedido.tipo_id_cliente === "NIT") ||
                         (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente, pedido.tipo_id_cliente))) {
 
 
@@ -2663,6 +2664,8 @@ function __sincronizarEncabezadoDocumento(obj, callback) {
                 obj.resultadoEncabezado = result.return.descripcion["$value"];
                 if (!result.return.estado["$value"]) {
                     throw {msj: /*result.return.descripcion["$value"]*/"Se ha generado un error sincronizando el documento", status: 403, obj: {}};
+                } else if(result.return.estado["$value"] === '0'){
+                   throw {msj: result.return.descripcion["$value"], status: 403, obj: {}};    
                 } else {
                     obj.temporal = result.return.docTmpId["$value"];
                     obj.tipo = '0';
@@ -2813,11 +2816,13 @@ function __sincronizarDetalleDocumento(obj, callback) {
 
                 //Asi fallen los productos se debe continuar con el proceso
                 if (!result.return.estado["$value"]) {
-                    //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
+                    throw {msj:"Error en la sincronizacion"/*+result.return.descripcion["$value"]*/, status:403, obj:{}}; 
                     obj.error = true;
-                }
-
+                } else if(result.return.estado["$value"] === '0'){
+                   throw {msj: result.return.descripcion["$value"], status: 403, obj: {}};    
+                }else{
                 def.resolve();
+                }
 
             }).fail(function (err) {
         console.log("ERROR __sincronizarDetalleDocumento ", err);

@@ -468,38 +468,38 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
             .from(tabla1)
             .join('terceros as c', function () {
                 this.on("a.tipo_id_tercero", "c.tipo_id_tercero")
-                        .on("a.tercero_id", "c.tercero_id")
+                        .on("a.tercero_id", "c.tercero_id");
             }).join('system_usuarios as d', function () {
-        this.on("a.usuario_id", "d.usuario_id")
+        this.on("a.usuario_id", "d.usuario_id");
     }).join('empresas as e', function () {
-        this.on("a.empresa_id", "e.empresa_id")
+        this.on("a.empresa_id", "e.empresa_id");
     }).join('tipo_mpios as f', function () {
         this.on("c.tipo_pais_id", "f.tipo_pais_id")
                 .on("c.tipo_dpto_id", "f.tipo_dpto_id")
-                .on("c.tipo_mpio_id", "f.tipo_mpio_id")
+                .on("c.tipo_mpio_id", "f.tipo_mpio_id");
     }).join('tipo_dptos as g', function () {
         this.on("f.tipo_pais_id", "g.tipo_pais_id")
-                .on("f.tipo_dpto_id", "g.tipo_dpto_id")
+                .on("f.tipo_dpto_id", "g.tipo_dpto_id");
     }).join('tipo_pais as h', function () {
-        this.on("g.tipo_pais_id", "h.tipo_pais_id")
+        this.on("g.tipo_pais_id", "h.tipo_pais_id");
     }).join('tipo_mpios as j', function () {
         this.on("e.tipo_pais_id ", "j.tipo_pais_id")
                 .on("e.tipo_dpto_id", "j.tipo_dpto_id")
-                .on("e.tipo_mpio_id", "j.tipo_mpio_id")
+                .on("e.tipo_mpio_id", "j.tipo_mpio_id");
     }).join('tipo_dptos as k', function () {
         this.on("j.tipo_pais_id", "k.tipo_pais_id")
-                .on("j.tipo_dpto_id", "k.tipo_dpto_id")
+                .on("j.tipo_dpto_id", "k.tipo_dpto_id");
     }).join('tipo_pais as l', function () {
-        this.on("k.tipo_pais_id", "l.tipo_pais_id")
+        this.on("k.tipo_pais_id", "l.tipo_pais_id");
     }).join(query, function () {
         this.on("m.empresa_id", "a.empresa_id")
                 .on("m.prefijo", "a.prefijo")
-                .on("m.factura_fiscal", "a.factura_fiscal")
+                .on("m.factura_fiscal", "a.factura_fiscal");
     }).join('documentos as i', function () {
         this.on("a.empresa_id", "i.empresa_id")
-                .on("a.documento_id", "i.documento_id")
+                .on("a.documento_id", "i.documento_id");
     }).where(function () {
-        this.andWhere('a.empresa_id', filtro.empresa_id)
+        this.andWhere('a.empresa_id', filtro.empresa_id);
 
         //
         if (filtro.factura_fiscal !== "") {
@@ -512,11 +512,11 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
 
             this.andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");
             if (filtro.tipoIdTercero !== "") {
-                this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero)
+                this.andWhere('a.tipo_id_tercero', filtro.tipoIdTercero);
             }
         }
         if (filtro.nombreTercero !== "") {
-            this.andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%")
+            this.andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%"); 
         }
 
         if (estado === 0) {
@@ -530,12 +530,12 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
 
         consulta.join('vnts_vendedores as b', function () {
             this.on("a.tipo_id_vendedor", "b.tipo_id_vendedor")
-                    .on("a.vendedor_id", "b.vendedor_id")
+                    .on("a.vendedor_id", "b.vendedor_id");
         });
 
         consulta.join('ventas_ordenes_pedidos as pedi', function () {
             this.on("pedi.empresa_id", "a.empresa_id")
-                    .on("pedi.pedido_cliente_id", "a.pedido_cliente_id")
+                    .on("pedi.pedido_cliente_id", "a.pedido_cliente_id");
             //.on("pedi.tercero_id", "a.tercero_id")
             //.on("pedi.tipo_id_tercero", "a.tipo_id_tercero")
 
@@ -618,14 +618,14 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
             .leftJoin("logs_facturacion_clientes_ws_fi as b ", function () {
                 this.on("a.prefijo", "b.prefijo")
                         .on("a.factura_fiscal", "b.factura_fiscal")
-                        .on(G.knex.raw("b.prefijo_nota IS NULL"))
+                        .on(G.knex.raw("b.prefijo_nota IS NULL"));
             }).orderBy("fecha_registro", "desc");
 
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit);
 //    console.log(G.sqlformatter.format(query.toString()));
     query.then(function (facturas) {
-        callback(false, facturas)
+        callback(false, facturas);
     }).catch(function (err) {
         console.log("err [listarFacturasGeneradas] ", err);
         callback({err: err, msj: "Error al consultar la lista de las facturas generadas"});
@@ -661,7 +661,7 @@ FacturacionClientesModel.prototype.consultarDocumentosPedidos = function (obj, c
             .as("b");
 
     query.then(function (resultado) {
-        callback(false, resultado)
+        callback(false, resultado);
     }).catch(function (err) {
         console.log("err [consultarDocumentosPedidos]:", err);
         callback({err: err, msj: "Error al consultar la lista de documentos"});
@@ -703,7 +703,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
             .select().from("inv_bodegas_movimiento_despachos_clientes as x")
             .where(function () {
                 this.andWhere("x.factura_gener", '0')
-                        .andWhere("x.empresa_id", obj.empresaId)
+                        .andWhere("x.empresa_id", obj.empresaId);
                 if (obj.pedidoClienteId !== "") {
                     this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
                 }
@@ -712,19 +712,19 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
     var query = G.knex.select(columnQuery)
             .from("ventas_ordenes_pedidos as a")
             .join(subQuery1, function () {
-                this.on("a.pedido_cliente_id", "b.pedido_cliente_id")
+                this.on("a.pedido_cliente_id", "b.pedido_cliente_id");
             })
             .join("terceros as c", function () {
                 this.on("a.tipo_id_tercero", "c.tipo_id_tercero")
-                        .on("a.tercero_id", "c.tercero_id")
+                        .on("a.tercero_id", "c.tercero_id");
             })
             .join("vnts_vendedores as d", function () {
                 this.on("a.tipo_id_vendedor", "d.tipo_id_vendedor")
-                        .on("a.vendedor_id", "d.vendedor_id")
+                        .on("a.vendedor_id", "d.vendedor_id");
             })
             .where(function () {
 
-                this.andWhere('estado_factura_fiscal', 'not in', 2)
+                this.andWhere('estado_factura_fiscal', 'not in', 2);
                 if (obj.tipoIdTercero !== "") {
                     this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)
                             .andWhere('a.tercero_id', obj.terceroId);
@@ -735,17 +735,17 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                     var fechaFinal = G.moment(obj.fechaFinal).format(formato);
                     var _fechaFinal = G.moment(fechaFinal).add(1, 'day').format(formato);
                     this.where(G.knex.raw("a.fecha_registro between '" + obj.fechaInicial + "' and '" + _fechaFinal + "'"))
-                            .andWhere("estado_proceso", obj.estadoProcesoPedido)
+                            .andWhere("estado_proceso", obj.estadoProcesoPedido);
                 }
-            }).orderBy("a.fecha_registro", 'desc')
+            }).orderBy("a.fecha_registro", 'desc');
 
     if (obj.procesoFacturacion === 1) {
-        query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit)
+        query.limit(G.settings.limit).offset((obj.paginaActual - 1) * G.settings.limit);
     }
 //    console.log(G.sqlformatter.format(query.toString()));
     //inv_facturas_xconsumo_tmp_d
     query.then(function (resultado) {
-        callback(false, resultado)
+        callback(false, resultado);
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);
         callback({err: err, msj: "Error al consultar la lista de los pedidos"});
@@ -806,9 +806,9 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function (obj, ca
         "c.porc_iva"];
 
     if (obj.estado === 1) {
-        parametros.push(G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"))
+        parametros.push(G.knex.raw("distinct on (a.codigo_producto, a.fecha_vencimiento, a.lote, a.valor_unitario) a.prefijo"));
         parametros.push(G.knex.raw("round(sum(a.cantidad))::integer as cantidad_despachada")),
-                parametros.push(G.knex.raw("round(sum(coalesce(a.cantidad_pendiente_por_facturar, 0)))::integer as cantidad_pendiente_por_facturar")),
+                parametros.push(G.knex.raw("round(sum(coalesce(a.cantidad_pendiente_por_facturar, 0)))::integer as cantidad_pendiente_por_facturar"));
                 // parametros.push(G.knex.raw("split_part(coalesce(fc_precio_producto_contrato_cliente('"+obj.contratoClienteId+"', a.codigo_producto, '"+obj.empresa_id+"' ),'0'), '@', 1) as valor_unitario")),       
                 parametros.push(G.knex.raw("coalesce((SELECT sum(cantidad_despachada)\
             FROM inv_facturas_xconsumo_tmp_d as tmp\
@@ -822,12 +822,12 @@ FacturacionClientesModel.prototype.obtenerDetallePorFacturar = function (obj, ca
     }
 
     parametros.push("a.numero"),
-            parametros.push("a.valor_unitario"),
-            parametros.push("a.codigo_producto"),
-            parametros.push(G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion")),
-            parametros.push("a.lote"),
-            parametros.push(G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento")),
-            parametros.push("c.porc_iva")
+            parametros.push("a.valor_unitario");
+            parametros.push("a.codigo_producto");
+            parametros.push(G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion"));
+            parametros.push("a.lote");
+            parametros.push(G.knex.raw("TO_CHAR(a.fecha_vencimiento,'yyyy-mm-dd') as fecha_vencimiento"));
+            parametros.push("c.porc_iva");
 
     if (obj.estado === 0) {
         parametros.push(G.knex.raw("(round(a.cantidad) - coalesce(a.cantidad_facturada, 0)) as cantidad"));
@@ -1627,6 +1627,7 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                 numero: obj.numero,
                 codigo_producto: obj.codigo_producto,
                 lote: obj.lote,
+                fecha_vencimiento: obj.fecha_vencimiento,
                 numero_caja: obj.numero_caja})
             .update({cantidad_facturada:
                         G.knex.select([G.knex.raw('coalesce(cantidad_facturada, 0)+' + obj.cantidad_facturada)])
@@ -1635,6 +1636,7 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                             numero: obj.numero,
                             codigo_producto: obj.codigo_producto,
                             lote: obj.lote,
+                            fecha_vencimiento: obj.fecha_vencimiento,
                             numero_caja: obj.numero_caja
                         }),
                 cantidad_pendiente_por_facturar:
@@ -1646,6 +1648,7 @@ FacturacionClientesModel.prototype.actualizarCantidadFacturadaXConsumo = functio
                             numero: obj.numero,
                             codigo_producto: obj.codigo_producto,
                             lote: obj.lote,
+                            fecha_vencimiento: obj.fecha_vencimiento,
                             numero_caja: obj.numero_caja
                         })
             })
@@ -2501,8 +2504,8 @@ FacturacionClientesModel.prototype.consultarTemporalFacturaConsumoBarranquilla =
         G.knex.raw("to_char(fecha_registro,'DD/MM/YYYY') as fecha_registro"),
         "sw_facturacion",
         "empresa_id",
-        G.knex.raw("case when sw_facturacion =1 then 'FACTURADO' \
-        when sw_facturacion=0 then 'SIN FACTURAR'\
+        G.knex.raw("case when sw_facturacion ='1' then 'FACTURADO' \
+        when sw_facturacion='0' then 'SIN FACTURAR'\
         end as descripcion_estado_facturacion"),
         "prefijo",
         "factura_fiscal",

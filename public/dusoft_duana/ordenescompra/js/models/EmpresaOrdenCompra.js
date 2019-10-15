@@ -15,6 +15,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaOrdenCompra.novedades_mercancia = [];
             EmpresaOrdenCompra.autorizacionCompras=[];
             EmpresaOrdenCompra.bodegasDestino = [];
+            EmpresaOrdenCompra.tercerosDestino = [];
 
 
 
@@ -50,6 +51,18 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             
             EmpresaOrdenCompra.vaciarBodegas = function(){
                 this.bodegasDestino = [];
+            };
+                        
+            EmpresaOrdenCompra.agregarTercero = function(tercero) {
+                this.tercerosDestino.push(tercero);
+            };
+
+            EmpresaOrdenCompra.getTerceros = function() {
+                return this.tercerosDestino;
+            };
+            
+            EmpresaOrdenCompra.vaciarTerceros = function(){
+                this.tercerosDestino = [];
             };
             
             EmpresaOrdenCompra.get_proveedor = function(codigo_proveedor_id) {

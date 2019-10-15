@@ -34681,7 +34681,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64
@@ -67485,7 +67485,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     producto.setBodegaProducto(data.bodega_origen_producto);
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
 
-                    var valorIva = Number(producto.get_iva())
+                    var valorIva = Number(producto.get_iva());
                     var valorTotalIva = (producto.get_precio_venta() * valorIva) / 100;
                     var precioVentaIva = producto.get_precio_venta() + valorTotalIva;
                     producto.setPrecioVentaIva(precioVentaIva);
@@ -67623,20 +67623,20 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
 
                 $scope.Empresa.limpiar_clientes();
                 clientes.forEach(function (data) {
-                    if((data.tipo_id_tercero != 'AS' && data.tipo_id_tercero != 'CE' && data.tercero_id.length > 6) || 
-                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '505')|| 
-                            (data.tipo_id_tercero === 'CC' && data.tercero_id === '84')|| 
-                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '258')||
-                            (data.tipo_id_tercero === 'NIT' && data.tercero_id === '17')||
-                            (data.tipo_id_tercero === 'CC' && data.tercero_id === '1083')||
-                            (data.tipo_id_tercero === 'CE' && data.tercero_id === '10365')){
-                    var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
-                    cliente.setDepartamento(data.departamento);
-                    cliente.setMunicipio(data.municipio);
-                    cliente.set_contrato(data.contrato_cliente_id);
-                    cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
-                    cliente.setEstadoContrato(data.estado_contrato);
-                    $scope.Empresa.set_clientes(cliente);
+                    if ((data.tipo_id_tercero != 'AS' && data.tipo_id_tercero != 'CE' && data.tercero_id.length > 6) ||
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '505') ||
+                            (data.tipo_id_tercero === 'CC' && data.tercero_id === '84') ||
+                            (data.tipo_id_tercero === 'AS' && data.tercero_id === '258') ||
+                            (data.tipo_id_tercero === 'NIT' && data.tercero_id === '17') ||
+                            (data.tipo_id_tercero === 'CC' && data.tercero_id === '1083') ||
+                            (data.tipo_id_tercero === 'CE' && data.tercero_id === '10365')) {
+                        var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                        cliente.setDepartamento(data.departamento);
+                        cliente.setMunicipio(data.municipio);
+                        cliente.set_contrato(data.contrato_cliente_id);
+                        cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
+                        cliente.setEstadoContrato(data.estado_contrato);
+                        $scope.Empresa.set_clientes(cliente);
                     }
                 });
 
@@ -67726,7 +67726,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
             ];
 
             $scope.seleccionarAprobacion = function (model) {
-                $scope.Pedido.setEstado(model.id.id)
+                $scope.Pedido.setEstado(model.id.id);
 
             };
 
@@ -67741,10 +67741,14 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
                     disabled = true;
-                
-//                console.log("$scope.Pedido.getCliente().getId()",$scope.Pedido);
-                if ($scope.Pedido.getCliente().getId() === '805027743' && ($scope.Pedido.sede === undefined || $scope.Pedido.sede === null ))
+
+                //console.log("$scope.Pedido.getCliente().getId()", $scope.Pedido);
+                if ($scope.Pedido.getCliente().getId() === '805027743' && ($scope.Pedido.sede === undefined || $scope.Pedido.sede === null))
                     disabled = true;
+
+                if ($scope.Pedido.getCliente().getId() === '830080649' || $scope.Pedido.getCliente().getId() === '830023202') {
+                    disabled = true;
+                }
 
 
                 // Cartera
@@ -67935,7 +67939,8 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                             usuario_name: Sesion.getUsuarioActual().usuario
                         }
                     };
-                };
+                }
+                ;
 
                 Request.realizarRequest(url, "POST", obj, function (data) {
 
@@ -68344,7 +68349,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                         return newArray;
                     }
 
-                    $scope.datos_view.productosInvalidosSinRepetir = removeDuplicates($scope.datos_view.productosInvalidos, "codigo_producto")
+                    $scope.datos_view.productosInvalidosSinRepetir = removeDuplicates($scope.datos_view.productosInvalidos, "codigo_producto");
 
                     if ($scope.datos_view.productosInvalidosSinRepetir.length > 0) {
                         $scope.opts = {
@@ -68408,38 +68413,38 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
             };
             //Aceptar la cotizacion
             $scope.aceptar_cotizacion = function () {
-                that.consultarEstadoCotizacion(function(data){
-                    console.log('data.obj.pedidos_clientes.estado',data.obj.pedidos_clientes.estado);
-                   if(data.obj.pedidos_clientes.estado !== '5'){
-                    var cotizacion = localStorageService.get("cotizacion");
+                that.consultarEstadoCotizacion(function (data) {
+                    
+                    if (data.obj.pedidos_clientes.estado !== '5') {
+                        var cotizacion = localStorageService.get("cotizacion");
 
-                    if (cotizacion) {
-                        var parametros = {busqueda: cotizacion.numero_cotizacion,
-                            pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0}
-                        };
-                        localStorageService.add("terminoBusqueda", parametros);
-                    }
-
-                    that.actualizarCabeceraPedidoCliente(function (respuesta) {
-                        if (respuesta) {
-                            $state.go('ListarPedidosClientes');
+                        if (cotizacion) {
+                            var parametros = {busqueda: cotizacion.numero_cotizacion,
+                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0}
+                            };
+                            localStorageService.add("terminoBusqueda", parametros);
                         }
 
-                    });
-                  }else{
-                      AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya tiene Pedido");
-                      $state.go('ListarPedidosClientes');
-                  }
-                });                 
+                        that.actualizarCabeceraPedidoCliente(function (respuesta) {
+                            if (respuesta) {
+                                $state.go('ListarPedidosClientes');
+                            }
+
+                        });
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya tiene Pedido");
+                        $state.go('ListarPedidosClientes');
+                    }
+                });
             };
-            
+
             that.consultarEstadoCotizacion = function (callback) {
-                   if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
                     var parametros = {
                         session: $scope.session,
                         data: {
-                               pedidos_clientes: {cotizacion: $scope.Pedido.get_numero_cotizacion()}
-                              }
+                            pedidos_clientes: {cotizacion: $scope.Pedido.get_numero_cotizacion()}
+                        }
                     };
                     // se consulta si necesita autorizacion de cartera
                     Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION, "POST", parametros, function (data) {
@@ -68447,7 +68452,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                         if (data.status === 200) {
                             console.log("data");
                             callback(data);
-                        }else{
+                        } else {
                             callback(false);
                         }
                     });
@@ -68856,13 +68861,13 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
              * @fecha 17/11/2016
              */
             that.autorizarCotizacionCartera = function (aprobado, denegar) {
-                $scope.mensaje="";  
-                console.log('-----',aprobado);
-                if(aprobado === 4){
-                    $scope.mensaje="Desea Denegar la cotizacion ?";  
-                  }else{
-                    $scope.mensaje="Desea Autorizar la cotizacion ?";  
-                  }
+                $scope.mensaje = "";
+                
+                if (aprobado === 4) {
+                    $scope.mensaje = "Desea Denegar la cotizacion ?";
+                } else {
+                    $scope.mensaje = "Desea Autorizar la cotizacion ?";
+                }
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -68884,22 +68889,22 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     controller: ["$scope", "$modalInstance", function ($scope, $modalInstance) {
 
                             $scope.confirmar = function () {
-                                        if(aprobado === 4){
-                                            $scope.desaprobarCartera(4, 0);
-                                        }else{
-                                        that.confirmacionExistenciaPedido(function(valida){
+                                if (aprobado === 4) {
+                                    $scope.desaprobarCartera(4, 0);
+                                } else {
+                                    that.confirmacionExistenciaPedido(function (valida) {
 
-                                            if(valida){                                              
-                                                that.generarPedidoCartera(aprobado, denegar);
-                                            }else{
-                                                if($scope.Pedido.get_numero_pedido()=== undefined)
+                                        if (valida) {
+                                            that.generarPedidoCartera(aprobado, denegar);
+                                        } else {
+                                            if ($scope.Pedido.get_numero_pedido() === undefined)
                                                 AlertService.mostrarVentanaAlerta("Error", "La cotizacion ya fue aprobada");
-                                                $state.go('ListarPedidosClientes');
-                                            }
-                                        });
-                                       }
-                                        $modalInstance.close();
-                                  
+                                            $state.go('ListarPedidosClientes');
+                                        }
+                                    });
+                                }
+                                $modalInstance.close();
+
                             };
                             $scope.close = function () {
                                 $modalInstance.close();
@@ -68908,30 +68913,30 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            
-            that.confirmacionExistenciaPedido = function(callback){
-                console.log("$scope.Pedido.get_numero_pedido()",$scope.Pedido.get_numero_pedido());
-                        if($scope.Pedido.get_numero_pedido()!== undefined){
-                            console.log("ok");
-                             callback(true);
+
+            that.confirmacionExistenciaPedido = function (callback) {
+                
+                if ($scope.Pedido.get_numero_pedido() !== undefined) {
+                    
+                    callback(true);
+                }
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            numeroCotizacion: $scope.Pedido.get_numero_cotizacion()
                         }
-                           var obj = {
-                                    session: $scope.session,
-                                    data: {
-                                        pedidos_clientes: {
-                                            numeroCotizacion: $scope.Pedido.get_numero_cotizacion()
-                                        }
-                                    }
-                                };
-                  Request.realizarRequest(API.PEDIDOS.CLIENTES.CONFIRMACION_EXISTENCIA_PEDIDO, "POST", obj, function (data) {                      
-                      console.log('data::::',data);
-                      if(data.status === 200){
-                          callback(true); 
-                      }else{
-                          callback(false); 
-                      }
-                     
-                  });
+                    }
+                };
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONFIRMACION_EXISTENCIA_PEDIDO, "POST", obj, function (data) {
+                    
+                    if (data.status === 200) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+
+                });
             };
 
 
@@ -68987,7 +68992,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     if (data.status === 200) {
                         callback(true, data.obj.pedidos_clientes.lista_productos);
                     } else {
-                        callback(false, data.obj.pedidos_clientes)
+                        callback(false, data.obj.pedidos_clientes);
                     }
 
                 });
@@ -69025,7 +69030,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
-                })
+                });
 
             };
 
@@ -69195,7 +69200,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     }
                     callback(true);
                 });
-            }
+            };
 
             /**
              * @author Cristian Manuel Ardila Troches
@@ -69247,8 +69252,8 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                         } else {
                             that.generarObservacionCartera(aprobado);
                         }
-                    }else{
-                    console.log("oho");
+                    } else {
+                        console.log("oho");
                     }
                 });
 
@@ -69322,7 +69327,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                             $scope.volver_cotizacion();
                         }
                     } else {
-                        
+
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         //$scope.volver_cotizacion();
                     }
@@ -69397,7 +69402,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                     vendedor: {tipo_id_tercero: $scope.Pedido.get_vendedor().getTipoId(), id: $scope.Pedido.get_vendedor().getId()},
                     cliente: {
                         tipo_id_tercero: $scope.Pedido.getCliente().getTipoId(),
-                        id: $scope.Pedido.getCliente().getId(),
+                        id: $scope.Pedido.getCliente().getId()
                     },
                     usuario_id: $scope.session.usuario_id
                 };
@@ -69420,7 +69425,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                         that.consultarDetalleProductosCotizacion('1', bodegaCotizacion, function (estado, resultado) {
 
                             if (estado && resultado[0].estado_multiple_pedido === "1") {
-                                that.generarPedidoModuloCliente(1, resultado, 0, 0)
+                                that.generarPedidoModuloCliente(1, resultado, 0, 0);
                             } else {
                                 that.generarPedidoClientesAutorizados();
                             }
@@ -69472,7 +69477,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                                     that.generarPedidoClientesAutorizados();
 
                                 }
-                            })
+                            });
 
                         } else {
                             that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado, aprobado, denegar);
@@ -69535,10 +69540,10 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                             vendedor: {tipo_id_tercero: $scope.Pedido.get_vendedor().getTipoId(), id: $scope.Pedido.get_vendedor().getId()}, //pedir a Mauricio
                             cliente: {
                                 tipo_id_tercero: $scope.Pedido.getCliente().getTipoId(), ///se determina que todos los clientes farmacia quedan creados con AS 
-                                id: $scope.Pedido.getCliente().getId(),
+                                id: $scope.Pedido.getCliente().getId()
                             },
                             fecha_registro: fecha,
-                            usuario_id: $scope.session.usuario_id,
+                            usuario_id: $scope.session.usuario_id
                             //pedido_multiple_farmacia:0
                         };
 
@@ -69613,7 +69618,7 @@ define('controllers/generacionpedidos/pedidosclientes/PedidosClienteController',
                 });
 
 
-            }
+            };
             /**
              * 
              */

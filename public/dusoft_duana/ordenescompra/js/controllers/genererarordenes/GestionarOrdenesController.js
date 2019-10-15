@@ -3,6 +3,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
     "controllers/genererarordenes/GestionarProductosController",
     "controllers/genererarordenes/CalcularValoresProductoController",
     "models/BodegaOrdenCompra",
+    "models/TerceroOrdenCompra",
 ], function(angular, controllers) {
 
     controllers.controller('GestionarOrdenesController', [
@@ -17,12 +18,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "UsuarioOrdenCompra",
         "Usuario",
         "BodegaOrdenCompra",
+        "TerceroOrdenCompra",
         function($scope, $rootScope, Request, 
                  $modal, API, socket, $timeout, 
                  AlertService, localStorageService, $state, 
                  $filter, OrdenCompra, Empresa, 
                  Proveedor, UnidadNegocio, Producto, 
-                 Usuario, Sesion, BodegaOrdenCompra) {
+                 Usuario, Sesion, BodegaOrdenCompra,TerceroOrdenCompra) {
 
             var that = this;
 
@@ -118,46 +120,77 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
             
-            that.buscarBodegas = function(terminoBusqueda){
+//            that.buscarBodegas = function(terminoBusqueda){
+//                
+//                var obj = {
+//                    session: $scope.session,
+//                    data: {
+//                        bodegas: {
+//                            termino: terminoBusqueda
+//                        }
+//                    }
+//                };
+//
+//                Request.realizarRequest(API.BODEGAS.BUSCAR_BODEGAS, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                        that.renderBodegas(data.obj);
+//                    }
+//                });
+//            };
+//            
+//            that.renderBodegas = function(data){
+//                 $scope.Empresa.vaciarBodegas();
+//                 var _bodegas = data.bodegas || null;
+//                 
+//                 
+//                 for(var i in _bodegas){
+//                     var _bodega = _bodegas[i];
+//                     var bodega = BodegaOrdenCompra.get(_bodega.descripcion, _bodega.bodega_id);
+//                     bodega.setEmpresaId(_bodega.empresa_id).setCentroUtilidad(_bodega.centro_utilidad).
+//                     setUbicacion(_bodega.ubicacion);
+//                     
+//                     $scope.Empresa.agregarBodega(bodega);
+//                 }                 
+//            };
+            
+            that.buscarTerceros = function(terminoBusqueda){
                 
                 var obj = {
-                    session: $scope.session,
-                    data: {
-                        bodegas: {
-                            termino: terminoBusqueda
-                        }
-                    }
-                };
+                            session: $scope.session,
+                            data: {
+                                tercero: {
+                                    terminoBusqueda:terminoBusqueda,
+                                    paginacion: false
+                                }
+                                }
+                        };
 
-                Request.realizarRequest(API.BODEGAS.BUSCAR_BODEGAS, "POST", obj, function(data) {
+                Request.realizarRequest(API.TERCEROS.BUSCAR_TERCEROS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        that.renderBodegas(data.obj);
+                        that.renderTerceros(data.obj);
                     }
                 });
             };
             
-            that.renderBodegas = function(data){
-                 $scope.Empresa.vaciarBodegas();
-                 var _bodegas = data.bodegas || null;
+            that.renderTerceros = function(data){
+                 $scope.Empresa.vaciarTerceros();
+                 var _terceros = data.terceros || null;
                  
-                 
-                 for(var i in _bodegas){
-                     var _bodega = _bodegas[i];
-                     var bodega = BodegaOrdenCompra.get(_bodega.descripcion, _bodega.bodega_id);
-                     bodega.setEmpresaId(_bodega.empresa_id).setCentroUtilidad(_bodega.centro_utilidad).
-                     setUbicacion(_bodega.ubicacion);
-                     
-                     $scope.Empresa.agregarBodega(bodega);
+                 for(var i in _terceros){
+                     var _tercerp = _terceros[i];
+                     var tercero = TerceroOrdenCompra.get(_tercerp.nombre_tercero, _tercerp.direccion, _tercerp.tipo_id_tercero, _tercerp.tercero_id, _tercerp.telefono);
+                     $scope.Empresa.agregarTercero(tercero);
                  }                 
             };
             
-            that.guardarBodegaDestino = function(borrar, callback){
-                var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
-                var bodegaDestino = {
-                    bodega : bodegaSeleccionada.getCodigo(),
-                    empresaId : bodegaSeleccionada.getEmpresaId(),
-                    centroUtilidad : bodegaSeleccionada.getCentroUtilidad(),
+            that.guardarTerceroDestino = function(borrar, callback){
+                var terceroSeleccionado = $scope.orden_compra.getTerceroSeleccionado();
+                
+                var terceroDestino = {
+                    tercero_id : terceroSeleccionado.id,
+                    tipo_id_tercero : terceroSeleccionado.tipo_id_tercero,
                     ordenCompraId : $scope.numero_orden
                 };
                 
@@ -165,12 +198,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            bodegaDestino: bodegaDestino,
+                            terceroDestino: terceroDestino,
                             borrarBodega : borrar
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.ORDENES_COMPRA.GUARDAR_BODEGA, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -181,6 +214,36 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
+            
+//            that.guardarBodegaDestino = function(borrar, callback){
+//                var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
+//                var bodegaDestino = {
+//                    bodega : bodegaSeleccionada.getCodigo(),
+//                    empresaId : bodegaSeleccionada.getEmpresaId(),
+//                    centroUtilidad : bodegaSeleccionada.getCentroUtilidad(),
+//                    ordenCompraId : $scope.numero_orden
+//                };
+//                
+//                var obj = {
+//                    session: $scope.session,
+//                    data: {
+//                        ordenes_compras: {
+//                            bodegaDestino: bodegaDestino,
+//                            borrarBodega : borrar
+//                        }
+//                    }
+//                };
+//
+//                Request.realizarRequest(API.ORDENES_COMPRA.GUARDAR_BODEGA, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                         AlertService.mostrarMensaje("warning", "Orden Modificada correctamente");
+//                         if(callback){
+//                            callback();
+//                         }
+//                    }
+//                });
+//            };
 
             $scope.buscar_orden_compra = function(callback) {
 
@@ -219,13 +282,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.valor_total = datos.total;
                         
                         // Bodega destino
-                        
                         if(datos.bodega_destino){
                             var bodegaSeleccionada = BodegaOrdenCompra.get(datos.descripcion_bodega_destino, datos.bodega_destino);
                             bodegaSeleccionada.setEmpresaId(datos.empresa_destino).setCentroUtilidad(datos.centro_utilidad_destino).
                             setUbicacion(datos.ubicacion_bodega_destino);
                             
                             $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
+                        }
+                        // Tercero destino
+                        if(datos.id_destino){
+                            var tercero = TerceroOrdenCompra.get(datos.nombre_destino, datos.direccion_destino, datos.tipo_id_destino, datos.id_destino, null);
+                          
+                            $scope.orden_compra.setTerceroSeleccionado(tercero);
                         }
 
                         callback(true);
@@ -235,19 +303,36 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
             
-            $scope.onSeleccionBodega = function(bodegaSeleccionada){
+//            $scope.onSeleccionBodega = function(bodegaSeleccionada){
+//                
+//                $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
+//                
+//                if ($scope.numero_orden > 0) {
+//                    that.guardarBodegaDestino(false);
+//                }
+//            };
+            
+            $scope.onSeleccionTercero = function(terceroSeleccionado){
                 
-                $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
+                $scope.orden_compra.setTerceroSeleccionado(terceroSeleccionado);
                 
                 if ($scope.numero_orden > 0) {
-                    that.guardarBodegaDestino(false);
+                    that.guardarTerceroDestino(false);
                 }
             };
             
-            $scope.onRemoverDestino = function(){
-                if ($scope.numero_orden > 0 && $scope.orden_compra.getBodegaSeleccionada()) {
-                    that.guardarBodegaDestino(true, function(){
-                        $scope.orden_compra.setBodegaSeleccionada(null);
+//            $scope.onRemoverDestino = function(){
+//                if ($scope.numero_orden > 0 && $scope.orden_compra.getBodegaSeleccionada()) {
+//                    that.guardarBodegaDestino(true, function(){
+//                        $scope.orden_compra.setBodegaSeleccionada(null);
+//                    });
+//                }
+//            };
+            
+            $scope.onRemoverDestinoTercero = function(){
+                if ($scope.numero_orden > 0 && $scope.orden_compra.getTerceroSeleccionado()) {
+                    that.guardarTerceroDestino(true, function(){
+                        $scope.orden_compra.setTerceroSeleccionado(null);
                     });
                 }
             };
@@ -314,12 +399,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             
-            $scope.onBuscarBodegas = function(terminoBusqueda){
+//            $scope.onBuscarBodegas = function(terminoBusqueda){
+//                if(terminoBusqueda.length < 3){
+//                    return;
+//                }
+//                
+//                that.buscarBodegas(terminoBusqueda);
+//                
+//            };
+            
+            $scope.onBuscarTerceros = function(terminoBusqueda){
                 if(terminoBusqueda.length < 3){
                     return;
                 }
                 
-                that.buscarBodegas(terminoBusqueda);
+                that.buscarTerceros(terminoBusqueda);
                 
             };
 
@@ -465,14 +559,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.insertar_cabercera_orden_compra = function(callback) {
                 var bodegaDestino = null;
+                var terceroDestino = null;
                     
                 var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
+                var terceroSeleccionado = $scope.orden_compra.getTerceroSeleccionado();
                         
                 if(bodegaSeleccionada){
                     bodegaDestino = {
                         bodega : bodegaSeleccionada.getCodigo(),
                         empresaId : bodegaSeleccionada.getEmpresaId(),
                         centroUtilidad : bodegaSeleccionada.getCentroUtilidad()
+                    };
+                }
+                
+                if(terceroSeleccionado){
+                    terceroDestino = {
+                        tercero_id : terceroSeleccionado.id,
+                        tipo_id_tercero : terceroSeleccionado.tipo_id_tercero
                     };
                 }
                 
@@ -484,10 +587,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         ordenes_compras: {
                             unidad_negocio: $scope.orden_compra.get_unidad_negocio().get_codigo(),
                             codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
-                            //empresa_id: '03',
                             empresa_id: empresa.getCodigo(),
                             observacion: $scope.orden_compra.get_observacion(),
                             bodegaDestino : bodegaDestino,
+                            terceroDestino: terceroDestino,
                             empresa_pedido : empresa.getCodigo(),
                             centro_utilidad_pedido : empresa.getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_pedido : empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
@@ -859,7 +962,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         $scope.buscar_detalle_orden_compra();
 
-                        $sc$scope.progresoArchivo = 0;ope.activar_tab.tab_productos = true;
+                        $scope.progresoArchivo = 0;$scope.activar_tab.tab_productos = true;
                         $scope.progresoArchivo = 0;
                         $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
                         $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;

@@ -1,4 +1,6 @@
 
+/* global G */
+
 var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, productos, pedidos_clientes, m_pedidos, terceros, emails,m_autorizaciones) {
 
     this.m_pedidos_farmacias = pedidos_farmacias;
@@ -319,7 +321,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
     } else {
 
-    if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
+    if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '5' ||  
         cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '9' || cabecera_pedido[0].estado_actual_pedido === '10') {
 
     that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
@@ -885,7 +887,7 @@ function dynamicSort(properties) {
  */
 
 function recurseObjProp(root, leafs, index) {
-    index ? index : index = 0
+    index ? index : index = 0;
     var upper = root;
     lower = upper[leafs[index]];
     if (!lower) {
@@ -1314,7 +1316,7 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_farmacias, "asignar_responsables_pedidos", numero_pedido, '0', responsable, usuario_id);
 
         } else {
-            res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Encabezado', 500, {error: err}));
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Encabezado', 500, {error: 'err'}));
             return;
         }
 
@@ -2472,7 +2474,7 @@ PedidosFarmacias.prototype.actualizarEstadoPedidoFarmacia = function(req, res) {
     var parametros = {
 			numeroPedido: args.pedidos_farmacias.numeroPedido,
 			usuarioId: usuarioId,			    
-			empresaId: args.pedidos_farmacias.empresa_id,			    
+			empresaId: args.pedidos_farmacias.empresa_id			    
 	             };
     G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_estado_actual_pedido", args.pedidos_farmacias.numeroPedido,args.pedidos_farmacias.estado).then(function(respuesta) {
 
@@ -3235,7 +3237,7 @@ function __agruparProductosPorTipo(productos,productosAgrupados,index, callback)
    
    if(!producto){     
        
-       callback(false, productosAgrupados)
+       callback(false, productosAgrupados);
    }
   
    if(producto){  
@@ -3454,7 +3456,7 @@ function __consultarStockProductoFarmacia(that, empresa_destino_id, bodega_desti
 
         callback(err, producto);
       }); 
-    })
+    });
     
 }
 

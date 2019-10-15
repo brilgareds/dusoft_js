@@ -4105,7 +4105,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
          *               estado (Estado del Pedido ) 1
          *               estado_pedido (Estado de solicitud ) 0
          */
-        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '5' || resultado[0].estado_pedido === '8' || resultado[0].estado_pedido === '9')) {
+        if ((resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8' || resultado[0].estado_pedido === '9')) || (resultado[0].estado === '3' && resultado[0].estado_pedido === '5')) {
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
 
         } else {
@@ -4113,7 +4113,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
         }
     }).then(function (resultado) {
 
-        if (resultado.length > 0 && resultado[0].valido === '1') {
+        if ((resultado.length > 0 && resultado[0].valido === '1') || producto.cantidadPendienteDespachar === '0') {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
         } else {

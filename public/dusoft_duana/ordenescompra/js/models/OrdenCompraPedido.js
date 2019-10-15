@@ -16,6 +16,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.productoSeleccionado = '';
                 this.localizacion = '';
                 this.bodegaSeleccionada;
+                this.terceroSeleccionado;
                 this.nombreBodega = "";
                 this.recepcionId = null;
                 this.totalNovedades = 0;
@@ -216,6 +217,14 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             
             OrdenCompraPedido.prototype.getBodegaSeleccionada = function() {
                 return this.bodegaSeleccionada;
+            };
+            
+            OrdenCompraPedido.prototype.setTerceroSeleccionado = function(terceroSeleccionado) {       
+                this.terceroSeleccionado = terceroSeleccionado ;    
+            };
+            
+            OrdenCompraPedido.prototype.getTerceroSeleccionado = function() {
+                return this.terceroSeleccionado;
             };
             
             OrdenCompraPedido.prototype.setNombreBodega = function(nombreBodega) {

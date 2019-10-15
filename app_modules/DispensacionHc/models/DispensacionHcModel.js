@@ -340,8 +340,9 @@ DispensacionHcModel.prototype.listarFormulas = function (obj, callback) {
                         obj.filtro.tipo === '2' ||
                         obj.filtro.tipo === '3') && obj.terminoBusqueda !== "") {
 
-                    this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
-                            .andWhere(G.knex.raw("a.transcripcion_medica = " + obj.filtro.tipo));
+                    //this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
+                    this.andWhere(G.knex.raw("a.numero_formula = " + obj.terminoBusqueda))
+                            .andWhere(G.knex.raw("a.transcripcion_medica = '" + obj.filtro.tipo + "'"));
                 }
 
                 if (obj.filtro.tipo === 'EV' && obj.terminoBusqueda !== "") {

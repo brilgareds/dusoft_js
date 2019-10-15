@@ -20,7 +20,7 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
         G.knex.raw("a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as farmacia_cliente "),
         G.knex.raw("a.pedido_cliente_id AS numero_pedido"),
         G.knex.raw("b.direccion AS direccion"),
-        G.knex.raw("b.telefono AS telefono"), 
+        G.knex.raw("b.telefono AS telefono") 
         
    ];
    
@@ -29,7 +29,7 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
         G.knex.raw("e.empresa_id || ' - '|| e.razon_social ||' ::: '||c.descripcion as farmacia_cliente "),
         G.knex.raw("a.solicitud_prod_a_bod_ppal_id AS numero_pedido"),
         G.knex.raw("e.direccion AS direccion"),
-        G.knex.raw("e.telefonos AS telefono"), 
+        G.knex.raw("e.telefonos AS telefono") 
         
    ]; 
                    
@@ -37,32 +37,32 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
             .from("inv_bodegas_movimiento_despachos_clientes as a")
               .innerJoin("terceros as b", function () {
                 this.on("a.tipo_id_tercero","b.tipo_id_tercero")
-                    .on("a.tercero_id","b.tercero_id")
+                    .on("a.tercero_id","b.tercero_id");
             
             }).where(function(){
                 this.andWhere("a.empresa_id", obj.empresa_id)
                     .andWhere("a.prefijo", obj.prefijo)
-                    .andWhere("a.numero", obj.numero)
+                    .andWhere("a.numero", obj.numero);
             }).as("a");
     
     var subQueryB = G.knex.select(columnSubQueryB)
             .from("inv_bodegas_movimiento_despachos_farmacias as a")
               .join("solicitud_productos_a_bodega_principal as b", function () {
-                this.on("a.solicitud_prod_a_bod_ppal_id","b.solicitud_prod_a_bod_ppal_id")
+                this.on("a.solicitud_prod_a_bod_ppal_id","b.solicitud_prod_a_bod_ppal_id");
             }).join("bodegas as c", function(){
                 this.on("b.farmacia_id","c.empresa_id")
                     .on("b.centro_utilidad","c.centro_utilidad")
-                    .on("b.bodega","c.bodega")
+                    .on("b.bodega","c.bodega");
             }).join("centros_utilidad as d", function(){
                 this.on("c.centro_utilidad","d.centro_utilidad")
-                    .on("c.empresa_id","d.empresa_id")
+                    .on("c.empresa_id","d.empresa_id");
             }).join("empresas as e", function(){
-                this.on("d.empresa_id","e.empresa_id")
+                this.on("d.empresa_id","e.empresa_id");
                     
             }).where(function(){
                 this.andWhere("a.empresa_id", obj.empresa_id)
                     .andWhere("a.prefijo", obj.prefijo)
-                    .andWhere("a.numero", obj.numero)
+                    .andWhere("a.numero", obj.numero);
             }).as("b");
     
     
@@ -70,7 +70,7 @@ DocumentoBodegaE008.prototype.consultarDatosAdicionales = function(obj, callback
             .from(subQueryA)
             .unionAll(function(){
                 this.select('*')
-                 .from(subQueryB)                           
+                 .from(subQueryB) ;                          
             });
     
    query.then(function(resultado) {
@@ -105,16 +105,16 @@ function __camposObtenerDocumentoBodega(observacion, tablaPedidos){
                 this.on("a.documento_id", "m.documento_id")
                         .on("a.empresa_id"," m.empresa_id")
                         .on("a.centro_utilidad"," m.centro_utilidad")
-                        .on("a.bodega"," m.bodega")
+                        .on("a.bodega"," m.bodega");
             }).join('documentos as b', function(){
                 this.on("b.documento_id","a.documento_id")
-                        .on("b.empresa_id","a.empresa_id")
+                        .on("b.empresa_id","a.empresa_id");
             }).join("tipos_doc_generales as c", function(){
-                this.on("c.tipo_doc_general_id","b.tipo_doc_general_id")
+                this.on("c.tipo_doc_general_id","b.tipo_doc_general_id");
             }).leftJoin(tablaPedidos, function(){
                 this.on("m.empresa_id","dc.empresa_id")
                     .on("m.prefijo","dc.prefijo")
-                    .on("m.numero","dc.numero")
+                    .on("m.numero","dc.numero");
             });  
         return consulta;
 }
@@ -163,27 +163,27 @@ DocumentoBodegaE008.prototype.obtenerDocumentoBodega = function(obj, callback){
                             "inv_bodegas_movimiento_despachos_farmacias as dc");
                             
     var queryA = consultaMovimientoClientes.leftJoin("ventas_ordenes_pedidos as vop", function(){
-                this.on("dc.pedido_cliente_id","vop.pedido_cliente_id")
+                this.on("dc.pedido_cliente_id","vop.pedido_cliente_id");
             }).where(function(){
                 this.andWhere("m.empresa_id", obj.empresa_id)
                     .andWhere("m.prefijo", obj.prefijo)
-                    .andWhere("m.numero", obj.numero)
+                    .andWhere("m.numero", obj.numero);
             }).as("a");
          
                                                        
     var queryB = consultaMovimientoFarmacias.leftJoin("solicitud_productos_a_bodega_principal as sp", function(){
-                this.on("dc.solicitud_prod_a_bod_ppal_id","sp.solicitud_prod_a_bod_ppal_id")
+                this.on("dc.solicitud_prod_a_bod_ppal_id","sp.solicitud_prod_a_bod_ppal_id");
             }).where(function(){
                 this.andWhere("m.empresa_id", obj.empresa_id)
                     .andWhere("m.prefijo", obj.prefijo)
-                    .andWhere("m.numero", obj.numero)
+                    .andWhere("m.numero", obj.numero);
             }).as("b");
             
     var queryUnion = G.knex.select('*')
             .from(queryA)
             .union(function(){
                 this.select('*')
-                 .from(queryB)                           
+                 .from(queryB);                           
             }).as("y");
     
     var query =  G.knex.column(column)
@@ -389,7 +389,7 @@ DocumentoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                on (\
                    vopmc.farmacia_id = b.empresa_id\
                    and vopmc.centro_utilidad = b.centro_utilidad\
-                   and vopmc.bodega = a.pedido_cliente_id\
+                   and vopmc.bodega = b.bodega\
                )\
        where\
            id_orden_pedido_origen = a.pedido_cliente_id limit 1\
@@ -1687,7 +1687,7 @@ DocumentoBodegaE008.prototype.obtenerBodegaMovimiento = function(obj, callback){
         console.log("err [obtenerBodegaMovimiento]:", err);
         callback(err);
     });
-}
+};
 
 DocumentoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
      
@@ -1806,9 +1806,9 @@ DocumentoBodegaE008.prototype.consultarJustificacionDespachos = function (obj,ca
         .where(function(){
             this.andWhere("empresa_id",obj.empresa_id)
             .andWhere("prefijo", obj.prefijo)
-            .andWhere("numero", obj.numero)
+            .andWhere("numero", obj.numero);
         }).then(function (resultado) {
-            callback(false, resultado)
+            callback(false, resultado);
         }).catch(function (err) {
         console.log("err [consultarJustificacionDespachos]:", err);
         callback({err:err, msj: "Error al consultar la justificacion de despachos"});   

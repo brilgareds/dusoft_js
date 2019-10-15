@@ -29,7 +29,7 @@ TemporalesCronjob.prototype.iniciar = function(){
 //Proceso temporal hasta cuadrar los lapsos de cierre
 TemporalesCronjob.prototype.backuptExistencias = function(){
     //El cronjob correra todos los dias a media noche
-    var job = new G.cronJob('00 01 * * *', function () {
+    var job = new G.cronJob('00 21 * * *', function () {
         var d = new Date();//08:23
         var fecha = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
         var sql = "INSERT INTO\

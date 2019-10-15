@@ -146,13 +146,23 @@ define(["angular", "js/controllers",
 
             that.insertar_cabercera_orden_compra = function(callback) {
                 var bodegaDestino = null;
+                var terceroDestino = null;
+                
                 var bodegaSeleccionada =  $scope.orden_compra.getBodegaSeleccionada();
+                var terceroSeleccionado = $scope.orden_compra.getTerceroSeleccionado();
                 
                 if(bodegaSeleccionada){
                     bodegaDestino = {
                         bodega : bodegaSeleccionada.getCodigo(),
                         empresaId : bodegaSeleccionada.getEmpresaId(),
                         centroUtilidad : bodegaSeleccionada.getCentroUtilidad()
+                    };
+                }
+                
+                if(terceroSeleccionado){
+                    terceroDestino = {
+                        tercero_id : terceroSeleccionado.id,
+                        tipo_id_tercero : terceroSeleccionado.tipo_id_tercero
                     };
                 }
                 
@@ -164,10 +174,10 @@ define(["angular", "js/controllers",
                         ordenes_compras: {
                             unidad_negocio: $scope.orden_compra.get_unidad_negocio().get_codigo(),
                             codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
-                            //empresa_id: '03',
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             observacion: $scope.orden_compra.get_observacion(),
                             bodegaDestino : bodegaDestino,
+                            terceroDestino: terceroDestino,
                             empresa_pedido : empresa.getCodigo(),
                             centro_utilidad_pedido : empresa.getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_pedido : empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()

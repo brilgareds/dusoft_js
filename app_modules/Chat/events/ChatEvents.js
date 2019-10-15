@@ -1,4 +1,6 @@
 
+/* global G */
+
 var ChatEvents = function(socket, m_chat) {
 
     this.io = socket;
@@ -24,7 +26,7 @@ ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmi
                     mensaje.socket_id = _session.socket_id;
                     mensaje.usuarioEmite = usuarioEmite;
                     that.io.to(_session.socket_id).emit('onNotificarMensaje', {mensaje: mensaje});
-                    that.io.to(_session.socket_id).emit('onNotificacionChat', {mensaje: mensaje});
+                    //that.io.to(_session.socket_id).emit('onNotificacionChat', {mensaje: mensaje});
 
                     //Se valida que la notificacion no se envie de forma repetida ni al usuario que la emitio
                     if(usuariosANotificar.indexOf(_usuario.usuario_id) === -1 && parseInt(_usuario.usuario_id) !== parseInt(usuarioEmite)){

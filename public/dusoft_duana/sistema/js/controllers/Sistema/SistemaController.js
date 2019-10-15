@@ -122,6 +122,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 icono: 'glyphicon glyphicon-list-alt',
                 btn_function: 'querysActiveInDb'
             };
+            let btn_dbIdlesDefault = {
+                title: 'Conexiones',
+                name: 'IdlesInDb',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'querysActiveInDb'
+            };
             let btn_killQuery = {
                 title: 'Kill Query',
                 name: 'killQuery',

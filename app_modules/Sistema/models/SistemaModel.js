@@ -31,7 +31,7 @@ SistemaModel.prototype.querysActiveInDb = (obj, callback) => {
             G.knex.raw('query_start as fecha'),
             'current_query as consulta'
         ])
-        .whereNot('current_query', 'ILIKE', '%<IDLE>%')
+        .where(G.knex.raw(`not current_query ILIKE '%<IDLE>%'`))
         .andWhere(G.knex.raw(`not current_query ILIKE '%from system_usuarios_sesiones%'`))
         .andWhere(G.knex.raw(`not current_query ILIKE '%update system_usuarios_sesiones%'`))
         .andWhere(G.knex.raw('procpid != pg_backend_pid()'))

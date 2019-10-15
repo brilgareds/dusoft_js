@@ -1,0 +1,558 @@
+<wsdl:definitions name="TerceroClasificacionFiscalGet" targetNamespace="http://ws.tercerodusoft.domain.org/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://ws.tercerodusoft.domain.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <wsdl:types>
+      <xs:schema elementFormDefault="unqualified" targetNamespace="http://ws.tercerodusoft.domain.org/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+         <xs:element name="autoretenedorfuente" type="tns:autoretenedorfuente"/>
+         <xs:element name="autoretenedorfuenteResponse" type="tns:autoretenedorfuenteResponse"/>
+         <xs:element name="autoretenedorica" type="tns:autoretenedorica"/>
+         <xs:element name="autoretenedoricaResponse" type="tns:autoretenedoricaResponse"/>
+         <xs:element name="autoretenedoriva" type="tns:autoretenedoriva"/>
+         <xs:element name="autoretenedorivaResponse" type="tns:autoretenedorivaResponse"/>
+         <xs:element name="datosClasificacionFiscalTercero" type="tns:datosClasificacionFiscalTercero"/>
+         <xs:element name="datosClasificacionFiscalTerceroId" type="tns:datosClasificacionFiscalTerceroId"/>
+         <xs:element name="datosClasificacionFiscalTerceroIdResponse" type="tns:datosClasificacionFiscalTerceroIdResponse"/>
+         <xs:element name="datosClasificacionFiscalTerceroResponse" type="tns:datosClasificacionFiscalTerceroResponse"/>
+         <xs:element name="impuestoretecree" type="tns:impuestoretecree"/>
+         <xs:element name="impuestoretecreeResponse" type="tns:impuestoretecreeResponse"/>
+         <xs:element name="impuestoretefuente" type="tns:impuestoretefuente"/>
+         <xs:element name="impuestoretefuenteResponse" type="tns:impuestoretefuenteResponse"/>
+         <xs:element name="impuestoretefuentecercano" type="tns:impuestoretefuentecercano"/>
+         <xs:element name="impuestoretefuentecercanoResponse" type="tns:impuestoretefuentecercanoResponse"/>
+         <xs:element name="impuestoretefuentecodigo" type="tns:impuestoretefuentecodigo"/>
+         <xs:element name="impuestoretefuentecodigoResponse" type="tns:impuestoretefuentecodigoResponse"/>
+         <xs:element name="impuestoreteica" type="tns:impuestoreteica"/>
+         <xs:element name="impuestoreteicaResponse" type="tns:impuestoreteicaResponse"/>
+         <xs:element name="impuestoreteiva" type="tns:impuestoreteiva"/>
+         <xs:element name="impuestoreteivaResponse" type="tns:impuestoreteivaResponse"/>
+         <xs:element name="impuestoreteivacercano" type="tns:impuestoreteivacercano"/>
+         <xs:element name="impuestoreteivacercanoResponse" type="tns:impuestoreteivacercanoResponse"/>
+         <xs:element name="impuestoreteivacodigo" type="tns:impuestoreteivacodigo"/>
+         <xs:element name="impuestoreteivacodigoResponse" type="tns:impuestoreteivacodigoResponse"/>
+         <xs:element name="listimpuestoica" type="tns:listimpuestoica"/>
+         <xs:element name="listimpuestoicaResponse" type="tns:listimpuestoicaResponse"/>
+         <xs:element name="retenciontercero" type="tns:retenciontercero"/>
+         <xs:element name="retencionterceroResponse" type="tns:retencionterceroResponse"/>
+         <xs:element name="tipotercero" type="tns:tipotercero"/>
+         <xs:element name="tipoterceroResponse" type="tns:tipoterceroResponse"/>
+         <xs:complexType name="datosClasificacionFiscalTerceroId">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="idempresa" type="xs:int"/>
+               <xs:element minOccurs="0" name="idtercero" type="xs:int"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="datosClasificacionFiscalTerceroIdResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="datosClasificacionFiscalTerceroIdResult" type="tns:datosClasificacionFiscal"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="datosClasificacionFiscal">
+            <xs:sequence>
+               <xs:element name="autoica" type="xs:boolean"/>
+               <xs:element name="autoiva" type="xs:boolean"/>
+               <xs:element name="autorenta" type="xs:boolean"/>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="codtipociiunuevo" type="xs:string"/>
+               <xs:element minOccurs="0" name="codtipociiuviejo" type="xs:string"/>
+               <xs:element minOccurs="0" name="codtipocontribuyente" type="xs:string"/>
+               <xs:element minOccurs="0" name="codtiporetencion" type="xs:string"/>
+               <xs:element name="declarante" type="xs:boolean"/>
+               <xs:element name="estadoclasfiscal" type="xs:boolean"/>
+               <xs:element minOccurs="0" name="idclasfiscal" type="xs:int"/>
+               <xs:element minOccurs="0" name="idtercero" type="xs:int"/>
+               <xs:element name="manejaica" type="xs:boolean"/>
+               <xs:element minOccurs="0" name="usuario" type="xs:int"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="autoretenedorfuente">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="autoretenedorfuenteResponse">
+            <xs:sequence>
+               <xs:element name="autoretenedorfuenteResult" type="xs:boolean"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretefuentecercano">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="baseretefuente" type="xs:double"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretefuentecercanoResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoretefuentecercanoResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestos">
+            <xs:sequence>
+               <xs:element name="base" type="xs:double"/>
+               <xs:element minOccurs="0" name="codigo" type="xs:string"/>
+               <xs:element minOccurs="0" name="codigocuenta" type="xs:string"/>
+               <xs:element minOccurs="0" name="descripcion" type="xs:string"/>
+               <xs:element minOccurs="0" name="descripcioncuenta" type="xs:string"/>
+               <xs:element minOccurs="0" name="error" type="xs:string"/>
+               <xs:element minOccurs="0" name="idcuenta" type="xs:int"/>
+               <xs:element minOccurs="0" name="idimpuesto" type="xs:int"/>
+               <xs:element name="tasa" type="xs:float"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="listimpuestoica">
+            <xs:sequence/>
+         </xs:complexType>
+         <xs:complexType name="listimpuestoicaResponse">
+            <xs:sequence>
+               <xs:element maxOccurs="unbounded" minOccurs="0" name="listimpuestoicaResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="datosClasificacionFiscalTercero">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codigoempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="idtercero" type="xs:int"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="datosClasificacionFiscalTerceroResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="datosClasificacionFiscalTerceroResult" type="tns:datosClasificacionFiscal"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretefuente">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="baseretefuente" type="xs:double"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretefuenteResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoretefuenteResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteica">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteicaResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoreteicaResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="tipotercero">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="tipoterceroResponse">
+            <xs:sequence>
+               <xs:element maxOccurs="unbounded" minOccurs="0" name="tipoterceroResult" type="tns:standardServiceResult"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="standardServiceResult">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codigo" type="xs:string"/>
+               <xs:element minOccurs="0" name="descripcion" type="xs:string"/>
+               <xs:element minOccurs="0" name="descripcion2" type="xs:string"/>
+               <xs:element minOccurs="0" name="id" type="xs:int"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretecree">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretecreeResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoretecreeResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="autoretenedorica">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="autoretenedoricaResponse">
+            <xs:sequence>
+               <xs:element name="autoretenedoricaResult" type="xs:boolean"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretefuentecodigo">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codigofuente" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoretefuentecodigoResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoretefuentecodigoResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="retenciontercero">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="retencionterceroResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="retencionterceroResult" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteiva">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="basereteiva" type="xs:double"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteivaResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoreteivaResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteivacodigo">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codigoiva" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteivacodigoResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoreteivacodigoResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="autoretenedoriva">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="codempresa" type="xs:string"/>
+               <xs:element minOccurs="0" name="identificacion" type="xs:string"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="autoretenedorivaResponse">
+            <xs:sequence>
+               <xs:element name="autoretenedorivaResult" type="xs:boolean"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteivacercano">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="basereteiva" type="xs:double"/>
+            </xs:sequence>
+         </xs:complexType>
+         <xs:complexType name="impuestoreteivacercanoResponse">
+            <xs:sequence>
+               <xs:element minOccurs="0" name="impuestoreteivacercanoResult" type="tns:impuestos"/>
+            </xs:sequence>
+         </xs:complexType>
+      </xs:schema>
+   </wsdl:types>
+   <wsdl:message name="impuestoretefuentecercanoResponse">
+      <wsdl:part element="tns:impuestoretefuentecercanoResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="datosClasificacionFiscalTerceroIdResponse">
+      <wsdl:part element="tns:datosClasificacionFiscalTerceroIdResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteivaResponse">
+      <wsdl:part element="tns:impuestoreteivaResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="listimpuestoicaResponse">
+      <wsdl:part element="tns:listimpuestoicaResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="tipotercero">
+      <wsdl:part element="tns:tipotercero" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretefuentecercano">
+      <wsdl:part element="tns:impuestoretefuentecercano" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="datosClasificacionFiscalTerceroId">
+      <wsdl:part element="tns:datosClasificacionFiscalTerceroId" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="listimpuestoica">
+      <wsdl:part element="tns:listimpuestoica" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="autoretenedorica">
+      <wsdl:part element="tns:autoretenedorica" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteivacercano">
+      <wsdl:part element="tns:impuestoreteivacercano" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="datosClasificacionFiscalTerceroResponse">
+      <wsdl:part element="tns:datosClasificacionFiscalTerceroResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretefuenteResponse">
+      <wsdl:part element="tns:impuestoretefuenteResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretecree">
+      <wsdl:part element="tns:impuestoretecree" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretecreeResponse">
+      <wsdl:part element="tns:impuestoretecreeResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretefuentecodigo">
+      <wsdl:part element="tns:impuestoretefuentecodigo" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretefuentecodigoResponse">
+      <wsdl:part element="tns:impuestoretefuentecodigoResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteiva">
+      <wsdl:part element="tns:impuestoreteiva" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="autoretenedorfuente">
+      <wsdl:part element="tns:autoretenedorfuente" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteivacodigoResponse">
+      <wsdl:part element="tns:impuestoreteivacodigoResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="tipoterceroResponse">
+      <wsdl:part element="tns:tipoterceroResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="retenciontercero">
+      <wsdl:part element="tns:retenciontercero" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="datosClasificacionFiscalTercero">
+      <wsdl:part element="tns:datosClasificacionFiscalTercero" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="autoretenedorfuenteResponse">
+      <wsdl:part element="tns:autoretenedorfuenteResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="retencionterceroResponse">
+      <wsdl:part element="tns:retencionterceroResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="autoretenedoricaResponse">
+      <wsdl:part element="tns:autoretenedoricaResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="autoretenedoriva">
+      <wsdl:part element="tns:autoretenedoriva" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoretefuente">
+      <wsdl:part element="tns:impuestoretefuente" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="autoretenedorivaResponse">
+      <wsdl:part element="tns:autoretenedorivaResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteica">
+      <wsdl:part element="tns:impuestoreteica" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteivacodigo">
+      <wsdl:part element="tns:impuestoreteivacodigo" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteivacercanoResponse">
+      <wsdl:part element="tns:impuestoreteivacercanoResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:message name="impuestoreteicaResponse">
+      <wsdl:part element="tns:impuestoreteicaResponse" name="parameters"></wsdl:part>
+   </wsdl:message>
+   <wsdl:portType name="TerceroClasificacionFiscalGetRemote">
+      <wsdl:operation name="datosClasificacionFiscalTerceroId">
+         <wsdl:input message="tns:datosClasificacionFiscalTerceroId" name="datosClasificacionFiscalTerceroId"></wsdl:input>
+         <wsdl:output message="tns:datosClasificacionFiscalTerceroIdResponse" name="datosClasificacionFiscalTerceroIdResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="autoretenedorfuente">
+         <wsdl:input message="tns:autoretenedorfuente" name="autoretenedorfuente"></wsdl:input>
+         <wsdl:output message="tns:autoretenedorfuenteResponse" name="autoretenedorfuenteResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretefuentecercano">
+         <wsdl:input message="tns:impuestoretefuentecercano" name="impuestoretefuentecercano"></wsdl:input>
+         <wsdl:output message="tns:impuestoretefuentecercanoResponse" name="impuestoretefuentecercanoResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="listimpuestoica">
+         <wsdl:input message="tns:listimpuestoica" name="listimpuestoica"></wsdl:input>
+         <wsdl:output message="tns:listimpuestoicaResponse" name="listimpuestoicaResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="datosClasificacionFiscalTercero">
+         <wsdl:input message="tns:datosClasificacionFiscalTercero" name="datosClasificacionFiscalTercero"></wsdl:input>
+         <wsdl:output message="tns:datosClasificacionFiscalTerceroResponse" name="datosClasificacionFiscalTerceroResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretefuente">
+         <wsdl:input message="tns:impuestoretefuente" name="impuestoretefuente"></wsdl:input>
+         <wsdl:output message="tns:impuestoretefuenteResponse" name="impuestoretefuenteResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteica">
+         <wsdl:input message="tns:impuestoreteica" name="impuestoreteica"></wsdl:input>
+         <wsdl:output message="tns:impuestoreteicaResponse" name="impuestoreteicaResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="tipotercero">
+         <wsdl:input message="tns:tipotercero" name="tipotercero"></wsdl:input>
+         <wsdl:output message="tns:tipoterceroResponse" name="tipoterceroResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretecree">
+         <wsdl:input message="tns:impuestoretecree" name="impuestoretecree"></wsdl:input>
+         <wsdl:output message="tns:impuestoretecreeResponse" name="impuestoretecreeResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="autoretenedorica">
+         <wsdl:input message="tns:autoretenedorica" name="autoretenedorica"></wsdl:input>
+         <wsdl:output message="tns:autoretenedoricaResponse" name="autoretenedoricaResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretefuentecodigo">
+         <wsdl:input message="tns:impuestoretefuentecodigo" name="impuestoretefuentecodigo"></wsdl:input>
+         <wsdl:output message="tns:impuestoretefuentecodigoResponse" name="impuestoretefuentecodigoResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="retenciontercero">
+         <wsdl:input message="tns:retenciontercero" name="retenciontercero"></wsdl:input>
+         <wsdl:output message="tns:retencionterceroResponse" name="retencionterceroResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteiva">
+         <wsdl:input message="tns:impuestoreteiva" name="impuestoreteiva"></wsdl:input>
+         <wsdl:output message="tns:impuestoreteivaResponse" name="impuestoreteivaResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteivacodigo">
+         <wsdl:input message="tns:impuestoreteivacodigo" name="impuestoreteivacodigo"></wsdl:input>
+         <wsdl:output message="tns:impuestoreteivacodigoResponse" name="impuestoreteivacodigoResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="autoretenedoriva">
+         <wsdl:input message="tns:autoretenedoriva" name="autoretenedoriva"></wsdl:input>
+         <wsdl:output message="tns:autoretenedorivaResponse" name="autoretenedorivaResponse"></wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteivacercano">
+         <wsdl:input message="tns:impuestoreteivacercano" name="impuestoreteivacercano"></wsdl:input>
+         <wsdl:output message="tns:impuestoreteivacercanoResponse" name="impuestoreteivacercanoResponse"></wsdl:output>
+      </wsdl:operation>
+   </wsdl:portType>
+   <wsdl:binding name="TerceroClasificacionFiscalGetSoapBinding" type="tns:TerceroClasificacionFiscalGetRemote">
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+      <wsdl:operation name="datosClasificacionFiscalTerceroId">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="datosClasificacionFiscalTerceroId">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="datosClasificacionFiscalTerceroIdResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="autoretenedorfuente">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="autoretenedorfuente">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="autoretenedorfuenteResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretefuentecercano">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoretefuentecercano">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoretefuentecercanoResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="listimpuestoica">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="listimpuestoica">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="listimpuestoicaResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="datosClasificacionFiscalTercero">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="datosClasificacionFiscalTercero">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="datosClasificacionFiscalTerceroResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretefuente">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoretefuente">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoretefuenteResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteica">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoreteica">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoreteicaResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretecree">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoretecree">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoretecreeResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="tipotercero">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="tipotercero">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="tipoterceroResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="autoretenedorica">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="autoretenedorica">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="autoretenedoricaResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoretefuentecodigo">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoretefuentecodigo">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoretefuentecodigoResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteiva">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoreteiva">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoreteivaResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="retenciontercero">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="retenciontercero">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="retencionterceroResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteivacodigo">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoreteivacodigo">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoreteivacodigoResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="autoretenedoriva">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="autoretenedoriva">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="autoretenedorivaResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+      <wsdl:operation name="impuestoreteivacercano">
+         <soap:operation soapAction="" style="document"/>
+         <wsdl:input name="impuestoreteivacercano">
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output name="impuestoreteivacercanoResponse">
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+   </wsdl:binding>
+   <wsdl:service name="TerceroClasificacionFiscalGet">
+      <wsdl:port binding="tns:TerceroClasificacionFiscalGetSoapBinding" name="TerceroClasificacionFiscalGetPort">
+         <soap:address location="http://172.16.29.240:8080/SinergiasFinanciero3-ejb/TerceroClasificacionFiscalGet/TerceroClasificacionFiscalGet"/>
+      </wsdl:port>
+   </wsdl:service>
+</wsdl:definitions>

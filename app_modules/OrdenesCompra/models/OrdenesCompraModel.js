@@ -2088,12 +2088,117 @@ OrdenesCompraModel.prototype.gestionaDetalleOrden = function(parametros, callbac
      }).catch(function(err){
         console.log("error (/catch) [gestionaDetalleOrden]: ", err);
         callback({msj: 'Error al registrar el detalle de la orden', status: 500});
-     }).done();   
-    
-     
+     }).done();
 };
- 
 
+OrdenesCompraModel.prototype.listarTerceroProveedor = (obj, callback) => {
+
+    new Promise((resolve, reject) => {
+        const queryListarTerceroProveedor = G.knex
+            .column(['ter.*', 'p.*'])
+            .from('terceros as ter')
+            .innerJoin('terceros_proveedores as p', function() {
+                this.on('ter.tipo_id_tercero', 'p.tipo_id_tercero')
+                    .on('ter.tercero_id', 'p.tercero_id')})
+            .where('ter.nombre_tercero', 'ILIKE', `%${obj.tercero_documento}%`)
+            .andWhere('ter.tipo_id_tercero', 'ILIKE', `%${obj.tercero_tipo_documento}%`)
+            .orWhere('ter.tercero_id', 'ILIKE', `%${obj.tercero_documento}%`);
+
+        resolve(queryListarTerceroProveedor);
+    }).then(response => {
+        callback(false, response);
+    }).catch(err => {
+        console.log('err: ', err);
+        callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.verExistenciaTercero = (tercero_id, callback) => {
+    new Promise((resolve, reject) => {
+        resolve(G.knex('terceros').count('*').where({ tercero_id, tipo_id_tercero: 'NIT' }));
+    }).then(response => {
+        const contador = parseFloat(response[0].count);
+        callback(false, contador);
+    }).catch(err => {
+        callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.verExistenciaProveedor = (tercero_id, callback) => {
+    new Promise((resolve, reject) => {
+        resolve(G.knex('terceros_proveedores').count('*').where({ tercero_id }));
+    }).then(response => {
+        const contador = parseFloat(response[0].count);
+        callback(false, contador);
+    }).catch(err => {
+        callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.crearTercero = (obj, callback) => {
+
+    new Promise((resolve, reject) => {
+        const query = G.knex('terceros')
+            .insert({
+                tipo_id_tercero: obj.tipodocumento,
+                tercero_id: obj.documento,
+                nombre_tercero: obj.razonsocial,
+                tipo_pais_id: obj.tipo_pais_id,
+                tipo_dpto_id: obj.tipo_dpto_id,
+                tipo_mpio_id: obj.tipo_mpio_id,
+                direccion: obj.direccion,
+                telefono: obj.telefono,
+                email: obj.email,
+                sw_persona_juridica: obj.naturaleza,
+                usuario_id: obj.userId
+            });
+
+        // resolve(true); // Este hay que borrarlo y descomentar el siguiente
+        resolve(query);
+    }).then(response => { callback(false, response); })
+        .catch(err => { console.log('err: ', err); callback(err); });
+};
+
+OrdenesCompraModel.prototype.crearTerceroProveedor = (tercero, callback) => {
+
+    new Promise((resolve, reject) => {
+        resolve(G.knex.column(G.knex.raw('nextval(\'terceros_proveedores_codigo_proveedor_id_seq\')')));
+    }).then(response => {
+        const existeNuevaSecuencia = response && response.length && response[0].nextval;
+
+        if (!existeNuevaSecuencia) throw 'Error al buscar nueva secuencia en "crearTerceroProveedor"';
+
+        const nuevaSecuencia = response[0].nextval;
+
+        const query_crearTerceroProveedor = G.knex('terceros_proveedores').insert({
+            codigo_proveedor_id: nuevaSecuencia,
+            tipo_id_tercero: tercero.tipodocumento,
+            tercero_id: tercero.documento,
+            estado: 1,
+            dias_gracia: 0,
+            dias_credito: 0,
+            tiempo_entrega: 0,
+            descuento_por_contado: 0,
+            cupo: 0,
+            sw_regimen_comun: 0,
+            sw_gran_contribuyente: 0,
+            porcentaje_rtf: tercero.porcentaje_rtf,
+            porcentaje_ica: tercero.porcentaje_ica,
+            porcentaje_reteiva: tercero.porcentaje_reteiva,
+            sw_rtf: tercero.sw_rtf,
+            sw_reteiva: tercero.sw_reteiva,
+            sw_ica: tercero.sw_ica
+        });
+
+        // return true; // Este hay que borrarlo y descomentar el siguiente
+        return query_crearTerceroProveedor;
+    }).then(response => {
+        callback(false, response);
+    }).catch(err => {
+        console.log('Error: ', err);
+        callback(err);
+    });
+};
 
 OrdenesCompraModel.$inject = ["m_unidad_negocio", "m_proveedores"];
 

@@ -1961,7 +1961,7 @@ PedidosClienteModel.prototype.listar_productos = function (empresa, centro_utili
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit);
-//console.log(G.sqlformatter.format(query.toString()));
+    console.log('Query is: ', G.sqlformatter.format(query.toString()));
     query.then(function (resultado) {
         callback(false, resultado);
     }).catch(function (err) {

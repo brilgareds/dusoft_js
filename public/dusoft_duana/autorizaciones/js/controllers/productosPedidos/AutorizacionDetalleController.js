@@ -50,6 +50,7 @@ define(["angular", "js/controllers",
                 $scope.pedido = filtroPedido.numeroPedido.pedidos[0].numero_pedido;
                 $scope.fechaSolicitud = filtroPedido.numeroPedido.pedidos[0].fechaSolicitud;
                 $scope.nombreTercero = filtroPedido.numeroPedido.nombre;                
+                $scope.observacionPedido = filtroPedido.numeroPedido.observacionPedido;                
                 callback();
 
             };

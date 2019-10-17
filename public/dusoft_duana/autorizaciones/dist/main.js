@@ -34839,9 +34839,15 @@ define('controllers/productosPedidos/ProductosPedidosController',["angular", "js
                     pedidoAutorizacion.setPorAprobar(objt.poraprobacion);
                     pedidoAutorizacion.setBoolPorAprobar(objt.poraprobacion);
                     //  pedidoAutorizacion.setProductos(producto);
-
-                    var terceros = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
+                    var nombre = "";
+                    if(objt.destino !== undefined && objt.destino !== null && objt.destino !== ""){
+                        nombre = objt.nombre_tercero + " - " + objt.destino;
+                    }else{
+                        nombre = objt.nombre_tercero;
+                    }
+                    var terceros = TerceroAutorizacion.get(nombre, objt.tipo_id_tercero, objt.tercero_id);
                     terceros.agregarPedido(pedidoAutorizacion);
+                    terceros.observacionPedido = objt.observacion;
                     listaTerceros.push(terceros);
                 }
                 $scope.listarPedido = listaTerceros;
@@ -40311,6 +40317,7 @@ define('controllers/productosPedidos/AutorizacionDetalleController',["angular", 
                 $scope.pedido = filtroPedido.numeroPedido.pedidos[0].numero_pedido;
                 $scope.fechaSolicitud = filtroPedido.numeroPedido.pedidos[0].fechaSolicitud;
                 $scope.nombreTercero = filtroPedido.numeroPedido.nombre;                
+                $scope.observacionPedido = filtroPedido.numeroPedido.observacionPedido;                
                 callback();
 
             };
@@ -45073,7 +45080,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64

@@ -486,8 +486,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     ) as ciudad,\
                     a.inv_planillas_despacho_id as planilla_id,\
                     a.empresa_id,\
-                    d.descripcion as descripcion_destino,\
-                    d.ubicacion as direccion_destino,\
+                    case when d.descripcion is not null then d.descripcion else e.nombre_tercero END as descripcion_destino,\
+                    case when d.ubicacion is not null then d.ubicacion else e.direccion END as direccion_destino,\
                     a.prefijo,\
                     a.numero,\
                     0 as numero_pedido,\
@@ -507,7 +507,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                         FROM aprobacion_despacho_planillas f \
                         INNER JOIN aprobacion_despacho_planillas_d g ON g.id_aprobacion_planillas = f.id_aprobacion_planillas\
                     ) as b ON (b.prefijo = a.prefijo AND b.numero = a.numero)\
-                    inner join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
+                    left join bodegas d on a.empresa_destino = d.empresa_id and a.centro_utilidad = d.centro_utilidad and a.bodega = d.bodega\
+                    left join terceros e on a.tipo_id_tercero = e.tipo_id_tercero and a.tercero_id = e.tercero_id\
                 ) as a where true " + sql + ";";
 //    var query = G.knex.raw(sql, {1: planilla_id, 2: '%' + termino_busqueda + '%'});
         var query = G.knex.raw(sql, {1: planilla_id, 2: termino_busqueda});
@@ -527,12 +528,12 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         sql1 = " and a.planilla_id = :1 ";
     }
     if (termino_busqueda !== undefined && termino_busqueda !== "") {
-        sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
+        sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )";
     }
 
     if (obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null && (planilla_id === "" || planilla_id === undefined)) {
-        sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
-        sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
+        sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) ";
+        sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) ";
     }
     if (obj.modificar === 1) {
         sql1 += " AND b.planilla_id is not null";
@@ -1049,9 +1050,9 @@ PlanillasDespachosModel.prototype.gestionarLios = function (obj, callback) {
     var vPrefijo = [];
     for (var i in lenght) {
 
-        vEmpresaId.push("'" + obj.documentos[i].empresa_id + "'")
-        vNumero.push("'" + obj.documentos[i].numero + "'")
-        vPrefijo.push("'" + obj.documentos[i].prefijo + "'")
+        vEmpresaId.push("'" + obj.documentos[i].empresa_id + "'");
+        vNumero.push("'" + obj.documentos[i].numero + "'");
+        vPrefijo.push("'" + obj.documentos[i].prefijo + "'");
 
     }
     ;

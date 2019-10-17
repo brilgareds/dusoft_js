@@ -332,17 +332,22 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
 			    CASE\
                           WHEN a.estado='0' THEN count(pedido_id)\
                           ELSE 0\
-                          END AS poraprobacion\
+                          END AS poraprobacion, b.observacion,\
+                        cast(coalesce(ter.nombre_tercero, '') as text) || '' || cast(coalesce(bo.descripcion, '') as text) as destino\
                         FROM autorizaciones_productos_pedidos AS a \
                         " + WHERE1 + "\
                         INNER JOIN ventas_ordenes_pedidos AS b ON (a.pedido_id=b.pedido_cliente_id AND autorizaciones_productos_pedidos_id=autorizaciones_productos_pedidos_id)  \
                         INNER JOIN terceros AS c ON (b.tipo_id_tercero =c.tipo_id_tercero AND b.tercero_id=c.tercero_id) \
                         INNER JOIN ventas_ordenes_pedidos_d AS d ON (b.pedido_cliente_id=d.pedido_cliente_id AND a.codigo_producto=d.codigo_producto) \
                         LEFT  JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id) \
-                        INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
+                        INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)\
+                        left join ventas_ordenes_pedido_multiple_clientes as vopmc ON (b.pedido_cliente_id = vopmc.id_orden_pedido_destino)\
+                        left join ventas_ordenes_pedidos_tmp vopt on (vopmc.id_orden_cotizacion_origen = vopt.pedido_cliente_id_tmp)\
+                        left join terceros ter on (vopt.tercero_id = ter.tercero_id and vopt.tipo_id_tercero = ter.tipo_id_tercero)\
+                        left join bodegas bo on (vopmc.farmacia_id = bo.empresa_id and vopmc.centro_utilidad = bo.centro_utilidad and vopmc.bodega = bo.bodega)\
                         WHERE true  " + WHERE2 + "\
                                AND a.tipo_pedido = :2 \
-		       GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19\
+		       GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,21,22\
                               ) as p \
                        order by p.estado_verificado desc";
    
@@ -401,7 +406,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
 		     CASE\
                           WHEN a.estado='0' THEN count(pedido_id)\
                           ELSE 0\
-                      END AS poraprobacion\
+                      END AS poraprobacion, b.observacion\
                    FROM autorizaciones_productos_pedidos  AS a \
                    " + WHERE1 + "\
                    INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\
@@ -410,7 +415,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
                    WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  \
-		    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20\
+		    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22\
 		    ) as p \
                order by p.estado_verificado desc";
     

@@ -528,12 +528,12 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho_detalle
         sql1 = " and a.planilla_id = :1 ";
     }
     if (termino_busqueda !== undefined && termino_busqueda !== "") {
-        sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )"
+        sql1 += " and ( a.descripcion_destino " + G.constants.db().LIKE + " :2 )";
     }
 
     if (obj.tercero_id !== undefined && obj.tercero_id !== "" && obj.tercero_id !== null && (planilla_id === "" || planilla_id === undefined)) {
-        sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
-        sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) "
+        sql1 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) ";
+        sql3 += " and ( a.tercero_id = :3  and a.tipo_id_tercero = :4 ) ";
     }
     if (obj.modificar === 1) {
         sql1 += " AND b.planilla_id is not null";
@@ -1050,9 +1050,9 @@ PlanillasDespachosModel.prototype.gestionarLios = function (obj, callback) {
     var vPrefijo = [];
     for (var i in lenght) {
 
-        vEmpresaId.push("'" + obj.documentos[i].empresa_id + "'")
-        vNumero.push("'" + obj.documentos[i].numero + "'")
-        vPrefijo.push("'" + obj.documentos[i].prefijo + "'")
+        vEmpresaId.push("'" + obj.documentos[i].empresa_id + "'");
+        vNumero.push("'" + obj.documentos[i].numero + "'");
+        vPrefijo.push("'" + obj.documentos[i].prefijo + "'");
 
     }
     ;

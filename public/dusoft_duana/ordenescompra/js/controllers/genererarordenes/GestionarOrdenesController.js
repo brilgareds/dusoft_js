@@ -443,7 +443,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                Request.realizarRequest(API.PROVEEDORES.WS_LISTAR_PROVEEDORES, "POST", obj, function(data) {
 
                     if (data.status === 200) {
 

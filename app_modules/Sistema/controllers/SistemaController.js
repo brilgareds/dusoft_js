@@ -59,26 +59,75 @@ Sistema.prototype.verificarSincronizacion = function (req, res) {
     });
 };
 
-const limpiarRespuesta = (lineas) => {
+const limpiarRespuesta = (lineas, modulo, accion) => {
     const cantidadLineas = lineas.length;
     let palabras = [];
     let palabra = '';
     let responseLineas = [];
     let responsePalabras = [];
     let cantidadPalabras = 0;
+    let cantidadConsultas = 0;
+
+
+
+    if (modulo === 'POSTGRES') {
+        if (accion === 'query') {
+            cantidadConsultas = lineas[cantidadLineas-3].substr(1,1);
+        } else {
+
+        }
+    }
 
     for (let j = 0; j < cantidadLineas; j++) {
-        palabras = lineas[j].split(' ');
+
+
+        if (modulo === 'POSTGRES') {
+            if (accion === 'query' && j === 1) {
+                continue;
+            } else {
+                let lineaDividida = lineas[j].split('  ');
+
+                for (let l=0; l < lineaDividida.length; l++) {
+                    let initQuery = lineaDividida[l].lastIndexOf(" | ")+1;
+                    console.log('initQuery: ', initQuery);
+
+                    let query = lineaDividida[l].substr(initQuery+1);
+                    console.log('Query: ', query);
+
+                    palabras = lineaDividida[l].substr(0, initQuery-1).split(' | ');
+                    palabras.push(query);
+
+                    console.log('Palabras: ', palabras);
+                }
+
+
+            }
+        } else {
+            palabras = lineas[j].split(' ');
+        }
+
         cantidadPalabras = palabras.length;
         responsePalabras = [];
 
+        console.log('Linea es: ', palabras);
+
         for (let k = 0; k < cantidadPalabras; k++) {
             palabra = palabras[k].trim();
-            if (palabra.length > 0 && palabra !== '│') {
-                responsePalabras.push(palabra);
+            if (palabra.length > 0 && palabra !== '│' && palabra !== '|' && palabra !== ' ') {
+
+                if (modulo === 'POSTGRES' && palabra.substr(0,1) === ':') {
+                    palabra = palabra.substr(1).trim();
+                }
+
+                if (palabra.length > 0 && palabra !== '│' && palabra !== '|' && palabra !== ' ' && palabra !== ' ') {
+                    responsePalabras.push(palabra);
+                } else {
+                    // console.log('No agregado nunca: ' + palabra);
+                }
             }
         }
-        if (responsePalabras.length > 0) {
+        if (responsePalabras.length > 1) {
+            console.log('J is: ', j, '\n\n\nAgregando esta lineaaaa: ', responsePalabras);
             responseLineas.push(responsePalabras);
         }
     }
@@ -124,7 +173,7 @@ Sistema.prototype.sshConnection = (req, res) => {
     let buscar_dusoft = '';
     let urlJasper = '/opt/jasperreports-server-cp-6.2.1/./ctlscript_public.sh';
     // var urlPM2 = '/var/www/projects/eDusoft/development_production/dusoft-server/pm2_script.js';
-    // console.log('Modulo es: ', modulo, ''); // Nombre del modulo
+    console.log('Modulo es: ', modulo, 'accion: ', accion); // Nombre del modulo
 
     if (server === 117) {
         credentialRoot = 'echo 301206. | sudo -S ';
@@ -135,11 +184,11 @@ Sistema.prototype.sshConnection = (req, res) => {
         };
     } else if (server === 191) {
         dusoft_directory = '/media/datos/Proyectos/Dusoft_Angular/Duana';
-        credentialRoot = 'echo gear777 | sudo -S ';
+        credentialRoot = 'echo 301206. | sudo -S ';
         parametros = {
             host: '10.0.2.191',
             user: 'gabriel',
-            password: 'gear777'
+            password: '301206.'
         };
     } else if (server === 216) {
         dusoft_directory = '/home/dusoft-server';
@@ -157,12 +206,20 @@ Sistema.prototype.sshConnection = (req, res) => {
             user: "dusoft",
             password: "301206."
         };
-    }else if(server === 117){
+    } else if (server === 117) {
         credentialRoot = 'echo 301206. | sudo -S ';
         parametros = {
             host: "10.0.2.117",
             user: "duana",
             password: "301206."
+        };
+    } else if (server === 246) {
+        credentialRoot = 'PGPASSWORD=.123mauro* psql -d dusoft -U admin -c';
+
+        parametros = {
+            host: "10.0.2.246",
+            user: "root",
+            password: "s1st3m_Du4na_r0ot2.4.6"
         };
     }
     buscar_dusoft = 'cd ' + dusoft_directory;
@@ -220,6 +277,17 @@ Sistema.prototype.sshConnection = (req, res) => {
         } else {
             console.log('Error en formato de "accion"!');
         }
+    } else if (modulo === 'POSTGRES') {
+        if (accion !== undefined) {
+            if (accion === 'query') {
+                const query = ` "select procpid as id, datname as database, usename as user, client_addr as ip, query_start as fecha, current_query as consulta from pg_stat_activity where not current_query ILIKE '%<IDLE>%' and not current_query ILIKE '%from system_usuarios_sesiones%' and not current_query ILIKE '%update system_usuarios_sesiones%' and procpid != pg_backend_pid() order by query_start asc;"`;
+                parametros.sentencia = credentialRoot + query;
+            } else if (accion === 'logs') {
+                parametros.sentencia = " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ad)' --graph -100 --date=format:%d/%m/%Y\\ %H:%M:%S";
+            }
+        } else {
+            console.log('Error en formato de "accion"!');
+        }
     }
 
     G.Q.nfcall(__asistenteSSH, parametros)
@@ -229,7 +297,9 @@ Sistema.prototype.sshConnection = (req, res) => {
             let palabras = [];
             let palabra = '';
             let cantidadPalabras = 0;
-            let lineas = limpiarRespuesta(resultados.split('\n'));
+
+            let lineas = limpiarRespuesta(resultados.split('\n'), modulo, accion);
+            console.log('Lineasssss: ', lineas);
             const cantidadLineas = lineas.length;
 
             for (let i = 0; i < cantidadObjetos; i++) {  // Declarar propiedades del objeto a responder
@@ -286,12 +356,16 @@ Sistema.prototype.sshConnection = (req, res) => {
                             }
                         }
                     } else if (modulo === 'GIT') {
-                        if (k === cantidadPalabras-1) { // En caso de "false" concatenará la palabra
+                        if (k === cantidadPalabras - 1) { // En caso de "false" concatenará la palabra
                             palabra = palabra.trim();
                             palabrasFiltradas.push(palabra);
                             palabra = '';
                         }
-                    } else {
+                    }
+                    /*else if (modulo === 'POSTGRES') {
+
+                    }*/
+                    else {
                         palabrasFiltradas.push(palabra);
                         palabra = '';
                     }
@@ -367,6 +441,16 @@ Sistema.prototype.sshConnection = (req, res) => {
                         }
                         resultadoArray[0].rows.push(palabrasFiltradas);
                         palabrasFiltradas = [];
+                    } else if (modulo === 'POSTGRES') {
+                        if (j === 0) {
+                            resultadoArray[0].title = 'En proceso (57)';
+                            resultadoArray[0].header = palabrasFiltradas;
+                        } else {
+                            resultadoArray[0].rows.push([' ']);
+                            resultadoArray[0].rows.push(palabrasFiltradas);
+
+                        }
+                        palabrasFiltradas = [];
                     } else {
                         if (j === 0) {
                             resultadoArray[0].title = palabrasFiltradas[0];
@@ -382,6 +466,8 @@ Sistema.prototype.sshConnection = (req, res) => {
             }
             retorno.status = 200;
             retorno.result = resultadoArray;
+
+            console.log('Rows: ', resultadoArray[0].rows);
 
             return true;
         }).then(result => {

@@ -115,15 +115,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 btn_function: 'sshConnection'
             };
             let btn_dbStatusDefault = {
-                title: 'Status',
-                name: 'querysActiveInDb',
+                title: 'Consultas en proceso',
+                name: 'query',
                 class: serverBtnSize + 'btn btn-primary',
                 disable: false,
                 icono: 'glyphicon glyphicon-list-alt',
-                btn_function: 'querysActiveInDb'
+                btn_function: 'sshConnection'
             };
             let btn_dbIdlesDefault = {
-                title: 'Conexiones',
+                title: 'Conexiones Activas',
                 name: 'IdlesInDb',
                 class: serverBtnSize + 'btn btn-primary',
                 disable: false,
@@ -247,7 +247,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 width: serverSizeMax,
                 tableClass: 'tablePc tableBorder cells-auto line-nowrap',
                 actions: [
-                    btn_dbStatusDefault
+                    btn_dbStatusDefault,
+                    btn_dbIdlesDefault
                 ],
                 obj: []
             };

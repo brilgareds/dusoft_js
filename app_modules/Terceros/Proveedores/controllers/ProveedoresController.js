@@ -73,8 +73,6 @@ const ws_tercero_clasificacionFiscal = (obj, callback) => {
 
     new Promise((resolve, reject) => { resolve(G.Q.nfcall(G.soap.createClient, url));
     }).then(client => {
-
-        console.log('%c in "ws_tercero_clasificacionFiscal", obj: ', obj, 'color: #ff0000;');
         return G.Q.ninvoke(client, "datosClasificacionFiscalTercero", obj); // metodo = 'todos_pacientes';
     }).then(result => { // Service without response
         if (result && result.datosClasificacionFiscalTerceroResult) {
@@ -193,7 +191,7 @@ const ws_tercero_proveedor = (data, callback) => {
     let existeTercero = false;
     let existeProveedorAsistencial = false;
     let existeProveedorFinanciero = false;
-    let logs = '';
+    var logs = '';
     let finish = false;
 
     let existe = 0;
@@ -234,10 +232,10 @@ const ws_tercero_proveedor = (data, callback) => {
         const obj = { numeroidentificacion: tercero_documento };
         resolve(G.Q.nfcall(ws_buscar_tercero, obj));
     }).then(response => {
-        if (!response) {
+        if (!response || !response.estadotercero) {
             const err = {
                 status: 300,
-                msg: 'Tercero no existe como proveedor en el FI'
+                msg: 'Tercero no existe como proveedor en el FI\n'
             };
 
             throw err;
@@ -255,10 +253,7 @@ const ws_tercero_proveedor = (data, callback) => {
             // EMPIEZA INTEGRACIÓN DUSOFT FINANCIERO Y DUSOFT ASISTENCIAL PARA CREAR TERCERO EN CASO DE LA NO EXISTENCIA
             return true;
         }
-    }).catch(err => {
-        if (err.msg) { logs += err.msg; }
-        throw err;
-    });
+    }).catch(err => { throw err; });
 
 
     const promise4 = new Promise((resolve, reject) => {
@@ -269,17 +264,19 @@ const ws_tercero_proveedor = (data, callback) => {
             resolve(G.Q.nfcall(ws_buscar_direccion_tercero, { tercero_documento }));
         }
     }).then(direccion => {
-        logs += direccion.msg || '';
+        logs += (direccion.msg || '');
 
-        Object.assign(tercero, {
-            tipo_pais_id: direccion.prefijopais,
-            tipo_dpto_id: direccion.coddepartamento,
-            tipo_mpio_id: direccion.codmunicipio,
-            razonsocial: direccion.razonsocial,
-            direccion: direccion.direccion,
-            telefono: direccion.numerotelefonico,
-            email: direccion.email || ''
-        });
+        if (direccion && direccion.razonsocial) {
+            Object.assign(tercero, {
+                tipo_pais_id: direccion.prefijopais,
+                tipo_dpto_id: direccion.coddepartamento,
+                tipo_mpio_id: direccion.codmunicipio,
+                razonsocial: direccion.razonsocial,
+                direccion: direccion.direccion,
+                telefono: direccion.numerotelefonico,
+                email: direccion.email || ''
+            });
+        }
 
         return true;
     }).catch(err => {
@@ -298,11 +295,10 @@ const ws_tercero_proveedor = (data, callback) => {
             } else { resolve(G.Q.nfcall(ws_tercero_clasificacionFiscal, obj)); }
         }, 1000); // funcion ws "datosClasificacionFiscalTercero" // Este metodo Webservice no funciona!! dañado, malo
     }).then(response => {
+        tercero.sw_ica = '0';
+        tercero.porcentaje_ica = 0;
 
-        if (!response) { // everytime empty
-            tercero.sw_ica = '0';
-            tercero.porcentaje_ica = 0;
-
+        if (!response || response.codtipocontribuyente) { // everytime empty
             const err = {
                 status: 300,
                 msg: 'No se encontro clasificacion fiscal tercero!\n'
@@ -329,7 +325,7 @@ const ws_tercero_proveedor = (data, callback) => {
 
         if (response === 'finish') { return true; }
 
-        if (!response) {
+        if (!response || !response.tasa) {
             const err = {
                 status: 300,
                 msg: 'No se encontro reteica!'
@@ -348,7 +344,8 @@ const ws_tercero_proveedor = (data, callback) => {
     const promise6 = new Promise((resolve, reject) => {
         resolve(G.Q.nfcall(ws_tercero_naturaleza, { idtercero })); // funcion ws "buscarNaturalezaTercero"
     }).then(response => {
-        tercero.naturaleza = response;
+        if (response)  tercero.naturaleza = response;
+
         return true;
     }).catch(err => { logs += (err.msg || ''); } );
 
@@ -411,7 +408,8 @@ const ws_tercero_proveedor = (data, callback) => {
             callback(false, logs);
         }).catch(err => {
             detenerPromesas = true;
-            err.msg = logs + (err.msg || '');
+            if (err.msg) { err.msg = logs + err.msg; }
+            else { err.msg = logs; }
 
             if (!err.status) {
                 err = {

@@ -52,9 +52,14 @@ ProveedoresModel.prototype.verExistenciaProveedorAsistencial = (tercero_id, call
 };
 
 ProveedoresModel.prototype.crearTercero = (obj, callback) => {
-    let logs = 'Creando tercero...\n';
+    var logs = 'Creando tercero...\n';
 
     new Promise((resolve, reject) => {
+        if (!obj || !obj.tipodocumento || !obj.documento || !obj.razonsocial || !obj.tipo_pais_is || !obj.tipo_dpto_id || !obj.tipo_mpio_id || !obj.direccion || !obj.telefono || !obj.email || !obj.naturaleza || !obj.userId) {
+            logs += 'Obj con formato invalido para crear un tercero!\n';
+            reject({});
+        }
+
         const query = G.knex('terceros')
             .insert({
                 tipo_id_tercero: obj.tipodocumento,
@@ -71,6 +76,7 @@ ProveedoresModel.prototype.crearTercero = (obj, callback) => {
             });
 
         resolve(query);
+
     }).then(response => {
         logs += 'Tercero Creado\n';
         callback(false, logs);

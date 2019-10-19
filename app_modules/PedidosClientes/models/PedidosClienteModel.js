@@ -320,7 +320,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
 
     if (fecha_inicial !== undefined) {
 
-        facturaFiscal = G.knex.raw("CASE WHEN estado_factura_fiscal = '0' THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
+        facturaFiscal = G.knex.raw("CASE WHEN e.factura_gener = '0' THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
 
         estadoFacturaFiscal = "estado_factura_fiscal";
 
@@ -336,7 +336,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
             orderBy("aa.fecha_registro", "desc").limit(1).as("nombre_separador");
 
     var columns = [
-        facturaFiscal,
         estadoFacturaFiscal,
         "a.empresa_id",
         "a.centro_destino as centro_utilidad_id",
@@ -428,7 +427,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
         andWhere('a.estado_pedido', G.constants.db().LIKE, "%" + estadoSolicitud + "%");
     }
 
-    query.orderByRaw("6 DESC").limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).as("a");
+    query.orderByRaw("5 DESC").limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).as("a");
 
 
     var queryPrincipal = G.knex.column([
@@ -436,6 +435,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
         "e.empresa_id as despacho_empresa_id",
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
+        facturaFiscal,
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
         G.knex.raw("(select\
             CASE WHEN id_orden_pedido_origen IS NULL THEN (select 'CT' || cast(id_orden_cotizacion_origen as text)  from ventas_ordenes_pedido_multiple_clientes  where  id_orden_pedido_origen = a.numero_pedido limit 1)\
@@ -512,7 +512,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function (empresa_id, bo
         subQuery
     ]).from(query).
             leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");
-    // console.log(G.sqlformatter.format(query.toString())); 
+    // console.log(G.sqlformatter.format(query.toString()));
     queryPrincipal.then(function (rows) {
         callback(false, rows);
     }).catch(function (err) {

@@ -34,14 +34,14 @@ const ws_buscar_tercero = (obj, callback) => {
         .then(client => {
             return G.Q.ninvoke(client, "buscarTerceroGeneralDocumento", obj);
         }).spread((result, raw, soapHeader) => {
-        if (result && result.buscarTerceroGeneralDocumentoResult) {
-            response = result.buscarTerceroGeneralDocumentoResult;
-        }
-        callback(false, response);
-    }).fail(err => {
-        console.log('Error in "ws_buscar_tercero"');
-        callback(err);
-    });
+            if (result && result.buscarTerceroGeneralDocumentoResult) {
+                response = result.buscarTerceroGeneralDocumentoResult;
+            }
+            callback(false, response);
+        }).fail(err => {
+            console.log('Error in "ws_buscar_tercero"');
+            callback(err);
+        });
 };
 
 const ws_buscar_direccion_tercero = (obj, callback) => {
@@ -53,6 +53,7 @@ const ws_buscar_direccion_tercero = (obj, callback) => {
     }).then(client => {
         return G.Q.ninvoke(client, "buscarTerceroId", { idtercero: obj.tercero_documento }); // metodo = 'todos_pacientes';
     }).then(result => {
+        console.log('result4: ', result);
         if (!result || !result[0] || !result[0].buscarTerceroIdResult) {
             const err = {
                 status: 300,
@@ -75,6 +76,7 @@ const ws_tercero_clasificacionFiscal = (obj, callback) => {
     }).then(client => {
         return G.Q.ninvoke(client, "datosClasificacionFiscalTercero", obj); // metodo = 'todos_pacientes';
     }).then(result => { // Service without response
+        console.log('Result5: ', result);
         if (result && result.datosClasificacionFiscalTerceroResult) {
             response = result.datosClasificacionFiscalTerceroResult;
         }
@@ -95,7 +97,7 @@ const ws_tercero_naturaleza = (obj, callback) => {
     }).then(result => {
         if (result && result.length) {
             const natura = result[0].buscarNaturalezaTerceroResult.split(',');
-            naturaleza = natura[0] === 0 ? 1:0;
+            naturaleza = natura[0] === '0' ? 1:0;
         }
         callback(false, naturaleza);
     }).catch(err => {

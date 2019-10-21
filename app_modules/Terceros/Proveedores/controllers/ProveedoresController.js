@@ -289,7 +289,7 @@ const ws_tercero_proveedor = (data, callback) => {
 
     const promise5 = new Promise((resolve, reject) => {
         // CLASIFICACION FISCAL
-        const obj = { codigoempresa: 'DUA', idtercero: tercero_documento };
+        const obj = { codigoempresa: 'MAD', idtercero: tercero_documento };
         setTimeout(() => {
             if (detenerPromesas) {
                 const err = { status: 300, msg: '¡Deteniendo promesa!' };
@@ -317,7 +317,7 @@ const ws_tercero_proveedor = (data, callback) => {
             if (!tercero.sw_reteIca) { return 'finish'; }
             else {
                 // RETEICA -- BIEN
-                const obj = { codempresa: 'DUA', identificacion: tercero_documento };
+                const obj = { codempresa: 'MAD', identificacion: tercero_documento };
                 return G.Q.nfcall(ws_tercero_impuestoRteIca, obj); // impuestoreteica
             }
         }

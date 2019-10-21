@@ -1,5 +1,6 @@
 
 /* global G */
+var that;
 
 var OrdenesCompra = function (ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios, m_actasTecnicas, m_e008, m_movimientos_bodegas, m_i002, c_i002, c_pedidos_clientes, m_pedidos_clientes, c_e008, c_pedidos_farmacias, m_pedidos_farmacias) {
 
@@ -18,6 +19,7 @@ var OrdenesCompra = function (ordenes_compras, productos, eventos_ordenes_compra
     this.m_pedidos_clientes = m_pedidos_clientes;
     this.m_pedidos_farmacias = m_pedidos_farmacias;
     this.c_e008 = c_e008;
+    that = this;
 };
 
 
@@ -25,8 +27,24 @@ var OrdenesCompra = function (ordenes_compras, productos, eventos_ordenes_compra
 OrdenesCompra.prototype.listarOrdenesCompra = function (req, res) {
 
     var that = this;
+    let args = req.body.data;
+    let termino_busqueda;
 
-    var args = req.body.data;
+    if (args.ordenes_compras.termino_busqueda) {
+        termino_busqueda = parseFloat(args.ordenes_compras.termino_busqueda);
+    }
+
+    const tercero_obj = {
+        obj: {
+            nit: '',
+            tercero_documento: termino_busqueda ? parseFloat(termino_busqueda):'', // 900775143,
+            tercero_tipo_documento: '',
+            tipo: 1, // 0 = Cliente, 1 = Proveedor
+            userId: req.session.user.usuario_id
+        }
+    };
+
+    that.ListarTercerosProveedores(tercero_obj); // Finish is "ws_tercero_proveedor"
 
     if (args.ordenes_compras === undefined || args.ordenes_compras.fecha_inicial === undefined || args.ordenes_compras.fecha_final === undefined) {
         res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final no estan definidas', 404, {}));
@@ -2991,7 +3009,424 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
 
 };
 
+const ws_buscar_tercero = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/terceroGeneralGet/terceroGeneralGet?wsdl';
+    let response;
 
+    G.Q.nfcall(G.soap.createClient, url)
+        .then(client => {
+            return G.Q.ninvoke(client, "buscarTerceroGeneralDocumento", obj);
+        }).spread((result, raw, soapHeader) => {
+            if (result && result.buscarTerceroGeneralDocumentoResult) {
+                response = result.buscarTerceroGeneralDocumentoResult;
+            }
+            callback(false, response);
+        }).fail(err => {
+            console.log('Error in "ws_buscar_tercero"');
+            callback(err);
+        });
+};
+
+const ws_buscar_direccion_tercero = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/terceroGeneralGet/terceroGeneralGet?wsdl';
+
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        return G.Q.ninvoke(client, "buscarTerceroId", { idtercero: obj.tercero_id }); // metodo = 'todos_pacientes';
+    }).then(result => {
+        if (!result.length) { throw 'Error al obtener la direccion del tercero!'; }
+        callback(false, result[0]);
+    }).catch(err => {
+        console.log('Error in "ws_buscar_direccion_tercero": ', err);
+        callback(err);
+    });
+};
+
+const ws_tercero_clasificacionFiscal = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/TerceroClasificacionFiscalGet/TerceroClasificacionFiscalGet?wsdl';
+    let response;
+
+    new Promise((resolve, reject) => { resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        return G.Q.ninvoke(client, "datosClasificacionFiscalTercero", obj); // metodo = 'todos_pacientes';
+    }).then(result => { // Service without response
+        if (result && result.datosClasificacionFiscalTerceroResult) {
+            response = result.datosClasificacionFiscalTerceroResult;
+        }
+        callback(false, response);
+    }).catch(err => {
+        console.log('Error in "ws_tercero_clasificacionFiscal": ', err);
+        callback(err);
+    });
+};
+
+const ws_tercero_naturaleza = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/terceroGeneralGet/terceroGeneralGet?wsdl';
+    let naturaleza;
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        return G.Q.ninvoke(client, 'buscarNaturalezaTercero', obj); // metodo = 'todos_pacientes'; 4488190001850797
+    }).then(result => {
+        if (result && result.length) {
+            const natura = result[0].buscarNaturalezaTerceroResult.split(',');
+            naturaleza = natura[0] === 0 ? 1:0;
+        }
+        callback(false, naturaleza);
+    }).catch(err => {
+        console.log('Error in "ws_tercero_naturaleza": ', err);
+        callback(err);
+    });
+};
+
+const ws_buscar_tercero_proveedor = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/getTercerosProveedorWS/getTercerosProveedorWS?wsdl';
+    let response;
+
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        return G.Q.ninvoke(client, 'terceroProveedorClienteIden', obj); // metodo = 'todos_pacientes'; 4488190001850797
+    }).then(result => {
+        if (result && result.length && result[0] && result[0].terceroProveedorClienteIdenResult) {
+            response = result[0].terceroProveedorClienteIdenResult;
+        }
+        callback(false, response);
+    }).catch(err => {
+        console.log('Error in "ws_buscar_tercero_proveedor": ', err);
+        callback(err);
+    });
+};
+
+const ws_tercero_impuestos = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/TerceroClasificacionFiscalGet/TerceroClasificacionFiscalGet?wsdl';
+    let response;
+
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        return G.Q.ninvoke(client, 'impuestoretefuentecodigo', obj); // metodo = 'todos_pacientes'; 4488190001850797
+    }).then(result => {
+        if (result && result.length && result[0].impuestoretefuentecodigoResult) {
+            response = result[0].impuestoretefuentecodigoResult;
+        }
+        callback(false, response);
+    }).catch(err => {
+        console.log('Error in "ws_buscar_tercero_proveedor": ', err);
+        callback(err);
+    });
+};
+
+const ws_tercero_impuestoRteIca = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/TerceroClasificacionFiscalGet/TerceroClasificacionFiscalGet?wsdl';
+    let response;
+
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        return G.Q.ninvoke(client, 'impuestoreteica', obj); // metodo = 'todos_pacientes'; 4488190001850797
+    }).then(result => {
+        if (result && result.length && result[0].impuestoreteicaResult) {
+            response = result[0].impuestoreteicaResult;
+        }
+        callback(false, response);
+    }).catch(err => {
+        console.log('Error in "ws_buscar_tercero_proveedor": ', err);
+        callback(err);
+    });
+};
+
+const ws_tercero_impuestoReteIvaCodigo = (obj, callback) => {
+    const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/TerceroClasificacionFiscalGet/TerceroClasificacionFiscalGet?wsdl';
+    let response;
+
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(G.soap.createClient, url));
+    }).then(client => {
+        // RETE IVA
+        return G.Q.ninvoke(client, 'impuestoreteivacodigo', obj); // metodo = 'todos_pacientes'; 4488190001850797
+    }).then(result => {
+        if (result && result.length && result[0].impuestoreteivacodigoResult) {
+            response = result[0].impuestoreteivacodigoResult;
+        }
+        callback(false, response);
+    }).catch(err => {
+        console.log('Error in "ws_buscar_tercero_proveedor": ', err);
+        callback(err);
+    });
+};
+
+OrdenesCompra.prototype.ListarTercerosProveedores = (data) => { // Viene de listarOrdenesCompra
+    // Se reciben objeto con 3 propiedades: 1º nit, 2º tercero_id, 3º tipo
+    // tipo: 0 Solo afecta tabla "terceros"
+    // tipo: 1 Afecta tabla "terceros" y "terceros_proveedores"
+    const obj = data.obj;
+
+    new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(that.ws_tercero_proveedor, obj));
+    }).then(Gu => {
+        if (!Gu && !data.tercero_documento) {
+            return false; // throw '';
+        } else {
+            return G.Q.ninvoke(that.m_ordenes_compra, 'listarTerceroProveedor', obj);
+        }
+    }).then(response => {
+        console.log('\nThe response is: ', response, '\n');
+        return response; // callback(false, response);
+    }).catch(err => {
+        console.log('Error: ', err);
+        return err; // callback(err);
+    });
+};
+
+
+OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
+    // data viene desde "listarOrdenesCompra", se reciben tres valores......1º nit, 2º tercero_id, 3º tipo
+    const nit = data.nit;
+    const tipo = data.tipo;
+    const tercero_documento = data.tercero_documento;
+    const userId = data.userId;
+
+    let existeTercero = false;
+    let existeProveedorAsistencial = false;
+    let existeProveedorFinanciero = false;
+    let finish = false;
+
+    let existe = 0;
+    let Gu = false;
+    let tercero = {};
+    let idtercero = '';
+    let detenerPromesas = false;
+
+    // tipo = 0 AFECTA SOLO LA TABLA DE TERCEROS
+    // tipo = 1 AFECTA TABLA DE TERCEROS Y TERCEROS PROVEEDORES
+
+    const promise1 = new Promise((resolve, reject) => {
+        resolve(G.Q.ninvoke(that.m_ordenes_compra, 'verExistenciaTercero', tercero_documento));
+    }).then(response => {
+        existeTercero = response;
+        return true;
+    }).catch(err => { console.log('Error in "promise1":\n', err); });
+
+
+    const promise2 = new Promise((resolve, reject) => {
+        resolve(G.Q.ninvoke(that.m_ordenes_compra, 'verExistenciaProveedor', tercero_documento));
+    }).then(response => {
+        existeProveedorAsistencial = response;
+
+        if (!existeProveedorAsistencial) {
+            console.log('Tercero no existe como proveedor en Asistencial');
+            return true;
+        } else {
+            const err = {
+                status: 300,
+                msg: 'Tercero ya existe como proveedor en Asistencial'
+            }
+
+            throw err;
+        }
+    }).catch(err => { console.log('Error in "promise2":'); detenerPromesas = true; throw err; });
+
+
+    const promise3 = new Promise((resolve, reject) => {
+        const obj = { numeroidentificacion: tercero_documento };
+        resolve(G.Q.nfcall(ws_buscar_tercero, obj));
+    }).then(response => {
+        if (!response) {
+            const err = {
+                status: 300,
+                msg: 'Tercero no existe como proveedor en el FI'
+            };
+
+            throw err;
+        } else {
+            tercero = {
+                id: response.idtercero,
+                documento: tercero_documento,
+                tipodocumento: response.tipodocumento,
+                estado: response.estadotercero,
+                userId
+            };
+            idtercero = response.idtercero;
+            // throw { status: 300, msg: 'Vamos bien!' };
+            // EMPIEZA INTEGRACIÓN DUSOFT FINANCIERO Y DUSOFT ASISTENCIAL PARA CREAR TERCERO EN CASO DE LA NO EXISTENCIA
+            return true;
+        }
+    }).catch(err => { console.log('Error in "promise3":'); detenerPromesas = true; throw err; });
+
+
+    const promise4 = new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(ws_buscar_direccion_tercero, { tercero_documento }));
+    }).then(direccion => {
+
+        if (detenerPromesas) {
+            const err = { status: 500, msg: '¡Deteniendo promesa!' };
+            reject(err);
+        } else { resolve(G.Q.nfcall(ws_tercero_clasificacionFiscal, obj)); }
+
+        Object.assign(tercero, {
+            tipo_pais_id: direccion.prefijopais,
+            tipo_dpto_id: direccion.coddepartamento,
+            tipo_mpio_id: direccion.codmunicipio,
+            razonsocial: direccion.razonsocial,
+            direccion: direccion.direccion,
+            telefono: direccion.numerotelefonico,
+            email: direccion.email || ''
+        });
+        return true;
+    }).catch(err => { console.log('Error in "promise4":\n', err); });
+
+
+    const promise5 = new Promise((resolve, reject) => {
+        // CLASIFICACION FISCAL
+        const obj = { codigoempresa: 'DUA', idtercero: tercero_documento };
+        setTimeout(() => {
+            if (detenerPromesas) {
+                const err = { status: 500, msg: '¡Deteniendo promesa!' };
+                reject(err);
+            } else { resolve(G.Q.nfcall(ws_tercero_clasificacionFiscal, obj)); }
+        }, 1000); // funcion ws "datosClasificacionFiscalTercero" // Este metodo Webservice no funciona!! dañado, malo
+    }).then(response => {
+
+        if (!response) { // everytime empty
+            tercero.sw_ica = '0';
+            tercero.porcentaje_ica = 0;
+
+            const err = {
+                status: 300,
+                msg: 'No se encontro clasificacion fiscal tercero!'
+            };
+
+            throw err;
+        } else {
+            Object.assign(tercero, {
+                tipoContribuyente: response.codtipocontribuyente,
+                tipoRetencion: response.codtiporetencion,
+                sw_reteIca: response.manejaica
+            });
+
+            if (!tercero.sw_reteIca) { return 'finish'; }
+            else {
+                // RETEICA -- BIEN
+                const obj = { codempresa: 'DUA', identificacion: tercero_documento };
+                return G.Q.nfcall(ws_tercero_impuestoRteIca, obj); // impuestoreteica
+            }
+        }
+    }).then(response => {
+        tercero.sw_ica = '0';
+        tercero.porcentaje_ica = 0;
+
+        if (response === 'finish') { return true; }
+
+        if (!response) {
+            const err = {
+                status: 300,
+                msg: 'No se encontro reteica!'
+            }
+
+            throw err;
+        } else {
+            tercero.sw_ica = '1';
+            tercero.porcentaje_ica = response.tasa;
+            console.log('finish promise4');
+            return true;
+        }
+    }).catch(err => { console.log('Error in "promise5":\n', err); });
+
+
+
+    const promise6 = new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(ws_tercero_naturaleza, { idtercero })); // funcion ws "buscarNaturalezaTercero"
+    }).then(response => {
+        tercero.naturaleza = response;
+        return true;
+    }).catch(err => { console.log('Error in "promise6":\n', err); });
+
+
+    const promise7 = new Promise((resolve, reject) => {
+        resolve();
+    }).then(response => {
+        tercero.naturaleza = response;
+        return true;
+    }).catch(err => { console.log('Error in "promise7":\n', err); });
+
+
+    const promise8 = new Promise((resolve, reject) => {
+        if (tipo === 1) {
+            const obj = { idempresa: 1, numeroidentificacion: tercero_documento };
+            resolve(G.Q.nfcall(ws_buscar_tercero_proveedor, obj)); // funcion ws "terceroProveedorClienteIden"
+        } else { resolve('finish'); }
+    }).then(response => {
+        if (response === 'finish') return true;
+
+        if (!response || !response.idtercero) {
+            const err = {
+                status: 300,
+                msg: 'No se encontro Id del tercero!'
+            };
+            throw err;
+        } else {
+            tercero.estadoproveedor = response.estadotercero;
+            tercero.razonSocial = response.razonsocial;
+            tercero.id = response.idtercero;
+            return true;
+        }
+    }).catch(err => { console.log('Error in "promise8":\n', err); });
+
+
+    const promise9 = new Promise((resolve, reject) => {
+        resolve(G.Q.nfcall(ws_tercero_impuestos, { codigofuente: 33 })); // funcion ws "impuestoretefuentecodigo"
+    }).then(response => {
+        // RETEFUENTE
+        tercero.sw_rtf = response ? '1': '0';
+        tercero.porcentaje_rtf = response ? response.tasa: 0;
+        return true;
+    }).catch(err => { console.log('Error in "promise9":\n', err); });
+
+
+    const promise10 = new Promise((resolve, reject) => {
+        const obj = { codigoiva: 13 };
+        resolve(G.Q.nfcall(ws_tercero_impuestoReteIvaCodigo, obj)); // funcion ws "impuestoreteivacodigo"
+    }).then(response => {
+        tercero.sw_reteiva = response ? '1': '0';
+        tercero.porcentaje_reteiva = response ? response.tasa: 0;
+        return true;
+    }).catch(err => { console.log('Error in "promise10":\n', err); });
+
+
+    Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7, promise8, promise9, promise10])
+        .then(response => {
+            console.log('Finish the promises!!');
+            if (!existeTercero) { return G.Q.nfcall(that.m_ordenes_compra, 'crearTercero', tercero); }
+            else {
+                console.log('Tercero ya existe en Asistencial!');
+                return true;
+            }
+        }).then(response => {
+            return G.Q.ninvoke(that.m_ordenes_compra, 'crearTerceroProveedor', tercero);
+        }).then(Gu => {
+            callback(false, Gu);
+        }).catch(err => {
+            detenerPromesas = true;
+            if (!err.status && !err.msg) {
+                err = {
+                    status: 500,
+                    msg: 'Hubo un error!',
+                    full: JSON.parse(JSON.stringify(err))
+                };
+            }
+            if (!err.full) { err.full = {}; }
+
+            console.log(err);
+
+            if (err.status !== 300) {
+                return callback(err);
+            } else {
+                return callback(false, err);
+            }
+        });
+};
 
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios", "m_actasTecnicas", "m_e008", "m_movimientos_bodegas", "m_i002", "c_i002", "c_pedidos_clientes", "m_pedidos_clientes", "c_e008", "c_pedidos_farmacias", "m_pedidos_farmacias"];
 

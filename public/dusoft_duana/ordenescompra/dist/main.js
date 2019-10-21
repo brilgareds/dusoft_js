@@ -42426,7 +42426,8 @@ define('url',["angular"], function(angular) {
                 'GUARDAR_ACTA': BASE_URL + '/ActasTecnicas/guardarActa'
             },
             'PROVEEDORES': {
-                'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
+                'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
+                'WS_LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/ws_listarProveedores'
             },
             'UNIDADES_NEGOCIO': {
                 'LISTAR_UNIDADES_NEGOCIO': BASE_URL + '/UnidadesNegocio/listarUnidadesNegocio'
@@ -53545,7 +53546,7 @@ define('controllers/genererarordenes/GestionarOrdenesController',["angular", "js
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                Request.realizarRequest(API.PROVEEDORES.WS_LISTAR_PROVEEDORES, "POST", obj, function(data) {
 
                     if (data.status === 200) {
 

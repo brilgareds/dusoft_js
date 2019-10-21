@@ -4,7 +4,11 @@ module.exports = function(app, di_container) {
     
     app.post('/api/Terceros/Proveedores/listar', function(req, res) {
          c_proveedores.listarProveedores(req, res);
-    });    
+    });
+
+    app.post('/api/Terceros/Proveedores/ws_listarProveedores', function(req, res) {
+         c_proveedores.ws_listarProveedores(req, res);
+    });
     
     app.post('/api/Terceros/Proveedores/listarProveedoresPorCodigo', function(req, res) {
          c_proveedores.listarProveedoresPorCodigo(req, res);

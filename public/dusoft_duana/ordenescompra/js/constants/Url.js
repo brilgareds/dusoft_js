@@ -50,7 +50,8 @@ define(["angular"], function(angular) {
                 'GUARDAR_ACTA': BASE_URL + '/ActasTecnicas/guardarActa'
             },
             'PROVEEDORES': {
-                'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
+                'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
+                'WS_LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/ws_listarProveedores'
             },
             'UNIDADES_NEGOCIO': {
                 'LISTAR_UNIDADES_NEGOCIO': BASE_URL + '/UnidadesNegocio/listarUnidadesNegocio'

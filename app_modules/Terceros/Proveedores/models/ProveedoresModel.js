@@ -30,109 +30,115 @@ ProveedoresModel.prototype.listar_proveedores = function(termino_busqueda, callb
 
 
 ProveedoresModel.prototype.verExistenciaTerceroAsistencial = (tercero_id, callback) => {
-    new Promise((resolve, reject) => {
-        resolve(G.knex('terceros').count('*').where({ tercero_id, tipo_id_tercero: 'NIT' }));
-    }).then(response => {
-        const contador = parseFloat(response[0].count);
-        callback(false, contador);
-    }).catch(err => {
-        callback(err);
-    });
+    Promise.resolve(true)
+        .then(response => {
+            return G.knex('terceros').count('*').where({ tercero_id, tipo_id_tercero: 'NIT' });
+        }).then(response => {
+            const contador = parseFloat(response[0].count);
+            callback(false, contador);
+        }).catch(err => {
+            callback(err);
+        });
 };
 
 ProveedoresModel.prototype.verExistenciaProveedorAsistencial = (tercero_id, callback) => {
-    new Promise((resolve, reject) => {
-        resolve(G.knex('terceros_proveedores').count('*').where({ tercero_id }));
-    }).then(response => {
-        const contador = parseFloat(response[0].count);
-        callback(false, contador);
-    }).catch(err => {
-        callback(err);
-    });
+    Promise.resolve(true)
+        .then(response => {
+            return G.knex('terceros_proveedores').count('*').where({ tercero_id });
+        }).then(response => {
+            const contador = parseFloat(response[0].count);
+            callback(false, contador);
+        }).catch(err => {
+            callback(err);
+        });
 };
 
 ProveedoresModel.prototype.crearTercero = (obj, callback) => {
     var logs = 'Creando tercero...\n';
 
-    new Promise((resolve, reject) => {
-        if (!obj || !obj.tipodocumento || !obj.documento || !obj.razonsocial || !obj.tipo_pais_is || !obj.tipo_dpto_id || !obj.tipo_mpio_id || !obj.direccion || !obj.telefono || !obj.email || !obj.naturaleza || !obj.userId) {
-            logs += 'Obj con formato invalido para crear un tercero!\n';
-            reject({});
-        }
+    Promise.resolve(true)
+        .then(response => {
+            if (!obj || !obj.tipodocumento || !obj.documento || !obj.razonsocial || !obj.tipo_pais_id || !obj.tipo_dpto_id || !obj.tipo_mpio_id || !obj.direccion || !obj.telefono || !obj.naturaleza || !obj.userId) {
+                logs += 'Obj con formato invalido para crear un tercero!\n';
+                throw {};
+            }
 
-        const query = G.knex('terceros')
-            .insert({
-                tipo_id_tercero: obj.tipodocumento,
-                tercero_id: obj.documento,
-                nombre_tercero: obj.razonsocial,
-                tipo_pais_id: obj.tipo_pais_id,
-                tipo_dpto_id: obj.tipo_dpto_id,
-                tipo_mpio_id: obj.tipo_mpio_id,
-                direccion: obj.direccion,
-                telefono: obj.telefono,
-                email: obj.email,
-                sw_persona_juridica: obj.naturaleza,
-                usuario_id: obj.userId
-            });
+            const query = G.knex('terceros')
+                .insert({
+                    tipo_id_tercero: obj.tipodocumento,
+                    tercero_id: obj.documento,
+                    nombre_tercero: obj.razonsocial,
+                    tipo_pais_id: obj.tipo_pais_id,
+                    tipo_dpto_id: obj.tipo_dpto_id,
+                    tipo_mpio_id: obj.tipo_mpio_id,
+                    direccion: obj.direccion,
+                    telefono: obj.telefono,
+                    email: '',
+                    sw_persona_juridica: obj.naturaleza,
+                    usuario_id: obj.userId
+                });
+            return query;
+        }).then(response => {
+            logs += 'Tercero Creado\n';
+            callback(false, logs);
+        }).catch(err => {
+            logs += 'Error al crear tercero!\n';
 
-        resolve(query);
-
-    }).then(response => {
-        logs += 'Tercero Creado\n';
-        callback(false, logs);
-    }).catch(err => {
-        logs += 'Error al crear tercero!\n';
-
-        if (!err.msg) { err.msg = logs; }
-        if (!err.status) { err.status = 300; }
-        callback(err);
-    });
+            if (!err.msg) {
+                err = {
+                    msg: logs + err.toString(),
+                    status: 300
+                };
+            }
+            callback(err);
+        });
 };
 
 ProveedoresModel.prototype.crearTerceroProveedor = (tercero, callback) => {
     let logs = 'Creando Proveedor...\n';
 
-    new Promise((resolve, reject) => {
-        resolve(G.knex.column(G.knex.raw('nextval(\'terceros_proveedores_codigo_proveedor_id_seq\')')));
-    }).then(response => {
-        const existeNuevaSecuencia = response && response.length && response[0].nextval;
+    Promise.resolve(true)
+        .then(response => {
+            return G.knex.column(G.knex.raw('nextval(\'terceros_proveedores_codigo_proveedor_id_seq\')'));
+        }).then(response => {
+            const existeNuevaSecuencia = response && response.length && response[0].nextval;
 
-        if (!existeNuevaSecuencia) throw { msg: 'Error al buscar nueva secuencia en "crearTerceroProveedor"\n' };
+            if (!existeNuevaSecuencia) throw { msg: 'Error al buscar nueva secuencia en "crearTerceroProveedor"\n' };
 
-        const nuevaSecuencia = response[0].nextval;
+            const nuevaSecuencia = response[0].nextval;
 
-        const query_crearTerceroProveedor = G.knex('terceros_proveedores').insert({
-            codigo_proveedor_id: nuevaSecuencia,
-            tipo_id_tercero: tercero.tipodocumento,
-            tercero_id: tercero.documento,
-            estado: 1,
-            dias_gracia: 0,
-            dias_credito: 0,
-            tiempo_entrega: 0,
-            descuento_por_contado: 0,
-            cupo: 0,
-            sw_regimen_comun: 0,
-            sw_gran_contribuyente: 0,
-            porcentaje_rtf: tercero.porcentaje_rtf,
-            porcentaje_ica: tercero.porcentaje_ica,
-            porcentaje_reteiva: tercero.porcentaje_reteiva,
-            sw_rtf: tercero.sw_rtf,
-            sw_reteiva: tercero.sw_reteiva,
-            sw_ica: tercero.sw_ica
+            const query_crearTerceroProveedor = G.knex('terceros_proveedores').insert({
+                codigo_proveedor_id: nuevaSecuencia,
+                tipo_id_tercero: tercero.tipodocumento,
+                tercero_id: tercero.documento,
+                estado: 1,
+                dias_gracia: 0,
+                dias_credito: 0,
+                tiempo_entrega: 0,
+                descuento_por_contado: 0,
+                cupo: 0,
+                sw_regimen_comun: 0,
+                sw_gran_contribuyente: 0,
+                porcentaje_rtf: tercero.porcentaje_rtf,
+                porcentaje_ica: tercero.porcentaje_ica,
+                porcentaje_reteiva: tercero.porcentaje_reteiva,
+                sw_rtf: tercero.sw_rtf,
+                sw_reteiva: tercero.sw_reteiva,
+                sw_ica: tercero.sw_ica
+            });
+
+            // return true; // Este hay que borrarlo y descomentar el siguiente
+            return query_crearTerceroProveedor;
+        }).then(response => {
+            logs += 'Proveedor creado\n';
+            callback(false, logs);
+        }).catch(err => {
+            if (!err.status) err.status = 300;
+            logs += 'Error al crear proveedor!\n';
+            err.msg = logs;
+
+            callback(err);
         });
-
-        // return true; // Este hay que borrarlo y descomentar el siguiente
-        return query_crearTerceroProveedor;
-    }).then(response => {
-        logs += 'Proveedor creado\n';
-        callback(false, logs);
-    }).catch(err => {
-        if (!err.status) err.status = 300;
-        logs += 'Error al crear proveedor!\n';
-        err.msg = logs;
-
-        callback(err);
-    });
 };
 
 
@@ -162,26 +168,27 @@ ProveedoresModel.prototype.obtenerProveedorPorCodigo = function(codigoProveedor,
 
 ProveedoresModel.prototype.listarTerceroProveedor = (obj, callback) => {
 
-    new Promise((resolve, reject) => {
-        const queryListarTerceroProveedor = G.knex
-            .column(['ter.*', 'p.*', 'ter.nombre_tercero as nombre_proveedor'])
-            .from('terceros as ter')
-            .innerJoin('terceros_proveedores as p', function() {
-                this.on('ter.tipo_id_tercero', 'p.tipo_id_tercero')
-                    .on('ter.tercero_id', 'p.tercero_id')})
-            .where('ter.nombre_tercero', 'ILIKE', `%${obj.tercero_documento}%`)
-            .andWhere('ter.tipo_id_tercero', 'ILIKE', `%${obj.tercero_tipo_documento}%`)
-            .orWhere('ter.tercero_id', 'ILIKE', `%${obj.tercero_documento}%`);
+    Promise.resolve(true)
+        .then(response => {
+            const queryListarTerceroProveedor = G.knex
+                .column(['ter.*', 'p.*', 'ter.nombre_tercero as nombre_proveedor'])
+                .from('terceros as ter')
+                .innerJoin('terceros_proveedores as p', function() {
+                    this.on('ter.tipo_id_tercero', 'p.tipo_id_tercero')
+                        .on('ter.tercero_id', 'p.tercero_id')})
+                .where('ter.nombre_tercero', 'ILIKE', `%${obj.tercero_documento}%`)
+                .andWhere('ter.tipo_id_tercero', 'ILIKE', `%${obj.tercero_tipo_documento}%`)
+                .orWhere('ter.tercero_id', 'ILIKE', `%${obj.tercero_documento}%`);
 
-        // ORDER BY 4 " ; // ter.nombre_tercero
+            // ORDER BY 4 " ; // ter.nombre_tercero
 
-        resolve(queryListarTerceroProveedor);
-    }).then(response => {
-        callback(false, response);
-    }).catch(err => {
-        console.log('err: ', err);
-        callback(err);
-    });
+            return queryListarTerceroProveedor;
+        }).then(response => {
+            callback(false, response);
+        }).catch(err => {
+            console.log('err: ', err);
+            callback(err);
+        });
 };
 
 

@@ -77,6 +77,7 @@ ProveedoresModel.prototype.crearTercero = (obj, callback) => {
                     sw_persona_juridica: obj.naturaleza,
                     usuario_id: obj.userId
                 });
+            console.log('query: ', G.sqlformatter.format(query.toString()));
             return query;
         }).then(response => {
             logs += 'Tercero Creado\n';

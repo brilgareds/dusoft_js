@@ -495,7 +495,6 @@ Proveedores.prototype.ws_listarProveedores = (req, res) => {
             console.log('\nProveedores: ', proveedores, '\n\n', 'Logs:', logs);
             return res.send(G.utils.r(req.url, 'Lista de proveedores', 200, { proveedores }));
         }).catch(err => {
-            console.log('err: ', err);
             if (!err.status) {
                 err.status = 500;
                 err.full = JSON.parse(JSON.stringify(err));

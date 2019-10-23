@@ -45,7 +45,6 @@ define(["angular", "js/controllers",
             
 
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
-
                 that.buscar_productos();
                 that.buscar_laboratorios();
             });
@@ -82,7 +81,6 @@ define(["angular", "js/controllers",
 
 
             that.buscar_productos = function(termino, paginando) {
-
                 var termino = termino || "";
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.pagina_actual = 1;

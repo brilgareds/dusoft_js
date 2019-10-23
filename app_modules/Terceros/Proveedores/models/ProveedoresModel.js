@@ -177,11 +177,12 @@ ProveedoresModel.prototype.listarTerceroProveedor = (obj, callback) => {
                 .innerJoin('terceros_proveedores as p', function() {
                     this.on('ter.tipo_id_tercero', 'p.tipo_id_tercero')
                         .on('ter.tercero_id', 'p.tercero_id')})
-                .where('ter.nombre_tercero', 'ILIKE', `%${obj.tercero_documento}%`)
-                .andWhere('ter.tipo_id_tercero', 'ILIKE', `%${obj.tercero_tipo_documento}%`)
-                .orWhere('ter.tercero_id', 'ILIKE', `%${obj.tercero_documento}%`);
-
-            // ORDER BY 4 " ; // ter.nombre_tercero
+                .where('ter.tipo_id_tercero', 'ILIKE', `%${obj.tercero_documento}%`)
+                .orWhere('ter.tercero_id', 'ILIKE', `%${obj.tercero_documento}%`)
+                .orWhere('ter.nombre_tercero', 'ILIKE', `%${obj.tercero_documento}%`)
+                .orWhere('ter.direccion', 'ILIKE', `%${obj.tercero_documento}%`)
+                .orWhere('ter.telefono', 'ILIKE', `%${obj.tercero_documento}%`)
+                .orderBy('ter.nombre_tercero');
 
             return queryListarTerceroProveedor;
         }).then(response => {

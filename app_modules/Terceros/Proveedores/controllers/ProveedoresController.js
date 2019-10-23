@@ -479,21 +479,14 @@ Proveedores.prototype.ws_listarProveedores = (req, res) => {
     // tipo: 1 Afecta tabla "terceros" y "terceros_proveedores"
     Promise.resolve(true)
         .then(response => {
-            if (!obj.tercero_documento) {
-                const err = {
-                    status: 300,
-                    msg: 'Error en termino de busqueda!'
-                };
-                throw err;
-            }
-            if (!sw_nit) { return true; }
+            if (!sw_nit) { return false; }
             else { return G.Q.nfcall(ws_tercero_proveedor, obj); }
         }).then(response => {
             logs += (response.msg || response || '');
             return G.Q.ninvoke(that.m_proveedores, 'listarTerceroProveedor', obj);
         }).then(proveedores => {
-            console.log('\nProveedores: ', proveedores, '\n\n', 'Logs:', logs);
-            return res.send(G.utils.r(req.url, 'Lista de proveedores', 200, { proveedores }));
+            logs += 'Listando Proveedores!\n';
+            return res.send(G.utils.r(req.url, logs, 200, { proveedores }));
         }).catch(err => {
             if (!err.status) {
                 err.status = 500;
@@ -502,8 +495,8 @@ Proveedores.prototype.ws_listarProveedores = (req, res) => {
             if (!err.full) { err.full = {}; }
 
             err.msg = logs + (err.msg || '') + 'Error listando los proveedores!';
-            console.log('Logs:', err.msg);
-            return res.send(G.utils.r(req.url, err.msg, err.status, err));
+
+            return res.send(G.utils.r(req.url, err.msg, err.status, {})); // se borro obj "err" en la respuesta
         }); // Finish is "ws_tercero_proveedor"
 };
 

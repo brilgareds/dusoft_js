@@ -93,13 +93,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             that.gestionar_consultas = function() {
-
-                that.buscar_proveedores(function() {
-
-                    that.buscar_unidades_negocio(function() {
-
-                        that.gestionar_orden_compra();
-                    });
+                that.buscar_proveedores(() => {});
+                that.buscar_unidades_negocio(function() {
+                    that.gestionar_orden_compra();
                 });
             };
 

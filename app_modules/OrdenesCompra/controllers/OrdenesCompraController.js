@@ -3029,14 +3029,17 @@ const ws_buscar_tercero = (obj, callback) => {
 
 const ws_buscar_direccion_tercero = (obj, callback) => {
     const url = 'http://172.16.29.240:8080/SinergiasFinanciero3-ejb/terceroGeneralGet/terceroGeneralGet?wsdl';
+    let response = {};
 
     new Promise((resolve, reject) => {
         resolve(G.Q.nfcall(G.soap.createClient, url));
     }).then(client => {
         return G.Q.ninvoke(client, "buscarTerceroId", { idtercero: obj.tercero_id }); // metodo = 'todos_pacientes';
     }).then(result => {
-        if (!result.length) { throw 'Error al obtener la direccion del tercero!'; }
-        callback(false, result[0]);
+        if (!result || !result.length || !result[0].buscarTerceroIdResult) { throw 'Error al obtener la direccion del tercero!'; }
+
+        response = result[0].buscarTerceroIdResult;
+        callback(false, response);
     }).catch(err => {
         console.log('Error in "ws_buscar_direccion_tercero": ', err);
         callback(err);
@@ -3220,9 +3223,9 @@ OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
             return true;
         } else {
             const err = {
-                status: 300,
+                status: 200,
                 msg: 'Tercero ya existe como proveedor en Asistencial'
-            }
+            };
 
             throw err;
         }
@@ -3257,13 +3260,20 @@ OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
 
 
     const promise4 = new Promise((resolve, reject) => {
-        resolve(G.Q.nfcall(ws_buscar_direccion_tercero, { tercero_documento }));
-    }).then(direccion => {
-
         if (detenerPromesas) {
-            const err = { status: 500, msg: '¡Deteniendo promesa!' };
-            reject(err);
-        } else { resolve(G.Q.nfcall(ws_tercero_clasificacionFiscal, obj)); }
+            const err = {status: 500, msg: '¡Deteniendo promesa!'};
+            throw err;
+        } else {
+            resolve(G.Q.nfcall(ws_buscar_direccion_tercero, { tercero_documento }));
+        }
+    }).then(direccion => {
+        if (!direccion || !direccion.razonsocial) {
+            const err = {
+                status: 300,
+                msg: 'No se encontro direccion del tercero!'
+            };
+            throw err;
+        }
 
         Object.assign(tercero, {
             tipo_pais_id: direccion.prefijopais,
@@ -3274,8 +3284,9 @@ OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
             telefono: direccion.numerotelefonico,
             email: direccion.email || ''
         });
+
         return true;
-    }).catch(err => { console.log('Error in "promise4":\n', err); });
+    }).catch(err => { console.log('Error in "promise4":'); throw err; });
 
 
     const promise5 = new Promise((resolve, reject) => {
@@ -3323,7 +3334,7 @@ OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
             const err = {
                 status: 300,
                 msg: 'No se encontro reteica!'
-            }
+            };
 
             throw err;
         } else {
@@ -3397,8 +3408,7 @@ OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
 
     Promise.all([promise1, promise2, promise3, promise4, promise5, promise6, promise7, promise8, promise9, promise10])
         .then(response => {
-            console.log('Finish the promises!!');
-            if (!existeTercero) { return G.Q.nfcall(that.m_ordenes_compra, 'crearTercero', tercero); }
+            if (!existeTercero) { console.log('Creando tercero!'); return G.Q.nfcall(that.m_ordenes_compra, 'crearTercero', tercero); }
             else {
                 console.log('Tercero ya existe en Asistencial!');
                 return true;
@@ -3420,7 +3430,7 @@ OrdenesCompra.prototype.ws_tercero_proveedor = (data, callback) => {
 
             console.log(err);
 
-            if (err.status !== 300) {
+            if (err.status === 500) {
                 return callback(err);
             } else {
                 return callback(false, err);

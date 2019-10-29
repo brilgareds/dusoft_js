@@ -192,10 +192,12 @@ const ws_tercero_impuestoReteIvaCodigo = (obj, callback) => {
 
 const ws_tercero_proveedor = (data, callback) => {
     // data viene desde "listarOrdenesCompra", se reciben tres valores......1º nit, 2º tercero_id, 3º tipo
-    const nit = data.nit;
     const tipo = data.tipo;
     const tercero_documento = data.tercero_documento;
     const userId = data.userId;
+    const codigofuente = 33; // Con esto sacan el reteFuente
+    const codigoiva = 13; // Con esto sacan el reteIva
+    const codigoempresa = 'MAD'; // Con esto sacan el ica, tipoContribuyente y el tipoRetencion
 
     let existeTerceroEnAsistencial = false;
     let existeProveedorEnAsistencial = false;
@@ -203,9 +205,7 @@ const ws_tercero_proveedor = (data, callback) => {
     let existeProveedorEnFinanciero = false;
     var logs = '';
     let finish = false;
-
     let existe = 0;
-    let Gu = false;
     var tercero = {};
     let idtercero = '';
 
@@ -221,14 +221,11 @@ const ws_tercero_proveedor = (data, callback) => {
                     existeTerceroEnAsistencial = response;
                     return true;
                 }).catch(err => { logs += err.msg; });
-
-
             const promiseAsistencialProveedor = Promise.resolve(true)
                 .then(response => {
                     return G.Q.ninvoke(that.m_proveedores, 'verExistenciaProveedorAsistencial', tercero_documento);
                 }).then(response => {
                     existeProveedorEnAsistencial = response;
-
                     if (!existeProveedorEnAsistencial) {
                         logs += 'Tercero no existe como proveedor en Asistencial\n';
                         return logs;
@@ -237,7 +234,6 @@ const ws_tercero_proveedor = (data, callback) => {
                         throw err;
                     }
                 }).catch(err => { throw err; });
-
             const promiseFinancieroTercero = Promise.resolve(true)
                 .then(response => {
                     const obj = { numeroidentificacion: tercero_documento };
@@ -267,7 +263,6 @@ const ws_tercero_proveedor = (data, callback) => {
                         return true;
                     }
                 }).catch(err => { throw err; });
-
             const promiseFinancieroProveedor = Promise.resolve(true)
                 .then(response => {
                     return true;
@@ -293,7 +288,6 @@ const ws_tercero_proveedor = (data, callback) => {
                         return tercero.id;
                     }
                 }).catch(err => { logs += (err.msg || ''); } );
-
             return Promise.all([promiseFinancieroProveedor, promiseAsistencialTercero, promiseAsistencialProveedor, promiseFinancieroTercero]);
         }).then(response => {
             if (!existeTerceroEnFinanciero || !existeProveedorEnFinanciero || (existeTerceroEnAsistencial && existeProveedorEnAsistencial)) {
@@ -327,7 +321,7 @@ const ws_tercero_proveedor = (data, callback) => {
                 const promiseFinancieroClasificacionFiscal = Promise.resolve(true)
                     .then(response => {
                         // CLASIFICACION FISCAL
-                        const obj = {codigoempresa: 'MAD', idtercero: tercero.id};
+                        const obj = { codigoempresa, idtercero: tercero.id };
                         return G.Q.nfcall(ws_tercero_clasificacionFiscal, obj); // funcion ws "datosClasificacionFiscalTercero" // Este metodo Webservice no funciona!! dañado, malo
                     }).then(response => {
                         tercero.sw_ica = '0';
@@ -352,14 +346,11 @@ const ws_tercero_proveedor = (data, callback) => {
                             }
                             else {
                                 // RETEICA -- BIEN
-                                const obj = {codempresa: 'MAD', identificacion: tercero_documento};
+                                const obj = {codempresa: codigoempresa, identificacion: tercero_documento};
                                 return G.Q.nfcall(ws_tercero_impuestoRteIca, obj); // impuestoreteica
                             }
                         }
                     }).then(response => {
-                        tercero.sw_ica = '0';
-                        tercero.porcentaje_ica = 0;
-
                         if (response === 'finish') {
                             return true;
                         }
@@ -395,7 +386,7 @@ const ws_tercero_proveedor = (data, callback) => {
 
                 const promiseFinancieroReteFuente = Promise.resolve(true)
                     .then(response => {
-                        return G.Q.nfcall(ws_tercero_impuestos, {codigofuente: 33}); // funcion ws "impuestoretefuentecodigo"
+                        return G.Q.nfcall(ws_tercero_impuestos, { codigofuente }); // funcion ws "impuestoretefuentecodigo"
                     }).then(response => {
                         // RETEFUENTE
                         tercero.sw_rtf = response ? '1' : '0';
@@ -408,9 +399,9 @@ const ws_tercero_proveedor = (data, callback) => {
 
                 const promiseFinancieroReteIva = Promise.resolve(true)
                     .then(response => {
-                        const obj = {codigoiva: 13};
-                        return G.Q.nfcall(ws_tercero_impuestoReteIvaCodigo, obj); // funcion ws "impuestoreteivacodigo"
+                        return G.Q.nfcall(ws_tercero_impuestoReteIvaCodigo, { codigoiva }); // funcion ws "impuestoreteivacodigo"
                     }).then(response => {
+                        if (response && response.error) { logs += 'Error en reteIva: "' + response.error + '"\n'; }
                         tercero.sw_reteiva = response ? '1' : '0';
                         tercero.porcentaje_reteiva = response ? response.tasa : 0;
                         return true;

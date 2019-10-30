@@ -33602,8 +33602,16 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 btn_function: 'sshConnection'
             };
             let btn_dbStatusDefault = {
-                title: 'Status',
-                name: 'querysActiveInDb',
+                title: 'Consultas en proceso',
+                name: 'query',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'sshConnection'
+            };
+            let btn_dbIdlesDefault = {
+                title: 'Conexiones Activas',
+                name: 'IdlesInDb',
                 class: serverBtnSize + 'btn btn-primary',
                 disable: false,
                 icono: 'glyphicon glyphicon-list-alt',
@@ -33726,7 +33734,8 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 width: serverSizeMax,
                 tableClass: 'tablePc tableBorder cells-auto line-nowrap',
                 actions: [
-                    btn_dbStatusDefault
+                    btn_dbStatusDefault,
+                    btn_dbIdlesDefault
                 ],
                 obj: []
             };
@@ -43350,7 +43359,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64

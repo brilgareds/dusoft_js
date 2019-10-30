@@ -59,6 +59,54 @@ Sistema.prototype.verificarSincronizacion = function (req, res) {
     });
 };
 
+const betweenDates = data => { // 2019-10-29 12:14:51.466269-05
+    let response = '';
+    const date1 = new Date(data);
+    const date2 = new Date();
+    let milisegundos = parseInt(date2 - date1);
+    let dias = 0;
+    let horas = 0;
+    let minutos = 0;
+    let segundos = 0;
+    const formulaDia = 8.64e+7;
+    const formulaHora = 3.6e+6;
+    const formulaMinuto = 60000;
+    const formulaSegundo = 1000;
+    console.log('Fechaaaa\nString: ' + data + ', Fecha1: ' + date1 + ' Fecha2: ' + date2 + ' Milisegundos: ' + milisegundos);
+
+    if (milisegundos >= formulaDia) {
+        dias = parseInt(milisegundos / formulaDia);
+        milisegundos = milisegundos - (dias * formulaDia);
+        response += dias + ' Dias, ';
+    }
+
+    if (milisegundos >= formulaHora) {
+        horas = parseInt(milisegundos / formulaHora);
+        milisegundos = milisegundos - (horas * formulaHora);
+        response += horas + ' Horas, ';
+    }
+
+    if (milisegundos >= formulaMinuto) {
+        minutos = parseInt(milisegundos / formulaMinuto);
+        milisegundos = milisegundos - (minutos * formulaMinuto);
+        response += minutos + ' Min, ';
+    }
+
+    if (milisegundos >= formulaSegundo) {
+        segundos = parseInt(milisegundos / formulaSegundo);
+        milisegundos = milisegundos - (segundos * formulaSegundo);
+        response += segundos + ' Seg, ';
+    }
+
+    if (response === '') {
+        segundos = '0,' + milisegundos.toString().substr(0, 1);
+        response += segundos + ' Seg, ';
+    }
+    response = response.substr(0, response.length-2);
+
+    return response;
+};
+
 const limpiarRespuesta = (lineas, modulo, accion) => {
     const cantidadLineas = lineas.length;
     let palabras = [];
@@ -67,6 +115,7 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
     let responsePalabras = [];
     let cantidadPalabras = 0;
     let cantidadConsultas = 0;
+    let todasLaspalabras = [];
 
 
 
@@ -79,29 +128,35 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
     }
 
     for (let j = 0; j < cantidadLineas; j++) {
-
+        palabras = [];
+        palabra = '';
 
         if (modulo === 'POSTGRES') {
-            if (accion === 'query' && j === 1) {
-                continue;
-            } else {
-                let lineaDividida = lineas[j].split('  ');
+            if (!lineas[j] || lineas[j].length < 4 || lineas[j].trim().substr(0, 4) === '----') continue;
 
-                for (let l=0; l < lineaDividida.length; l++) {
-                    let initQuery = lineaDividida[l].lastIndexOf(" | ")+1;
-                    console.log('initQuery: ', initQuery);
+            let initQuery = lineas[j].lastIndexOf(" | ")+1;
+            const query = lineas[j].substr(initQuery+1).trim();
+            const part0 = lineas[j].substr(0, initQuery-1).trim();
 
-                    let query = lineaDividida[l].substr(initQuery+1);
-                    console.log('Query: ', query);
+            let initDate = part0.lastIndexOf(" | ")+1;
+            const date = part0.substr(initDate+1).trim();
+            const beforeDate = part0.substr(0, initDate-1).trim();
 
-                    palabras = lineaDividida[l].substr(0, initQuery-1).split(' | ');
-                    palabras.push(query);
+            let lineaDividida = beforeDate.trim().split(' ');
+            lineaDividida.push(date.trim());
+            lineaDividida.push(query);
 
-                    console.log('Palabras: ', palabras);
+            palabras = lineaDividida;
+
+            console.log('palabras: ', palabras);
+
+            /*for (let k = 0; k < lineaDividida.length; k++) {
+                let word = lineaDividida[k];
+
+                if (word && word.length) {
+                    palabras.push(word);
                 }
-
-
-            }
+            }*/
         } else {
             palabras = lineas[j].split(' ');
         }
@@ -109,10 +164,21 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
         cantidadPalabras = palabras.length;
         responsePalabras = [];
 
-        console.log('Linea es: ', palabras);
+        // console.log('Linea es: ', palabras);
 
         for (let k = 0; k < cantidadPalabras; k++) {
-            palabra = palabras[k].trim();
+            if (!palabras[k] || !palabras[k].length) { continue; }
+
+            palabra = palabras[k];
+            // console.log('palabras: ', palabras);
+            // console.log('palabra: ', palabra);
+
+
+            /*let initQuery = lineaDividida.lastIndexOf(" | ")+1;
+            let query = lineaDividida.substr(initQuery+1).trim();
+            todasLaspalabras = lineaDividida.substr(0, initQuery-1).trim();*/
+
+
             if (palabra.length > 0 && palabra !== '│' && palabra !== '|' && palabra !== ' ') {
 
                 if (modulo === 'POSTGRES' && palabra.substr(0,1) === ':') {
@@ -127,7 +193,13 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
             }
         }
         if (responsePalabras.length > 1) {
-            console.log('J is: ', j, '\n\n\nAgregando esta lineaaaa: ', responsePalabras);
+            if (responsePalabras[4] && responsePalabras[4] !== 'fecha') {
+                // console.log('Fecha original: ', responsePalabras[4]);
+                responsePalabras[4] = betweenDates(responsePalabras[4].toString());
+                console.log('Diferencia: ', responsePalabras[4], '\n\n');
+            }
+
+            console.log('\n\nJ is: ', j, 'Agregando esta lineaaaa: ', responsePalabras);
             responseLineas.push(responsePalabras);
         }
     }
@@ -280,7 +352,7 @@ Sistema.prototype.sshConnection = (req, res) => {
     } else if (modulo === 'POSTGRES') {
         if (accion !== undefined) {
             if (accion === 'query') {
-                const query = ` "select procpid as id, datname as database, usename as user, client_addr as ip, query_start as fecha, current_query as consulta from pg_stat_activity where not current_query ILIKE '%<IDLE>%' and not current_query ILIKE '%from system_usuarios_sesiones%' and not current_query ILIKE '%update system_usuarios_sesiones%' and procpid != pg_backend_pid() order by query_start asc;"`;
+                const query = ` "select procpid as id, datname as database, usename as user, client_addr as ip, substring(query_start, 0, 20) as fecha, current_query as consulta from pg_stat_activity where not current_query ILIKE '%<IDLE>%' and not current_query ILIKE '%from system_usuarios_sesiones%' and not current_query ILIKE '%update system_usuarios_sesiones%' and procpid != pg_backend_pid() order by query_start asc;"`;
                 parametros.sentencia = credentialRoot + query;
             } else if (accion === 'logs') {
                 parametros.sentencia = " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ad)' --graph -100 --date=format:%d/%m/%Y\\ %H:%M:%S";

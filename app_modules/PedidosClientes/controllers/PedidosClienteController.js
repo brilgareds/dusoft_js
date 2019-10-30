@@ -4850,7 +4850,7 @@ function __disponibilidadProductos(that, index, productos, parametros, callback)
             parametros.filtroAvanzado)
             .then(function (resultado) {
 
-                if (producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0) {
+                if ((producto.cantidadPendienteDespachar && producto.cantidadPendienteDespachar!= '0') && (producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0)) {
                     productoUnidadMedida = resultado[0];
                     resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                     productosSinDisponible.push(resultado[0]);

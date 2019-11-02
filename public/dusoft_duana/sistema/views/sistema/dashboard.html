@@ -93,8 +93,14 @@
                                     <div class="col-sm-12 console-format" style="max-height: 370px; overflow: auto;">
                                         <table class="{{monitoreo[server][modulo].tableClass}}" ng-repeat="obj in monitoreo[server][modulo].obj track by $index">  <!-- ng-repeat="(key, title) in modulo.obj track by $index" -->
                                             <tr style="height: 20px;">
-                                                <th colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px; ">
-                                                    {{obj.title}}
+                                                {{modulo.actions}} yyyyyyy {{modulo.actions.name}}
+                                                <th ng-if="!(modulo === 'POSTGRES_PRODUCCION' && modulo.actions.name === 'idles')" colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px;">{{obj.title}}</th>
+
+                                                <th ng-if="(modulo === 'POSTGRES_PRODUCCION' && modulo.actions.name === 'idles')" colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px; height: 3em;" class="ng-binding col-sm-12">
+                                                    <div class="col-sm-offset-4 col-sm-4">{{obj.title}}</div>
+                                                    <div class="col-sm-4">
+                                                        <span class="btn btn-danger custom-danger" style="position: absolute;margin-top: -6px;right: 3em;">Detener TODAS</span>
+                                                    </div>
                                                 </th>
                                             </tr>
                                             <tr>
@@ -106,7 +112,7 @@
                                                 <td ng-repeat="item in items track by $index" class="nowrap">
                                                     {{item}}
                                                 </td>
-                                                <td ng-if="modulo === 'POSTGRES' && items" class="normal">
+                                                <td ng-if="modulo === 'POSTGRES_PRODUCCION' && items" class="normal">
                                                     <p class="btn btn-danger custom-danger" ng-click="querysActiveInDb(modulo, 'killProcess', server, obj.header, items)">
                                                         <i class="glyphicon glyphicon-stop"></i>
                                                         <span>Stop</span>

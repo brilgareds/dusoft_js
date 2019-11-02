@@ -87,10 +87,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              *              listar todos las autorizaciones de productos en pedido
              */
             that.buscarProductosBloqueados = function(termino,paginando) {
-                    
-                if ($scope.ultima_busqueda !== $scope.termino) {
-                    $scope.paginaactual = 1;
-                }
+
+                if ($scope.ultima_busqueda !== $scope.termino) { $scope.paginaactual = 1; }
                 
                 var obj = {
                     termino_busqueda: termino,

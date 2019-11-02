@@ -72,7 +72,7 @@ const betweenDates = data => { // 2019-10-29 12:14:51.466269-05
     const formulaHora = 3.6e+6;
     const formulaMinuto = 60000;
     const formulaSegundo = 1000;
-    console.log('Fechaaaa\nString: ' + data + ', Fecha1: ' + date1 + ' Fecha2: ' + date2 + ' Milisegundos: ' + milisegundos);
+    // console.log('Fechaaaa\nString: ' + data + ', Fecha1: ' + date1 + ' Fecha2: ' + date2 + ' Milisegundos: ' + milisegundos);
 
     if (milisegundos >= formulaDia) {
         dias = parseInt(milisegundos / formulaDia);
@@ -116,10 +116,11 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
     let cantidadPalabras = 0;
     let cantidadConsultas = 0;
     let todasLaspalabras = [];
+    let responseObj = {};
 
 
 
-    if (modulo === 'POSTGRES') {
+    if (modulo === 'POSTGRES_PRODUCCION') {
         if (accion === 'query') {
             cantidadConsultas = lineas[cantidadLineas-3].substr(1,1);
         } else {
@@ -131,11 +132,11 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
         palabras = [];
         palabra = '';
 
-        if (modulo === 'POSTGRES') {
+        if (modulo === 'POSTGRES_PRODUCCION') {
             if (!lineas[j] || lineas[j].length < 4 || lineas[j].trim().substr(0, 4) === '----') continue;
 
             let initQuery = lineas[j].lastIndexOf(" | ")+1;
-            const query = lineas[j].substr(initQuery+1).trim();
+            const query = lineas[j].substr(initQuery+1).trim() || ' ';
             const part0 = lineas[j].substr(0, initQuery-1).trim();
 
             let initDate = part0.lastIndexOf(" | ")+1;
@@ -147,9 +148,6 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
             lineaDividida.push(query);
 
             palabras = lineaDividida;
-
-            console.log('palabras: ', palabras);
-
             /*for (let k = 0; k < lineaDividida.length; k++) {
                 let word = lineaDividida[k];
 
@@ -171,6 +169,8 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
 
             palabra = palabras[k];
             // console.log('palabras: ', palabras);
+
+            // console.log('palabras: ', palabras);
             // console.log('palabra: ', palabra);
 
 
@@ -180,8 +180,7 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
 
 
             if (palabra.length > 0 && palabra !== '│' && palabra !== '|' && palabra !== ' ') {
-
-                if (modulo === 'POSTGRES' && palabra.substr(0,1) === ':') {
+                if (modulo === 'POSTGRES_PRODUCCION' && palabra.substr(0,1) === ':') {
                     palabra = palabra.substr(1).trim();
                 }
 
@@ -190,20 +189,32 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
                 } else {
                     // console.log('No agregado nunca: ' + palabra);
                 }
+            } else {
+                //console.log('No agregado nunca2: ' + palabra);
             }
         }
+
         if (responsePalabras.length > 1) {
-            if (responsePalabras[4] && responsePalabras[4] !== 'fecha') {
+            if (modulo === 'POSTGRES_PRODUCCION' && (accion === 'query' || accion === 'idles') && responsePalabras[4] && responsePalabras[4] !== 'time') {
                 // console.log('Fecha original: ', responsePalabras[4]);
                 responsePalabras[4] = betweenDates(responsePalabras[4].toString());
-                console.log('Diferencia: ', responsePalabras[4], '\n\n');
+                // console.log('Diferencia: ', responsePalabras[4], '\n\n');
             }
-
-            console.log('\n\nJ is: ', j, 'Agregando esta lineaaaa: ', responsePalabras);
+            // console.log('Array in this moment: ', responseLineas);
+            // console.log('\n\nJ is: ', j, 'Agregando esta lineaaaa: ', responsePalabras);
             responseLineas.push(responsePalabras);
+            // console.log('Array After: ', responseLineas);
+        } else if (modulo === 'POSTGRES_PRODUCCION' && j === cantidadLineas-3 && responsePalabras && responsePalabras.length === 1) {
+            const isPlural = responsePalabras[0].substr(0, 2) !== '1 ';
+            const positionNumber = isPlural ? (responsePalabras[0].length-6) : (responsePalabras[0].length-5);
+            responseObj = responsePalabras[0].substr(0, positionNumber);
         }
     }
-    return responseLineas;
+    const responseSsh = {
+        rows: responseLineas,
+        obj: responseObj
+    };
+    return responseSsh;
 };
 
 Sistema.prototype.querysActiveInDb = (req, res) => {
@@ -349,14 +360,16 @@ Sistema.prototype.sshConnection = (req, res) => {
         } else {
             console.log('Error en formato de "accion"!');
         }
-    } else if (modulo === 'POSTGRES') {
+    } else if (modulo === 'POSTGRES_PRODUCCION') {
         if (accion !== undefined) {
+            let query = '';
             if (accion === 'query') {
-                const query = ` "select procpid as id, datname as database, usename as user, client_addr as ip, substring(query_start, 0, 20) as fecha, current_query as consulta from pg_stat_activity where not current_query ILIKE '%<IDLE>%' and not current_query ILIKE '%from system_usuarios_sesiones%' and not current_query ILIKE '%update system_usuarios_sesiones%' and procpid != pg_backend_pid() order by query_start asc;"`;
-                parametros.sentencia = credentialRoot + query;
-            } else if (accion === 'logs') {
-                parametros.sentencia = " && git log --pretty=format:'Sha:%x09%h,%x09Msg:%x09\"%s\",%x09Author:%x09%an%x09(%ad)' --graph -100 --date=format:%d/%m/%Y\\ %H:%M:%S";
+                query = ` "SELECT procpid AS id, datname AS bd, usename AS user, client_addr AS ip, substring(query_start, 0, 20) AS time, current_query AS query FROM pg_stat_activity WHERE not current_query ILIKE '%<IDLE>%' AND not current_query ILIKE '%from system_usuarios_sesiones%' AND not current_query ILIKE '%update system_usuarios_sesiones%' AND procpid != pg_backend_pid() ORDER BY query_start ASC;"`;
+            } else if (accion === 'idles') {
+                query = ` "SELECT procpid AS id, datname AS bd, usename AS user, client_addr AS ip, substring(query_start, 0, 20) AS time, current_query AS query FROM pg_stat_activity WHERE current_query = '<IDLE>' ORDER BY query_start ASC;"`;
             }
+            console.log('accion: ', accion);
+            parametros.sentencia = credentialRoot + query;
         } else {
             console.log('Error en formato de "accion"!');
         }
@@ -370,7 +383,10 @@ Sistema.prototype.sshConnection = (req, res) => {
             let palabra = '';
             let cantidadPalabras = 0;
 
-            let lineas = limpiarRespuesta(resultados.split('\n'), modulo, accion);
+            let sshResponse = limpiarRespuesta(resultados.split('\n'), modulo, accion);
+            let lineas = sshResponse.rows;
+            let objetoResponse = sshResponse.obj;
+
             console.log('Lineasssss: ', lineas);
             const cantidadLineas = lineas.length;
 
@@ -434,7 +450,7 @@ Sistema.prototype.sshConnection = (req, res) => {
                             palabra = '';
                         }
                     }
-                    /*else if (modulo === 'POSTGRES') {
+                    /*else if (modulo === 'POSTGRES_PRODUCCION') {
 
                     }*/
                     else {
@@ -513,12 +529,17 @@ Sistema.prototype.sshConnection = (req, res) => {
                         }
                         resultadoArray[0].rows.push(palabrasFiltradas);
                         palabrasFiltradas = [];
-                    } else if (modulo === 'POSTGRES') {
+                    } else if (modulo === 'POSTGRES_PRODUCCION') {
                         if (j === 0) {
-                            resultadoArray[0].title = 'En proceso (57)';
-                            resultadoArray[0].header = palabrasFiltradas;
+                            if (accion === 'query') {
+                                resultadoArray[0].title = 'Consultas en proceso (' + objetoResponse + ')';
+                            } else if (accion === 'idles') {
+                                resultadoArray[0].title = 'Conexiones activas (' + objetoResponse + ')';
+                            }
+                            if (cantidadLineas !== 1) {
+                                resultadoArray[0].header = palabrasFiltradas;
+                            }
                         } else {
-                            resultadoArray[0].rows.push([' ']);
                             resultadoArray[0].rows.push(palabrasFiltradas);
 
                         }

@@ -124,11 +124,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             let btn_dbIdlesDefault = {
                 title: 'Conexiones Activas',
-                name: 'IdlesInDb',
+                name: 'idles',
                 class: serverBtnSize + 'btn btn-primary',
                 disable: false,
                 icono: 'glyphicon glyphicon-list-alt',
-                btn_function: 'querysActiveInDb'
+                btn_function: 'sshConnection'
             };
             let btn_killQuery = {
                 title: 'Kill Query',
@@ -242,8 +242,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ],
                 obj: []
             };
-            $scope.monitorModulos.POSTGRES = {
-                title: 'POSTGRES',
+            $scope.monitorModulos.POSTGRES_PRODUCCION = {
+                title: 'PRODUCCIÓN (10.0.2.246)',
                 width: serverSizeMax,
                 tableClass: 'tablePc tableBorder cells-auto line-nowrap',
                 actions: [
@@ -277,7 +277,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 } else if (server === 229) {
                     $scope.monitoreo.serversName[server] = 'Server ' + server + ' (Dusoft #2)';
                 } else if (server === 246) {
-                    $scope.monitoreo.serversName[server] = 'Base de Datos';
+                    $scope.monitoreo.serversName[server] = 'Postgresql';
                 } else {
                     $scope.monitoreo.serversName[server] = 'Server ' + server;
                 }
@@ -310,7 +310,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             // Creando servidores, Agregando Modulos y agregando Sockets
-            $scope.crearServer(246, ['POSTGRES']); // Creando servidor 246
+            $scope.crearServer(246, ['POSTGRES_PRODUCCION']); // Creando servidor 246
             $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
             $scope.crearServer(191, ['PC', 'PM2', 'GIT']); // Creando servidor 191
             $scope.crearServer(216, ['PC', 'PM2', 'JASPER', 'GIT']); // Creando servidor 216

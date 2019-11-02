@@ -29,8 +29,8 @@ TemporalesCronjob.prototype.iniciar = function(){
 //Proceso temporal hasta cuadrar los lapsos de cierre
 TemporalesCronjob.prototype.backuptExistencias = function(){
     //El cronjob correra todos los dias a media noche
-    var job = new G.cronJob('00 21 * * *', function () {
-        var d = new Date();//08:23
+    new G.CronJobNew('00 23 * * *', function () {
+        var d = new Date();
         var fecha = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
         var sql = "INSERT INTO\
                     existencia_productos_x_dia\
@@ -57,9 +57,8 @@ TemporalesCronjob.prototype.backuptExistencias = function(){
            console.log("error generado en backup existencias bodega", err);
         });
         
-    });
-    job.start();
-    
+    }, null, true, 'America/Bogota');
+      
 };
 
 module.exports = TemporalesCronjob;

@@ -199,8 +199,9 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
 
         if (responsePalabras.length > 1) {
             if ((modulo === 'POSTGRES_PRODUCCION' || modulo === 'POSTGRES_PRUEBAS') && (accion === 'query' || accion === 'idles') && responsePalabras[4] && responsePalabras[4] !== 'time') {
-                const time = responsePalabras[4].toString().trim().substr(0, 19);
-                responsePalabras[4] = betweenDates(time);
+                //const time = responsePalabras[4].toString().trim().substr(0, 19);
+                console.log('Beforeeeeeee: ');
+                responsePalabras[4] = betweenDates(responsePalabras[4]);
             }
             // console.log('Array in this moment: ', responseLineas);
             responseLineas.push(responsePalabras);

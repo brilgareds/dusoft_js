@@ -1,0 +1,84 @@
+[2019-10-19 10:55:59.669] [ERROR] facturacion_clientes - -----------------------------------
+[2019-10-19 10:55:59.671] [ERROR] facturacion_clientes - { metodo: 'FacturacionClientes.prototype.listarPedidosClientes',
+  usuario_id: 1350,
+  'parametros: ':
+   { empresaId: '03',
+     tipoIdTercero: 'NIT',
+     terceroId: '805027743',
+     pedidoClienteId: '139453',
+     paginaActual: 1,
+     pedidoMultipleFarmacia: '0',
+     estadoProcesoPedido: '0',
+     procesoFacturacion: 1,
+     bodega: '03' },
+  'resultado: ': 'El cliente no tiene pedidos para facturar' }
+[2019-10-19 10:55:59.673] [ERROR] facturacion_clientes - -----------------------------------
+[2019-11-06 08:15:00.711] [ERROR] facturacion_clientes - -----------------------------------
+[2019-11-06 08:15:00.713] [ERROR] facturacion_clientes - { metodo: 'FacturacionClientes.prototype.listarFacturasGeneradas',
+  usuario_id: 1350,
+  'parametros: ':
+   { empresa_id: '03',
+     factura_fiscal: '18757',
+     prefijo: '',
+     tipoIdTercero: '',
+     pedidoClienteId: '',
+     terceroId: '',
+     nombreTercero: '',
+     paginaActual: 1 },
+  'resultado: ':
+   { err:
+      { error: el operador no existe: character = integer
+          at Connection.parseE (/media/datos/Proyectos/Dusoft_JS/Duana/node_modules/pg/lib/connection.js:539:11)
+          at Connection.parseMessage (/media/datos/Proyectos/Dusoft_JS/Duana/node_modules/pg/lib/connection.js:366:17)
+          at Socket.<anonymous> (/media/datos/Proyectos/Dusoft_JS/Duana/node_modules/pg/lib/connection.js:105:22)
+          at Socket.emit (events.js:198:13)
+          at addChunk (_stream_readable.js:288:12)
+          at readableAddChunk (_stream_readable.js:269:11)
+          at Socket.Readable.push (_stream_readable.js:224:10)
+          at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+        name: 'error',
+        length: 222,
+        severity: 'ERROR',
+        code: '42883',
+        detail: undefined,
+        hint:
+         'Ningún operador coincide con el nombre y el tipo de los argumentos. Puede desear agregar conversiones explícitas de tipos.',
+        position: '45',
+        internalPosition: undefined,
+        internalQuery: undefined,
+        where: undefined,
+        schema: undefined,
+        table: undefined,
+        column: undefined,
+        dataType: undefined,
+        constraint: undefined,
+        file: 'parse_oper.c',
+        line: '766',
+        routine: 'op_error' },
+     msj: 'Error al consultar la lista de las facturas generadas' } }
+[2019-11-06 08:15:00.714] [ERROR] facturacion_clientes - -----------------------------------
+[2019-11-06 08:16:08.010] [ERROR] facturacion_clientes - -----------------------------------
+[2019-11-06 08:16:08.013] [ERROR] facturacion_clientes - { metodo: 'FacturacionClientes.prototype.listarFacturasGeneradas',
+  usuario_id: 1350,
+  'parametros: ':
+   { empresa_id: '03',
+     factura_fiscal: '18757',
+     prefijo: '',
+     tipoIdTercero: '',
+     pedidoClienteId: '',
+     terceroId: '',
+     nombreTercero: '',
+     paginaActual: 1 },
+  'resultado: ': 'Consulta sin resultados' }
+[2019-11-06 08:16:08.014] [ERROR] facturacion_clientes - -----------------------------------
+[2019-11-06 08:16:20.580] [ERROR] facturacion_clientes - -----------------------------------
+[2019-11-06 08:16:20.583] [ERROR] facturacion_clientes - { metodo: 'FacturacionClientes.prototype.listarClientes',
+  usuario_id: 1350,
+  'parametros: ':
+   { empresaId: '03',
+     terminoBusqueda: '18757',
+     paginaActual: 1,
+     filtro: { tipo: '', descripcion: 'Todos' },
+     usuarioId: 1350 },
+  'resultado: ': 'Consulta sin resultados' }
+[2019-11-06 08:16:20.586] [ERROR] facturacion_clientes - -----------------------------------

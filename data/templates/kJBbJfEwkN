@@ -1,0 +1,23 @@
+{
+    "_id": "xCwH95HcUHvqjH8J",
+    "shortid": "kJBbJfEwkN",
+    "name": "Sample report",
+    "content": "<h2>Book sales</h2>\n<table style='border-style:solid'>\n  <tr>\n    <th>Name</th>\n    <th>Author</th>\n    <th>Sales</th>\n  </tr>\n   \n</table>\n\n<h2>The book of the month</h2>\n\n<h2>Book sales chart</h2> \n<script src=\"//code.jquery.com/jquery-1.11.0.min.js\"></script>\n<script src=\"//cdnjs.cloudflare.com/ajax/libs/flot/0.8.1/jquery.flot.min.js\"></script>\n<script src=\"//cdnjs.cloudflare.com/ajax/libs/flot/0.8.1/jquery.flot.categories.min.js\"></script>\n<div id=\"placeholder\" style=\"width:700px;height:350px\"></div>\n\n<script>\n    $(function () {   \n  \n        var data = [];\n     \n        data.push([\"{{this.name}}\", {{this.sales}}]);\n         \n  \n            $.plot(\"#placeholder\", [ data ], \n            {\n                series: { \n                    bars: { show: true, barWidth: 0.6, align: \"center\" }\n                },\n                xaxis: {   mode: \"categories\", tickLength: 0 }\n            }); \n    });\n</script>",
+    "recipe": "phantom-pdf",
+    "helpers": "function mostSelling(books, prop) {\r\n    return _.max(books, function(book){ return book.sales; })[prop];\r\n}\r\n",
+    "engine": "handlebars",
+    "modificationDate": {
+        "$$date": 1547150196986
+    },
+    "phantom": {
+        "header": "<h1 style='background-color: lightGray'>Library monthly report</h1> ",
+        "orientation": "portrait",
+        "format": "A4"
+    },
+    "script": {},
+    "data": {
+        "shortid": "fvb9e2smN"
+    },
+    "dataItemId": "fvb9e2smN",
+    "images": []
+}

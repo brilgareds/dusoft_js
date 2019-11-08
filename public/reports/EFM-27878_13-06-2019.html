@@ -1,0 +1,219 @@
+<html>
+    <head>
+        <style>
+
+            td{
+                font-size:7pt;
+
+            }
+
+             BODY {
+                font: 7pt Verdana, Geneva, Arial, Helvetica, sans-serif;
+                background-color: #ffffff;
+                overflow:visible;
+                overflow-y:visible;
+                display:inline;
+            }
+
+            .title{
+                font-weight:bold;
+                /*font-family:"Times New Roman", Georgia, Serif;*/
+                font-size:7pt;
+            }
+
+            .docInfo{
+                float:right;
+                font-size:7pt;
+            }
+
+            .footer{
+                margin-top:20px;
+                width:100%;
+                text-align:right;
+            }
+
+
+
+            .fecha_pedido{
+                margin-left:20px;
+            }
+
+            th{
+                text-align: left;
+            }
+
+            .rellenoCelda{
+                padding-top:15px;
+            }
+
+           @page
+            {
+                size: auto;   /* auto is the initial value */
+                margin: 10mm 10mm 10mm 10mm;  ;  /* this affects the margin in the printer settings */
+            }
+
+            table,
+            table tr td,
+            table tr th {
+                   /* page-break-inside: avoid;*/
+            }
+
+            .thDetalle{
+                width:25%;
+            }
+
+            .tablaPrincipal{
+                overflow:visible;
+                overflow-y:visible;
+               /* display:inline;*/
+            }
+
+            table{
+                padding:0px 5px;
+            }
+
+            .detalle{
+                padding:0px;
+            }
+
+            @-moz-document url-prefix() {
+                td{
+                     font-size:10pt!important;
+
+                 }
+
+                  BODY {
+                     font: 10pt Verdana, Geneva, Arial, Helvetica, sans-serif!important;
+
+                 }
+
+                 .title{
+                     font-weight:bold;
+                     /*font-family:"Times New Roman", Georgia, Serif;*/
+                     font-size:10pt!important;
+                 }
+
+                 .docInfo{
+                     font-size:10pt!important;
+                 }
+            }
+
+        </style>
+
+        <!-- link rel="stylesheet" href="http://10.0.2.191:3002/stylesheets/bootstrap.min.css" / -->
+
+
+    </head>
+
+
+
+    <body>
+        <h2 style="text-align:right;">EFM - 27878</h2>
+       <table class="table" width='100%' border ='0'>
+            <tr>
+                <td class='title' >Empresa</td><td>DUANA & CIA LTDA.</td>
+                <td class='title' >Usuario</td><td>JORDAN STEVEN MERA MONTOYA</td>
+                <td class='title' >Imprime</td><td>MAURICIO BARRIOS</td>
+                <td colspan="3"><h3></h3></td>
+            </tr>
+            <tr>
+                <td class='title'>Bodega</td><td>BODEGA COSMITET</td>
+                <td class='title'>Documento</td><td>EFM - 27878</td>
+                <td class='title'></td><td>13-06-2019 08:14 AM</td>
+            </tr>
+            <tr>
+                <td class='title'>Pedido</td><td>228657<span class='fecha_pedido'>11-06-2019 04:27 PM</span></td>
+                <td class='title'>Fecha Despacho</td><td>12-06-2019 08:14 am</td>
+                <td class='title'>Direccion </td><td></td>
+            </tr>
+        </table>
+
+        <hr/>
+
+
+
+        <div class="panel panel-default">
+             <table width='100%' >
+                <tr>
+                    <td class='title'>OBSERVACIÓN</td>
+                    <td>enviar a HOMIC HOSPITALARIA</td>
+                </tr>
+                
+                    <tr>
+                        <td class='title'>TIPO DE DESPACHO</td>
+                        <td>FARMACIAS</td>
+                    </tr>
+                
+                    <tr>
+                        <td class='title'>CLIENTE</td>
+                        <td>BM - MINDEFENSA ::: HOSP. CENTRAL MILITA</td>
+                    </tr>
+                
+                    <tr>
+                        <td class='title'>SEDE</td>
+                        <td></td>
+                    </tr>
+                
+                    <tr>
+                        <td class='title'>DEPARTAMENTO</td>
+                        <td></td>
+                    </tr>
+                
+            </table>
+        </div>
+
+        
+
+            <table class="table table-bordered  tablaPrincipal" width='100%'>
+                <tr>
+                   <th class='title'>Producto</th>
+                   <th class='title' >Cant</th>
+                   <th class='title'>Invima</th>
+                   <th class='title'>Lote</th>
+                   <th class='title'>F/vto</th>
+                   <th class='title'>C#</th>
+                </tr>
+
+                
+
+                    <tr>
+                      <td>1312H0010001 - HALOPERIDOL 5mg/ml SOLUCION INYECTABLE | CAJA X 5. SALUSPHARMA S.A.S.</td>
+                      <td width='45'>100</td>
+                      <td width='100'>2013M-0014633</td>
+                      <td width='80'>18H84</td>
+                      <td width='75'>30-10-2020</td>
+                      <td width='30'>1</td>
+                    </tr>
+
+                
+
+            </table>
+
+        
+        <table  width='100%'  style="margin-top:20px" >
+            <tr align='center'>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+            </tr>
+            <tr align='center'>
+                <td>
+                   Separo
+                </td>
+                <td>
+                   Audito
+                </td>
+                <td>
+                    Verifico
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>

@@ -1,0 +1,55 @@
+
+================================================================================ ERROR 9:51:15 ================================================================================
+
+
+URL: /api/FacturacionClientes/generarSincronizacionDian
+TypeError: Cannot read property 'moduloActual' of undefined
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 9:53:22 ================================================================================
+
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sch="http://certicamara.com/certifactura/soap" xmlns:tns="http://certicamara.com/certifactura/soap">
+    <soap:Header>
+        <wsse:Security soap:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+            <wsse:UsernameToken xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="SecurityToken-2019-09-04T14:53:21Z">
+                <wsse:Username>
+                    admin_duana
+                </wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">
+                    duana649
+                </wsse:Password>
+                <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">
+                    XmVFDSrKEYTndhaZ5yADSMVHCvE=
+                </wsse:Nonce>
+                <wsu:Created>
+                    2019-09-04T14:53:21Z
+                </wsu:Created>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soap:Header>
+    <soap:Body>
+        <consultaDocumentosRequest xmlns="http://certicamara.com/certifactura/soap">
+            <ConsultaResultadoValidacionDocumentosPeticion>
+                <tipoDocumento>
+                    1
+                </tipoDocumento>
+                <numeroDocumento>
+                    FDC_6985
+                </numeroDocumento>
+                <tipoRespuesta>
+                    PDF
+                </tipoRespuesta>
+            </ConsultaResultadoValidacionDocumentosPeticion>
+        </consultaDocumentosRequest>
+    </soap:Body>
+</soap:Envelope>
+
+********************************************************************************************************************************************************************************
+
+
+

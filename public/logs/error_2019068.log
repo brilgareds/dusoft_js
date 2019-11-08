@@ -1,0 +1,100 @@
+
+================================================================================ ERROR 10:22:17 ================================================================================
+
+
+    SELECT
+        a.tipo_id_tercero,
+        a.tercero_id,
+        a.direccion,
+        a.telefono,
+        a.email,
+        a.nombre_tercero,
+        a.tipo_bloqueo_id                
+    FROM
+        terceros as a                
+    LEFT JOIN
+        inv_tipos_bloqueos b 
+            ON a.tipo_bloqueo_id = b.tipo_bloqueo_id                
+    WHERE
+        a.tercero_id = '88244370'  
+        AND                     a.tipo_id_tercero = 'CC'
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 10:22:17 ================================================================================
+
+
+    SELECT
+        a.tipo_id_tercero,
+        a.tercero_id,
+        a.direccion,
+        a.telefono,
+        a.email,
+        a.nombre_tercero,
+        a.tipo_bloqueo_id                
+    FROM
+        terceros as a                
+    LEFT JOIN
+        inv_tipos_bloqueos b 
+            ON a.tipo_bloqueo_id = b.tipo_bloqueo_id                
+    WHERE
+        a.tercero_id = '88244370'  
+        AND                     a.tipo_id_tercero = 'CC'
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 10:25:47 ================================================================================
+
+
+    SELECT
+        a.tipo_id_tercero,
+        a.tercero_id,
+        a.direccion,
+        a.telefono,
+        a.email,
+        a.nombre_tercero,
+        a.tipo_bloqueo_id                
+    FROM
+        terceros as a                
+    LEFT JOIN
+        inv_tipos_bloqueos b 
+            ON a.tipo_bloqueo_id = b.tipo_bloqueo_id                
+    WHERE
+        a.tercero_id = '88244370'  
+        AND                     a.tipo_id_tercero = 'CC'
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 10:25:47 ================================================================================
+
+
+    SELECT
+        a.tipo_id_tercero,
+        a.tercero_id,
+        a.direccion,
+        a.telefono,
+        a.email,
+        a.nombre_tercero,
+        a.tipo_bloqueo_id                
+    FROM
+        terceros as a                
+    LEFT JOIN
+        inv_tipos_bloqueos b 
+            ON a.tipo_bloqueo_id = b.tipo_bloqueo_id                
+    WHERE
+        a.tercero_id = '88244370'  
+        AND                     a.tipo_id_tercero = 'CC'
+
+********************************************************************************************************************************************************************************
+
+
+

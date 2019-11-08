@@ -1,0 +1,1900 @@
+
+================================================================================ ERROR 16:0:18 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.numero_formula::varchar = 1706225 
+            and a.transcripcion_medica = 0
+        )
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 16:0:30 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.numero_formula::varchar = 1706225 
+            and a.transcripcion_medica = 0
+        )
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 16:0:39 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.numero_formula::varchar = 1706225 
+            and a.transcripcion_medica = 1
+        )
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 16:1:1 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.fecha_registro between '2019-01-01 00:00:00' and '2019-03-12 23:59:00' 
+            and "a"."tipo_id_paciente" = 'CC' 
+            and a.paciente_id::varchar = 13253967
+        )
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 16:1:34 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.fecha_registro between '2019-01-01 00:00:00' and '2019-03-12 23:59:00' 
+            and "a"."tipo_id_paciente" = 'CC' 
+            and a.paciente_id::varchar = 13253967
+        )
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 16:1:41 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.fecha_registro between '2019-01-01 00:00:00' and '2019-03-12 23:59:00' 
+            and "a"."tipo_id_paciente" = 'CC' 
+            and a.paciente_id::varchar = 13253967
+        )
+
+********************************************************************************************************************************************************************************
+
+
+
+
+================================================================================ ERROR 16:4:11 ================================================================================
+
+
+    select
+        * 
+    from
+        (select
+            DISTINCT '0' AS tipo_formula,
+            "a"."tipo_formula" as "transcripcion_medica",
+            CASE 
+                WHEN (a.tipo_formula='0' 
+                or a.tipo_formula ='2') THEN 'FORMULACION' 
+                ELSE 'TRANSCRIPCION' 
+            END AS descripcion_tipo_formula,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS fecha_registro,
+            "a"."tipo_id_paciente",
+            "a"."paciente_id",
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') AS registro,
+            CURRENT_DATE as hoy,
+            "a"."sw_refrendar" as "refrendar",
+            "a"."evolucion_id",
+            coalesce(a.formula_id,
+            0) AS numero_formula,
+            edad(b.fecha_nacimiento) as edad,
+            "b"."sexo_id",
+            b.primer_apellido ||' '||b.segundo_apellido AS apellidos,
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,
+            "b"."residencia_telefono",
+            "b"."residencia_direccion",
+            '1' as sw_entrega_med,
+            TO_CHAR(a.fecha_finalizacion,
+            'YYYY-MM-DD') as fecha_finalizacion,
+            TO_CHAR(a.fecha_registro,
+            'YYYY-MM-DD') as fecha_formulacion,
+            "e"."nombre_medico" as "nombre",
+            "a"."numero_entrega_actual",
+            "a"."numero_total_entregas",
+            TO_CHAR(a.fecha_entrega,
+            'YYYY-MM-DD') as fecha_entrega,
+            "f"."tipo_bloqueo_id",
+            "f"."descripcion" as "bloqueo",
+            COALESCE(i.plan_id,
+            0) as plan_id,
+            "i"."plan_descripcion",
+            "a"."sw_finalizado",
+            "a"."numero_total_entregas",
+            "a"."numero_entrega_actual",
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                             CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN '0'                                  
+                    ELSE '1' 
+                END )                          
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN '0' 
+            END AS formula_en_proceso,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                    CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL 
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '0'                             
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN '1'                             
+                                ELSE '2' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )        
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN '3'                     
+                            WHEN a.sw_pendiente = '1' THEN '3'                     
+                            WHEN a.sw_pendiente = '2' THEN '4' 
+                        END                )          
+                    END ) 
+                    ELSE '5' 
+                END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (        CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL 
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '0'                             
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN '1'                             
+                            ELSE '2' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )        
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN '3'                     
+                        WHEN a.sw_pendiente = '1' THEN '3'                     
+                        WHEN a.sw_pendiente = '2' THEN '4' 
+                    END                )         
+                END ) 
+            END  AS estado_entrega,
+            CASE 
+                WHEN (                                SELECT
+                    count(distinct(usuario_id)) as usuario_id                                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                                 
+                WHERE
+                    evolucion_id = a.evolucion_id) = 1 THEN (                      CASE 
+                    WHEN (                                SELECT
+                        count(distinct(usuario_id)) as usuario_id                                 
+                    FROM
+                        hc_dispensacion_medicamentos_tmp                                  
+                    WHERE
+                        evolucion_id = a.evolucion_id 
+                        and usuario_id = 1350) = 1 THEN (        CASE 
+                        WHEN a.sw_finalizado = '0' 
+                        OR a.sw_finalizado is NULL            THEN (                CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL  
+                            OR a.sw_pendiente = '1' THEN(                        CASE 
+                                WHEN TO_CHAR(a.fecha_minima_entrega,
+                                'YYYY-MM-DD') <= TO_CHAR(now(),
+                                'YYYY-MM-DD')                         
+                                and TO_CHAR(now(),
+                                'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Activa'                        
+                                WHEN TO_CHAR(now(),
+                                'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                                'YYYY-MM-DD') THEN 'Refrendar'                        
+                                ELSE 'Falta ' || EXTRACT(DAY 
+                            FROM
+                                a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                            END                        )                    
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                        WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                            WHEN a.sw_pendiente = '0' 
+                            OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                            WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado'                     
+                            WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                        END                )         
+                    END ) 
+                    ELSE (SELECT
+                        nombre 
+                    FROM
+                        system_usuarios 
+                    WHERE
+                        usuario_id = (                                SELECT
+                            distinct(usuario_id) as usuario_id                                 
+                        FROM
+                            hc_dispensacion_medicamentos_tmp                                  
+                        WHERE
+                            evolucion_id = a.evolucion_id )) 
+                    END )          
+                WHEN (                SELECT
+                    count(distinct(usuario_id)) as usuario_id                 
+                FROM
+                    hc_dispensacion_medicamentos_tmp                  
+                WHERE
+                    evolucion_id = a.evolucion_id) = 0 THEN (             CASE 
+                    WHEN a.sw_finalizado = '0' 
+                    OR a.sw_finalizado is NULL            THEN (                CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL  
+                        OR a.sw_pendiente = '1' THEN(                        CASE 
+                            WHEN TO_CHAR(a.fecha_minima_entrega,
+                            'YYYY-MM-DD') <= TO_CHAR(now(),
+                            'YYYY-MM-DD')                         
+                            and TO_CHAR(now(),
+                            'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Activa'                        
+                            WHEN TO_CHAR(now(),
+                            'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,
+                            'YYYY-MM-DD') THEN 'Refrendar'                        
+                            ELSE 'Falta ' || EXTRACT(DAY 
+                        FROM
+                            a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' 
+                        END                        )                    
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                    WHEN a.sw_finalizado = '1'            THEN (                 CASE                     
+                        WHEN a.sw_pendiente = '0' 
+                        OR a.sw_pendiente is NULL THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '1' THEN 'Tto finalizo'                     
+                        WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' 
+                    END                )         
+                END ) 
+            END  AS descripcion_estado_entrega,
+            "a"."sw_pendiente" as "sw_estado" 
+        from
+            "dispensacion_estados" as "a" 
+        inner join
+            "pacientes" as "b" 
+                on "a"."tipo_id_paciente" = "b"."tipo_id_paciente" 
+                and "a"."paciente_id" = "b"."paciente_id" 
+        left join
+            "inv_tipos_bloqueos" as "f" 
+                on "b"."tipo_bloqueo_id" = "f"."tipo_bloqueo_id" 
+                and f.estado='1' 
+        left join
+            "medico_formula" as "e" 
+                on "a"."medico_id" = "e"."tercero_id" 
+                and "a"."evolucion_id" = "e"."evolucion_id" 
+        inner join
+            "eps_afiliados" as "g" 
+                on "g"."afiliado_tipo_id" = "b"."tipo_id_paciente" 
+                and "g"."afiliado_id" = "b"."paciente_id" 
+        inner join
+            "planes_rangos" as "h" 
+                on "g"."plan_atencion" = "h"."plan_id" 
+                and "g"."tipo_afiliado_atencion" = "h"."tipo_afiliado_id" 
+                and "g"."rango_afiliado_atencion" = "h"."rango" 
+        inner join
+            "planes" as "i" 
+                on "h"."plan_id" = "i"."plan_id"
+            ) as "a" 
+    where
+        (
+            a.numero_formula::varchar = 1706225 
+            and a.transcripcion_medica = 0
+        )
+
+********************************************************************************************************************************************************************************
+
+
+

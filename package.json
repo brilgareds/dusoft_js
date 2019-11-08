@@ -34,7 +34,7 @@
     "json2csv": "~3.4.2",
     "jsreport": "^0.2.1",
     "jsreport-client": "*",
-    "knex": "^0.11.5",
+    "knex": "^0.19.5",
     "log4js": "^1.1.1",
     "measured": "^1.1.0",
     "memory-cache": "^0.2.0",

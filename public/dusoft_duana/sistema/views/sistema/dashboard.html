@@ -76,25 +76,31 @@
                         </div>
                         <div class="panel-body">
                             <div class="contenedor-modulos-btns">
-                                <div style="display: inline-block;" ng-disabled="btn.disable" ng-click="btnAccion(modulo, btn, server)" ng-repeat="btn in monitoreo[server][modulo].actions track by $index" class={{btn.class}}>
+                                <div style="display: inline-block;" ng-disabled="btn.disable" ng-click="btnAccion(modulo, btn, (monitoreo[server][modulo].serverDefault || server))" ng-repeat="btn in monitoreo[server][modulo].actions track by $index" class={{btn.class}}>
                                     <button type="button" ng-if="!btn.htmlPersonalizado" style="background: inherit; border: 0px;"><i class="{{btn.icono}}"></i> {{btn.title}}</button>
                                     <div ng-if="btn.htmlPersonalizado" class="form-group" style="background: inherit; border: 0px; margin-bottom: 0px; display: inline-block; margin-right: auto; margin-left: auto;">
-                                        <label class="sr-only" for="exampleInputAmount">Kill Process</label>
+                                        <label class="sr-only" for="exampleInputAmount">Kill Procetttss</label>
                                         <div class="input-group">
-                                            <div class="input-group-addon" style="background: #b7403c; color: #FFF;">Kill Process</div>
+                                            <div class="input-group-addon" style="background: #b7403c; color: #FFF;">Kill Proceuuuuss</div>
                                             <input ng-model="nota.valorConcepto" type="number" class="form-control ng-pristine ng-untouched ng-invalid ng-invalid-number" id="exampleInputAmount" placeholder="Ingrese id" min="1" required>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <br>
+
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                     <div class="col-sm-12 console-format" style="max-height: 370px; overflow: auto;">
                                         <table class="{{monitoreo[server][modulo].tableClass}}" ng-repeat="obj in monitoreo[server][modulo].obj track by $index">  <!-- ng-repeat="(key, title) in modulo.obj track by $index" -->
                                             <tr style="height: 20px;">
-                                                <th colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px; ">
-                                                    {{obj.title}}
+                                                <th ng-if="!(modulo === 'POSTGRES_PRODUCCION' && monitoreo[server][modulo].actions[1].name === 'idles')" colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px;">{{obj.title}}</th>
+
+                                                <th ng-if="(modulo === 'POSTGRES_PRODUCCION' && monitoreo[server][modulo].actions[1].name === 'idles')" colspan="100%" style="text-align: center; padding-top: 0px; padding-bottom: 6px; height: 3em;" class="ng-binding col-sm-12">
+                                                    <div class="col-sm-offset-4 col-sm-4">{{obj.title}}</div>
+                                                    <!--<div class="col-sm-4">
+                                                        <span class="btn btn-danger custom-danger" style="position: absolute;margin-top: -6px;right: 3em;">Detener TODAS</span>
+                                                    </div>-->
                                                 </th>
                                             </tr>
                                             <tr>
@@ -106,8 +112,14 @@
                                                 <td ng-repeat="item in items track by $index" class="nowrap">
                                                     {{item}}
                                                 </td>
-                                                <td ng-if="modulo === 'POSTGRES' && items" class="normal">
+                                                <td ng-if="modulo === 'POSTGRES_PRODUCCION' && items && monitoreo[server][modulo].obj[0].obj.killQuery" class="normal">
                                                     <p class="btn btn-danger custom-danger" ng-click="querysActiveInDb(modulo, 'killProcess', server, obj.header, items)">
+                                                        <i class="glyphicon glyphicon-stop"></i>
+                                                        <span>Stop</span>
+                                                    </p>
+                                                </td>
+                                                <td ng-if="modulo === 'POSTGRES_PRODUCCION' && items && monitoreo[server][modulo].obj[0].obj.killIdle" class="normal">
+                                                    <p class="btn btn-danger custom-danger" ng-click="querysActiveInDb(modulo, 'killProcess2', server, obj.header, items)">
                                                         <i class="glyphicon glyphicon-stop"></i>
                                                         <span>Stop</span>
                                                     </p>

@@ -33531,11 +33531,12 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 const obj = {
                     session: $scope.session,
                     data: {
-                        accion: action,
-                        modulo: modulo,
-                        server: server
+                        action,
+                        modulo,
+                        server
                     }
                 };
+                console.log('action is: ', action);
                 $scope.post(API.LOGS.SSH, obj, data => {
                     if (data.status === 200) {
                         if (modulo === 'PM2' && btn.accion === 'reload') {
@@ -33559,16 +33560,21 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 const obj = {
                     session: $scope.session,
                     data: {
-                        action: action,
-                        modulo: modulo,
-                        server: server,
-                        process: process
+                        action,
+                        modulo,
+                        server,
+                        process
                     }
                 };
-                $scope.post(API.LOGS.QUERYSACTIVES, obj, data => {
+                console.log('obj: ', obj);
+
+                $scope.post(API.LOGS.SSH, obj, data => {
                     if (data.status === 200) {
                         if (action === 'killProcess') {
-                            $scope.querysActiveInDb(modulo, 'querysActiveInDb', server, process);
+                            $scope.querysActiveInDb(modulo, 'query', server, header, process);
+                        }
+                        if (action === 'killProcess2') {
+                            $scope.querysActiveInDb(modulo, 'idles', server, header, process);
                         }
                         if (action === 'querysActiveInDb') {
                             $scope.monitoreo[server][modulo].obj = data.obj;
@@ -33581,6 +33587,8 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
 
             $scope.btnAccion = (modulo, btn, server) => {
+                console.log('btn:, btn ');
+                // currentAction: '';
                 $scope[btn.btn_function](modulo, btn.name, server);
             };
 
@@ -33602,12 +33610,20 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 btn_function: 'sshConnection'
             };
             let btn_dbStatusDefault = {
-                title: 'Status',
-                name: 'querysActiveInDb',
+                title: 'Consultas en proceso',
+                name: 'query',
                 class: serverBtnSize + 'btn btn-primary',
                 disable: false,
                 icono: 'glyphicon glyphicon-list-alt',
-                btn_function: 'querysActiveInDb'
+                btn_function: 'sshConnection'
+            };
+            let btn_dbIdlesDefault = {
+                title: 'Conexiones Activas',
+                name: 'idles',
+                class: serverBtnSize + 'btn btn-primary',
+                disable: false,
+                icono: 'glyphicon glyphicon-list-alt',
+                btn_function: 'sshConnection'
             };
             let btn_killQuery = {
                 title: 'Kill Query',
@@ -33615,7 +33631,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 class: serverBtnSizeMedium + '',
                 disable: false,
                 icono: 'glyphicon glyphicon-refresh',
-                btn_function: 'querysActiveInDb'
+                btn_function: 'sshConnection'
             };
             btn_killQuery.htmlPersonalizado = true;
 
@@ -33686,6 +33702,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 actions: [
                     btn_sshStatusDefault
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.JASPER = {
@@ -33697,6 +33714,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                     btn_startDefault,
                     btn_stopDefault
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.PM2 = {
@@ -33708,6 +33726,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                     btn_reloadPM2,
                     btn_resurrectPM2
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.PM2_DISABLED = {
@@ -33719,15 +33738,31 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                     btn_reloadPM2Disabled,
                     btn_resurrectPM2Disabled
                 ],
+                currentAction: '',
                 obj: []
             };
-            $scope.monitorModulos.POSTGRES = {
-                title: 'POSTGRES',
+            $scope.monitorModulos.POSTGRES_PRODUCCION = {
+                title: 'PRODUCCIÓN (10.0.2.246)',
                 width: serverSizeMax,
+                //serverDefault: 246,
                 tableClass: 'tablePc tableBorder cells-auto line-nowrap',
                 actions: [
-                    btn_dbStatusDefault
+                    btn_dbStatusDefault,
+                    btn_dbIdlesDefault
                 ],
+                currentAction: '',
+                obj: []
+            };
+            $scope.monitorModulos.POSTGRES_PRUEBAS = {
+                title: 'PRUEBAS (10.0.2.169)',
+                width: serverSizeMax,
+                // serverDefault: 169,
+                tableClass: 'tablePc tableBorder cells-auto line-nowrap',
+                actions: [
+                    btn_dbStatusDefault,
+                    btn_dbIdlesDefault
+                ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.GIT = {
@@ -33738,6 +33773,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                     btn_sshStatusDefault,
                     btn_sshGitLogs
                 ],
+                currentAction: '',
                 obj: []
             };
 
@@ -33755,7 +33791,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                 } else if (server === 229) {
                     $scope.monitoreo.serversName[server] = 'Server ' + server + ' (Dusoft #2)';
                 } else if (server === 246) {
-                    $scope.monitoreo.serversName[server] = 'Base de Datos';
+                    $scope.monitoreo.serversName[server] = 'Postgresql';
                 } else {
                     $scope.monitoreo.serversName[server] = 'Server ' + server;
                 }
@@ -33775,7 +33811,6 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
                             const modulo = Modulo.toLowerCase();
                             const nombreSocket = modulo+server;
                             socket.on(nombreSocket, datos => {
-                                console.log('Response is fine!!!', '\nObj is:\n', datos.obj);
                                 if (datos.status === 200) $scope.monitoreo[server][Modulo].obj = datos.obj;
                             });
                         } else {
@@ -33788,7 +33823,7 @@ define('controllers/Sistema/SistemaController',["angular", "js/controllers", 'in
             };
 
             // Creando servidores, Agregando Modulos y agregando Sockets
-            $scope.crearServer(246, ['POSTGRES']); // Creando servidor 246
+            $scope.crearServer(246, ['POSTGRES_PRODUCCION', 'POSTGRES_PRUEBAS']); // Creando servidor 246
             $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
             $scope.crearServer(191, ['PC', 'PM2', 'GIT']); // Creando servidor 191
             $scope.crearServer(216, ['PC', 'PM2', 'JASPER', 'GIT']); // Creando servidor 216
@@ -43350,7 +43385,7 @@ module.exports = function parseuri(str) {
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {})
 },{}],30:[function(_dereq_,module,exports){
-
+'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')
   , length = 64

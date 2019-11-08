@@ -62,7 +62,7 @@
 tr .nowrap {
     white-space: nowrap;
 }
-tr .nowrap:nth-child(7) {
+tr .nowrap:nth-child(6) {
     white-space: normal;
 }
 .line-normal td, .line-nowrap td:last-child:not(.normal), tr > .nowrap:last-child {

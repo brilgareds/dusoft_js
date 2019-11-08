@@ -353,11 +353,7 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
    
    var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit);
-
-   console.log('Query is: ', G.sqlformatter.format(query.toString()));
-
-   query.
+    offset((pagina - 1) * G.settings.limit).
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

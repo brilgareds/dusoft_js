@@ -88,7 +88,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             that.buscarProductosBloqueados = function(termino,paginando) {
 
-                if ($scope.ultima_busqueda !== $scope.termino) { $scope.paginaactual = 1; }
+                if ($scope.ultima_busqueda !== $scope.termino) {
+                    $scope.paginaactual = 1;
+                }
                 
                 var obj = {
                     termino_busqueda: termino,

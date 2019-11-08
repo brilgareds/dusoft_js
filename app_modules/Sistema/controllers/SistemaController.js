@@ -63,8 +63,6 @@ const betweenDates = data => { // 2019-10-29 12:14:51.466269-05
     let response = '';
     const date1 = new Date(data);
     const date2 = new Date();
-    console.log('Fechaa 1: ', date1);
-    console.log('Fechaa 2: ', date2);
     let milisegundos = parseInt(date2 - date1);
     let dias = 0;
     let horas = 0;
@@ -101,7 +99,7 @@ const betweenDates = data => { // 2019-10-29 12:14:51.466269-05
     }
 
     if (response === '') {
-        segundos = '0,' + milisegundos.toString().substr(0, 1);
+        segundos = '< 1';
         response += segundos + ' Seg, ';
     }
     response = response.substr(0, response.length-2);
@@ -184,7 +182,6 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
             if (palabra.length > 0 && palabra !== '│' && palabra !== '|' && palabra !== ' ') {
                 if ((modulo === 'POSTGRES_PRODUCCION' || modulo === 'POSTGRES_PRUEBAS') && palabra.substr(0,1) === ':') {
                     palabra = palabra.substr(1).trim();
-                    console.log('\n\nArray Antes del problema: ', responsePalabras[responsePalabras.length-1], 'magnitud: ', responsePalabras.length-1, 'palabra a concatenar: ', palabra, '\n\n');
                     responsePalabras[responsePalabras.length-1] += palabra;
 
                 } else if (palabra.length > 0 && palabra !== '│' && palabra !== '|' && palabra !== ' ' && palabra !== ' ') {
@@ -200,7 +197,6 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
         if (responsePalabras.length > 1) {
             if ((modulo === 'POSTGRES_PRODUCCION' || modulo === 'POSTGRES_PRUEBAS') && (accion === 'query' || accion === 'idles') && responsePalabras[4] && responsePalabras[4] !== 'time') {
                 //const time = responsePalabras[4].toString().trim().substr(0, 19);
-                console.log('Beforeeeeeee: ');
                 responsePalabras[4] = betweenDates(responsePalabras[4]);
             }
             // console.log('Array in this moment: ', responseLineas);
@@ -251,7 +247,6 @@ Sistema.prototype.querysActiveInDb = (req, res) => {
 const promesa = new Promise((resolve, reject) => { resolve(true); });
 
 Sistema.prototype.sshConnection = (req, res) => {
-    console.log('In controller "sshConnection"');
     res.send(G.utils.r(req.url, 'sshConnection', 200, {sshConnection: {}}));
     let args = req.body.data;
     let accion = args.action;
@@ -381,7 +376,7 @@ Sistema.prototype.sshConnection = (req, res) => {
             console.log('Error en formato de "accion"!');
         }
     } else if (modulo === 'POSTGRES_PRODUCCION' || modulo === 'POSTGRES_PRUEBAS') {
-        console.log('args: ', args);
+        // console.log('args: ', args);
         if (accion !== undefined) {
             let query = "";
             if (accion === 'query') {

@@ -197,8 +197,9 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
 
         if (responsePalabras.length > 1) {
             if ((modulo === 'POSTGRES_PRODUCCION' || modulo === 'POSTGRES_PRUEBAS') && (accion === 'query' || accion === 'idles') && responsePalabras[4] && responsePalabras[4] !== 'time') {
-                // console.log('Fecha original: ', responsePalabras[4]);
-                const time = responsePalabras[4].toString().substr(0, 19);
+                console.log('Fecha original: ', responsePalabras[4].toString().trim());
+                console.log('Fecha Despues: ',  responsePalabras[4].toString().trim().substr(0, 19));
+                const time = responsePalabras[4].toString().trim().substr(0, 19);
                 responsePalabras[4] = betweenDates(time);
                 // console.log('Diferencia: ', responsePalabras[4], '\n\n');
             }

@@ -99,7 +99,7 @@ const betweenDates = data => { // 2019-10-29 12:14:51.466269-05
     }
 
     if (response === '') {
-        segundos = '< 1';
+        segundos = '0,' + milisegundos.toString().substr(0, 1);
         response += segundos + ' Seg, ';
     }
     response = response.substr(0, response.length-2);

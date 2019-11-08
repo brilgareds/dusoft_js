@@ -25,7 +25,7 @@ SistemaModel.prototype.querysActiveInDb = (obj, callback) => {
     let query = G.knex('pg_stat_activity')
         .column([
             'procpid as id',
-            'datname as database',
+            'datname as db',
             'usename as user',
             'client_addr as ip',
             G.knex.raw('query_start as fecha'),
@@ -77,7 +77,7 @@ SistemaModel.prototype.querysActiveInDb = (obj, callback) => {
 
 SistemaModel.prototype.killProcess = (obj, callback) => {
     let pid = obj.process.id;
-    let db = obj.process.database;
+    let db = obj.process.db;
 
     let query = G.knex.column(G.knex.raw('pg_cancel_backend(' + pid + ') AS dead'))
         .from('pg_stat_activity')
@@ -85,6 +85,33 @@ SistemaModel.prototype.killProcess = (obj, callback) => {
 
     query
         .then(response => {
+            console.log('response: ', response);
+            if (response && ((response[0] && response[0].dead) || response.dead)) {
+                console.log('Proceso eliminado con Exito!');
+                callback(false, response);
+            } else {
+                throw 'No se detuvo la consulta en la base de datos!';
+            }
+        }).catch(err => {
+            console.log(err);
+            callback(false, false);
+        });
+};
+
+SistemaModel.prototype.killProcess2 = (obj, callback) => {
+    let pid = obj.process.id;
+    let db = obj.process.db;
+
+    let query = G.knex.column(G.knex.raw('pg_cancel_backend(' + pid + ') AS dead'))
+        .from('pg_stat_activity')
+        .where('datname', db)
+        .andWhere('current_query', '<IDLE>');
+
+    console.log('query is: ', G.sqlformatter.format(query.toString()));
+
+    query
+        .then(response => {
+            console.log('response: ', response);
             if (response.dead) {
                 console.log('Proceso eliminado con Exito!');
                 callback(false, response);
@@ -92,8 +119,9 @@ SistemaModel.prototype.killProcess = (obj, callback) => {
                 throw 'No se detuvo la consulta en la base de datos!';
             }
         }).catch(err => {
-            callback(false, false);
-        });
+        console.log(err);
+        callback(false, false);
+    });
 };
 
 SistemaModel.prototype.ultima_version = callback => {

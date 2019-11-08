@@ -44,11 +44,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 const obj = {
                     session: $scope.session,
                     data: {
-                        accion: action,
-                        modulo: modulo,
-                        server: server
+                        action,
+                        modulo,
+                        server
                     }
                 };
+                console.log('action is: ', action);
                 $scope.post(API.LOGS.SSH, obj, data => {
                     if (data.status === 200) {
                         if (modulo === 'PM2' && btn.accion === 'reload') {
@@ -72,16 +73,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 const obj = {
                     session: $scope.session,
                     data: {
-                        action: action,
-                        modulo: modulo,
-                        server: server,
-                        process: process
+                        action,
+                        modulo,
+                        server,
+                        process
                     }
                 };
-                $scope.post(API.LOGS.QUERYSACTIVES, obj, data => {
+                console.log('obj: ', obj);
+
+                $scope.post(API.LOGS.SSH, obj, data => {
                     if (data.status === 200) {
                         if (action === 'killProcess') {
-                            $scope.querysActiveInDb(modulo, 'querysActiveInDb', server, process);
+                            $scope.querysActiveInDb(modulo, 'query', server, header, process);
+                        }
+                        if (action === 'killProcess2') {
+                            $scope.querysActiveInDb(modulo, 'idles', server, header, process);
                         }
                         if (action === 'querysActiveInDb') {
                             $scope.monitoreo[server][modulo].obj = data.obj;
@@ -94,6 +100,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.btnAccion = (modulo, btn, server) => {
+                console.log('btn:, btn ');
+                // currentAction: '';
                 $scope[btn.btn_function](modulo, btn.name, server);
             };
 
@@ -136,7 +144,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 class: serverBtnSizeMedium + '',
                 disable: false,
                 icono: 'glyphicon glyphicon-refresh',
-                btn_function: 'querysActiveInDb'
+                btn_function: 'sshConnection'
             };
             btn_killQuery.htmlPersonalizado = true;
 
@@ -207,6 +215,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 actions: [
                     btn_sshStatusDefault
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.JASPER = {
@@ -218,6 +227,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     btn_startDefault,
                     btn_stopDefault
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.PM2 = {
@@ -229,6 +239,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     btn_reloadPM2,
                     btn_resurrectPM2
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.PM2_DISABLED = {
@@ -240,16 +251,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     btn_reloadPM2Disabled,
                     btn_resurrectPM2Disabled
                 ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.POSTGRES_PRODUCCION = {
                 title: 'PRODUCCIÓN (10.0.2.246)',
                 width: serverSizeMax,
+                //serverDefault: 246,
                 tableClass: 'tablePc tableBorder cells-auto line-nowrap',
                 actions: [
                     btn_dbStatusDefault,
                     btn_dbIdlesDefault
                 ],
+                currentAction: '',
+                obj: []
+            };
+            $scope.monitorModulos.POSTGRES_PRUEBAS = {
+                title: 'PRUEBAS (10.0.2.169)',
+                width: serverSizeMax,
+                // serverDefault: 169,
+                tableClass: 'tablePc tableBorder cells-auto line-nowrap',
+                actions: [
+                    btn_dbStatusDefault,
+                    btn_dbIdlesDefault
+                ],
+                currentAction: '',
                 obj: []
             };
             $scope.monitorModulos.GIT = {
@@ -260,6 +286,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     btn_sshStatusDefault,
                     btn_sshGitLogs
                 ],
+                currentAction: '',
                 obj: []
             };
 
@@ -297,7 +324,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             const modulo = Modulo.toLowerCase();
                             const nombreSocket = modulo+server;
                             socket.on(nombreSocket, datos => {
-                                console.log('Response is fine!!!', '\nObj is:\n', datos.obj);
                                 if (datos.status === 200) $scope.monitoreo[server][Modulo].obj = datos.obj;
                             });
                         } else {
@@ -310,7 +336,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             // Creando servidores, Agregando Modulos y agregando Sockets
-            $scope.crearServer(246, ['POSTGRES_PRODUCCION']); // Creando servidor 246
+            $scope.crearServer(246, ['POSTGRES_PRODUCCION', 'POSTGRES_PRUEBAS']); // Creando servidor 246
             $scope.crearServer(117, ['PC', 'PM2']); // Creando servidor 117
             $scope.crearServer(191, ['PC', 'PM2', 'GIT']); // Creando servidor 191
             $scope.crearServer(216, ['PC', 'PM2', 'JASPER', 'GIT']); // Creando servidor 216

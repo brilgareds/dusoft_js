@@ -93,11 +93,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             that.gestionar_consultas = function() {
-
                 that.buscar_proveedores(function() {
-
                     that.buscar_unidades_negocio(function() {
-
                         that.gestionar_orden_compra();
                     });
                 });
@@ -443,13 +440,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                Request.realizarRequest(API.PROVEEDORES.WS_LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                    if (data && data.msj) { console.log('Logs:', data.msj); }
 
                     if (data.status === 200) {
 
                         if ($scope.numero_orden > 0)
                             that.render_proveedores(data.obj.proveedores);
-
                         //callback(true);
                         callback(data.obj.proveedores);
                     }

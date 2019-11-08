@@ -42426,7 +42426,8 @@ define('url',["angular"], function(angular) {
                 'GUARDAR_ACTA': BASE_URL + '/ActasTecnicas/guardarActa'
             },
             'PROVEEDORES': {
-                'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
+                'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
+                'WS_LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/ws_listarProveedores'
             },
             'UNIDADES_NEGOCIO': {
                 'LISTAR_UNIDADES_NEGOCIO': BASE_URL + '/UnidadesNegocio/listarUnidadesNegocio'
@@ -52594,7 +52595,6 @@ define('controllers/genererarordenes/GestionarProductosController',["angular", "
             
 
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
-
                 that.buscar_productos();
                 that.buscar_laboratorios();
             });
@@ -52631,7 +52631,6 @@ define('controllers/genererarordenes/GestionarProductosController',["angular", "
 
 
             that.buscar_productos = function(termino, paginando) {
-
                 var termino = termino || "";
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.pagina_actual = 1;
@@ -53195,11 +53194,8 @@ define('controllers/genererarordenes/GestionarOrdenesController',["angular", "js
             };
 
             that.gestionar_consultas = function() {
-
                 that.buscar_proveedores(function() {
-
                     that.buscar_unidades_negocio(function() {
-
                         that.gestionar_orden_compra();
                     });
                 });
@@ -53545,13 +53541,13 @@ define('controllers/genererarordenes/GestionarOrdenesController',["angular", "js
                     }
                 };
 
-                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                Request.realizarRequest(API.PROVEEDORES.WS_LISTAR_PROVEEDORES, "POST", obj, function(data) {
+                    if (data && data.msj) { console.log('Logs:', data.msj); }
 
                     if (data.status === 200) {
 
                         if ($scope.numero_orden > 0)
                             that.render_proveedores(data.obj.proveedores);
-
                         //callback(true);
                         callback(data.obj.proveedores);
                     }

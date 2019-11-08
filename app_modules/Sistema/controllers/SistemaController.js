@@ -63,6 +63,8 @@ const betweenDates = data => { // 2019-10-29 12:14:51.466269-05
     let response = '';
     const date1 = new Date(data);
     const date2 = new Date();
+    console.log('Fechaa 1: ', date1);
+    console.log('Fechaa 2: ', date2);
     let milisegundos = parseInt(date2 - date1);
     let dias = 0;
     let horas = 0;
@@ -197,11 +199,8 @@ const limpiarRespuesta = (lineas, modulo, accion) => {
 
         if (responsePalabras.length > 1) {
             if ((modulo === 'POSTGRES_PRODUCCION' || modulo === 'POSTGRES_PRUEBAS') && (accion === 'query' || accion === 'idles') && responsePalabras[4] && responsePalabras[4] !== 'time') {
-                console.log('Fecha original: ', responsePalabras[4].toString().trim());
-                console.log('Fecha Despues: ',  responsePalabras[4].toString().trim().substr(0, 19));
                 const time = responsePalabras[4].toString().trim().substr(0, 19);
                 responsePalabras[4] = betweenDates(time);
-                // console.log('Diferencia: ', responsePalabras[4], '\n\n');
             }
             // console.log('Array in this moment: ', responseLineas);
             responseLineas.push(responsePalabras);

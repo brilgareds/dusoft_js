@@ -61,7 +61,7 @@
     "socket.io-client": "1.4.5",
     "socket.io-redis": "2.0.0",
     "sqlformatter": "^0.1.0",
-    "tinymce": "^5.0.12",
+    "tinymce": "^5.1.4",
     "utf8": "^3.0.0",
     "uuid": "^3.3.2",
     "xls-to-json": "*",

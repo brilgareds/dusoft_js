@@ -39,7 +39,7 @@
     "measured": "^1.1.0",
     "memory-cache": "^0.2.0",
     "moment": "^2.13.0",
-    "mongodb": "^3.1.1",
+    "mongodb": "^3.1.13",
     "nginx": "0.0.0",
     "node-gyp": "^4.0.0",
     "node-xlsx": "~0.5.1",

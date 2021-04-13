@@ -32,7 +32,7 @@
     "jade": "*",
     "jinq": "^1.6.0",
     "json2csv": "~3.4.2",
-    "jsreport": "^0.2.1",
+    "jsreport": "^2.6.0",
     "jsreport-client": "*",
     "knex": "^0.11.5",
     "log4js": "^1.1.1",
